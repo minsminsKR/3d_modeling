@@ -26,14 +26,19 @@ At the game's 5.5 m gate scale the full-depth leaves are about 1.9 m thick,
 while the alternate leaves are about .30 m. Their cut edges, backs, hinge
 positions, animation direction and appearance still require camera review.
 The standalone `gate-opening.fbx` embeds its original textures and exports
-the static **full-depth** parts; it does not contain the blend animation or
-the thin alternative. Neither prototype is integrated into the game.
+the static **full-depth** parts. `gate-opening-thin.fbx` exports the static
+thin parts with a placeholder material; the Unity importer connects the
+preserved `CorridorEntrance/temple-gate` material and its PBR maps. Neither
+FBX contains the blend animation. The thin candidate is installed only by
+the explicitly requested native review flag below; the ordinary game retains
+the original gate.
 
 Reproduce and check the prototype with Blender 4.0.2 (background):
 
 ```powershell
 blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/prepare_openable_gate.py
 blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/verify_openable_gate.py
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -executeMethod HappyToy.V2.Editor.TemplePrologueImport.ImportGateReview -v2-audit-no-desktop-interaction
 ```
 
 `geometry-report.json` records source and output hashes and provisional cut
@@ -44,8 +49,18 @@ and five central geometric rays that hit the closed leaves and clear at frame
 The source area and sampled positions are preserved to numerical tolerance;
 the FBX exporter drops 24 triangles and about 0.018 of 1,534 square model units.
 These checks do not establish that either open version looks correct or that
-the exported model is ready for runtime integration. The original corridor gate
-and its source remain unchanged.
+the exported model is ready for normal play. The original corridor gate and its
+source remain unchanged.
+
+The opt-in isolated player review accepts `-v2-temple-gate-candidate` with
+the `-v2-temple-review-output` diagnostics described below. It installs the
+candidate during review only, captures the original gate camera at partially
+and almost fully open states, and opens over three unscaled seconds before the
+existing masked corridor transition. `temple-prologue-flow` verifies actual
+E input, opening progress, the corridor transition and temporary mesh-collider
+ray checks at closed/open states; the normal walking test retains the original
+gate. Collider rays and headless tests cannot certify open cut edges, material
+appearance, physical walking through the gate, sound quality or FPS.
 
 ## Prayer furnishings follow-up — 2026-11-05
 

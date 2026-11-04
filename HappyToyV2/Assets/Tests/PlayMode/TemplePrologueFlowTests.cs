@@ -14,6 +14,40 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleReviewGateLeavesClearTheOpening()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Call(session, "CreatePrologueForCheckpoint", data); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var motion = (Component)Call(world, "InstallGateReview");
+            var review = world.transform.Find("Review gate (opt-in)");
+            Assert.That(review, Is.Not.Null); Assert.That(review.gameObject.activeSelf, Is.True);
+            Assert.That(review.GetComponentsInChildren<Collider>(true), Is.Empty, "Review art must not change production physics");
+            var colliders = new System.Collections.Generic.List<MeshCollider>();
+            foreach (var filter in review.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var collider = filter.gameObject.AddComponent<MeshCollider>(); collider.sharedMesh = filter.sharedMesh;
+                colliders.Add(collider);
+            }
+            Assert.That(colliders.Count, Is.EqualTo(3));
+            foreach (float progress in new[] { 0f, 1f })
+            {
+                Call(motion, "SetProgress", progress); Physics.SyncTransforms();
+                foreach (float x in new[] { -.6f, -.3f, 0, .3f, .6f })
+                {
+                    var ray = new Ray(new Vector3(500 + x, 1.63f, 497), Vector3.back);
+                    bool hit = colliders.Any(c => c.Raycast(ray, out _, 16));
+                    Assert.That(hit, Is.EqualTo(progress == 0), "Gate opening ray at x=" + x + ", progress=" + progress);
+                }
+            }
+            foreach (var collider in colliders) Object.Destroy(collider);
+            yield return null;
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TemplePrayerFurnishingsPreserveInteractionAndPhysics()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
@@ -258,7 +292,11 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(origin + new Vector3(0, .04f, -5.4f)); player.transform.rotation = Quaternion.Euler(0, 180, 0); pitch.SetValue(player, 0f);
             yield return null; yield return null;
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("나타난 대문"));
+            var review = (Component)Call(world, "InstallGateReview");
             yield return RecoveryPulse(Key.E);
+            Assert.That(Get<bool>(review, "Started"), Is.True);
+            Assert.That(Get<bool>(shell, "IsReloading"), Is.True);
+            yield return Wait(() => Get<float>(review, "Progress") > .2f, 5, "Review gate did not move before the transition");
             yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60, "Gate did not enter the real corridor");
             Assert.That(Get<bool>(session, "PrologueMode"), Is.False);
             Assert.That(Get<object>(shell, "Screen").ToString(), Is.EqualTo("Playing"));

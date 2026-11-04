@@ -19,7 +19,8 @@ report = json.loads((root / 'geometry-report.json').read_text(encoding='utf-8'))
 source = here.parent / 'CorridorEntrance/temple-gate/temple-gate.blend'
 sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 for path, expected in ((source, report['sourceSha256']), (root/'gate-opening.blend', report['editableSha256']),
-                       (root/'gate-opening.fbx', report['exportSha256'])):
+                       (root/'gate-opening.fbx', report['exportSha256']),
+                       (root/'gate-opening-thin.fbx', report['thinExportSha256'])):
     if sha(path) != expected: raise RuntimeError('Source or export hash differs: ' + str(path))
 bpy.ops.wm.open_mainfile(filepath=str(root/'gate-opening.blend'))
 bpy.context.scene.frame_set(1)
@@ -157,6 +158,19 @@ if result['fbxPackedImages'] < 1:
     result['status'] = 'FAIL'
 if not math.isclose(fbx_area, report['areaBefore'], rel_tol=2e-5, abs_tol=.001):
     result['status'] = 'FAIL'
+bpy.ops.wm.read_factory_settings(use_empty=True)
+bpy.ops.import_scene.fbx(filepath=str(root/'gate-opening-thin.fbx'))
+thin_import = {obj.name: obj for obj in bpy.data.objects if obj.type == 'MESH'}
+result['thinFbxParts'] = {}
+for name in ('Gate frame', 'Left thin leaf', 'Right thin leaf'):
+    obj = thin_import.get(name)
+    if not obj or not obj.data.uv_layers.active or len(obj.data.materials) != 1:
+        raise RuntimeError('Unity review FBX lost a part, atlas or material: ' + name)
+    mesh = obj.data
+    if len(mesh.uv_layers.active.data) != len(mesh.loops):
+        raise RuntimeError('Unity review FBX lost atlas loops: ' + name)
+    result['thinFbxParts'][name] = dict(vertices=len(mesh.vertices), faces=len(mesh.polygons),
+                                         material=mesh.materials[0].name)
 out = root/'surface-proof.json'
 out.write_text(json.dumps(result, indent=2)+'\n',encoding='utf-8',newline='\n')
 print('GATE_SURFACE_PROOF', json.dumps(result), flush=True)

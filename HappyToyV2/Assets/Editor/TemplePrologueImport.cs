@@ -18,11 +18,70 @@ namespace HappyToy.V2.Editor
         public static void ImportTemple() => Import("temple");
         public static void ImportPine() => Import("pine");
 
+        // Opt-in prototype for camera review; the ordinary prologue continues
+        // to use the original corridor gate until the opened result is reviewed.
+        public static void ImportGateReview()
+        {
+            const string source = "SourceArt/TemplePrologue/gate-opening/gate-opening-thin.fbx";
+            const string modelPath = Target + "gate-opening-review.fbx";
+            const string prefabPath = Target + "gate-opening-review.prefab";
+            const string materialPath = "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0.mat";
+            if (!File.Exists(source)) throw new InvalidOperationException("Missing source-derived review FBX");
+            Copy(source, modelPath); AssetDatabase.Refresh();
+            var importer = AssetImporter.GetAtPath(modelPath) as ModelImporter;
+            if (!importer) throw new InvalidOperationException("Missing gate review FBX importer");
+            importer.importAnimation = false; importer.addCollider = false; importer.isReadable = true;
+            importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+            importer.materialLocation = ModelImporterMaterialLocation.InPrefab;
+            importer.SaveAndReimport();
+            var model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+            var material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+            if (!model || !material) throw new InvalidOperationException("Gate review model or original material is missing");
+            var root = new GameObject("gate-opening-review");
+            try
+            {
+                var instance = UnityEngine.Object.Instantiate(model, root.transform, false);
+                if (instance.GetComponentInChildren<Collider>(true) || instance.GetComponentInChildren<Rigidbody>(true))
+                    throw new InvalidOperationException("Gate review asset unexpectedly owns physics");
+                foreach (var item in instance.GetComponentsInChildren<Transform>(true)) item.gameObject.layer = 8;
+                foreach (var renderer in instance.GetComponentsInChildren<MeshRenderer>(true))
+                {
+                    var slots = renderer.sharedMaterials;
+                    for (int i = 0; i < slots.Length; i++) slots[i] = material;
+                    renderer.sharedMaterials = slots;
+                }
+                foreach (var name in new[] { "Gate frame", "Left thin leaf", "Right thin leaf" })
+                {
+                    var found = Array.Find(instance.GetComponentsInChildren<Transform>(true), t => t.name == name);
+                    var filter = found ? found.GetComponent<MeshFilter>() : null;
+                    if (!filter || !filter.sharedMesh || !filter.sharedMesh.isReadable || filter.sharedMesh.uv.Length == 0)
+                        throw new InvalidOperationException("Gate review geometry or UVs missing: " + name);
+                }
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+            AssetDatabase.SaveAssets();
+            Debug.Log("TEMPLE_GATE_REVIEW_IMPORT_PASS");
+        }
+
         public static void Ensure()
         {
             var temple = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "temple-visual.prefab");
             var pine = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "pine-visual.prefab");
-            if (!temple || !pine) throw new InvalidOperationException("Temple prologue visual prefabs are missing");
+            var review = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "gate-opening-review.prefab");
+            var gateMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0.mat");
+            if (!temple || !pine || !review || !gateMaterial) throw new InvalidOperationException("Temple prologue visual prefabs are missing");
+            if (review.GetComponentInChildren<Collider>(true) || review.GetComponentInChildren<Rigidbody>(true))
+                throw new InvalidOperationException("Gate review art unexpectedly owns physics");
+            foreach (var name in new[] { "Gate frame", "Left thin leaf", "Right thin leaf" })
+            {
+                var part = Array.Find(review.GetComponentsInChildren<Transform>(true), t => t.name == name);
+                var reviewFilter = part ? part.GetComponent<MeshFilter>() : null;
+                var renderer = part ? part.GetComponent<MeshRenderer>() : null;
+                if (!reviewFilter || !reviewFilter.sharedMesh || !reviewFilter.sharedMesh.isReadable || reviewFilter.sharedMesh.uv.Length == 0 ||
+                    !renderer || renderer.sharedMaterial != gateMaterial)
+                    throw new InvalidOperationException("Gate review part, UV or original material is missing: " + name);
+            }
             var group = pine.GetComponent<LODGroup>();
             var levels = group ? group.GetLODs() : null;
             if (levels == null || levels.Length != 2) throw new InvalidOperationException("The forest pine requires two authored LODs");

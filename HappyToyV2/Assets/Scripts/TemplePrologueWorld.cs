@@ -139,6 +139,11 @@ namespace HappyToy.V2
             if (presentation) presentation.ReleaseEnvironment();
             gameObject.SetActive(false);
         }
+        public TempleGateReviewMotion InstallGateReview()
+        {
+            if (!Ready || TransitionRequested || !presentation) throw new InvalidOperationException("Temple is not ready for gate review");
+            return presentation.InstallGateReview();
+        }
         void OnDestroy()
         {
             if (Director) Director.PhaseChanged -= PhaseChanged;

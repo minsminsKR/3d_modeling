@@ -235,6 +235,29 @@ namespace HappyToy.V2
             if (cry) cry.Play();
         }
         public void RevealGate() { if (gate) gate.gameObject.SetActive(true); }
+        public TempleGateReviewMotion InstallGateReview()
+        {
+            if (!world || !gate || GetComponent<TempleGateReviewMotion>())
+                throw new InvalidOperationException("Fresh temple gate is required for review");
+            var prefab = Resources.Load<GameObject>("TemplePrologue/gate-opening-review");
+            if (!prefab) throw new InvalidOperationException("Gate review prefab is missing");
+            bool visible = GateVisible;
+            var replacement = CorridorEntranceModels.Group(transform, "Review gate (opt-in)", Vector3.zero);
+            try
+            {
+                Instantiate(prefab, replacement, false);
+                if (replacement.GetComponentInChildren<Collider>(true) || replacement.GetComponentInChildren<Rigidbody>(true))
+                    throw new InvalidOperationException("Review gate art must not own physics");
+                CorridorEntranceModels.GroundAtHeight(replacement, new Vector3(0, 0, -8), 5.5f, Quaternion.identity);
+                var motion = gameObject.AddComponent<TempleGateReviewMotion>();
+                try { motion.Prepare(replacement); }
+                catch { Destroy(motion); throw; }
+                replacement.gameObject.SetActive(visible);
+                var old = gate; gate = replacement; old.gameObject.SetActive(false); Destroy(old.gameObject);
+                return motion;
+            }
+            catch { Destroy(replacement.gameObject); throw; }
+        }
         public void PlayGateSound() { if (gateSound) gateSound.Play(); }
         void Update()
         {

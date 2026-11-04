@@ -74,6 +74,8 @@ namespace HappyToy.V2
         IEnumerator TempleCorridorTransition()
         {
             IsReloading = true; ApplyScreenState();
+            var reviewGate = session.Prologue.GetComponent<TempleGateReviewMotion>();
+            if (reviewGate) yield return reviewGate.Open();
             for (float t = 0; t < 1; t += Time.unscaledDeltaTime)
             { TransitionBlack = Mathf.SmoothStep(0, 1, t); yield return null; }
             TransitionBlack = 1; yield return null;

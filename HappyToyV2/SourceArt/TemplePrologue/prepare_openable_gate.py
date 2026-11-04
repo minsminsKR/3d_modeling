@@ -19,6 +19,7 @@ output = here / 'gate-opening'
 output.mkdir(exist_ok=True)
 editable = output / 'gate-opening.blend'
 export = output / 'gate-opening.fbx'
+thin_export = output / 'gate-opening-thin.fbx'
 report_path = output / 'geometry-report.json'
 sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 source_hash = sha(source)
@@ -135,10 +136,23 @@ bpy.ops.wm.save_as_mainfile(filepath=str(editable), compress=True)
 bpy.ops.export_scene.fbx(filepath=str(export), use_selection=True, object_types={'MESH'},
     axis_forward='-Z', axis_up='Y', bake_anim=False, add_leaf_bones=False,
     path_mode='COPY', embed_textures=True, use_mesh_modifiers=True)
+# The Unity review candidate uses the same source-derived material in the
+# project and therefore does not duplicate the original packed texture maps.
+thin_collection.hide_viewport = False
+bpy.ops.object.select_all(action='DESELECT')
+export_material = bpy.data.materials.new('CE_temple-gate_review_export')
+for obj in (objects[0], *thin_objects):
+    obj.data.materials.clear(); obj.data.materials.append(export_material)
+    obj.select_set(True)
+bpy.context.view_layer.objects.active = objects[0]
+bpy.ops.export_scene.fbx(filepath=str(thin_export), use_selection=True, object_types={'MESH'},
+    axis_forward='-Z', axis_up='Y', bake_anim=False, add_leaf_bones=False,
+    path_mode='STRIP', use_mesh_modifiers=True)
 if sha(source) != source_hash: raise RuntimeError('Original authoring file changed')
 report = dict(scope='Geometry-only prototype, not visually reviewed or integrated into Unity',
     source='SourceArt/CorridorEntrance/temple-gate/temple-gate.blend', sourceSha256=source_hash,
     editable='gate-opening.blend', editableSha256=sha(editable), export='gate-opening.fbx', exportSha256=sha(export),
+    thinExport='gate-opening-thin.fbx', thinExportSha256=sha(thin_export),
     halfWidth=half_width, bottom=bottom, top=top, halfDepth=half_depth,
     areaBefore=area_before, areaAfter=total_area, triangles=counts,
     parts=[dict(name=o.name, hinge=list(o.location), vertices=len(o.data.vertices),

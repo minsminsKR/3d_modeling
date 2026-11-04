@@ -71,5 +71,22 @@
     }
   },
   "fbxSurfaceArea": 1534.2947058425843,
-  "fbxPackedImages": 2
+  "fbxPackedImages": 2,
+  "thinFbxParts": {
+    "Gate frame": {
+      "vertices": 51317,
+      "faces": 109549,
+      "material": "CE_temple-gate_review_export"
+    },
+    "Left thin leaf": {
+      "vertices": 1832,
+      "faces": 3221,
+      "material": "CE_temple-gate_review_export"
+    },
+    "Right thin leaf": {
+      "vertices": 1835,
+      "faces": 3200,
+      "material": "CE_temple-gate_review_export"
+    }
+  }
 }

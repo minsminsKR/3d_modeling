@@ -17,7 +17,9 @@
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
 이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
 `NativeTempleReview`는 명시 플래그의 격리 Windows 플레이어에서 실제 카메라·믹서와
-1080p 오프스크린 동기 렌더를 확인한다. 해당 수치는 모니터 표시 FPS 또는 직접 청음이 아니다.
+1080p 오프스크린 동기 렌더를 확인한다. 명시적 `-v2-temple-gate-candidate` 검토에서만
+`TempleGateReviewMotion`이 시제품 문을 열고 같은 가림 전환으로 이어진다.
+해당 수치는 모니터 표시 FPS 또는 직접 청음이 아니다.
 
 수정할 기능의 행에서 시작하고 해당 코드와 검증만 읽는다. 공유 규칙·저장·입력
 경계에 영향을 주면 관련 행까지 범위를 넓힌다. 전체 리팩터링과 배포 준비는 전체

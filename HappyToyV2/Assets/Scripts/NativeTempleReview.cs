@@ -25,7 +25,7 @@ namespace HappyToy.V2
         {
             public string scope = "Isolated Windows batch player; actual production eye camera and audio listener, scripted poses and interactions. Each timing submits one 1920x1080 offscreen eye render per update and synchronously reads one pixel to include GPU completion. Frames include readback/audit overhead and concurrent workloads; not presented/displayed FPS or manual play. Audio is the pre-device mixer, not device listening.";
             public string unity, device, graphics, phase, error;
-            public bool batch, isolated, muted, frameTimingEnabled, corridorReached;
+            public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate;
             public int forestFootsteps; public string lastForestStep;
             public string[] images; public Mark[] marks; public Timing[] timings;
             public RouteAudioCapture.Report audio;
@@ -34,7 +34,7 @@ namespace HappyToy.V2
         readonly List<string> images = new List<string>();
         readonly List<Mark> marks = new List<Mark>();
         readonly List<Timing> timings = new List<Timing>();
-        GameSession session; RouteAudioCapture capture; string output, phase = "startup";
+        GameSession session; RouteAudioCapture capture; TempleGateReviewMotion reviewGate; string output, phase = "startup";
         ProfilerRecorder gpuRecorder;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -100,6 +100,8 @@ namespace HappyToy.V2
             session.ConfigureRecordDirectory(Path.Combine(output, "isolated-profile"));
             phase = "title-to-forest"; session.Shell.BeginTempleCinematic();
             yield return Until(() => session.PrologueMode && !session.Shell.IsReloading, 30, "Temple start did not finish");
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-v2-temple-gate-candidate") >= 0)
+            { reviewGate = session.Prologue.InstallGateReview(); result.candidateGate = true; }
             session.player.enabled = false; yield return null;
             AudioListener.volume = .8f; capture = RouteAudioCapture.Attach(Path.Combine(output, "audio"));
             MarkTime("first-day-forest");
@@ -147,6 +149,13 @@ namespace HappyToy.V2
             var target = session.Prologue.transform.Find("나타난 대문");
             Require(target && target.gameObject.activeSelf, "Gate is absent");
             target.GetComponent<TemplePrologueTarget>().Use(session.player);
+            if (reviewGate)
+            {
+                yield return Until(() => reviewGate.Progress >= .35f, 8, "Review gate did not begin opening");
+                SaveCamera("07b-gate-opening.png");
+                yield return Until(() => reviewGate.Progress >= .95f, 8, "Review gate did not finish opening");
+                SaveCamera("07c-gate-open.png");
+            }
             yield return Until(() => session.CorridorMode && !session.Shell.IsReloading, 90, "Corridor transition did not finish");
             result.corridorReached = true; yield return null; SaveCamera("08-corridor.png"); MarkTime("corridor");
             yield return new WaitForSeconds(1); phase = "complete";
