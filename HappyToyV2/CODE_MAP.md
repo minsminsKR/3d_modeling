@@ -9,7 +9,9 @@
 `PlayerMotor`는 향을 놓는 짧은 구간에만 수평 이동을 멈추며, 시선·중력과 이후 이동은 유지한다.
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡고,
 `TemplePrayerDressing`은 기존 제작 제단·도자기·촛불의 시각 자산과 재질/메시 수명을 맡는다.
-가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다.
+가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다. 회랑 암전 동안
+`TempleProloguePresentation`이 숲 바람·울음의 현재 음량을 0까지 줄인다. 전환 중에만 두 주변음이
+리스너 일시정지를 우회하며, 일반 일시정지와 별도 대문 소리는 기존 동작을 유지한다.
 `TemplePrologueCheckpointStore`는 별도 슬롯의 원자 저장·소비·충돌 보호를 소유한다. 기존 학교와
 회랑 저장은 별개이며 회랑 저장은 실제 새 회랑이 준비된 뒤에만 소비한다. 숲 발소리는 기존
 `PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용하고, 숲 바람은

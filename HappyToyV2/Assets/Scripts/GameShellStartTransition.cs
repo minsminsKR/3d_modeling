@@ -73,12 +73,25 @@ namespace HappyToy.V2
         }
         IEnumerator TempleCorridorTransition()
         {
+            var soundscape = session.Prologue.GetComponent<TempleProloguePresentation>();
+            Exception audioFailure = null;
+            try
+            {
+                if (!soundscape) throw new InvalidOperationException("사찰 주변음을 준비할 수 없습니다.");
+                soundscape.BeginCorridorAudioFade();
+            }
+            catch (Exception error) { audioFailure = error; }
+            if (audioFailure != null) { FailTempleTransition(audioFailure.Message); yield break; }
             IsReloading = true; ApplyScreenState();
             var reviewGate = session.Prologue.GetComponent<TempleGateReviewMotion>();
             if (reviewGate && !reviewGate.Started) yield return reviewGate.Open();
             for (float t = 0; t < 1; t += Time.unscaledDeltaTime)
-            { TransitionBlack = Mathf.SmoothStep(0, 1, t); yield return null; }
-            TransitionBlack = 1; yield return null;
+            {
+                TransitionBlack = Mathf.SmoothStep(0, 1, t);
+                soundscape.SetCorridorAudioFade(TransitionBlack);
+                yield return null;
+            }
+            TransitionBlack = 1; soundscape.SetCorridorAudioFade(1); yield return null;
             Exception retireFailure = null;
             try { session.RetirePrologue(); } catch (Exception error) { retireFailure = error; }
             if (retireFailure != null) { FailTempleTransition(retireFailure.Message); yield break; }

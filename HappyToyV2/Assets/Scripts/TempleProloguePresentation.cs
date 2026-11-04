@@ -21,6 +21,8 @@ namespace HappyToy.V2
         AudioSource cry, bell, air, gateSound;
         TempleGateReviewAudio reviewGateAudio;
         bool secondDay, captured;
+        bool corridorAudioFading;
+        float exitAirVolume, exitCryVolume;
         float pendingIncense = -1, nextBell;
         bool waitingForIncenseEquip;
         PlayerMotor incenseActor;
@@ -293,6 +295,24 @@ namespace HappyToy.V2
             gateSound.ignoreListenerPause = false;
             gateSound.time = offset;
             gateSound.Play();
+        }
+        // The shell pauses the listener while it masks and prepares the next
+        // scene. Let only the existing outdoor bed finish a short fade across
+        // that mask; ordinary pause still holds these sources normally.
+        public void BeginCorridorAudioFade()
+        {
+            if (corridorAudioFading || !air || !cry)
+                throw new InvalidOperationException("Fresh temple ambience is required for the corridor fade");
+            corridorAudioFading = true;
+            exitAirVolume = air.volume; exitCryVolume = cry.volume;
+            air.ignoreListenerPause = true; cry.ignoreListenerPause = true;
+        }
+        public void SetCorridorAudioFade(float opacity)
+        {
+            if (!corridorAudioFading || !air || !cry || float.IsNaN(opacity) || float.IsInfinity(opacity))
+                throw new InvalidOperationException("Temple corridor audio fade is not ready");
+            float gain = 1 - Mathf.Clamp01(opacity);
+            air.volume = exitAirVolume * gain; cry.volume = exitCryVolume * gain;
         }
         void Update()
         {

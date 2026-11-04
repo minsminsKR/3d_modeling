@@ -13,6 +13,47 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(180000)]
+        public IEnumerator TempleGateTransitionFadesAmbienceWhileNormalPauseStillHoldsIt()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(checkpoint, "phase", 5); Set(checkpoint, "incensePlaced", true); Set(checkpoint, "gateVisible", true);
+            Call(session, "CreatePrologueForCheckpoint", checkpoint); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var callback = shell.GetType().GetMethod("TempleEnterCorridor", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(callback, Is.Not.Null);
+            world.GetType().GetEvent("CorridorRequested").AddEventHandler(world,
+                System.Delegate.CreateDelegate(typeof(System.Action), shell, callback));
+            var air = world.transform.Find("Forest air").GetComponent<AudioSource>();
+            var cry = world.transform.Find("Distant child crying").GetComponent<AudioSource>();
+            var gate = world.transform.Find("Gate opening").GetComponent<AudioSource>();
+            PlacePlayer(new Vector3(500, .04f, 494.6f)); player.transform.rotation = Quaternion.Euler(0, 180, 0);
+            yield return null; yield return null;
+            Assert.That(air.ignoreListenerPause, Is.False); Assert.That(cry.ignoreListenerPause, Is.False);
+            Call(shell, "Pause");
+            Assert.That(AudioListener.pause, Is.True);
+            Assert.That(air.ignoreListenerPause, Is.False); Assert.That(cry.ignoreListenerPause, Is.False);
+            Call(shell, "Resume"); yield return null;
+            float airStart = air.volume, cryStart = cry.volume;
+            Assert.That(airStart, Is.GreaterThan(0)); Assert.That(cryStart, Is.GreaterThan(0));
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("나타난 대문"));
+            yield return RecoveryPulse(Key.E);
+            Assert.That(Get<bool>(shell, "IsReloading"), Is.True);
+            Assert.That(AudioListener.pause, Is.True);
+            Assert.That(air.ignoreListenerPause, Is.True); Assert.That(cry.ignoreListenerPause, Is.True);
+            yield return Wait(() => Get<float>(shell, "TransitionBlack") >= .4f, 3, "Temple fade did not begin");
+            float black = Get<float>(shell, "TransitionBlack");
+            Assert.That(air.volume, Is.EqualTo(airStart * (1 - black)).Within(.001f));
+            Assert.That(cry.volume, Is.EqualTo(cryStart * (1 - black)).Within(.001f));
+            Assert.That(gate.volume, Is.EqualTo(.65f).Within(.001f), "Gate cue must remain independent of ambience fade");
+            yield return Wait(() => Get<float>(shell, "TransitionBlack") >= 1, 3, "Temple fade did not finish");
+            Assert.That(air.volume, Is.EqualTo(0).Within(.0001f));
+            Assert.That(cry.volume, Is.EqualTo(0).Within(.0001f));
+            yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60, "Corridor did not open");
+        }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleForestSoilRepeatsWithoutHardSeams()
         {
@@ -131,6 +172,8 @@ namespace HappyToy.V2.CloudTests
             world.GetType().GetEvent("CorridorRequested").AddEventHandler(world,
                 System.Delegate.CreateDelegate(typeof(System.Action), shell, callback));
             var review = (Component)Call(world, "InstallGateReview");
+            var forestAir = world.transform.Find("Forest air").GetComponent<AudioSource>();
+            float forestStart = forestAir.volume;
             PlacePlayer(new Vector3(500, .04f, 494.6f)); player.transform.rotation = Quaternion.Euler(0, 180, 0);
             player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 0f);
             yield return null; yield return null;
@@ -140,6 +183,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(world.transform.Find("Review gate left hinge").GetComponent<AudioSource>().ignoreListenerPause, Is.True);
             Assert.That(world.transform.Find("Review gate right hinge").GetComponent<AudioSource>().ignoreListenerPause, Is.True);
             yield return Wait(() => Get<float>(review, "Progress") > .2f, 5, "Immediate review gate did not open");
+            Assert.That(forestAir.ignoreListenerPause, Is.True);
+            Assert.That(forestAir.volume, Is.EqualTo(forestStart).Within(.001f), "Ambient bed faded before the gate finished opening");
             yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60,
                 "Immediate gate review did not enter the corridor");
         }
