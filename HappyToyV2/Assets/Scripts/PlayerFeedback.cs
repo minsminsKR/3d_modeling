@@ -129,14 +129,19 @@ namespace HappyToy.V2
                     var contact = transform.position + transform.right * (strideIndex % 2 == 0 ? .11f : -.11f);
                     LastFootstepSurface = ContactSurface(contact, out bool wet, out string floorName);
                     LastFootstepColliderName = floorName;
-                    if (session.PrologueMode) LastFootstepSurface = "forest";
-                    if (session.PrologueMode && forestSteps == null) forestSteps = Variants("step-forest");
-                    var bank = session.PrologueMode ? forestSteps : wet ? waterSteps : LastFootstepSurface == "stone" ? stoneSteps : woodSteps;
+                    bool temple = session.PrologueMode;
+                    if (temple) LastFootstepSurface = session.Prologue.IsStoneApproach(contact) ? "stone" : "forest";
+                    if (temple && LastFootstepSurface == "forest" && forestSteps == null) forestSteps = Variants("step-forest");
+                    var bank = temple ? (LastFootstepSurface == "stone" ? stoneSteps : forestSteps) :
+                        wet ? waterSteps : LastFootstepSurface == "stone" ? stoneSteps : woodSteps;
                     // Several recorded contacts and a tiny shoe variation avoid a repeating single-sample rhythm.
                     LastFootstepClip = bank[strideIndex % bank.Length];
                     steps.pitch = 1 + ((strideIndex % 7) - 3) * .008f;
                     float strength = player.Crouching ? .24f : player.Running ? 1 : .55f;
-                    steps.PlayOneShot(LastFootstepClip, strength * .95f);
+                    // These existing stone recordings have a stronger contact
+                    // than the forest bank; keep the surface change restrained.
+                    float surfaceMix = temple && LastFootstepSurface == "stone" ? .65f : 1;
+                    steps.PlayOneShot(LastFootstepClip, strength * .95f * surfaceMix);
                     FootstepsPlayed++;
                     player.ReportFootstep(contact, wet);
                     Footstep?.Invoke(contact, wet, strength);

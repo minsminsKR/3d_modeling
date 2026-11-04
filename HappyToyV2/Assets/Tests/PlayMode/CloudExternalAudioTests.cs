@@ -169,8 +169,8 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<int>(feedback,"FootstepsPlayed"), Is.EqualTo(stopped)); Call(shell,"Resume");
             }
             var light=Get<Light>(player,"flashlight"); bool lit=light.enabled;int interactions=Get<int>(feedback,"InteractionCuesPlayed");
-            yield return KeysObserved(Key.F); Keys(); yield return null;
-            Assert.That(light.enabled, Is.EqualTo(!lit), "F input did not toggle the actual flashlight");
+            yield return KeysObserved(Key.F); Keys();
+            yield return Wait(() => light.enabled != lit, 3, "F input did not toggle the flashlight at the hand-action release");
             Assert.That(Get<AudioSource>(feedback,"InteractionSource").isPlaying, Is.True, "Flashlight input made no production foley");
             Assert.That(Get<int>(feedback,"InteractionCuesPlayed"),Is.EqualTo(interactions+1));
             Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioClip>(feedback,"LastInteractionClip"),"flashlight",1),Is.True,

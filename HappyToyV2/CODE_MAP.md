@@ -13,8 +13,8 @@
 `TempleProloguePresentation`이 숲 바람·울음의 현재 음량을 0까지 줄인다. 전환 중에만 두 주변음이
 리스너 일시정지를 우회하며, 일반 일시정지와 별도 대문 소리는 기존 동작을 유지한다.
 `TemplePrologueCheckpointStore`는 별도 슬롯의 원자 저장·소비·충돌 보호를 소유한다. 기존 학교와
-회랑 저장은 별개이며 회랑 저장은 실제 새 회랑이 준비된 뒤에만 소비한다. 숲 발소리는 기존
-`PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용하고, 숲 바람은
+회랑 저장은 별개이며 회랑 저장은 실제 새 회랑이 준비된 뒤에만 소비한다. 발소리는 기존
+`PlayerFeedback`의 이동거리 판정과 실제 돌길 렌더러 범위를 사용해 돌길 녹음과 숲 녹음을 구분하고, 숲 바람은
 실제 숲의 녹음을 좌표 감쇠 없는 배경으로 반복한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
 사찰에서만 `ShellHudView`가 기존 단계 안내를 잠시 표시한다. 보이지 않는 대문을 바라보거나

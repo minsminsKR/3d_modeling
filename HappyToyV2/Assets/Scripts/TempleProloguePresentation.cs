@@ -17,6 +17,7 @@ namespace HappyToy.V2
         TemplePrologueWorld world;
         Camera camera;
         Transform incense, gate;
+        Renderer stoneApproach;
         IncenseSmokeTrail smoke;
         AudioSource cry, bell, air, gateSound;
         TempleGateReviewAudio reviewGateAudio;
@@ -63,7 +64,7 @@ namespace HappyToy.V2
             var path = Surface(floorSource, "Old stone path", new Color(.57f, .53f, .46f), new Vector2(1, 8));
             var wood = Material("Prayer table", new Color(.16f, .095f, .055f));
             Box("Forest ground", new Vector3(0, -.16f, -2), new Vector3(48, .3f, 64), earth, true);
-            Box("Stone approach", new Vector3(0, .005f, -5), new Vector3(3.4f, .025f, 31), path, false);
+            stoneApproach = Box("Stone approach", new Vector3(0, .005f, -5), new Vector3(3.4f, .025f, 31), path, false).GetComponent<Renderer>();
             foreach (float side in new[] { -1f, 1f })
                 Box("Forest boundary", new Vector3(side * 22, 3, -2), new Vector3(.3f, 6, 64), earth, true, false);
             Box("Forest end", new Vector3(0, 3, -27), new Vector3(44, 6, .3f), earth, true, false);
@@ -207,6 +208,14 @@ namespace HappyToy.V2
             var source = go.AddComponent<AudioSource>(); source.playOnAwake = false; source.clip = ExternalAudio.Shared(cue);
             source.loop = loop; source.volume = volume; source.spatialBlend = 1; source.minDistance = 2; source.maxDistance = distance;
             source.rolloffMode = AudioRolloffMode.Linear; source.dopplerLevel = 0; return source;
+        }
+        public bool IsStoneApproach(Vector3 contact)
+        {
+            if (!stoneApproach || !stoneApproach.enabled) return false;
+            var bounds = stoneApproach.bounds;
+            if (contact.y < bounds.min.y - .15f || contact.y > bounds.max.y + .25f) return false;
+            var local = stoneApproach.transform.InverseTransformPoint(contact);
+            return Mathf.Abs(local.x) <= .5f && Mathf.Abs(local.z) <= .5f;
         }
         public void PlaceIncense()
         {

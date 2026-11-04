@@ -16,6 +16,7 @@ namespace HappyToy.V2
         public bool Ready { get; private set; }
         public bool TransitionRequested { get; private set; }
         public bool IncensePlacementPending => Ready && presentation && presentation.IncensePending;
+        public bool IsStoneApproach(Vector3 contact) => Ready && presentation && presentation.IsStoneApproach(contact);
         public event Action NextDayRequested;
         public event Action CorridorRequested;
         public string Objective
