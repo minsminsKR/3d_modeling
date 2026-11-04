@@ -202,6 +202,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(lod.GetLODs().Length, Is.EqualTo(2));
             Assert.That(lod.GetLODs()[1].renderers[0].GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0) / 3, Is.LessThanOrEqualTo(50000));
             Assert.That(world.transform.Find("Distant child crying").GetComponent<AudioSource>().clip, Is.Not.Null);
+            var air = world.transform.Find("Forest air").GetComponent<AudioSource>();
+            Assert.That(air.clip, Is.Not.Null);
+            Assert.That(air.clip.name, Is.EqualTo("ambience-forest-0"));
+            Assert.That(air.loop, Is.True);
+            Assert.That(air.spatialBlend, Is.Zero, "Forest wind should not fade with distance from one point");
             var origin = new Vector3(500, 0, 500);
             var start = player.transform.position;
             yield return KeysObserved(Key.W); yield return Delay(1.2f); Keys(); yield return null;

@@ -8,7 +8,8 @@
 가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다.
 `TemplePrologueCheckpointStore`는 별도 슬롯의 원자 저장·소비·충돌 보호를 소유한다. 기존 학교와
 회랑 저장은 별개이며 회랑 저장은 실제 새 회랑이 준비된 뒤에만 소비한다. 숲 발소리는 기존
-`PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용한다. 생성 원본·두 LOD·Blender와
+`PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용하고, 숲 바람은
+실제 숲의 녹음을 좌표 감쇠 없는 배경으로 반복한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
 `temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원·카메라 환경 복원과 기도 공간의 물리 경계,
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는

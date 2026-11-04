@@ -44,7 +44,7 @@ namespace HappyToy.V2
             var incensePrefab = Resources.Load<GameObject>("PlayerItems/incense");
             if (!temple || !pine || !incensePrefab || !Resources.Load<GameObject>("CorridorEntrance/temple-gate-visual"))
                 throw new InvalidOperationException("The temple, pine, incense and gate prefabs are required");
-            if (!ExternalAudio.Shared("enemy-baby-cry") || !ExternalAudio.Shared("story-bell") || !ExternalAudio.Shared("ambience-corridor") || !ExternalAudio.Shared("door-open"))
+            if (!ExternalAudio.Shared("enemy-baby-cry") || !ExternalAudio.Shared("story-bell") || !ExternalAudio.Shared("ambience-forest") || !ExternalAudio.Shared("door-open"))
                 throw new InvalidOperationException("The prologue's recorded ambience, bell and cry are required");
             var incenseAction = HandAnimationLibrary.Load().GetClip("UseIncense");
             if (incenseAction == null || incenseAction.releaseTime <= 0 || incenseAction.releaseTime >= 4)
@@ -117,7 +117,8 @@ namespace HappyToy.V2
                     CorridorEntranceModels.GroundAtHeight(rock, new Vector3(side * (4.5f + i), 0, -16 + i * 11),
                         .8f + .25f * i, Quaternion.Euler(0, i * 71, 0));
                 }
-            air = Source("Forest air", "ambience-corridor", new Vector3(5, 2, -3), true, .15f, 35);
+            air = Source("Forest air", "ambience-forest", new Vector3(5, 2, -3), true, .15f, 35);
+            air.spatialBlend = 0; // Diffuse outdoor wind is not a single point in the forest.
             bell = Source("Distant temple bell", "story-bell", new Vector3(-3, 4, 15), false, .10f, 32);
             cry = Source("Distant child crying", "enemy-baby-cry", new Vector3(0, 1.5f, -8), true, .30f, 22);
             gateSound = Source("Gate opening", "door-open", new Vector3(0, 1.5f, -8), false, .65f, 16);

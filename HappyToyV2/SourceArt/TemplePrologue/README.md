@@ -11,6 +11,16 @@ The CPU/physics profile does not certify rendered appearance, audio listening
 quality or player FPS. An isolated Windows player camera/mixer inspection is
 described below; it does not replace manual listening or displayed FPS.
 
+## Gate opening follow-up — 2026-11-05
+
+E currently starts the masked corridor transition and does not animate the
+gate leaves. The preserved `CE_temple-gate_LOD0` is a single generated mesh:
+45,914 of its 46,212 vertices belong to the same connected component, so
+rotating an existing child transform cannot open the leaves independently.
+An actual opening needs source-derived leaf/frame separation with UVs and
+hinges, followed by visual inspection before replacing the current gate.
+No generated source or existing corridor gate was changed by this inspection.
+
 ## Prayer furnishings follow-up — 2026-11-05
 
 The prayer table and side offering jar now reuse the authored

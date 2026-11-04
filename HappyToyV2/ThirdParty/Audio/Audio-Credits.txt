@@ -213,3 +213,7 @@ Original file and SHA-256: ThirdParty/Audio/MorningBirds/README.md.
 Temple forest footsteps — Steps Mud Gravel Forest Sneaker — Sheyvan (Philipp Grzemba)
 https://freesound.org/people/Sheyvan/sounds/830876/
 CC0 1.0. Four edited contacts from the public HQ preview; source, comparison, hashes and reproducible extraction: ThirdParty/Audio/TempleForest/README.md.
+
+Temple forest wind — Wind Through Trees ambience.wav — Noted451
+https://freesound.org/people/Noted451/sounds/531016/
+CC0 1.0. A crossfaded loop from the public HQ preview; source, hashes and reproducible extraction: ThirdParty/Audio/TempleForest/README.md.

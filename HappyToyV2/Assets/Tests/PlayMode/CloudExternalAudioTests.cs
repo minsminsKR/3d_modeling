@@ -70,7 +70,7 @@ namespace HappyToy.V2.CloudTests
                 {"cabinet",1}, {"cabinet-rustle",4}, {"flashlight",1}, {"discovery",3},
                 {"cabinet-open",1}, {"cabinet-close",1},
                 {"frame-strain",3}, {"frame-impact",3},
-                {"ambience-ground",1}, {"ambience-upper",1}, {"ambience-basement",1}, {"ambience-basement-bed",1},
+                {"ambience-ground",1}, {"ambience-upper",1}, {"ambience-basement",1}, {"ambience-basement-bed",1}, {"ambience-forest",1},
                 {"enemy-cyclopse-movement",3}, {"enemy-cyclopse-attack",1},
             {"enemy-cyclopse-breath",1},{"mask-beast-step",3},
                 {"enemy-hwacat-movement",3}, {"enemy-hwacat-attack",1},

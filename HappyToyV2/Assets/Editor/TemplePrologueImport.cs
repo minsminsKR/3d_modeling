@@ -32,7 +32,7 @@ namespace HappyToy.V2.Editor
             var filter = levels[1].renderers[0] ? levels[1].renderers[0].GetComponent<MeshFilter>() : null;
             if (!filter || !filter.sharedMesh || filter.sharedMesh.subMeshCount != 1 || filter.sharedMesh.GetIndexCount(0) / 3 > 50000)
                 throw new InvalidOperationException("Forest pine distant LOD is missing or exceeds its budget");
-            foreach (string cue in new[] { "enemy-baby-cry", "story-bell", "ambience-corridor", "door-open" })
+            foreach (string cue in new[] { "enemy-baby-cry", "story-bell", "ambience-forest", "door-open" })
                 if (!ExternalAudio.Shared(cue)) throw new InvalidOperationException("Missing prologue recording " + cue);
             for (int i = 0; i < 4; i++) if (!ExternalAudio.Shared("step-forest", i))
                 throw new InvalidOperationException("Missing forest footstep recording " + i);
