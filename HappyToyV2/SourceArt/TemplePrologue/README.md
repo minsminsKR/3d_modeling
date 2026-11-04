@@ -80,8 +80,13 @@ low-sample CPU preview after the three-face atlas adjustment; Unity camera
 appearance remains unverified.
 
 The current measured poses and editable-source hash are preserved in
-`gate-opening/sweep-proof.json`; generate a fresh report at a new path after
-any geometry or pivot change.
+`gate-opening/sweep-proof.json`. A second pass samples each integer degree
+from 1 to 80 using both Blender's object transform and an equivalent direct
+matrix calculation. The object calculation finds no mid-height intersections;
+the matrix calculation finds one left-side triangle pair at 3 degrees, near
+the hinge. The numerical disagreement indicates a near-contact case, not a
+measurement of penetration depth. The right side has none in either pass.
+Generate a fresh report at a new path after any geometry or pivot change.
 
 `geometry-report.json` records source and output hashes, repaired face indices
 and provisional cut bounds. `surface-proof.json` records 4,713 original

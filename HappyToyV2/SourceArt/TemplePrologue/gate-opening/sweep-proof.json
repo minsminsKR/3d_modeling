@@ -192,5 +192,26 @@
         }
       ]
     }
+  ],
+  "denseAngles": [
+    {
+      "name": "Left thin leaf",
+      "samples": 80,
+      "stepDegrees": 1,
+      "intersections": [
+        {
+          "degrees": 3,
+          "objectTransformPairs": 0,
+          "matrixTransformPairs": 1,
+          "maxTriangleCentreRadius": 0.46196332123629896
+        }
+      ]
+    },
+    {
+      "name": "Right thin leaf",
+      "samples": 80,
+      "stepDegrees": 1,
+      "intersections": []
+    }
   ]
 }

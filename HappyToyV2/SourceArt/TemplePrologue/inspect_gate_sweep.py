@@ -11,7 +11,7 @@ from pathlib import Path
 import sys
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
 parser = argparse.ArgumentParser()
@@ -58,10 +58,46 @@ for frame in (1, 10, 19, 28, 37, 46, 55, 64, 73):
     poses.append(dict(frame=frame, leaves=leaves))
 if abs(poses[-1]['leaves'][0]['rotationDegrees']-80) > .01 or abs(poses[-1]['leaves'][1]['rotationDegrees']+80) > .01:
     raise RuntimeError('Hidden collection did not evaluate the opening animation')
+
+# The keyed-frame sample alone can miss a brief seam intersection. Sample
+# every integer degree as well, rotating the actual stored pivots without
+# changing the blend. This remains a surface-intersection observation, not a
+# continuous collision proof or a measure of visible penetration.
+scene.frame_set(1)
+bpy.context.view_layer.update()
+_, _, _, frame_tree = make_tree('Gate frame')
+dense = []
+for name, direction in (('Left thin leaf', 1), ('Right thin leaf', -1)):
+    leaf = bpy.data.objects[name]
+    _, closed_vertices, closed_triangles, _ = make_tree(name)
+    pivot = leaf.matrix_world.translation.copy()
+    observed = []
+    for degrees in range(1, 81):
+        leaf.rotation_euler.z = math.radians(direction * degrees)
+        bpy.context.view_layer.update()
+        _, vertices, triangles, leaf_tree = make_tree(name)
+        overlap = frame_tree.overlap(leaf_tree)
+        centres = [sum((vertices[i] for i in triangles[part]), Vector()) / 3 for _, part in overlap]
+        middle = [p for p in centres if report['bottom']+.1 < p.z < report['top']-.1]
+        # A second, mathematically equivalent matrix calculation exposes
+        # near-contact cases sensitive to floating-point evaluation order.
+        transform = (Matrix.Translation(pivot) @ Matrix.Rotation(math.radians(direction * degrees), 4, 'Z') @
+                     Matrix.Translation(-pivot))
+        direct_vertices = [transform @ point for point in closed_vertices]
+        direct_tree = BVHTree.FromPolygons(direct_vertices, closed_triangles, all_triangles=True)
+        direct_overlap = frame_tree.overlap(direct_tree)
+        direct_centres = [sum((direct_vertices[i] for i in closed_triangles[part]), Vector()) / 3
+                          for _, part in direct_overlap]
+        direct_middle = [p for p in direct_centres if report['bottom']+.1 < p.z < report['top']-.1]
+        combined = middle + direct_middle
+        if combined:
+            observed.append(dict(degrees=degrees, objectTransformPairs=len(middle), matrixTransformPairs=len(direct_middle),
+                maxTriangleCentreRadius=max(math.hypot(p.x-pivot.x, p.y-pivot.y) for p in combined)))
+    dense.append(dict(name=name, samples=80, stepDegrees=1, intersections=observed))
 if hashlib.sha256(source.read_bytes()).hexdigest() != digest: raise RuntimeError('Source changed during inspection')
 out.parent.mkdir(parents=True, exist_ok=True)
 with out.open('x', encoding='utf-8', newline='\n') as stream:
     json.dump(dict(scope='Blender triangle intersections, not visual approval or penetration depth',
-        sourceSha256=digest, blender=bpy.app.version_string, poses=poses), stream, indent=2)
+        sourceSha256=digest, blender=bpy.app.version_string, poses=poses, denseAngles=dense), stream, indent=2)
     stream.write('\n')
 print('GATE_SWEEP_INSPECTION_SAVED', out, flush=True)
