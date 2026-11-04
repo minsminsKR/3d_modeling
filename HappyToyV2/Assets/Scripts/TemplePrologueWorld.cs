@@ -38,6 +38,7 @@ namespace HappyToy.V2
         TempleProloguePresentation presentation;
         Interactable prayerTarget, gateTarget;
         BoxCollider[] gateColliders;
+        TempleGateReviewTraversal walkReview;
 
         public void Prepare(GameSession owner, TemplePrologueCheckpoint checkpoint = null)
         {
@@ -55,8 +56,9 @@ namespace HappyToy.V2
                 () => Director.Phase == TemplePrologueSequence.Phase.FirstApproach || Director.Phase == TemplePrologueSequence.Phase.SecondApproach,
                 player => { if (Director.PlaceIncense()) session.Notify("향을 꽂고 잠시 기도합니다."); });
             gateTarget = Target("나타난 대문", new Vector3(0, 2, -7.13f), new Vector3(4.7f, 4, .35f), "문 열고 들어가기",
-                () => presentation.GateVisible && Director.Phase == TemplePrologueSequence.Phase.GateRevealed,
-                player => { if (Director.EnterGate()) { presentation.PlayGateSound(); TransitionRequested = true; CorridorRequested?.Invoke(); } });
+                () => presentation.GateVisible && Director.Phase == TemplePrologueSequence.Phase.GateRevealed &&
+                    (!walkReview || !walkReview.Started),
+                player => UseGate());
             foreach (float side in new[] { -1f, 1f })
             {
                 var post = new GameObject("대문 기둥 충돌"); post.layer = 8;
@@ -84,6 +86,8 @@ namespace HappyToy.V2
         public TemplePrologueCheckpoint Capture(float seconds)
         {
             if (!Ready || TransitionRequested) throw new InvalidOperationException("전환을 마친 뒤 저장하세요.");
+            if (walkReview && walkReview.Started)
+                throw new InvalidOperationException("대문 통과 검토 중에는 저장할 수 없습니다.");
             var light = session.player.FlashlightSystem;
             var result = new TemplePrologueCheckpoint {
                 token = Guid.NewGuid().ToString("N"), phase = (int)Director.Phase, prayerElapsed = Director.PrayerElapsed,
@@ -109,6 +113,21 @@ namespace HappyToy.V2
                 session.Notify("오늘은 이만 돌아가야겠다. 내일 다시 와야지.");
             else if (phase == TemplePrologueSequence.Phase.GateRevealed)
                 session.Notify("향 연기가 뒤쪽으로 흐르고 있다.");
+        }
+        void UseGate()
+        {
+            if (walkReview)
+            {
+                if (!walkReview.Started) { presentation.PlayGateSound(false); walkReview.Begin(); }
+                return;
+            }
+            if (Director.EnterGate())
+            { presentation.PlayGateSound(); TransitionRequested = true; CorridorRequested?.Invoke(); }
+        }
+        void CompleteGateWalk()
+        {
+            if (!Director.EnterGate()) throw new InvalidOperationException("Gate phase was lost during traversal review");
+            TransitionRequested = true; CorridorRequested?.Invoke();
         }
         void Update()
         {
@@ -168,6 +187,13 @@ namespace HappyToy.V2
         {
             if (!Ready || TransitionRequested || !presentation) throw new InvalidOperationException("Temple is not ready for gate review");
             return presentation.InstallGateReview(gateTarget.GetComponent<BoxCollider>());
+        }
+        public TempleGateReviewMotion InstallGateWalkReview()
+        {
+            var motion = InstallGateReview();
+            walkReview = gameObject.AddComponent<TempleGateReviewTraversal>();
+            walkReview.Prepare(this, session, motion, CompleteGateWalk);
+            return motion;
         }
         void OnDestroy()
         {

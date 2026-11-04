@@ -40,7 +40,9 @@ namespace HappyToy.V2
             right.rotation = Quaternion.AngleAxis(rightSign * angle, Vector3.up) * rightClosed;
             passageChanged(Progress >= 1);
         }
-        public IEnumerator Open()
+        public IEnumerator Open() => Animate(true);
+        public IEnumerator OpenDuringGameplay() => Animate(false);
+        IEnumerator Animate(bool unscaled)
         {
             if (Started) throw new InvalidOperationException("Review gate opening already started");
             Started = true;
@@ -49,7 +51,7 @@ namespace HappyToy.V2
             {
                 SetProgress(elapsed / Duration);
                 yield return null;
-                elapsed += Time.unscaledDeltaTime;
+                elapsed += unscaled ? Time.unscaledDeltaTime : Time.deltaTime;
             }
             SetProgress(1);
         }

@@ -259,7 +259,12 @@ namespace HappyToy.V2
             }
             catch { Destroy(replacement.gameObject); throw; }
         }
-        public void PlayGateSound() { if (gateSound) gateSound.Play(); }
+        public void PlayGateSound(bool duringMaskedTransition = true)
+        {
+            if (!gateSound) return;
+            gateSound.ignoreListenerPause = duringMaskedTransition;
+            gateSound.Play();
+        }
         void Update()
         {
             if (!world || !world.Ready || !GameSession.Current || !GameSession.Current.InputAllowed || world.TransitionRequested) return;

@@ -25,7 +25,7 @@ namespace HappyToy.V2
         {
             public string scope = "Isolated Windows batch player; actual production eye camera and audio listener, scripted poses and interactions. Each timing submits one 1920x1080 offscreen eye render per update and synchronously reads one pixel to include GPU completion. Frames include readback/audit overhead and concurrent workloads; not presented/displayed FPS or manual play. Audio is the pre-device mixer, not device listening.";
             public string unity, device, graphics, phase, error;
-            public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate;
+            public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate, walkCandidateGate;
             public int forestFootsteps; public string lastForestStep;
             public string[] images; public Mark[] marks; public Timing[] timings;
             public RouteAudioCapture.Report audio;
@@ -35,6 +35,7 @@ namespace HappyToy.V2
         readonly List<Mark> marks = new List<Mark>();
         readonly List<Timing> timings = new List<Timing>();
         GameSession session; RouteAudioCapture capture; TempleGateReviewMotion reviewGate; string output, phase = "startup";
+        bool walkGateReview;
         ProfilerRecorder gpuRecorder;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -100,8 +101,13 @@ namespace HappyToy.V2
             session.ConfigureRecordDirectory(Path.Combine(output, "isolated-profile"));
             phase = "title-to-forest"; session.Shell.BeginTempleCinematic();
             yield return Until(() => session.PrologueMode && !session.Shell.IsReloading, 30, "Temple start did not finish");
-            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-v2-temple-gate-candidate") >= 0)
-            { reviewGate = session.Prologue.InstallGateReview(); result.candidateGate = true; }
+            var args = Environment.GetCommandLineArgs();
+            walkGateReview = Array.IndexOf(args, "-v2-temple-gate-walk-candidate") >= 0;
+            if (walkGateReview || Array.IndexOf(args, "-v2-temple-gate-candidate") >= 0)
+            {
+                reviewGate = walkGateReview ? session.Prologue.InstallGateWalkReview() : session.Prologue.InstallGateReview();
+                result.candidateGate = true; result.walkCandidateGate = walkGateReview;
+            }
             session.player.enabled = false; yield return null;
             AudioListener.volume = .8f; capture = RouteAudioCapture.Attach(Path.Combine(output, "audio"));
             MarkTime("first-day-forest");
@@ -156,6 +162,11 @@ namespace HappyToy.V2
                 yield return Until(() => reviewGate.Progress >= .95f, 8, "Review gate did not finish opening");
                 SaveCamera("07c-gate-open.png");
             }
+            if (walkGateReview)
+            {
+                yield return Until(() => reviewGate.Progress >= 1, 8, "Review passage did not open");
+                yield return WalkThroughGate();
+            }
             yield return Until(() => session.CorridorMode && !session.Shell.IsReloading, 90, "Corridor transition did not finish");
             result.corridorReached = true; yield return null; SaveCamera("08-corridor.png"); MarkTime("corridor");
             yield return new WaitForSeconds(1); phase = "complete";
@@ -168,6 +179,34 @@ namespace HappyToy.V2
             session.player.RelocateWorld(origin + feet, Quaternion.LookRotation(heading));
             session.player.eyes.transform.rotation = Quaternion.LookRotation(origin + look - session.player.eyes.transform.position);
             Physics.SyncTransforms(); session.GetComponent<LocalShadowBudget>()?.RefreshNow();
+        }
+        IEnumerator WalkThroughGate()
+        {
+            var disabled = new List<InputDevice>(); var oldBackground = InputSystem.settings.backgroundBehavior;
+            var previousKeyboard = Keyboard.current; Keyboard keyboard = null;
+            var temple = session.Prologue;
+            try
+            {
+                InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+                foreach (var device in InputSystem.devices.ToArray())
+                    if (device.enabled && (device is Keyboard || device is Mouse || device is Gamepad || device is Joystick))
+                    { disabled.Add(device); InputSystem.DisableDevice(device); }
+                keyboard = InputSystem.AddDevice<Keyboard>("Isolated gate traversal keyboard"); keyboard.MakeCurrent();
+                session.player.enabled = true;
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W));
+                float end = Time.realtimeSinceStartup + 8;
+                while (temple && !temple.TransitionRequested && Time.realtimeSinceStartup < end) yield return null;
+                Require(temple && temple.TransitionRequested, "Walking through the review gate did not trigger the corridor");
+                InputSystem.QueueStateEvent(keyboard, new KeyboardState()); yield return null;
+            }
+            finally
+            {
+                session.player.enabled = false;
+                if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
+                foreach (var device in disabled) if (device.added) InputSystem.EnableDevice(device);
+                if (previousKeyboard != null && previousKeyboard.added) previousKeyboard.MakeCurrent();
+                InputSystem.settings.backgroundBehavior = oldBackground;
+            }
         }
         IEnumerator WalkForAudio()
         {

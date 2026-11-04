@@ -64,10 +64,17 @@ checks at closed/open states. A headless test configures the fully open state
 and walks the actual player through three central lanes, using temporary
 colliders on the visible gate mesh to expose contact with the stonework.
 Without the ramp, those lanes stop at the roughly 0.35 m rear threshold.
-The review transition still fades directly after opening; the walking probe
-does not implement or certify a player-triggered walking transition. Normal
-play retains the original gate. These checks cannot certify cut edges, material
-appearance, sound quality or FPS.
+The original `-v2-temple-gate-candidate` review still fades directly after
+opening. A separate `-v2-temple-gate-walk-candidate` review keeps gameplay
+active, pauses the opening and its sound with the game, and starts the same
+masked transition only when the player crosses the central opening towards
+the back. The headless flow exercises E, pause, a crossing outside the gate,
+actual forward walking and corridor entry. To avoid unsafe checkpoint poses,
+this experimental route refuses suspension once gate opening starts; ordinary
+play and its save format are unchanged. The new native review path is prepared
+but has not yet been run with graphics/audio. Normal play retains the original
+gate. These checks cannot certify cut edges, material appearance, sound
+quality or FPS.
 
 ## Prayer furnishings follow-up — 2026-11-05
 
