@@ -240,6 +240,7 @@ namespace HappyToy.V2.CloudTests
             var actions = Get<Component>(player, "HandActions");
             var hands = Get<Component>(player, "Hands");
             var heldField = hands.GetType().GetField("held", BindingFlags.Instance | BindingFlags.NonPublic);
+            var incenseItem = System.Enum.Parse(RequireType("PlayerItem"), "Incense");
             int incenseStock = Get<int>(Get<Component>(player, "Rituals"), "Incense");
             var flashlight = Get<Light>(player, "flashlight");
             bool initialLight = flashlight.enabled;
@@ -252,12 +253,16 @@ namespace HappyToy.V2.CloudTests
             var pending = presentation.GetType().GetField("pendingIncense", BindingFlags.Instance | BindingFlags.NonPublic);
             yield return Wait(() => (float)pending.GetValue(presentation) > 0, 3, "Incense action did not start");
             Assert.That((bool)(Transform)heldField.GetValue(hands), Is.True, "Incense was not held before placement");
+            Assert.That((bool)Call(hands, "TryGetHeldRootWorld", incenseItem, Vector3.zero), Is.True,
+                "Review did not see the held incense before placement");
             yield return RecoveryPulse(Key.F);
             Assert.That(Get<bool>(actions, "Busy"), Is.False, "Flashlight interrupted the incense release");
             Assert.That(flashlight.enabled, Is.EqualTo(initialLight));
             yield return Wait(() => Get<bool>(presentation, "IncensePlaced"), 3, "Incense did not reach its release marker");
             yield return null;
             Assert.That((bool)(Transform)heldField.GetValue(hands), Is.False, "Placed incense remained in the hand");
+            Assert.That((bool)Call(hands, "TryGetHeldRootWorld", incenseItem, Vector3.zero), Is.False,
+                "Review still saw held incense after placement");
             Assert.That(Get<int>(Get<Component>(player, "Rituals"), "Incense"), Is.EqualTo(incenseStock), "Story placement spent corridor stock");
             yield return RecoveryPulse(Key.F);
             yield return Wait(() => flashlight.enabled != initialLight, 3, "Flashlight did not work after incense placement");

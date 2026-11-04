@@ -117,6 +117,15 @@ with graphics and audio. Run it on the private, never-switched desktop via
 `Tools/quality/run_isolated_desktop.py`; its process-only audio mute guards
 the real pre-device listener recording. The review performs a short isolated
 keyboard walk, then controlled poses and interactions through the corridor.
+For the incense handoff it records a separate hand-camera image before
+placement when the held visual is observed, then another after the placed
+incense has appeared and the hand presentation has updated. The result fields
+`incenseHeldBeforePlacement` and `incenseHeldAfterPlacement` record what the
+review observed; a missing before image is not proof of a correct handoff.
+When the gate candidate is enabled, the almost-open state is also captured
+from left, right and behind in the same frame, using controlled camera poses.
+The walking review returns to the approach pose before sending its isolated
+keyboard input. These new captures are prepared but have not yet been run.
 The 2026-11-04 D3D11 RTX 3090 Ti run recorded nine forest steps and 27.18s of
 non-silent mixer PCM, with no clipped or nonfinite samples. It did not perform
 subjective listening or test the output device.

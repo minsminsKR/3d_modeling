@@ -26,6 +26,7 @@ namespace HappyToy.V2
             public string scope = "Isolated Windows batch player; actual production eye camera and audio listener, scripted poses and interactions. Each timing submits one 1920x1080 offscreen eye render per update and synchronously reads one pixel to include GPU completion. Frames include readback/audit overhead and concurrent workloads; not presented/displayed FPS or manual play. Audio is the pre-device mixer, not device listening.";
             public string unity, device, graphics, phase, error;
             public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate, walkCandidateGate;
+            public bool incenseHeldBeforePlacement, incenseHeldAfterPlacement;
             public int forestFootsteps; public string lastForestStep;
             public string[] images; public Mark[] marks; public Timing[] timings;
             public RouteAudioCapture.Report audio;
@@ -133,8 +134,19 @@ namespace HappyToy.V2
             yield return Measure("prayer-space");
             phase = "first-prayer"; MarkTime("first-prayer");
             Require(session.Prologue.Director.PlaceIncense(), "First prayer did not start");
-            yield return Until(() => session.Prologue.GetComponent<TempleProloguePresentation>().IncensePlaced, 8, "Incense was not placed");
-            SaveHand("04-hand-release.png");
+            var templePresentation = session.Prologue.GetComponent<TempleProloguePresentation>();
+            var hands = session.player.Hands;
+            Require(templePresentation && hands, "Incense hand presentation is unavailable");
+            yield return Until(() => templePresentation.IncensePlaced ||
+                hands.TryGetHeldRootWorld(PlayerItem.Incense, out _), 8, "Incense hand did not become ready");
+            result.incenseHeldBeforePlacement = !templePresentation.IncensePlaced &&
+                hands.TryGetHeldRootWorld(PlayerItem.Incense, out _);
+            if (result.incenseHeldBeforePlacement) SaveHand("04a-hand-before-placement.png");
+            yield return Until(() => templePresentation.IncensePlaced, 8, "Incense was not placed");
+            yield return null; // Let the hands' LateUpdate consume the placement state.
+            result.incenseHeldAfterPlacement = hands.TryGetHeldRootWorld(PlayerItem.Incense, out _);
+            SaveHand("04b-hand-after-placement.png");
+            Require(!result.incenseHeldAfterPlacement, "Placed incense remained visible in the hand");
             yield return new WaitForSeconds(1.3f); SaveCamera("04-first-incense.png");
             yield return Until(() => session.Prologue.Director.Phase == TemplePrologueSequence.Phase.FirstDeparture, 10, "First prayer did not finish");
             phase = "next-day"; Pose(new Vector3(0,.04f,-19), new Vector3(0,1.4f,7));
@@ -161,6 +173,12 @@ namespace HappyToy.V2
                 SaveCamera("07b-gate-opening.png");
                 yield return Until(() => reviewGate.Progress >= .95f, 8, "Review gate did not finish opening");
                 SaveCamera("07c-gate-open.png");
+                // All views are captured in the same frame, before the masked
+                // transition can advance. Return to the playable approach pose.
+                Pose(new Vector3(-3.4f,.04f,-6), new Vector3(-1.8f,2,-8)); SaveCamera("07d-gate-open-left.png");
+                Pose(new Vector3(3.4f,.04f,-6), new Vector3(1.8f,2,-8)); SaveCamera("07e-gate-open-right.png");
+                Pose(new Vector3(0,.04f,-11), new Vector3(0,2,-8)); SaveCamera("07f-gate-open-back.png");
+                Pose(new Vector3(0,.04f,-3), new Vector3(0,2,-8));
             }
             if (walkGateReview)
             {
