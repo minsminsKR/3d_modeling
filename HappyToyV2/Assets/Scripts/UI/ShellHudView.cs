@@ -9,8 +9,8 @@ namespace HappyToy.V2
     {
         readonly ShellLayout layout;
         readonly VisualElement threatVeil;
-        VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip;
-        Label focus, meter, caption, itemFeedback, controlsFooter;
+        VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip, templeNoticePanel;
+        Label focus, meter, caption, itemFeedback, controlsFooter, templeNotice;
         FlashlightGauge batteryMeter;
         readonly MemoryToken[] memoryTokens = new MemoryToken[7];
         Color Rust => layout.Rust;
@@ -79,6 +79,19 @@ namespace HappyToy.V2
             caption.name = "sound-caption";
             caption.style.unityTextAlign = TextAnchor.UpperCenter;
             caption.style.color = layout.Gold;
+            // The prologue has a short authored sequence; its existing phase
+            // notices must be readable without changing other modes' quiet HUD.
+            templeNoticePanel = layout.Panel(400, 64, 800, 72, new Color(.017f, .026f, .022f, layout.HighContrast ? .96f : .78f));
+            templeNoticePanel.name = "temple-story-notice-panel";
+            templeNoticePanel.style.alignItems = Align.Center;
+            templeNoticePanel.style.justifyContent = Justify.Center;
+            templeNotice = new Label { name = "temple-story-notice", pickingMode = PickingMode.Ignore };
+            templeNotice.style.width = 760;
+            templeNotice.style.fontSize = layout.LargeText ? 25 : 22;
+            templeNotice.style.whiteSpace = WhiteSpace.Normal;
+            templeNotice.style.unityTextAlign = TextAnchor.MiddleCenter;
+            templeNotice.style.color = layout.Paper;
+            templeNoticePanel.Add(templeNotice);
             var focusAnchor = layout.Panel(0, 753, 1600, 54, Color.clear);
             focusAnchor.style.alignItems = Align.Center;
             focusAnchor.style.justifyContent = Justify.Center;
@@ -159,6 +172,8 @@ namespace HappyToy.V2
                 memoryTokens[i]?.SetRecovered(state.RecordsRecovered > i);
             caption.text = state.Caption;
             Visible(caption, state.CaptionVisible);
+            templeNotice.text = state.TempleNoticeVisible ? state.TempleNotice : string.Empty;
+            Visible(templeNoticePanel, state.TempleNoticeVisible);
             stamina.style.width = 265 * Mathf.Clamp01(state.Stamina);
             stamina.style.backgroundColor = state.SprintExhausted ? Rust : Gold;
             batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
@@ -185,9 +200,9 @@ namespace HappyToy.V2
         internal struct State
         {
             public bool HasPlayer, CaptionVisible, SprintExhausted, FlashlightLit, Hidden, Focused;
-            public bool ItemFeedbackVisible, Threatened, UnlimitedItems, PrologueMode;
+            public bool ItemFeedbackVisible, Threatened, UnlimitedItems, PrologueMode, TempleNoticeVisible;
             public int RecordsRecovered, Firecrackers, Traps;
-            public string Caption, FocusLabel, ItemFeedback;
+            public string Caption, FocusLabel, ItemFeedback, TempleNotice;
             public float Stamina, BatteryFraction, FeedbackOpacity, PeripheralStrength;
             public Texture2D PeripheralTexture;
             public Color OverlayColor;
@@ -204,6 +219,7 @@ namespace HappyToy.V2
                 bool showItem = trapFeedback || inventory && (inventory.FeedbackVisible || showAim);
                 return new State {
                     HasPlayer = true, PrologueMode = session.PrologueMode, UnlimitedItems = player.Items.Unlimited, RecordsRecovered = session.RecordsRecovered, Caption = shell.Caption, CaptionVisible = shell.CaptionVisible,
+                    TempleNoticeVisible = session.PrologueMode && shell.NoticeVisible, TempleNotice = session.Notice,
                     Stamina = player.Stamina, SprintExhausted = player.SprintExhausted,
                     BatteryFraction = charge.Fraction, FlashlightLit = charge.Lit,
                     Firecrackers = inventory ? inventory.Count : 0, Traps = traps ? traps.Count : 0,

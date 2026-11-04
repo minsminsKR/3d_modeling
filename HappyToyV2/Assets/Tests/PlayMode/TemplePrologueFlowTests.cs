@@ -7,12 +7,51 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 
 namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(120000)]
+        public IEnumerator TempleHiddenGateGuidesBlockedAndWatchingPlayersWithoutAffectingOtherHud()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var initialRoot = Get<VisualElement>(One("GameShellView"), "Root");
+            yield return Wait(() => initialRoot.Q<Label>("temple-story-notice")?.text == Get<string>(session, "Notice"),
+                3, "Initial temple instruction was not shown");
+            Assert.That(initialRoot.Q("temple-story-notice-panel").resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
+            var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(checkpoint, "phase", 5); Set(checkpoint, "incensePlaced", true); Set(checkpoint, "gateVisible", false);
+            Set(Get<object>(checkpoint, "player"), "position", new Vector3(500, .04f, 492.87f));
+            Set(Get<object>(checkpoint, "player"), "yaw", 180f);
+            Call(session, "CreatePrologueForCheckpoint", checkpoint); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var gate = world.transform.Find("나타난 대문");
+            Assert.That(gate.gameObject.activeSelf, Is.False);
+            Call(shell, "Pause"); int revision = Get<int>(session, "NoticeRevision");
+            yield return Delay(1f);
+            Assert.That(Get<int>(session, "NoticeRevision"), Is.EqualTo(revision), "Paused time must not advance gate hints");
+            Call(shell, "Resume");
+            yield return Wait(() => Get<string>(session, "Notice").Contains("물러서"), 12, "No hint when the player occupies the hidden gate");
+            var root = Get<VisualElement>(One("GameShellView"), "Root");
+            yield return Wait(() => root.Q<Label>("temple-story-notice")?.text == Get<string>(session, "Notice"),
+                3, "Gate clearance hint was not rendered");
+            Assert.That(root.Q("temple-story-notice-panel").resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
+            PlacePlayer(new Vector3(500, .04f, 494.4f)); player.transform.rotation = Quaternion.Euler(0, 180, 0);
+            yield return Wait(() => Get<string>(session, "Notice").Contains("시선을"), 3, "No hint while watching the empty gate position");
+            Assert.That(gate.gameObject.activeSelf, Is.False, "The gate appeared inside the player's view");
+            player.transform.rotation = Quaternion.identity;
+            yield return Wait(() => gate.gameObject.activeSelf, 3, "The gate did not appear after the player looked away");
+            Assert.That(Get<string>(session, "Notice"), Does.Contain("문"));
+            Call(session, "RetirePrologue"); yield return null; yield return null;
+            root = Get<VisualElement>(One("GameShellView"), "Root");
+            var label = root.Q<Label>("temple-story-notice");
+            if (label != null) Assert.That(label.text, Is.Empty, "Temple guidance leaked into another mode");
+        }
         [UnityTest, Timeout(180000)]
         public IEnumerator TempleGateTransitionFadesAmbienceWhileNormalPauseStillHoldsIt()
         {
@@ -53,6 +92,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(air.volume, Is.EqualTo(0).Within(.0001f));
             Assert.That(cry.volume, Is.EqualTo(0).Within(.0001f));
             yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60, "Corridor did not open");
+            yield return null;
+            var hud = Get<VisualElement>(One("GameShellView"), "Root");
+            var templeNotice = hud.Q<Label>("temple-story-notice");
+            if (templeNotice != null)
+            {
+                Assert.That(templeNotice.text, Is.Empty, "Temple notice leaked into the corridor");
+                Assert.That(hud.Q("temple-story-notice-panel").resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
+            }
         }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleForestSoilRepeatsWithoutHardSeams()

@@ -39,6 +39,8 @@ namespace HappyToy.V2
         Interactable prayerTarget, gateTarget;
         BoxCollider[] gateColliders;
         TempleGateReviewTraversal walkReview;
+        float hiddenGateWait, nextGateReminder;
+        bool hintedGateClearance, hintedGateGlance;
 
         public void Prepare(GameSession owner, TemplePrologueCheckpoint checkpoint = null)
         {
@@ -148,8 +150,29 @@ namespace HappyToy.V2
             if (Director.Phase == TemplePrologueSequence.Phase.GateRevealed && !presentation.GateVisible)
             {
                 var towardGate = (GatePoint - session.player.eyes.transform.position).normalized;
-                if (Vector3.Dot(session.player.eyes.transform.forward, towardGate) < .1f && GateClearOfPlayer())
-                { presentation.RevealGate(); gateTarget.gameObject.SetActive(true); }
+                bool lookingAway = Vector3.Dot(session.player.eyes.transform.forward, towardGate) < .1f;
+                bool clear = GateClearOfPlayer();
+                if (lookingAway && clear)
+                {
+                    presentation.RevealGate(); gateTarget.gameObject.SetActive(true);
+                    if (hintedGateClearance || hintedGateGlance) session.Notify("낯선 문이 나타났다.");
+                }
+                else
+                {
+                    // Keep the unseen reveal, but do not leave a player who
+                    // arrived early or is watching the empty spot guessing.
+                    hiddenGateWait += Time.deltaTime;
+                    if (hiddenGateWait >= 8 && !clear && (!hintedGateClearance || hiddenGateWait >= nextGateReminder))
+                    {
+                        hintedGateClearance = true; nextGateReminder = hiddenGateWait + 20;
+                        session.Notify("한 걸음 물러서 주변을 살펴보자.");
+                    }
+                    else if (hiddenGateWait >= 8 && clear && !lookingAway && (!hintedGateGlance || hiddenGateWait >= nextGateReminder))
+                    {
+                        hintedGateGlance = true; nextGateReminder = hiddenGateWait + 20;
+                        session.Notify("잠시 시선을 돌려 주변을 둘러보자.");
+                    }
+                }
             }
         }
         bool GateClearOfPlayer()
