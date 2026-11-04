@@ -46,6 +46,8 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
+        ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
         ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),

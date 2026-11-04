@@ -84,3 +84,10 @@ before welding. At the existing 0.00002 Blender-unit weld tolerance it has
 counts identify difficult topology, but do not establish that topology alone
 caused the decimator's 253,120-face result. A UV-safe reduction and visual
 review are still required before using the tree as a repeated forest asset.
+
+The unconnected `TemplePrologueDirector` now coordinates the interaction
+sequence and a four-simulation-second prayer clock, with an explicit hold
+input and validated restoration inputs. `temple-prologue-logic` checks the
+actual component's hold and phase transition; the standalone CPU check also
+exercises invalid time and restoration. No player interaction, storage, forest,
+smoke, gate or corridor transition has been connected by this change.

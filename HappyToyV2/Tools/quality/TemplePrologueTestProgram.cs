@@ -33,6 +33,17 @@ static class TemplePrologueTestProgram
             try { TemplePrologueSequence.Restore(invalid); throw new Exception("Invalid phase accepted"); }
             catch (ArgumentOutOfRangeException) { }
         }
+        var prayer = new TemplePrayerClock(4);
+        Check(!prayer.Advance(3, false) && prayer.Elapsed == 3);
+        Check(!prayer.Advance(10, true) && prayer.Elapsed == 3);
+        var resumed = new TemplePrayerClock(4, prayer.Elapsed);
+        Check(resumed.Advance(2, false) && resumed.Elapsed == 4);
+        Check(!resumed.Advance(1, false));
+        foreach (float bad in new[] { -1f, float.NaN, float.PositiveInfinity })
+        {
+            try { prayer.Advance(bad, false); throw new Exception("Invalid prayer time accepted"); }
+            catch (ArgumentOutOfRangeException) { }
+        }
         Console.WriteLine("Temple prologue sequence passed.");
     }
 }

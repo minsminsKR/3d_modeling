@@ -6,6 +6,9 @@
 독립 규칙 확인: `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`
 (저장소 루트). 소나무 원본의 접합 전후 토폴로지 확인 도구는
 `SourceArt/TemplePrologue/inspect_pine.py`다.
+`TemplePrologueDirector`는 아직 미연결 상태로, 명시 입력을 받아 4초 기도·정지·단계
+전환을 소유한다. `temple-prologue-logic`은 Core와 실제 컴포넌트의 정지/완료를 검사하며
+장면, 저장, 입력 또는 회랑 전환의 검증이 아니다.
 
 수정할 기능의 행에서 시작하고 해당 코드와 검증만 읽는다. 공유 규칙·저장·입력
 경계에 영향을 주면 관련 행까지 범위를 넓힌다. 전체 리팩터링과 배포 준비는 전체
