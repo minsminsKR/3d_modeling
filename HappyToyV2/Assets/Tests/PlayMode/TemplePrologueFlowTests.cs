@@ -14,6 +14,25 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleGateAudioRestoresDuringSecondHingeCue()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            Call(world, "InstallGateWalkReview");
+            var data = Call(world, "Capture", 0f);
+            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "reviewGateStarted", true); Set(data, "reviewGateProgress", .75f);
+            Call(shell, "Pause"); Call(session, "RetirePrologue"); yield return null;
+            Call(session, "CreatePrologueForCheckpoint", data);
+            world = Get<Component>(session, "Prologue");
+            var audio = world.GetComponent(RequireType("TempleGateReviewAudio"));
+            var right = world.transform.Find("Review gate right hinge").GetComponent<AudioSource>();
+            Assert.That(Get<bool>(audio, "SecondTriggered"), Is.True);
+            Assert.That(right.ignoreListenerPause, Is.False);
+            Assert.That(right.time, Is.EqualTo((.75f * 3f - 1.65f) * .70f).Within(.03f));
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleWalkReviewCheckpointValidatesAndRestoresBeforeOpening()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
@@ -87,6 +106,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("나타난 대문"));
             yield return RecoveryPulse(Key.E);
             Assert.That(Get<bool>(shell, "IsReloading"), Is.True);
+            Assert.That(world.transform.Find("Review gate left hinge").GetComponent<AudioSource>().ignoreListenerPause, Is.True);
+            Assert.That(world.transform.Find("Review gate right hinge").GetComponent<AudioSource>().ignoreListenerPause, Is.True);
             yield return Wait(() => Get<float>(review, "Progress") > .2f, 5, "Immediate review gate did not open");
             yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60,
                 "Immediate gate review did not enter the corridor");
@@ -566,13 +587,24 @@ namespace HappyToy.V2.CloudTests
             var review = (Component)Call(world, "InstallGateWalkReview");
             yield return RecoveryPulse(Key.E);
             Assert.That(Get<bool>(review, "Started"), Is.True);
+            var leftHinge = world.transform.Find("Review gate left hinge").GetComponent<AudioSource>();
+            var rightHinge = world.transform.Find("Review gate right hinge").GetComponent<AudioSource>();
+            var gateAudio = world.GetComponent(RequireType("TempleGateReviewAudio"));
+            Assert.That(leftHinge.clip.name, Is.EqualTo("door-open-1"));
+            Assert.That(rightHinge.clip.name, Is.EqualTo("door-open-0"));
+            Assert.That(leftHinge.pitch, Is.EqualTo(.85f)); Assert.That(rightHinge.pitch, Is.EqualTo(.70f));
+            Assert.That(leftHinge.clip.length / leftHinge.pitch, Is.GreaterThanOrEqualTo(1.65f));
+            Assert.That(1.65f + rightHinge.clip.length / rightHinge.pitch, Is.InRange(2.9f, 3.05f));
+            Assert.That(Get<bool>(gateAudio, "SecondTriggered"), Is.False);
             Assert.That(Get<bool>(shell, "IsReloading"), Is.False, "Opening should not transfer the player");
             yield return Wait(() => Get<float>(review, "Progress") > .2f, 5, "Review gate did not begin opening");
             Call(shell, "Pause");
             float opening = Get<float>(review, "Progress");
             yield return Delay(.3f);
             Assert.That(Get<float>(review, "Progress"), Is.EqualTo(opening), "Gate moved while paused");
-            Assert.That(world.transform.Find("Gate opening").GetComponent<AudioSource>().ignoreListenerPause, Is.False);
+            Assert.That(leftHinge.ignoreListenerPause, Is.False);
+            Assert.That(rightHinge.ignoreListenerPause, Is.False);
+            Assert.That(Get<bool>(gateAudio, "SecondTriggered"), Is.False);
             var openingSave = Call(world, "Capture", Get<float>(session, "ElapsedPlayTime"));
             Assert.That(Get<int>(openingSave, "version"), Is.EqualTo(3));
             Assert.That(Get<bool>(openingSave, "reviewGateStarted"), Is.True);
@@ -583,10 +615,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RecoveryPage, Is.EqualTo("Pause"));
             world = Get<Component>(session, "Prologue");
             review = world.GetComponent(RequireType("TempleGateReviewMotion"));
+            gateAudio = world.GetComponent(RequireType("TempleGateReviewAudio"));
             Assert.That(review, Is.Not.Null);
             Assert.That(Get<float>(review, "Progress"), Is.EqualTo(opening).Within(.001f));
+            Assert.That(Get<bool>(gateAudio, "SecondTriggered"), Is.False);
             Assert.That(world.transform.Find("나타난 대문").GetComponent<BoxCollider>().enabled, Is.True);
             yield return RecoveryClick("resume");
+            yield return Wait(() => Get<bool>(gateAudio, "SecondTriggered"), 5, "Second recorded hinge cue was not scheduled");
+            Assert.That(Get<float>(review, "Progress"), Is.GreaterThanOrEqualTo(.55f));
             yield return Wait(() => Get<float>(review, "Progress") == 1f, 6, "Review gate did not open");
             Assert.That(Get<bool>(session, "CorridorMode"), Is.False, "Opening alone entered the corridor");
             PlacePlayer(origin + new Vector3(4, .04f, -10)); yield return null; yield return null;
@@ -604,7 +640,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RecoveryPage, Is.EqualTo("Pause"));
             world = Get<Component>(session, "Prologue");
             review = world.GetComponent(RequireType("TempleGateReviewMotion"));
+            gateAudio = world.GetComponent(RequireType("TempleGateReviewAudio"));
             Assert.That(Get<float>(review, "Progress"), Is.EqualTo(1));
+            Assert.That(Get<bool>(gateAudio, "SecondTriggered"), Is.True);
             Assert.That(world.transform.Find("나타난 대문").GetComponent<BoxCollider>().enabled, Is.False);
             Assert.That(world.transform.Find("Review gate stair collision").GetComponent<BoxCollider>().enabled, Is.True);
             Assert.That(Vector3.Distance(player.transform.position, savedPosition), Is.LessThan(.03f));

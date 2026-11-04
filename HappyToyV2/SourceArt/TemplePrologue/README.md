@@ -75,8 +75,13 @@ crossing position. The gate collision state is restored before validating the
 player pose, so suspension also works while opening and on the open threshold.
 A pause just after crossing retains the preceding position and completes the
 crossing after resumption. Version 1/2 saves still load; ordinary play continues
-writing version 2. The opening cue is resumed from its corresponding elapsed
-offset where its clip still has audio, but this has not been heard on a device.
+writing version 2. The gate review reuses the two Kenney CC0 door clips from
+`ThirdParty/Audio/manifest.json` at opposite hinges: `door-open-1` plays at
+0.85 pitch, then `door-open-0` starts 1.65 seconds into the motion at 0.70 pitch.
+Their nominal playback ends near 1.66 and 2.96 seconds respectively. Pausing
+holds the gameplay review and restoration seeks into whichever clip is active.
+This timing is tested with the audio backend disabled; device listening and
+the combined mix remain unverified.
 The new native review path is prepared but has not yet been run with
 graphics/audio. Normal play retains the original gate. These checks cannot
 certify cut edges, material appearance, sound quality or FPS.

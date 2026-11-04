@@ -19,6 +19,7 @@ namespace HappyToy.V2
         Transform incense, gate;
         IncenseSmokeTrail smoke;
         AudioSource cry, bell, air, gateSound;
+        TempleGateReviewAudio reviewGateAudio;
         bool secondDay, captured;
         float pendingIncense = -1, nextBell;
         bool waitingForIncenseEquip;
@@ -251,22 +252,31 @@ namespace HappyToy.V2
                 CorridorEntranceModels.GroundAtHeight(replacement, new Vector3(0, 0, -8), 5.5f, Quaternion.identity);
                 var passage = gameObject.AddComponent<TempleGateReviewPassage>();
                 var motion = gameObject.AddComponent<TempleGateReviewMotion>();
-                try { passage.Prepare(gateBlocker, world.GatePoint); motion.Prepare(replacement, passage.SetOpen); }
-                catch { Destroy(motion); Destroy(passage); throw; }
+                var audio = gameObject.AddComponent<TempleGateReviewAudio>();
+                try
+                {
+                    passage.Prepare(gateBlocker, world.GatePoint);
+                    motion.Prepare(replacement, passage.SetOpen);
+                    audio.Prepare(motion, world.GatePoint);
+                }
+                catch { Destroy(audio); Destroy(motion); Destroy(passage); throw; }
                 replacement.gameObject.SetActive(visible);
                 var old = gate; gate = replacement; old.gameObject.SetActive(false); Destroy(old.gameObject);
+                reviewGateAudio = audio;
                 return motion;
             }
             catch { Destroy(replacement.gameObject); throw; }
         }
         public void PlayGateSound(bool duringMaskedTransition = true)
         {
+            if (reviewGateAudio) { reviewGateAudio.StartAt(0, duringMaskedTransition); return; }
             if (!gateSound) return;
             gateSound.ignoreListenerPause = duringMaskedTransition;
             gateSound.Play();
         }
         public void RestoreGateSound(float openingProgress)
         {
+            if (reviewGateAudio) { reviewGateAudio.StartAt(openingProgress, false); return; }
             if (!gateSound || !gateSound.clip) return;
             float offset = openingProgress * TempleGateReviewMotion.Duration;
             if (offset >= gateSound.clip.length) return;

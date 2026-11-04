@@ -49,7 +49,9 @@ See ThirdParty/Audio/CorridorFoley/prepared-cues.json for exact edits and hashes
 
 50 RPG sound effects — Kenney
 https://opengameart.org/content/50-rpg-sound-effects
-CC0 1.0. Wooden sliding doors, latches, paper and mechanical contacts.
+CC0 1.0. Wooden sliding doors, latches, paper and mechanical contacts. The
+temple gate review reuses two door recordings at reduced playback pitches,
+spatialized at opposite hinges and sequenced across the opening motion.
 
 The Shop (two free samples only) — LEGIT Audio
 https://opengameart.org/content/the-shop
