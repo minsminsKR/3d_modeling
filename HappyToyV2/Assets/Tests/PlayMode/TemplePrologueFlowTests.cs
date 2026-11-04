@@ -38,6 +38,32 @@ namespace HappyToy.V2.CloudTests
             Assert.That(camera.backgroundColor, Is.EqualTo(background));
             yield return null;
         }
+        [UnityTest, Timeout(120000)]
+        public IEnumerator TempleObstructedContinueKeepsSaveAndShowsErrorOnTitle()
+        {
+            string directory = NewRecordFixture();
+            Call(session, "ConfigureRecordDirectory", directory);
+            Call(session, "CreatePrologue"); yield return null;
+            var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(checkpoint, "phase", 1); Set(checkpoint, "prayerElapsed", 0f); Set(checkpoint, "incensePlaced", false);
+            Set(Get<object>(checkpoint, "player"), "position", new Vector3(500, .04f, 507.35f));
+            Assert.That((bool)Call(Get<object>(session, "TempleSuspension"), "Save", checkpoint), Is.True);
+            string path = Path.Combine(directory, "temple-suspend-v1.json");
+            string original = File.ReadAllText(path);
+            yield return RecoveryUiReady(); yield return RefreshSlotTitle(directory);
+            yield return RecoveryClick("continue-temple");
+            Assert.That(RecoveryPage, Is.EqualTo("Title"));
+            Assert.That(Get<bool>(session, "PrologueMode"), Is.False);
+            Assert.That(File.ReadAllText(path), Is.EqualTo(original));
+            Assert.That(File.Exists(path + ".used"), Is.False);
+            Assert.That(Get<bool>(Get<object>(session, "TempleSuspension"), "HasRun"), Is.True);
+            string error = Get<string>(shell, "ReloadError");
+            Assert.That(error, Does.Contain("중단 기록을 보존했습니다"));
+            yield return Wait(() => Get<VisualElement>(One("GameShellView"), "Root")
+                .Query<Label>().ToList().Any(label => label.text == error), 3,
+                "The title did not show the restore failure");
+        }
         [UnityTest, Timeout(90000)]
         public IEnumerator TemplePlacedIncenseSmokeStartsAtVisibleMeshTip()
         {

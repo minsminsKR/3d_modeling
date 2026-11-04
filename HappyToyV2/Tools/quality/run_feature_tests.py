@@ -59,7 +59,9 @@ PROFILES = {
                       PLAY + "SavedSlotIsConsumedWhenContinuingAfterSceneReloadFailure",
                       PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
     "temple-prologue-restore": ("Temple pause/save restoration, legacy migration and opt-in walking gate checkpoints; CPU only", [
-        ("PlayMode", (PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement",
+        ("PlayMode", (PLAY + "TempleObstructedResumePreservesPlayerSelectionAndEnvironment",
+                      PLAY + "TempleObstructedContinueKeepsSaveAndShowsErrorOnTitle",
+                      PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement",
                       PLAY + "TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate", PLAY + "TempleWalkReviewCheckpointValidatesAndRestoresBeforeOpening",
                       PLAY + "TempleWalkReviewPreservesCrossingInterruptedByPause", PLAY + "TempleRealTitleAndInteractionReachCorridor"))]),
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
