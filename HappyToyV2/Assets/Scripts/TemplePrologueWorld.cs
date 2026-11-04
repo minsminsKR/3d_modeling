@@ -15,6 +15,7 @@ namespace HappyToy.V2
         public TemplePrologueDirector Director { get; private set; }
         public bool Ready { get; private set; }
         public bool TransitionRequested { get; private set; }
+        public bool IncensePlacementPending => Ready && presentation && presentation.IncensePending;
         public event Action NextDayRequested;
         public event Action CorridorRequested;
         public string Objective

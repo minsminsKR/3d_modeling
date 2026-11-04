@@ -14,6 +14,33 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleIncensePlacementKeepsFlashlightFromInterruptingItsHandAction()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            var world = Get<Component>(session, "Prologue");
+            var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            var actions = Get<Component>(player, "HandActions");
+            var flashlight = Get<Light>(player, "flashlight");
+            bool initialLight = flashlight.enabled;
+            PlacePlayer(new Vector3(500, .04f, 505.2f));
+            player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
+            yield return null; yield return null; yield return RecoveryPulse(Key.E);
+            Assert.That(Get<bool>(presentation, "IncensePending"), Is.True);
+            yield return RecoveryPulse(Key.F);
+            Assert.That(Get<bool>(actions, "Busy"), Is.False, "Flashlight interrupted incense equip");
+            var pending = presentation.GetType().GetField("pendingIncense", BindingFlags.Instance | BindingFlags.NonPublic);
+            yield return Wait(() => (float)pending.GetValue(presentation) > 0, 3, "Incense action did not start");
+            yield return RecoveryPulse(Key.F);
+            Assert.That(Get<bool>(actions, "Busy"), Is.False, "Flashlight interrupted the incense release");
+            Assert.That(flashlight.enabled, Is.EqualTo(initialLight));
+            yield return Wait(() => Get<bool>(presentation, "IncensePlaced"), 3, "Incense did not reach its release marker");
+            yield return RecoveryPulse(Key.F);
+            yield return Wait(() => flashlight.enabled != initialLight, 3, "Flashlight did not work after incense placement");
+            yield return Wait(() => Get<object>(Get<Component>(world, "Director"), "Phase").ToString() == "FirstDeparture", 8,
+                "Prayer did not finish after incense placement");
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleGateWaitsUntilPlayerClearsItsCollidersAfterRestore()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

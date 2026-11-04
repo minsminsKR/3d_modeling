@@ -30,7 +30,8 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             if ((int)item < 0 || (int)item >= PlayerItemLoadout.SlotCount || active || !isActiveAndEnabled ||
-                !player || player.Hidden || player.Paused || !session || session.PrologueMode && item != PlayerItem.Flashlight || session.Shell.ItemWheelOpen ||
+                !player || player.Hidden || player.Paused || !session || (session.PrologueMode &&
+                (item != PlayerItem.Flashlight || session.Prologue.IncensePlacementPending)) || session.Shell.ItemWheelOpen ||
                 player.Rituals.Burning && item != PlayerItem.Flashlight) return false;
             string reason = string.Empty;
             bool allowed;
