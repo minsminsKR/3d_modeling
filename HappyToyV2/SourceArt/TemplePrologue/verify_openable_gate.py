@@ -70,6 +70,23 @@ thin_collection.hide_viewport = False
 bpy.context.scene.frame_set(1)
 result['thinLeaves'] = {}
 repairs = {item['name']: item for item in report['thinRepair']}
+
+def edge_ray_counts(tree, outer):
+    hits_by_edge = {}
+    for axis, plane, lo, hi in ((0, 0, report['bottom'], report['top']),
+                                 (0, outer, report['bottom'], report['top']),
+                                 (2, report['bottom'], min(outer, 0), max(outer, 0)),
+                                 (2, report['top'], min(outer, 0), max(outer, 0))):
+        hits = 0
+        for n in range(1, 40):
+            along = lo+(hi-lo)*n/40
+            origin = Vector((along, -1.44, along))
+            origin[axis] = plane-.1
+            direction = Vector((0, 0, 0)); direction[axis] = 1
+            if tree.ray_cast(origin, direction, .2)[2] is not None: hits += 1
+        hits_by_edge[str(axis)+':'+str(plane)] = hits
+    return hits_by_edge
+
 for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate leaf', 'Right thin leaf')):
     thick, thin = bpy.data.objects[thick_name], bpy.data.objects[thin_name]
     if len(thick.data.vertices) >= len(thin.data.vertices) or len(thick.data.loops) >= len(thin.data.loops):
@@ -111,20 +128,8 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
     cap_tree = BVHTree.FromPolygons([thin.matrix_world @ v.co for v in thin.data.vertices],
                                    [list(face.vertices) for face in caps])
     outer = -report['halfWidth'] if thin_name.startswith('Left') else report['halfWidth']
-    edge_hits = {}
-    for axis, plane, lo, hi in ((0, 0, report['bottom'], report['top']),
-                                 (0, outer, report['bottom'], report['top']),
-                                 (2, report['bottom'], min(outer, 0), max(outer, 0)),
-                                 (2, report['top'], min(outer, 0), max(outer, 0))):
-        hits = 0
-        for n in range(1, 40):
-            along = lo+(hi-lo)*n/40
-            origin = Vector((along, -1.44, along))
-            origin[axis] = plane-.1
-            direction = Vector((0, 0, 0)); direction[axis] = 1
-            if cap_tree.ray_cast(origin, direction, .2)[2] is not None: hits += 1
-        edge_hits[str(axis)+':'+str(plane)] = hits
-        if hits != 39: result['status'] = 'FAIL'
+    edge_hits = edge_ray_counts(cap_tree, outer)
+    if any(hits != 39 for hits in edge_hits.values()): result['status'] = 'FAIL'
     result['thinLeaves'][thin_name]['edgeCapFaces'] = len(caps)
     result['thinLeaves'][thin_name]['edgeCapRayHits'] = edge_hits
     if (front_count < 100 or not rear_errors or max(differences) > 1e-5 or max(rear_errors) > 1e-5 or
@@ -216,6 +221,13 @@ for name in ('Gate frame', 'Left thin leaf', 'Right thin leaf'):
         # still retain the added edge surfaces in the actual review FBX.
         if len(mesh.polygons) < expected_faces - 25:
             raise RuntimeError('Review FBX dropped edge finishing: ' + name)
+        mesh.calc_loop_triangles()
+        tree = BVHTree.FromPolygons([obj.matrix_world @ vertex.co for vertex in mesh.vertices],
+                                    [list(tri.vertices) for tri in mesh.loop_triangles], all_triangles=True)
+        outer = -report['halfWidth'] if name.startswith('Left') else report['halfWidth']
+        edge_hits = edge_ray_counts(tree, outer)
+        result['thinFbxParts'][name]['edgeRayHits'] = edge_hits
+        if any(hits != 39 for hits in edge_hits.values()): result['status'] = 'FAIL'
 out = root/'surface-proof.json'
 out.write_text(json.dumps(result, indent=2)+'\n',encoding='utf-8',newline='\n')
 print('GATE_SURFACE_PROOF', json.dumps(result), flush=True)

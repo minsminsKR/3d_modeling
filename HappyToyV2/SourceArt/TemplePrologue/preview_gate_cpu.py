@@ -15,10 +15,12 @@ from mathutils import Vector
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--output', required=True)
+parser.add_argument('--views', nargs='+', help='Render only these named views')
+parser.add_argument('--asset-directory', help='Review a separate editable blend and its geometry report')
 arguments = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
 output = Path(arguments.output).resolve()
 output.mkdir(parents=True, exist_ok=False)
-root = Path(__file__).resolve().parent / 'gate-opening'
+root = Path(arguments.asset_directory).resolve() if arguments.asset_directory else Path(__file__).resolve().parent / 'gate-opening'
 source = root / 'gate-opening.blend'
 report = json.loads((root / 'geometry-report.json').read_text(encoding='utf-8'))
 
@@ -76,7 +78,19 @@ views = (
     ('left-back', 1, (-1.5, 10, 3.6), (-1.5, -1.2, 3.4), 6.2, ('Left thin leaf',)),
     ('left-free-edge', 1, (8, -1.3, 3.4), (0, -1.3, 3.4), 6.2, ('Left thin leaf',)),
     ('right-free-edge', 1, (-8, -1.3, 3.4), (0, -1.3, 3.4), 6.2, ('Right thin leaf',)),
+    ('left-hinge-half', 37, (-6, -8, 4), (-3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('right-hinge-half', 37, (6, -8, 4), (3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('left-hinge-open', 73, (-6, 5, 4), (-3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('right-hinge-open', 73, (6, 5, 4), (3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('left-hinge-inside-half', 37, (0, -6, 4), (-3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('right-hinge-inside-half', 37, (0, -6, 4), (3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('left-hinge-inside-open', 73, (0, 5, 4), (-3.05, -1.3, 3.4), 4.0, tuple(parts)),
+    ('right-hinge-inside-open', 73, (0, 5, 4), (3.05, -1.3, 3.4), 4.0, tuple(parts)),
 )
+if arguments.views:
+    missing = set(arguments.views) - {view[0] for view in views}
+    if missing: raise ValueError('Unknown gate preview views: ' + ', '.join(sorted(missing)))
+    views = tuple(view for view in views if view[0] in arguments.views)
 results = []
 for name, frame, position, target, scale, visible in views:
     for part_name, obj in parts.items(): obj.hide_render = part_name not in visible

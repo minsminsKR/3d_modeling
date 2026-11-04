@@ -103,12 +103,24 @@
     "Left thin leaf": {
       "vertices": 3648,
       "faces": 3675,
-      "material": "CE_temple-gate_review_export"
+      "material": "CE_temple-gate_review_export",
+      "edgeRayHits": {
+        "0:0": 39,
+        "0:-3.05": 39,
+        "2:0.8": 39,
+        "2:6.05": 39
+      }
     },
     "Right thin leaf": {
       "vertices": 3679,
       "faces": 3661,
-      "material": "CE_temple-gate_review_export"
+      "material": "CE_temple-gate_review_export",
+      "edgeRayHits": {
+        "0:0": 39,
+        "0:3.05": 39,
+        "2:0.8": 39,
+        "2:6.05": 39
+      }
     }
   }
 }

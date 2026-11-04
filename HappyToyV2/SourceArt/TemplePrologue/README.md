@@ -52,11 +52,24 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -execut
 ```
 
 The optional `preview_gate_cpu.py -- --output <new-directory>` Blender script
-creates eight 512px, eight-sample CPU-only material views with two threads,
-including both free edges. Run it
+creates sixteen 512px, eight-sample CPU-only material views with two threads,
+including free edges and close views of the hinges. Pass `--views` followed by
+view names to render a subset; `--asset-directory` can inspect a separate
+editable blend alongside a matching `geometry-report.json`. Run it
 through `Tools/quality/run_isolated_desktop.py` with `-b -t 2`; the directory
 must not already exist. Its images and hashes are asset evidence, not game
 camera, device-audio or FPS validation. Preview outputs are not source assets.
+
+`inspect_gate_sweep.py -- --output <new-json-file>` is a separate CPU-only
+Blender diagnostic for nine opening poses. It records intersecting source mesh
+triangle pairs and their approximate locations; triangle centres do not measure
+penetration or establish acceptable appearance. On the current source, middle
+intersections after opening begins mostly cluster close to each pivot, with at
+most two sampled pairs beyond 0.5 source units. Several hundred pairs remain
+near the hinge at wide opening and must be reviewed from the game camera. A
+localized yellow-green patch beside a left-side stud also remains in the CPU
+preview; applying the planar correction to smaller outlier triangles did not
+remove it, so that experimental correction was not incorporated.
 
 `geometry-report.json` records source and output hashes, repaired face indices
 and provisional cut bounds. `surface-proof.json` records 4,713 original
@@ -64,7 +77,8 @@ closed-surface/UV samples, unchanged front geometry, the rear translation and
 UV repair boundaries, leaf depth and keyframes, a static-FBX reimport check including packed textures,
 and five central geometric rays that hit the closed leaves and clear at frame
 73 in both variants. It also checks 39 rays through each of the four edge
-strips on each leaf. Those rays do not verify player collision or visual quality.
+strips on each leaf, both in the editable blend and after reimporting the
+review FBX. Those rays do not verify player collision or visual quality.
 The source area and sampled positions are preserved to numerical tolerance;
 the FBX exporter drops 24 triangles and about 0.018 of 1,534 square model units.
 These checks do not establish that either open version looks correct or that
