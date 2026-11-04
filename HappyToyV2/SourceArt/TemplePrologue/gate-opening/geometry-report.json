@@ -1,13 +1,13 @@
 {
-  "scope": "Geometry-only prototype, not visually reviewed or integrated into Unity",
+  "scope": "Optional Unity review asset; CPU asset preview does not certify game rendering",
   "source": "SourceArt/CorridorEntrance/temple-gate/temple-gate.blend",
   "sourceSha256": "bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623",
   "editable": "gate-opening.blend",
-  "editableSha256": "4e078e55207b4076c83ea94e6fc1fdfc202bfa9d65b04195f1a71329788806bd",
+  "editableSha256": "e594276dbbf760100db5aaf836edbbd098c8bccecfb78db68230618cd800c003",
   "export": "gate-opening.fbx",
-  "exportSha256": "d0d1b5c3c2993fe0dc24148817e5ede6e83bf7e550fab9b5b7a149560f2fdb60",
+  "exportSha256": "3b713ea2279c6d44bc6677db9e9d770c3a951171b7d7a8e9f3c3f8fc5213a390",
   "thinExport": "gate-opening-thin.fbx",
-  "thinExportSha256": "c54f0a14c32cf3385584df0a342692cfae8642bbc76f3ce80d4c094754370522",
+  "thinExportSha256": "dca9669a4f4c7be71325f8e41ba4890cb45a7710d31e9a2bed0fc8fc67171f66",
   "halfWidth": 3.05,
   "bottom": 0.8,
   "top": 6.05,
@@ -55,7 +55,7 @@
     }
   ],
   "prototypeAnimation": "Editable blend only: frames 1\u201373 at 24 fps; static FBX has no baked animation",
-  "thinAlternative": "Hidden blend collection translates the intact back by -2.8 and repairs planar wood UV outliers; static FBX has no baked animation",
+  "thinAlternative": "Hidden blend collection translates the intact back by -2.8, repairs planar wood UV outliers and bridges cut edges; static FBX has no baked animation",
   "thinRepair": [
     {
       "name": "Left thin leaf",
@@ -107,7 +107,33 @@
           0.8638267676
         ]
       ],
-      "rearTranslation": 2.8
+      "rearTranslation": 2.8,
+      "edgeFinish": [
+        {
+          "axis": 0,
+          "plane": 0,
+          "strips": 156,
+          "maxBoundaryGap": 0.19186719915771455
+        },
+        {
+          "axis": 0,
+          "plane": -3.05,
+          "strips": 127,
+          "maxBoundaryGap": 0.0
+        },
+        {
+          "axis": 2,
+          "plane": 0.8,
+          "strips": 87,
+          "maxBoundaryGap": 0.0
+        },
+        {
+          "axis": 2,
+          "plane": 6.05,
+          "strips": 84,
+          "maxBoundaryGap": 0.0
+        }
+      ]
     },
     {
       "name": "Right thin leaf",
@@ -161,12 +187,38 @@
           0.9899461657
         ]
       ],
-      "rearTranslation": 2.8
+      "rearTranslation": 2.8,
+      "edgeFinish": [
+        {
+          "axis": 0,
+          "plane": 0,
+          "strips": 156,
+          "maxBoundaryGap": 0.19186719915771455
+        },
+        {
+          "axis": 0,
+          "plane": 3.05,
+          "strips": 114,
+          "maxBoundaryGap": 0.0
+        },
+        {
+          "axis": 2,
+          "plane": 0.8,
+          "strips": 105,
+          "maxBoundaryGap": 0.0
+        },
+        {
+          "axis": 2,
+          "plane": 6.05,
+          "strips": 86,
+          "maxBoundaryGap": 0.0
+        }
+      ]
     }
   ],
   "limitations": [
     "cut bounds and hinge pivots are provisional",
-    "thick source depth and open borders need visual review",
-    "no runtime integration, collision or camera validation"
+    "edge finishing and opening require Unity camera review",
+    "device audio and player performance remain unverified"
   ]
 }

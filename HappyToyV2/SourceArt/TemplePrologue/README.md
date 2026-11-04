@@ -29,10 +29,12 @@ to the preserved source hash and rejects changed face counts. At the game's
 5.5 m gate scale the full-depth leaves are about 1.9 m thick, while the
 repaired alternate leaves are about .47–.48 m. Low-sample CPU Blender previews
 show that the large triangular texture smears and flattened rear deformation
-are reduced. A CPU view along the left leaf's free edge shows a visible gap
-between its front and rear surfaces; the open leaf needs edge finishing before
-it is ready for normal play. Its hinges and appearance still require Unity
-camera review.
+are reduced. `gate_edge_finish.py` now follows the cut front/rear boundaries
+and bridges the four edges with wood-textured strips in the same leaf mesh.
+Missing boundary intervals are interpolated from neighboring source edges; the
+report records the largest midpoint-to-nearest-boundary distance. A low-sample CPU view confirms the
+previously empty free edge is filled. Its appearance and hinges still require
+Unity camera review before normal play.
 The standalone `gate-opening.fbx` embeds its original textures and exports
 the static **full-depth** parts. `gate-opening-thin.fbx` exports the static
 thin parts with a placeholder material; the Unity importer connects the
@@ -61,7 +63,8 @@ and provisional cut bounds. `surface-proof.json` records 4,713 original
 closed-surface/UV samples, unchanged front geometry, the rear translation and
 UV repair boundaries, leaf depth and keyframes, a static-FBX reimport check including packed textures,
 and five central geometric rays that hit the closed leaves and clear at frame
-73 in both variants. Those rays do not verify player collision.
+73 in both variants. It also checks 39 rays through each of the four edge
+strips on each leaf. Those rays do not verify player collision or visual quality.
 The source area and sampled positions are preserved to numerical tolerance;
 the FBX exporter drops 24 triangles and about 0.018 of 1,534 square model units.
 These checks do not establish that either open version looks correct or that

@@ -8,12 +8,15 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import sys
 
 import bmesh
 import bpy
 from mathutils import Matrix, Vector
 
 here = Path(__file__).resolve().parent
+sys.path.insert(0, str(here))
+from gate_edge_finish import finish_edges
 source = here.parent / 'CorridorEntrance/temple-gate/temple-gate.blend'
 output = here / 'gate-opening'
 output.mkdir(exist_ok=True)
@@ -150,6 +153,7 @@ for original_leaf, name, coefficients, expected_faces in (
         raise RuntimeError('Unexpected planar UV repair count: ' + name + ' ' + str(len(repaired)))
     repair_details.append(dict(name=name, uvFaces=repaired, expectedFaces=expected_faces,
                                coefficients=coefficients, rearTranslation=rear_shift))
+    repair_details[-1]['edgeFinish'] = finish_edges(leaf, half_width, bottom, top, coefficients)
     thin_objects.append(leaf)
 thin_collection.hide_viewport = True
 thin_collection.hide_render = True
@@ -182,7 +186,7 @@ bpy.ops.export_scene.fbx(filepath=str(thin_export), use_selection=True, object_t
     axis_forward='-Z', axis_up='Y', bake_anim=False, add_leaf_bones=False,
     path_mode='STRIP', use_mesh_modifiers=True)
 if sha(source) != source_hash: raise RuntimeError('Original authoring file changed')
-report = dict(scope='Geometry-only prototype, not visually reviewed or integrated into Unity',
+report = dict(scope='Optional Unity review asset; CPU asset preview does not certify game rendering',
     source='SourceArt/CorridorEntrance/temple-gate/temple-gate.blend', sourceSha256=source_hash,
     editable='gate-opening.blend', editableSha256=sha(editable), export='gate-opening.fbx', exportSha256=sha(export),
     thinExport='gate-opening-thin.fbx', thinExportSha256=sha(thin_export),
@@ -191,9 +195,9 @@ report = dict(scope='Geometry-only prototype, not visually reviewed or integrate
     parts=[dict(name=o.name, hinge=list(o.location), vertices=len(o.data.vertices),
                 triangles=len(o.data.polygons), uvLoops=len(o.data.uv_layers.active.data)) for o in objects],
     prototypeAnimation='Editable blend only: frames 1–73 at 24 fps; static FBX has no baked animation',
-    thinAlternative='Hidden blend collection translates the intact back by -2.8 and repairs planar wood UV outliers; static FBX has no baked animation',
+    thinAlternative='Hidden blend collection translates the intact back by -2.8, repairs planar wood UV outliers and bridges cut edges; static FBX has no baked animation',
     thinRepair=repair_details,
-    limitations=['cut bounds and hinge pivots are provisional', 'thick source depth and open borders need visual review',
-                 'no runtime integration, collision or camera validation'])
+    limitations=['cut bounds and hinge pivots are provisional', 'edge finishing and opening require Unity camera review',
+                 'device audio and player performance remain unverified'])
 report_path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
 print('GATE_PARTITION_PROTOTYPE_PASS', json.dumps(report['triangles']), flush=True)

@@ -72,12 +72,12 @@ result['thinLeaves'] = {}
 repairs = {item['name']: item for item in report['thinRepair']}
 for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate leaf', 'Right thin leaf')):
     thick, thin = bpy.data.objects[thick_name], bpy.data.objects[thin_name]
-    if len(thick.data.vertices) != len(thin.data.vertices) or len(thick.data.loops) != len(thin.data.loops):
-        raise RuntimeError('Thin alternative changed topology')
+    if len(thick.data.vertices) >= len(thin.data.vertices) or len(thick.data.loops) >= len(thin.data.loops):
+        raise RuntimeError('Thin alternative has no added edge finishing')
     differences, rear_errors = [], []
     ys = []
     front_count = 0
-    for old, new in zip(thick.data.vertices, thin.data.vertices):
+    for old, new in zip(thick.data.vertices, thin.data.vertices[:len(thick.data.vertices)]):
         old_world = thick.matrix_world @ old.co; new_world = thin.matrix_world @ new.co
         if old_world.y < 0:
             front_count += 1; differences.append((old_world-new_world).length)
@@ -91,7 +91,7 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
     changed_loops = {i for face in thin.data.polygons if face.index in faces for i in face.loop_indices}
     unchanged_uv = max((old_uv[i].uv-new_uv[i].uv).length for i in range(len(old_uv)) if i not in changed_loops)
     coefficients = repair['coefficients']; corrected_errors = []
-    for face in thin.data.polygons:
+    for face in thin.data.polygons[:len(thick.data.polygons)]:
         if face.index not in faces: continue
         for i in face.loop_indices:
             point = thick.matrix_world @ thick.data.vertices[thick.data.loops[i].vertex_index].co
@@ -107,6 +107,26 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
         frontMaxDisplacement=max(differences), rearVertices=len(rear_errors), rearTranslationMaxError=max(rear_errors),
         repairedFaces=len(faces), unchangedMaxUvDifference=unchanged_uv,
         repairedMaxUvError=max(corrected_errors), degenerateTriangles=degenerate)
+    caps = list(thin.data.polygons[len(thick.data.polygons):])
+    cap_tree = BVHTree.FromPolygons([thin.matrix_world @ v.co for v in thin.data.vertices],
+                                   [list(face.vertices) for face in caps])
+    outer = -report['halfWidth'] if thin_name.startswith('Left') else report['halfWidth']
+    edge_hits = {}
+    for axis, plane, lo, hi in ((0, 0, report['bottom'], report['top']),
+                                 (0, outer, report['bottom'], report['top']),
+                                 (2, report['bottom'], min(outer, 0), max(outer, 0)),
+                                 (2, report['top'], min(outer, 0), max(outer, 0))):
+        hits = 0
+        for n in range(1, 40):
+            along = lo+(hi-lo)*n/40
+            origin = Vector((along, -1.44, along))
+            origin[axis] = plane-.1
+            direction = Vector((0, 0, 0)); direction[axis] = 1
+            if cap_tree.ray_cast(origin, direction, .2)[2] is not None: hits += 1
+        edge_hits[str(axis)+':'+str(plane)] = hits
+        if hits != 39: result['status'] = 'FAIL'
+    result['thinLeaves'][thin_name]['edgeCapFaces'] = len(caps)
+    result['thinLeaves'][thin_name]['edgeCapRayHits'] = edge_hits
     if (front_count < 100 or not rear_errors or max(differences) > 1e-5 or max(rear_errors) > 1e-5 or
         unchanged_uv > 1e-6 or max(corrected_errors) > 1e-6 or depth > .51):
         result['status'] = 'FAIL'
@@ -189,6 +209,13 @@ for name in ('Gate frame', 'Left thin leaf', 'Right thin leaf'):
         raise RuntimeError('Unity review FBX lost atlas loops: ' + name)
     result['thinFbxParts'][name] = dict(vertices=len(mesh.vertices), faces=len(mesh.polygons),
                                          material=mesh.materials[0].name)
+    if name != 'Gate frame':
+        thick_name = name.replace('thin', 'gate')
+        expected_faces = totals[thick_name]['triangles'] + result['thinLeaves'][name]['edgeCapFaces']
+        # The exporter can drop a few degenerate original triangles; it must
+        # still retain the added edge surfaces in the actual review FBX.
+        if len(mesh.polygons) < expected_faces - 25:
+            raise RuntimeError('Review FBX dropped edge finishing: ' + name)
 out = root/'surface-proof.json'
 out.write_text(json.dumps(result, indent=2)+'\n',encoding='utf-8',newline='\n')
 print('GATE_SURFACE_PROOF', json.dumps(result), flush=True)
