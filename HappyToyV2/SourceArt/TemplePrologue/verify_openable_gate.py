@@ -103,6 +103,11 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
         ys.append(new_world.y)
     old_uv = thick.data.uv_layers.active.data; new_uv = thin.data.uv_layers.active.data
     repair = repairs[thin_name]
+    pivot_delta = thin.location - thick.location
+    if (abs(pivot_delta.x) > 1e-5 or abs(pivot_delta.z) > 1e-5 or
+        abs(pivot_delta.y - repair['hingeDepthOffset']) > 1e-5 or
+        abs(repair['hingeDepthOffset'] - .075) > 1e-6):
+        raise RuntimeError('Thin gate hinge offset differs from the reviewed candidate: ' + thin_name)
     faces = set(repair['uvFaces'])
     spot_faces = set(repair['spotFaces'])
     if len(faces) != repair['expectedFaces']: raise RuntimeError('UV repair face list is inconsistent')
@@ -143,7 +148,7 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
             thin.data.vertices[tri.vertices[2]].co-thin.data.vertices[tri.vertices[0]].co).length < 1e-8)
     result['thinLeaves'][thin_name] = dict(depthAtGameScaleMetres=depth, frontVertices=front_count,
         frontMaxDisplacement=max(differences), rearVertices=len(rear_errors), rearTranslationMaxError=max(rear_errors),
-        repairedFaces=len(faces), unchangedMaxUvDifference=unchanged_uv,
+        repairedFaces=len(faces), hingeDepthOffset=pivot_delta.y, unchangedMaxUvDifference=unchanged_uv,
         repairedMaxUvError=max(corrected_errors), spotFaces=len(spot_faces),
         spotMaxUvError=max(spot_errors, default=0),
         referenceSpotSourceUvMaxError=max(reference_spot_errors, default=0), degenerateTriangles=degenerate)

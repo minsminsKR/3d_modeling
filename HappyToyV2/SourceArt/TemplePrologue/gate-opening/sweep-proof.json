@@ -1,0 +1,196 @@
+{
+  "scope": "Blender triangle intersections, not visual approval or penetration depth",
+  "sourceSha256": "0023e7a8c653b69295544d21de2a6a148db3d493e90c35e9083299f9959d6853",
+  "blender": "4.0.2",
+  "poses": [
+    {
+      "frame": 1,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 0.0,
+          "intersectingTrianglePairs": 178,
+          "middlePairs": 91,
+          "maxMiddleTriangleCentreRadius": 2.966240514701308,
+          "middlePairsBeyondHalfSourceUnit": 10
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": 0.0,
+          "intersectingTrianglePairs": 113,
+          "middlePairs": 66,
+          "maxMiddleTriangleCentreRadius": 2.889144119178588,
+          "middlePairsBeyondHalfSourceUnit": 3
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 3.437500166804956,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -3.437500166804956,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 12.500000063252974,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -12.500000063252974,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 28,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 25.312500064054248,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -25.312500064054248,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 37,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 39.99999883637168,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -39.99999883637168,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 46,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 54.6875010237837,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -54.6875010237837,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 55,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 67.49999334062217,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -67.49999334062217,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 64,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 76.56250689744851,
+          "intersectingTrianglePairs": 11,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -76.56250689744851,
+          "intersectingTrianglePairs": 0,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    },
+    {
+      "frame": 73,
+      "leaves": [
+        {
+          "name": "Left thin leaf",
+          "rotationDegrees": 79.99999767274336,
+          "intersectingTrianglePairs": 20,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        },
+        {
+          "name": "Right thin leaf",
+          "rotationDegrees": -79.99999767274336,
+          "intersectingTrianglePairs": 12,
+          "middlePairs": 0,
+          "maxMiddleTriangleCentreRadius": 0,
+          "middlePairsBeyondHalfSourceUnit": 0
+        }
+      ]
+    }
+  ]
+}

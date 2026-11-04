@@ -69,13 +69,19 @@ camera, device-audio or FPS validation. Preview outputs are not source assets.
 `inspect_gate_sweep.py -- --output <new-json-file>` is a separate CPU-only
 Blender diagnostic for nine opening poses. It records intersecting source mesh
 triangle pairs and their approximate locations; triangle centres do not measure
-penetration or establish acceptable appearance. On the current source, middle
-intersections after opening begins mostly cluster close to each pivot, with at
-most two sampled pairs beyond 0.5 source units. Several hundred pairs remain
-near the hinge at wide opening and must be reviewed from the game camera. The
+penetration or establish acceptable appearance. The thin-leaf pivots now move
+0.075 source units toward the rear without moving any closed leaf vertex. The
+prior pivots produced 1,050 left and 920 right mid-height intersecting triangle
+pairs at full opening; the revised pivots produce zero at each of the eight
+sampled opening poses. The closed pose still has shared and intersecting source
+surfaces, and unsampled angles and actual appearance require game-camera review. The
 yellow-green patch beside a left-side stud is no longer visible in the
 low-sample CPU preview after the three-face atlas adjustment; Unity camera
 appearance remains unverified.
+
+The current measured poses and editable-source hash are preserved in
+`gate-opening/sweep-proof.json`; generate a fresh report at a new path after
+any geometry or pivot change.
 
 `geometry-report.json` records source and output hashes, repaired face indices
 and provisional cut bounds. `surface-proof.json` records 4,713 original

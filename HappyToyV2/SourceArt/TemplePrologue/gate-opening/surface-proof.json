@@ -24,12 +24,13 @@
   },
   "thinLeaves": {
     "Left thin leaf": {
-      "depthAtGameScaleMetres": 0.47855867081322734,
+      "depthAtGameScaleMetres": 0.47855870124692923,
       "frontVertices": 945,
-      "frontMaxDisplacement": 0.0,
+      "frontMaxDisplacement": 1.1920928955078125e-07,
       "rearVertices": 887,
-      "rearTranslationMaxError": 1.1920928955078125e-07,
+      "rearTranslationMaxError": 0.0,
       "repairedFaces": 31,
+      "hingeDepthOffset": 0.07500004768371582,
       "unchangedMaxUvDifference": 0.0,
       "repairedMaxUvError": 0.0,
       "spotFaces": 3,
@@ -45,12 +46,13 @@
       }
     },
     "Right thin leaf": {
-      "depthAtGameScaleMetres": 0.4719979559688968,
+      "depthAtGameScaleMetres": 0.47199792553519493,
       "frontVertices": 933,
-      "frontMaxDisplacement": 0.0,
+      "frontMaxDisplacement": 1.1920928955078125e-07,
       "rearVertices": 902,
-      "rearTranslationMaxError": 1.1920928955078125e-07,
+      "rearTranslationMaxError": 0.0,
       "repairedFaces": 33,
+      "hingeDepthOffset": 0.07500004768371582,
       "unchangedMaxUvDifference": 0.0,
       "repairedMaxUvError": 0.0,
       "spotFaces": 0,

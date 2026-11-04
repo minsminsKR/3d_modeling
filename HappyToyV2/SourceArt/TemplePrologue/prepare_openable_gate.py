@@ -179,6 +179,21 @@ for original_leaf, name, coefficients, expected_faces in (
                                coefficients=coefficients, rearTranslation=rear_shift,
                                spotFaces=list(spot_faces), spotVOffset=.005))
     repair_details[-1]['edgeFinish'] = finish_edges(leaf, half_width, bottom, top, coefficients)
+    # Move the provisional pivot towards the rear surface without moving the
+    # closed leaf. The original cut pivot places the finished edge inside the
+    # post throughout the swing; sampled CPU intersection checks found this
+    # smaller offset clears the mid-height seam at the tested opening angles.
+    # Keep it review-only until the in-game camera can inspect the hinge.
+    hinge_offset = .075
+    closed_positions = [vertex.co.copy() + leaf.location for vertex in leaf.data.vertices]
+    leaf.data.transform(Matrix.Translation((0, -hinge_offset, 0)))
+    leaf.location.y += hinge_offset
+    leaf.data.update()
+    closed_error = max((vertex.co + leaf.location - original).length
+                       for vertex, original in zip(leaf.data.vertices, closed_positions))
+    if closed_error > 1e-5: raise RuntimeError('Pivot adjustment moved the closed leaf: ' + name)
+    repair_details[-1]['hingeDepthOffset'] = hinge_offset
+    repair_details[-1]['closedPivotAdjustmentMaxError'] = closed_error
     reference_error = max(math.hypot(item.uv.x-u, item.uv.y-v)
                           for item, (u, v) in zip(original_leaf.data.uv_layers.active.data, reference_uv))
     if reference_error > 1e-7: raise RuntimeError('Thin repair changed full-depth reference UVs: ' + name)

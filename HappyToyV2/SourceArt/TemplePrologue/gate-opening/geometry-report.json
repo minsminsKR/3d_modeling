@@ -3,11 +3,11 @@
   "source": "SourceArt/CorridorEntrance/temple-gate/temple-gate.blend",
   "sourceSha256": "bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623",
   "editable": "gate-opening.blend",
-  "editableSha256": "d70689b5c40bf8e67fc97eb559e2aca0efdc9de2b98951ea6028497718f65827",
+  "editableSha256": "0023e7a8c653b69295544d21de2a6a148db3d493e90c35e9083299f9959d6853",
   "export": "gate-opening.fbx",
-  "exportSha256": "9c60b9b2ae906ae78ad0ffe7b9c539a65bf2c6be7949a4bf0922f704b7d4b2cc",
+  "exportSha256": "0487b5be0f95c8a2deaeb97af1c6798b3688ea4325ad564871c565093149fcb8",
   "thinExport": "gate-opening-thin.fbx",
-  "thinExportSha256": "6d7754529722f9892274fdd56fc6a52d31a9ecc2f850a33305b059918b186f76",
+  "thinExportSha256": "4ad91b932ca157032e95f4dded70c69233aea10c974fc9a160a5aef314be8b55",
   "halfWidth": 3.05,
   "bottom": 0.8,
   "top": 6.05,
@@ -140,6 +140,8 @@
           "maxBoundaryGap": 0.0
         }
       ],
+      "hingeDepthOffset": 0.075,
+      "closedPivotAdjustmentMaxError": 1.1920928955078125e-07,
       "referenceUvMaxDifference": 0.0
     },
     {
@@ -223,6 +225,8 @@
           "maxBoundaryGap": 0.0
         }
       ],
+      "hingeDepthOffset": 0.075,
+      "closedPivotAdjustmentMaxError": 1.1920928955078125e-07,
       "referenceUvMaxDifference": 0.0
     }
   ],
