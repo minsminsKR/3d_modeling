@@ -71,3 +71,16 @@ comparison only, and do not enable the rejected tree in the game.
 sequence. Its CPU check is `dotnet run --project
 HappyToyV2/Tools/quality/TemplePrologueTests.csproj` from the repository root.
 It does not verify a playable prologue or presentation quality.
+
+2026-11-04: The sequence now accepts explicitly numbered, validated phase
+values for a future checkpoint owner. Invalid values are rejected; this is
+only the rules boundary, not a save file, playable scene, or a replacement for
+the existing corridor checkpoint. The CPU test covers each restored phase and
+its next action. `inspect_pine.py` reports original and welded mesh topology
+without exporting or modifying the source; run it in Blender 4.0.2 background.
+The preserved TRELLIS mesh has 961,875 faces and 1,136,608 boundary edges
+before welding. At the existing 0.00002 Blender-unit weld tolerance it has
+954,712 faces, 10,144 boundary edges and 27,894 non-manifold edges. These
+counts identify difficult topology, but do not establish that topology alone
+caused the decimator's 253,120-face result. A UV-safe reduction and visual
+review are still required before using the tree as a repeated forest asset.

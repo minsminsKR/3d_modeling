@@ -1,5 +1,12 @@
 # HappyToyV2 기능별 수정 지도
 
+사찰 프롤로그는 아직 게임 진입에 연결되지 않았다. `Core/TemplePrologueSequence`는
+두 차례 향·기도·퇴장과 대문 순서 및 명시적 단계 값의 검증된 복원만 소유한다.
+저장 파일·플레이 장면·입력·연출은 미구현이며 기존 회랑 체크포인트를 대체하지 않는다.
+독립 규칙 확인: `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`
+(저장소 루트). 소나무 원본의 접합 전후 토폴로지 확인 도구는
+`SourceArt/TemplePrologue/inspect_pine.py`다.
+
 수정할 기능의 행에서 시작하고 해당 코드와 검증만 읽는다. 공유 규칙·저장·입력
 경계에 영향을 주면 관련 행까지 범위를 넓힌다. 전체 리팩터링과 배포 준비는 전체
 검사와 새 플레이어 빌드를 실행한다. 아래 경로는 Unity 프로젝트 기준이다.
