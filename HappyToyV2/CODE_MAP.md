@@ -1,7 +1,8 @@
 # HappyToyV2 기능별 수정 지도
 
 사찰 프롤로그는 타이틀의 새 이야기에서 시작하며, `TemplePrologueWorld`가 기존 플레이어의
-향로/대문 E 상호작용과 첫날 귀가·둘째 날 회귀를 소유한다. `TemplePrologueDirector`와
+향로/대문 E 상호작용과 첫날 귀가·둘째 날 회귀를 소유한다. 보이지 않는 대문은 플레이어가
+문짝·기둥 충돌 영역을 벗어난 뒤 나타나며, 중단 복원에서도 같은 기준을 사용한다. `TemplePrologueDirector`와
 `Core/TemplePrologueSequence`/`TemplePrayerClock`은 향 장착·방출 후 4초 기도·정지·단계 전환을 소유하고,
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡고,
 `TemplePrayerDressing`은 기존 제작 제단·도자기·촛불의 시각 자산과 재질/메시 수명을 맡는다.
@@ -11,7 +12,7 @@
 `PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용하고, 숲 바람은
 실제 숲의 녹음을 좌표 감쇠 없는 배경으로 반복한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
-`temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원·카메라 환경 복원과 기도 공간의 물리 경계,
+`temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
 장착 중 저장·복원, 여섯 단계의 향/대문 복원과 사찰 v1 저장 이전을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.

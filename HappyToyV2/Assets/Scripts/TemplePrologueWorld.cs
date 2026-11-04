@@ -36,6 +36,7 @@ namespace HappyToy.V2
         GameSession session;
         TempleProloguePresentation presentation;
         Interactable prayerTarget, gateTarget;
+        BoxCollider[] gateColliders;
 
         public void Prepare(GameSession owner, TemplePrologueCheckpoint checkpoint = null)
         {
@@ -61,6 +62,7 @@ namespace HappyToy.V2
                 post.transform.SetParent(gateTarget.transform, false); post.transform.localPosition = new Vector3(side * 3.0f, 0, 0);
                 post.AddComponent<BoxCollider>().size = new Vector3(1.3f, 4, .55f);
             }
+            gateColliders = gateTarget.GetComponentsInChildren<BoxCollider>(true);
             gateTarget.gameObject.SetActive(false);
             Director.PhaseChanged += PhaseChanged;
             if (checkpoint == null) session.player.RelocateWorld(Spawn, Quaternion.identity);
@@ -118,9 +120,31 @@ namespace HappyToy.V2
             if (Director.Phase == TemplePrologueSequence.Phase.GateRevealed && !presentation.GateVisible)
             {
                 var towardGate = (GatePoint - session.player.eyes.transform.position).normalized;
-                if (Vector3.Dot(session.player.eyes.transform.forward, towardGate) < .1f)
+                if (Vector3.Dot(session.player.eyes.transform.forward, towardGate) < .1f && GateClearOfPlayer())
                 { presentation.RevealGate(); gateTarget.gameObject.SetActive(true); }
             }
+        }
+        bool GateClearOfPlayer()
+        {
+            // The gate is initially inactive, so Collider.bounds is empty.
+            // Test its authored boxes in local space before activating them;
+            // include the controller's skin to avoid spawning against its edge.
+            var controller = session.player.GetComponent<CharacterController>();
+            if (!controller) return false;
+            Vector3 playerScale = controller.transform.lossyScale;
+            float radius = (controller.radius + controller.skinWidth) *
+                Mathf.Max(Mathf.Abs(playerScale.x), Mathf.Abs(playerScale.z));
+            Vector3 center = controller.transform.TransformPoint(controller.center);
+            foreach (var box in gateColliders)
+            {
+                Vector3 local = box.transform.InverseTransformPoint(center) - box.center;
+                Vector3 scale = box.transform.lossyScale;
+                float xMargin = radius / Mathf.Max(.0001f, Mathf.Abs(scale.x));
+                float zMargin = radius / Mathf.Max(.0001f, Mathf.Abs(scale.z));
+                if (Mathf.Abs(local.x) <= box.size.x * .5f + xMargin &&
+                    Mathf.Abs(local.z) <= box.size.z * .5f + zMargin) return false;
+            }
+            return true;
         }
         // Called only under the fully opaque transition veil.
         public void BeginSecondDay()

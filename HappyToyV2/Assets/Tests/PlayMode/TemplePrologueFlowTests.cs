@@ -14,6 +14,34 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleGateWaitsUntilPlayerClearsItsCollidersAfterRestore()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            PlacePlayer(new Vector3(500, .04f, 492.87f));
+            var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", false);
+            Call(session, "CreatePrologueForCheckpoint", data); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var gate = world.transform.Find("나타난 대문");
+            Assert.That(gate.gameObject.activeSelf, Is.False, "Gate appeared around the restored player");
+            foreach (float x in new[] { -3f, 3f })
+            {
+                PlacePlayer(new Vector3(500 + x, .04f, 492.87f));
+                yield return null;
+                Assert.That(gate.gameObject.activeSelf, Is.False, "Gate post appeared around the player");
+                Assert.That(Get<bool>(Call(world, "Capture", 0f), "gateVisible"), Is.False);
+            }
+            PlacePlayer(new Vector3(500, .04f, 494.4f));
+            yield return null; yield return null;
+            Assert.That(gate.gameObject.activeSelf, Is.True, "Gate did not appear after the player cleared it");
+            var controller = player.GetComponent<CharacterController>();
+            foreach (var box in gate.GetComponentsInChildren<BoxCollider>())
+                Assert.That(Physics.ComputePenetration(controller, controller.transform.position, controller.transform.rotation,
+                    box, box.transform.position, box.transform.rotation, out _, out _), Is.False);
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleReviewGateLeavesClearTheOpening()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
