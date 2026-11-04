@@ -9,11 +9,13 @@
 회랑 저장은 별개이며 회랑 저장은 실제 새 회랑이 준비된 뒤에만 소비한다. 숲 발소리는 기존
 `PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
-`temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원,
+`temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원·카메라 환경 복원,
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
 장착 중 저장·복원, 여섯 단계의 향/대문 복원과 사찰 v1 저장 이전을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
 이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
+`NativeTempleReview`는 명시 플래그의 격리 Windows 플레이어에서 실제 카메라·믹서와
+1080p 오프스크린 동기 렌더를 확인한다. 해당 수치는 모니터 표시 FPS 또는 직접 청음이 아니다.
 
 수정할 기능의 행에서 시작하고 해당 코드와 검증만 읽는다. 공유 규칙·저장·입력
 경계에 영향을 주면 관련 행까지 범위를 넓힌다. 전체 리팩터링과 배포 준비는 전체

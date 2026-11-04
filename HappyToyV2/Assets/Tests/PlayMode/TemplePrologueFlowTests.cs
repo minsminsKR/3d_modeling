@@ -13,6 +13,26 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleOutdoorCameraAndFogAreRestoredWhenLeaving()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            var eye = Get<Camera>(player, "eyes");
+            var flags = eye.clearFlags; var background = eye.backgroundColor;
+            var fog = RenderSettings.fog; var fogColor = RenderSettings.fogColor;
+            var fogDensity = RenderSettings.fogDensity; var ambient = RenderSettings.ambientLight;
+            Call(session, "CreatePrologue");
+            Assert.That(eye.clearFlags, Is.EqualTo(CameraClearFlags.SolidColor));
+            Assert.That(eye.backgroundColor, Is.Not.EqualTo(background));
+            Call(session, "RetirePrologue");
+            Assert.That(eye.clearFlags, Is.EqualTo(flags));
+            Assert.That(eye.backgroundColor, Is.EqualTo(background));
+            Assert.That(RenderSettings.fog, Is.EqualTo(fog));
+            Assert.That(RenderSettings.fogColor, Is.EqualTo(fogColor));
+            Assert.That(RenderSettings.fogDensity, Is.EqualTo(fogDensity));
+            Assert.That(RenderSettings.ambientLight, Is.EqualTo(ambient));
+            yield return null;
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

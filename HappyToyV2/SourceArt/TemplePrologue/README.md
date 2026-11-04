@@ -7,8 +7,39 @@ shown only when the player is not looking towards it; E on the gate begins the
 masked transition. A separate suspend slot saves the phase, prayer time, player
 pose and flashlight without replacing school or corridor checkpoint formats.
 The existing corridor slot is consumed only after the new corridor is ready.
-The background CPU/physics profile does not certify rendered appearance, audio
-listening quality or player FPS; those reviews remain outstanding.
+The CPU/physics profile does not certify rendered appearance, audio listening
+quality or player FPS. An isolated Windows player camera/mixer inspection is
+described below; it does not replace manual listening or displayed FPS.
+
+## Isolated player inspection — 2026-11-04
+
+The first game-camera captures exposed a sideways temple, a shiny blue indoor
+floor used as outdoor ground, a bright sunset background and a hard-to-read
+facade. The runtime placement now corrects the preserved model's import axes,
+grounds its renderer bounds, uses matte soil and stone, and scopes the dark sky
+and outdoor fill to the prologue. The camera and fog restore when the prologue
+ends. Captures show the front facade, both incense states, sideways flowing
+second-day smoke, the gate and the corridor; a separate hand-camera capture
+shows the incense at release. The forest's generated tree geometry remains
+visibly faceted. These are scripted camera views, not manual play.
+
+`NativeTempleReview` is installed only with `-v2-temple-review-output <new
+directory> -batchmode -v2-audit-no-desktop-interaction` in a Windows player
+with graphics and audio. Run it on the private, never-switched desktop via
+`Tools/quality/run_isolated_desktop.py`; its process-only audio mute guards
+the real pre-device listener recording. The review performs a short isolated
+keyboard walk, then controlled poses and interactions through the corridor.
+The 2026-11-04 D3D11 RTX 3090 Ti run recorded nine forest steps and 27.18s of
+non-silent mixer PCM, with no clipped or nonfinite samples. It did not perform
+subjective listening or test the output device.
+
+At each of four controlled poses the same player submitted 120 1920x1080 eye
+renders, synchronously reading one pixel per frame. Forest/prayer throughput
+was 295–297 frames/s and the gate was 106 frames/s, with a 300 FPS diagnostic
+cap and concurrent work; screenshots and audio capture are not manual gameplay.
+FrameTimingManager reported no usable GPU timestamps. The readback and audit
+overhead, frame cap and hidden offscreen rendering mean these are not displayed
+FPS, GPU time, a supported-hardware guarantee or a substitute for device audio.
 
 ## Temple reference and generation
 
@@ -38,11 +69,11 @@ CorridorEntrance finishing recipe with Blender 4.0.2. It preserves the original
 inside the packed editable blend and exports one 100,000-triangle derived mesh,
 9m wide, and 4K PBR maps in `game-export/`. A 25,000-triangle second LOD failed
 to reach its target (86,629 triangles remained) and was omitted. Front facing,
-appearance of the reduced mesh and collision have not been verified. The
+appearance of the reduced mesh and collision have not been fully verified. The
 `TemplePrologueImport.ImportTemple` Unity batch importer creates the URP maps,
 material and prefab from this export; the batch import succeeded, but the
-prefab is now used by the outdoor prayer space; its in-game appearance and
-front-facing orientation still require visual review.
+prefab is now used by the outdoor prayer space. The 2026-11-04 in-game camera
+review confirmed its corrected front-facing placement.
 
 ## Pine reference and generation
 
@@ -66,7 +97,8 @@ the result. An initial Blender attempt with a 75,000-triangle budget failed at
 253,120 triangles. The later source-derived LOD0 has 157,748 triangles and the
 distant LOD1 has 44,161. Both use a shared 2K atlas, Unity LODGroup and original
 materials; the original and packed editable `pine.blend` are preserved. The
-derived LODs have not yet had a game-camera appearance or runtime FPS review.
+derived LODs have had a scripted game-camera review; displayed FPS and a
+subjective quality approval remain open.
 
 The rejected Hunyuan result also included independent initial and remeshed
 geometry plus an OBJ/MTL with separate albedo, metallic and roughness images.
@@ -127,4 +159,4 @@ the recorded centroid projection distance is 0.0243m at the 95th percentile,
 0.262m maximum. These geometric numbers do not prove that foliage or texture
 seams look correct. `TemplePrologueImport.ImportPine` imports both levels and
 `QualityValidation.BuildWindows` checks their presence and the 50k LOD1 budget.
-First-person render, subjective hearing and FPS evaluation remain separate.
+Subjective hearing and displayed FPS evaluation remain separate.

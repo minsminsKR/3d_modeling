@@ -11,6 +11,7 @@ namespace HappyToy.V2
     public sealed class TempleProloguePresentation : MonoBehaviour
     {
         readonly List<Material> materials = new List<Material>();
+        readonly List<Texture2D> textures = new List<Texture2D>();
         readonly List<Light> lamps = new List<Light>();
         readonly List<Transform> lanterns = new List<Transform>();
         TemplePrologueWorld world;
@@ -27,6 +28,8 @@ namespace HappyToy.V2
         Color oldFogColor, oldAmbient;
         float oldFogDensity, oldAmbientIntensity;
         AmbientMode oldAmbientMode;
+        CameraClearFlags oldClearFlags;
+        Color oldBackground;
         RoomAmbience schoolAmbience;
         bool oldAmbienceEnabled;
         public bool GateVisible => gate && gate.gameObject.activeSelf;
@@ -53,8 +56,8 @@ namespace HappyToy.V2
 
             var floorSource = Resources.Load<Material>("CorridorEntrance/ritual-floor/CE_ritual-floor_0");
             if (!floorSource) throw new InvalidOperationException("The existing stone surface is required");
-            var earth = Surface(floorSource, "Forest earth", new Color(.40f, .37f, .29f), new Vector2(6, 8));
-            var path = Surface(floorSource, "Old stone path", new Color(.65f, .62f, .55f), new Vector2(1, 8));
+            var earth = ForestEarth();
+            var path = Surface(floorSource, "Old stone path", new Color(.57f, .53f, .46f), new Vector2(1, 8));
             var wood = Material("Prayer table", new Color(.16f, .095f, .055f));
             var bronze = Material("Incense vessel", new Color(.20f, .17f, .12f));
             Box("Forest ground", new Vector3(0, -.16f, -2), new Vector3(48, .3f, 64), earth, true);
@@ -63,9 +66,21 @@ namespace HappyToy.V2
                 Box("Forest boundary", new Vector3(side * 22, 3, -2), new Vector3(.3f, 6, 64), earth, true, false);
             Box("Forest end", new Vector3(0, 3, -27), new Vector3(44, 6, .3f), earth, true, false);
             Box("Temple boundary", new Vector3(0, 3, 29), new Vector3(44, 6, .3f), earth, true, false);
-            var shrine = Instantiate(temple, transform); shrine.name = "Generated Korean temple";
-            shrine.transform.localPosition = new Vector3(0, 0, 18);
-            shrine.transform.localRotation = Quaternion.Euler(0, 180, 0); // Authored front is Unity +Z; the path approaches from -Z.
+            var moon = new GameObject("Temple outdoor fill"); moon.transform.SetParent(transform, false);
+            moon.transform.localRotation = Quaternion.Euler(48, -35, 0);
+            var moonlight = moon.AddComponent<Light>(); moonlight.type = LightType.Directional;
+            moonlight.color = new Color(.66f, .72f, .70f); moonlight.intensity = .75f; moonlight.shadows = LightShadows.None;
+            var shrineFill = new GameObject("Temple facade fill"); shrineFill.transform.SetParent(transform, false);
+            shrineFill.transform.localPosition = new Vector3(0, 4.2f, 10.7f);
+            var facadeLight = shrineFill.AddComponent<Light>(); facadeLight.type = LightType.Point;
+            facadeLight.color = new Color(1, .72f, .48f); facadeLight.range = 11; facadeLight.intensity = 2.6f; facadeLight.shadows = LightShadows.None;
+            var shrine = CorridorEntranceModels.Group(transform, "Generated Korean temple", Vector3.zero);
+            Instantiate(temple, shrine, false);
+            shrine.GetChild(0).localRotation = Quaternion.identity;
+            // The preserved FBX imports with the roof toward +X in the front
+            // view. Correct the art axes, then ground by actual renderer bounds.
+            CorridorEntranceModels.GroundAtHeight(shrine, new Vector3(0, 0, 18), 6f,
+                Quaternion.Euler(0, 0, 90) * Quaternion.Euler(0, 90, 0));
             // The preserved model is an exterior; keep the accessible prayer space in front.
             Box("Temple front physical wall", new Vector3(0, 2, 13.8f), new Vector3(9, 4, .3f), wood, true, false);
             Box("Prayer table top", new Vector3(0, .77f, 7.35f), new Vector3(1.8f, .15f, .75f), wood, true);
@@ -120,11 +135,14 @@ namespace HappyToy.V2
             oldFog = RenderSettings.fog; oldFogMode = RenderSettings.fogMode; oldFogColor = RenderSettings.fogColor;
             oldFogDensity = RenderSettings.fogDensity; oldAmbientMode = RenderSettings.ambientMode;
             oldAmbient = RenderSettings.ambientLight; oldAmbientIntensity = RenderSettings.ambientIntensity;
+            oldClearFlags = camera.clearFlags; oldBackground = camera.backgroundColor;
             captured = true;
             RenderSettings.fog = true; RenderSettings.fogMode = FogMode.ExponentialSquared;
             RenderSettings.fogColor = new Color(.055f, .067f, .065f); RenderSettings.fogDensity = .035f;
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.12f, .14f, .13f);
             RenderSettings.ambientIntensity = .7f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(.045f, .060f, .058f, 1);
         }
         Material Material(string name, Color color)
         {
@@ -137,8 +155,29 @@ namespace HappyToy.V2
         {
             var result = new Material(source) { name = name, color = color };
             result.SetTextureScale("_BaseMap", tiling);
-            if (result.HasProperty("_MetallicGlossMap")) result.SetTextureScale("_MetallicGlossMap", tiling);
+            if (result.HasProperty("_MetallicGlossMap")) result.SetTexture("_MetallicGlossMap", null);
+            result.DisableKeyword("_METALLICSPECGLOSSMAP");
+            result.SetFloat("_Metallic", 0); result.SetFloat("_Smoothness", .08f);
             materials.Add(result); return result;
+        }
+        Material ForestEarth()
+        {
+            // Small repeatable CPU texture for matte soil; no reflective indoor floor map.
+            const int size = 128;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, true) { name = "Temple forest soil", wrapMode = TextureWrapMode.Repeat };
+            var pixels = new Color[size * size];
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    float a = Mathf.PerlinNoise(x * .125f, y * .125f);
+                    float b = Mathf.PerlinNoise(x * .39f + 13, y * .39f + 7);
+                    float shade = .72f + .34f * a + .14f * b;
+                    pixels[y * size + x] = new Color(.18f * shade, .15f * shade, .105f * shade, 1);
+                }
+            texture.SetPixels(pixels); texture.Apply(true, false); textures.Add(texture);
+            var soil = Material("Matte forest soil", Color.white); soil.SetTexture("_BaseMap", texture);
+            soil.SetTextureScale("_BaseMap", new Vector2(14, 18)); soil.SetFloat("_Metallic", 0); soil.SetFloat("_Smoothness", .02f);
+            return soil;
         }
         GameObject Box(string name, Vector3 pos, Vector3 scale, Material material, bool collision, bool visible = true)
         {
@@ -235,6 +274,7 @@ namespace HappyToy.V2
             RenderSettings.fog = oldFog; RenderSettings.fogMode = oldFogMode; RenderSettings.fogColor = oldFogColor;
             RenderSettings.fogDensity = oldFogDensity; RenderSettings.ambientMode = oldAmbientMode;
             RenderSettings.ambientLight = oldAmbient; RenderSettings.ambientIntensity = oldAmbientIntensity;
+            if (camera) { camera.clearFlags = oldClearFlags; camera.backgroundColor = oldBackground; }
             if (schoolAmbience) schoolAmbience.enabled = oldAmbienceEnabled;
             captured = false;
         }
@@ -242,6 +282,7 @@ namespace HappyToy.V2
         {
             ReleaseEnvironment();
             foreach (var item in materials) if (item) Destroy(item);
+            foreach (var item in textures) if (item) Destroy(item);
         }
     }
 }
