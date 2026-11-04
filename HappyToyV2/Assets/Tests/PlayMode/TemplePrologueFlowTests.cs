@@ -15,6 +15,33 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TemplePlacedIncenseSmokeStartsAtVisibleMeshTip()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            Call(presentation, "PlaceIncense"); yield return null; yield return null;
+            var trail = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
+            AssertTempleSmokeAtVisibleTip(world, trail);
+        }
+        static void AssertTempleSmokeAtVisibleTip(Component world, Component trail)
+        {
+            var item = world.transform.Find("Placed incense");
+            Assert.That(item, Is.Not.Null);
+            var renderers = item.GetComponentsInChildren<Renderer>(true);
+            Assert.That(renderers, Is.Not.Empty);
+            var bounds = renderers[0].bounds;
+            foreach (var part in renderers.Skip(1)) bounds.Encapsulate(part.bounds);
+            var expected = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+            Assert.That(trail, Is.Not.Null);
+            var field = trail.GetType().GetField("positions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var points = (Vector3[])field.GetValue(trail);
+            Assert.That(Get<int>(trail, "SampleCount"), Is.GreaterThan(0));
+            Assert.That(Vector3.Distance(points[0], expected), Is.LessThan(.005f),
+                "The smoke must emerge from the actual placed incense tip");
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleItemWheelStaysDisarmedUntilHeldInputIsReleased()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
@@ -710,6 +737,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(presentation, "IncensePlaced"), Is.True);
             Assert.That(Get<object>(Get<Component>(player, "Hands"), "PresentedItem").ToString(), Is.EqualTo("Incense"));
             var firstSmoke = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
+            AssertTempleSmokeAtVisibleTip(world, firstSmoke);
             yield return Delay(1.1f);
             var positions = firstSmoke.GetType().GetField("positions", BindingFlags.Instance | BindingFlags.NonPublic);
             var firstPoints = (Vector3[])positions.GetValue(firstSmoke);
@@ -735,6 +763,7 @@ namespace HappyToy.V2.CloudTests
             yield return null;
             Assert.That((bool)(Transform)held.GetValue(hand), Is.False, "Second placed incense remained in the hand");
             var secondSmoke = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
+            AssertTempleSmokeAtVisibleTip(world, secondSmoke);
             yield return Delay(1.1f);
             var secondPoints = (Vector3[])positions.GetValue(secondSmoke);
             float secondDrift = secondPoints[Get<int>(secondSmoke, "SampleCount") - 1].z - secondPoints[0].z;

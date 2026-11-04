@@ -17,6 +17,7 @@ namespace HappyToy.V2
         TemplePrologueWorld world;
         Camera camera;
         Transform incense, gate;
+        Vector3 incenseTipLocal;
         Renderer stoneApproach;
         IncenseSmokeTrail smoke;
         AudioSource cry, bell, air, gateSound;
@@ -223,6 +224,11 @@ namespace HappyToy.V2
             if (smoke) Destroy(smoke.gameObject);
             var item = Instantiate(Resources.Load<GameObject>("PlayerItems/incense"), transform);
             item.name = "Placed incense"; item.transform.localPosition = new Vector3(0, 1.02f, 7.2f); incense = item.transform;
+            var renderers = item.GetComponentsInChildren<Renderer>(true);
+            if (renderers.Length == 0) throw new InvalidOperationException("Placed incense has no visible mesh");
+            var bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+            incenseTipLocal = incense.InverseTransformPoint(new Vector3(bounds.center.x, bounds.max.y, bounds.center.z));
             var plume = new GameObject("Placed incense smoke"); plume.transform.SetParent(transform, false);
             smoke = plume.AddComponent<IncenseSmokeTrail>(); smoke.Prepare(camera);
         }
@@ -347,7 +353,7 @@ namespace HappyToy.V2
             if (smoke && incense)
             {
                 Vector3 direction = world.GatePoint - world.IncensePoint;
-                smoke.Advance(incense.position + Vector3.up * .22f, direction, Time.deltaTime, 1, secondDay ? 1 : 0);
+                smoke.Advance(incense.TransformPoint(incenseTipLocal), direction, Time.deltaTime, 1, secondDay ? 1 : 0);
             }
         }
         public void ReleaseEnvironment()
