@@ -74,6 +74,8 @@ views = (
     ('left-front', 1, (-1.5, -10, 3.6), (-1.5, -1.5, 3.4), 6.2, ('Left thin leaf',)),
     ('right-front', 1, (1.5, -10, 3.6), (1.5, -1.5, 3.4), 6.2, ('Right thin leaf',)),
     ('left-back', 1, (-1.5, 10, 3.6), (-1.5, -1.2, 3.4), 6.2, ('Left thin leaf',)),
+    ('left-free-edge', 1, (8, -1.3, 3.4), (0, -1.3, 3.4), 6.2, ('Left thin leaf',)),
+    ('right-free-edge', 1, (-8, -1.3, 3.4), (0, -1.3, 3.4), 6.2, ('Right thin leaf',)),
 )
 results = []
 for name, frame, position, target, scale, visible in views:

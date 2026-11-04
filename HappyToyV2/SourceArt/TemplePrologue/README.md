@@ -29,8 +29,10 @@ to the preserved source hash and rejects changed face counts. At the game's
 5.5 m gate scale the full-depth leaves are about 1.9 m thick, while the
 repaired alternate leaves are about .47–.48 m. Low-sample CPU Blender previews
 show that the large triangular texture smears and flattened rear deformation
-are reduced. Their cut edges, hinges and appearance still require Unity camera
-review.
+are reduced. A CPU view along the left leaf's free edge shows a visible gap
+between its front and rear surfaces; the open leaf needs edge finishing before
+it is ready for normal play. Its hinges and appearance still require Unity
+camera review.
 The standalone `gate-opening.fbx` embeds its original textures and exports
 the static **full-depth** parts. `gate-opening-thin.fbx` exports the static
 thin parts with a placeholder material; the Unity importer connects the
@@ -48,7 +50,8 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -execut
 ```
 
 The optional `preview_gate_cpu.py -- --output <new-directory>` Blender script
-creates six 512px, eight-sample CPU-only material views with two threads. Run it
+creates eight 512px, eight-sample CPU-only material views with two threads,
+including both free edges. Run it
 through `Tools/quality/run_isolated_desktop.py` with `-b -t 2`; the directory
 must not already exist. Its images and hashes are asset evidence, not game
 camera, device-audio or FPS validation. Preview outputs are not source assets.
