@@ -10,7 +10,7 @@ namespace HappyToy.V2
         PlayerMotor player;
         AudioSource steps, foley, breathing;
         AudioClip click, cabinetOpen, cabinetClose, discovery, breath;
-        AudioClip[] woodSteps, stoneSteps, waterSteps;
+        AudioClip[] woodSteps, stoneSteps, waterSteps, forestSteps;
         readonly List<AudioClip> ownedClips = new List<AudioClip>();
         Vector3 previousPosition, cameraHome, cameraPreviousPosition, stancePosition;
         float stride;
@@ -129,7 +129,9 @@ namespace HappyToy.V2
                     var contact = transform.position + transform.right * (strideIndex % 2 == 0 ? .11f : -.11f);
                     LastFootstepSurface = ContactSurface(contact, out bool wet, out string floorName);
                     LastFootstepColliderName = floorName;
-                    var bank = wet ? waterSteps : LastFootstepSurface == "stone" ? stoneSteps : woodSteps;
+                    if (session.PrologueMode) LastFootstepSurface = "forest";
+                    if (session.PrologueMode && forestSteps == null) forestSteps = Variants("step-forest");
+                    var bank = session.PrologueMode ? forestSteps : wet ? waterSteps : LastFootstepSurface == "stone" ? stoneSteps : woodSteps;
                     // Several recorded contacts and a tiny shoe variation avoid a repeating single-sample rhythm.
                     LastFootstepClip = bank[strideIndex % bank.Length];
                     steps.pitch = 1 + ((strideIndex % 7) - 3) * .008f;

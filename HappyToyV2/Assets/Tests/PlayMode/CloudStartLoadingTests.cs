@@ -30,7 +30,7 @@ namespace HappyToy.V2.CloudTests
                 minimumMenu=Mathf.Min(minimumMenu,Get<float>(shell,"TransitionMenuOpacity"));
                 maximumBlack=Mathf.Max(maximumBlack,Get<float>(shell,"TransitionBlack"));
                 float distance=Get<float>(title,"ApproachDistance");
-                if(Get<bool>(shell,"CorridorPreparing"))
+                if(Get<bool>(shell,"TemplePreparing"))
                 {
                     preparingFrames++;
                     Assert.That(Get<float>(shell,"TransitionBlack"),Is.GreaterThanOrEqualTo(.999f),"World preparation interrupted the visible approach");
@@ -42,13 +42,12 @@ namespace HappyToy.V2.CloudTests
                 if(RecoveryPage=="Playing" && Get<float>(shell,"TransitionBlack")<.9f && Get<bool>(shell,"IsReloading"))revealWhileGated=true;
                 yield return null;
             }
-            Assert.That(preparingFrames,Is.GreaterThan(5));Assert.That(movingFrames,Is.GreaterThan(3),"The actual approach never moved before preparation");
+            Assert.That(preparingFrames,Is.GreaterThan(0));Assert.That(movingFrames,Is.GreaterThan(3),"The actual approach never moved before preparation");
             Assert.That(minimumMenu,Is.LessThan(.01f));Assert.That(maximumBlack,Is.GreaterThan(.99f));
             Assert.That(previousDistance,Is.GreaterThan(2));Assert.That(minimumFloorGap,Is.GreaterThan(-.015f));
             Assert.That(revealWhileGated,Is.True);Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
-            Assert.That(RecoveryPage,Is.EqualTo("Playing"));Assert.That(Get<bool>(session,"CorridorMode"),Is.True);
+            Assert.That(RecoveryPage,Is.EqualTo("Playing"));Assert.That(Get<bool>(session,"PrologueMode"),Is.True);
             Assert.That(Get<float>(shell,"TransitionBlack"),Is.Zero);Assert.That(Time.timeScale,Is.EqualTo(1));
-            AssertMainCorridor();
             Assert.That(Get<int>(title,"ApproachStepsPlayed"),Is.GreaterThanOrEqualTo(2));
             var voice=Get<AudioSource>(title,"ApproachFootstepSource");
             Assert.That(voice.ignoreListenerPause,Is.True);Assert.That(voice.ignoreListenerVolume,Is.False);

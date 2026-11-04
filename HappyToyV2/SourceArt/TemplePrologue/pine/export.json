@@ -1,0 +1,83 @@
+{
+  "key": "pine",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "68621ad5e7d3e063ae4fa4c0c9224c65959b1b000389de1882f68786b8d168d3",
+  "editable": "pine/pine.blend",
+  "widthMetres": 10.658153533935547,
+  "heightMetres": 9.805458262562752,
+  "depthMetres": 9.854933261871338,
+  "normalizedAxis": "height",
+  "normalizedMetres": 10.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 10.0,
+    "texture": 2048,
+    "budgets": [
+      160000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 961875,
+  "originalTriangles": 961875,
+  "lods": [
+    {
+      "file": "pine-lod0.fbx",
+      "targetTriangles": 160000,
+      "triangles": 157748,
+      "vertices": 63250,
+      "boundsMin": [
+        -5.313816547393799,
+        -4.903440475463867,
+        0.14716701209545135
+      ],
+      "boundsMax": [
+        5.344336986541748,
+        4.951492786407471,
+        9.952625274658203
+      ],
+      "sha256": "f18ae99569c3860ae41b39626b7cbeb03272d96783bdd32bbe8bef0d7a1ff792"
+    },
+    {
+      "file": "pine-lod1.fbx",
+      "targetTriangles": 50000,
+      "triangles": 44161,
+      "vertices": 8861,
+      "sha256": "79ee76b9fdbacde35574ab2f614784741992617fa22e0080cc84771945ca94fa",
+      "boundsMin": [
+        -5.295986611805802,
+        -4.868259675708469,
+        0.14716701209545135
+      ],
+      "boundsMax": [
+        5.256578430533409,
+        4.904978275299072,
+        9.779734471348364
+      ],
+      "projectedCentroidDistanceMax": 0.26188451051712036,
+      "projectedCentroidDistanceP95": 0.02423272468149662,
+      "groundOffset": -0.15186514565603015,
+      "method": "fast-simplification 0.1.12 QEM and nearest source-triangle UV projection"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_pine_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_pine_0-baseColor.png",
+      "metallicSmoothness": "CE_pine_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

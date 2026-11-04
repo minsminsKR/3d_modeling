@@ -103,7 +103,7 @@ namespace HappyToy.V2.CloudTests
             {
                 var inventory = Get<Component>(player, "Firecrackers");
                 yield return AimHold(mouse, true); AssertAimHidden("Title");
-                yield return RecoveryClick("begin"); yield return AimFrames();
+                yield return RecoveryClick("begin"); yield return RecoveryAdvanceTempleToCorridor(); yield return AimFrames();
                 IsolateThreats();
                 // Counts are individual shots: one corridor pack or two school packs.
                 int initialStock = Get<int>(inventory, "Count");

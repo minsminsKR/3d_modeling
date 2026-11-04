@@ -1,9 +1,14 @@
-# Temple prologue — work in progress
+# Temple prologue — implementation and remaining review
 
-The prologue is not connected to the game yet. New-game entry, the forest,
-prayer interaction, two-day presentation, directional smoke, gate transition,
-pause and save behavior, and actual in-game visual/audio review remain to be
-implemented and verified. Existing corridor checkpoint entry must remain intact.
+The new-story title entry now assembles the forest and temple, two days of
+incense and prayer, the directional plume and gate, then prepares the existing
+corridor. The two days share the same physical path. The second-day gate is
+shown only when the player is not looking towards it; E on the gate begins the
+masked transition. A separate suspend slot saves the phase, prayer time, player
+pose and flashlight without replacing school or corridor checkpoint formats.
+The existing corridor slot is consumed only after the new corridor is ready.
+The background CPU/physics profile does not certify rendered appearance, audio
+listening quality or player FPS; those reviews remain outstanding.
 
 ## Temple reference and generation
 
@@ -36,7 +41,8 @@ to reach its target (86,629 triangles remained) and was omitted. Front facing,
 appearance of the reduced mesh and collision have not been verified. The
 `TemplePrologueImport.ImportTemple` Unity batch importer creates the URP maps,
 material and prefab from this export; the batch import succeeded, but the
-prefab is not connected to gameplay or visually reviewed in Unity.
+prefab is now used by the outdoor prayer space; its in-game appearance and
+front-facing orientation still require visual review.
 
 ## Pine reference and generation
 
@@ -56,9 +62,11 @@ original and record are preserved in `pine/`. A replacement using TRELLIS.2
 `4ff43435-9370-4552-9e84-30d96ac8ec80`. Its front and side were inspected in
 the webapp: foliage and branches are present. The downloaded `original.glb`,
 `trellis-job.json`, `trellis-metadata.json` and `trellis-processed.png` preserve
-the result. A Blender attempt with a 75,000-triangle budget failed at 253,120
-triangles; no editable blend or game export was produced. Do not place this
-high-poly original repeatedly without topology/UV-safe optimization and review.
+the result. An initial Blender attempt with a 75,000-triangle budget failed at
+253,120 triangles. The later source-derived LOD0 has 157,748 triangles and the
+distant LOD1 has 44,161. Both use a shared 2K atlas, Unity LODGroup and original
+materials; the original and packed editable `pine.blend` are preserved. The
+derived LODs have not yet had a game-camera appearance or runtime FPS review.
 
 The rejected Hunyuan result also included independent initial and remeshed
 geometry plus an OBJ/MTL with separate albedo, metallic and roughness images.
@@ -67,27 +75,49 @@ Those unchanged service originals and their SHA-256 hashes are retained under
 record and metadata remain in `pine/`. They are preserved for authoring and
 comparison only, and do not enable the rejected tree in the game.
 
-`TemplePrologueSequence` is an unconnected, engine-independent interaction
-sequence. Its CPU check is `dotnet run --project
+`TemplePrologueSequence` is an engine-independent interaction sequence used by
+the runtime director. Its CPU check is `dotnet run --project
 HappyToyV2/Tools/quality/TemplePrologueTests.csproj` from the repository root.
 It does not verify a playable prologue or presentation quality.
 
-2026-11-04: The sequence now accepts explicitly numbered, validated phase
-values for a future checkpoint owner. Invalid values are rejected; this is
-only the rules boundary, not a save file, playable scene, or a replacement for
-the existing corridor checkpoint. The CPU test covers each restored phase and
-its next action. `inspect_pine.py` reports original and welded mesh topology
+The sequence accepts explicitly numbered, validated phase values; its separate
+checkpoint owner stores them without changing corridor checkpoints. The CPU
+test covers each restored phase and its next action. `inspect_pine.py` reports original and welded mesh topology
 without exporting or modifying the source; run it in Blender 4.0.2 background.
 The preserved TRELLIS mesh has 961,875 faces and 1,136,608 boundary edges
 before welding. At the existing 0.00002 Blender-unit weld tolerance it has
 954,712 faces, 10,144 boundary edges and 27,894 non-manifold edges. These
 counts identify difficult topology, but do not establish that topology alone
-caused the decimator's 253,120-face result. A UV-safe reduction and visual
-review are still required before using the tree as a repeated forest asset.
+caused the decimator's 253,120-face result. The later reductions and atlas
+projection are documented below; visual and performance review remain required.
 
-The unconnected `TemplePrologueDirector` now coordinates the interaction
+`TemplePrologueDirector` now coordinates the interaction
 sequence and a four-simulation-second prayer clock, with an explicit hold
 input and validated restoration inputs. `temple-prologue-logic` checks the
 actual component's hold and phase transition; the standalone CPU check also
-exercises invalid time and restoration. No player interaction, storage, forest,
-smoke, gate or corridor transition has been connected by this change.
+exercises invalid time and restoration. `temple-prologue-flow` adds the real
+title, physical E focus, directional smoke, both days, gate and corridor,
+pause, checkpoint and conflict protection. `temple-prologue-regressions`
+covers selected existing school/corridor storage and title-entry contracts.
+
+### Rebuilding the pine LODs
+
+Run `finish_pine.py` with Blender 4.0.2 in background. It welds coincident source
+vertices, splits non-manifold edges and reduces the derived LOD0 while keeping
+the original collection and packed textures. Then run `finish_pine_lod.py` with
+`fast-simplification==0.1.12` (MIT, https://github.com/pyvista/fast-simplification)
+available to Blender's Python 3.10. On Windows x64, one reproducible setup from
+the repository root is:
+
+```powershell
+python -m pip install --python-version 310 --only-binary=:all: --no-deps --target HappyToyV2/Tools/.venv-pine fast-simplification==0.1.12
+$env:PYTHONPATH = (Resolve-Path HappyToyV2/Tools/.venv-pine).Path
+& 'C:/Program Files/Blender Foundation/Blender 4.0/blender.exe' -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/finish_pine_lod.py
+```
+
+LOD1 projects each reduced triangle onto the nearest LOD0 triangle's UV atlas;
+the recorded centroid projection distance is 0.0243m at the 95th percentile,
+0.262m maximum. These geometric numbers do not prove that foliage or texture
+seams look correct. `TemplePrologueImport.ImportPine` imports both levels and
+`QualityValidation.BuildWindows` checks their presence and the 50k LOD1 budget.
+First-person render, subjective hearing and FPS evaluation remain separate.

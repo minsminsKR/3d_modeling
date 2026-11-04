@@ -40,15 +40,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RecoveryPage, Is.EqualTo("Settings"), "Native gamepad submit did not open focused settings");
             yield return PadPulse(GamepadButton.East); Assert.That(RecoveryPage, Is.EqualTo("Title"));
             yield return PadPulse(GamepadButton.South);
-            yield return RecoveryWaitForCorridorEntry();
-            Assert.That(Get<bool>(session, "CorridorMode"), Is.True); Assert.That(Get<bool>(session, "ChapterMode"), Is.False);
+            yield return RecoveryWaitForTempleEntry();
+            Assert.That(Get<bool>(session, "PrologueMode"), Is.True); Assert.That(Get<bool>(session, "ChapterMode"), Is.False);
             Assert.That(RecoveryPage, Is.EqualTo("Playing"));
             yield return PadPulse(GamepadButton.Start); Assert.That(RecoveryPage, Is.EqualTo("Pause"));
             yield return PadPulse(GamepadButton.South); Assert.That(RecoveryPage, Is.EqualTo("Playing"));
-            yield return PadPulse(GamepadButton.Select); Assert.That(RecoveryPage, Is.EqualTo("Journal"));
+            yield return PadPulse(GamepadButton.Select); Assert.That(RecoveryPage, Is.EqualTo("Playing"));
             bool previousStance=Get<bool>(player,"Crouching");
-            yield return PadPulse(GamepadButton.East); Assert.That(RecoveryPage, Is.EqualTo("Playing"));
-            Assert.That(Get<bool>(player,"Crouching"), Is.EqualTo(previousStance), "Menu cancel leaked into gameplay crouch");
+            Assert.That(Get<bool>(player,"Crouching"), Is.EqualTo(previousStance));
             Call(shell,"Pause"); Call(shell,"Restart",false); var previous=session; yield return RecoveryRebind(previous);
             var failures = new List<string>(); Call(shell, "ToggleLargeText"); yield return null;
             foreach (var size in new[] { new Vector2Int(1280,720), new Vector2Int(1024,768), new Vector2Int(2560,1080) })

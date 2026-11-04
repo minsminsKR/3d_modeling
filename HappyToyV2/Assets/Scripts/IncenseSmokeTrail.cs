@@ -45,9 +45,10 @@ namespace HappyToy.V2
                 indices[index + 3] = vertex + 1; indices[index + 4] = vertex + 2; indices[index + 5] = vertex + 3;
             }
         }
-        public void Advance(Vector3 source, Vector3 direction, float delta, float remaining)
+        public void Advance(Vector3 source, Vector3 direction, float delta, float remaining, float horizontalFlow = 1)
         {
             if (!mesh || !eye || delta <= 0) return;
+            horizontalFlow = Mathf.Clamp01(horizontalFlow);
             direction.y = 0;
             if (direction.sqrMagnitude < .001f) direction = Vector3.forward;
             direction.Normalize();
@@ -69,7 +70,7 @@ namespace HappyToy.V2
                     float birth = SimulationTime - ages[i];
                     float curl = Mathf.Sin(birth * 1.9f + ages[i] * 1.7f) * .027f +
                         Mathf.Sin(ages[i] * 5.1f - birth * 1.1f) * .012f;
-                    Vector3 desired = flow * (.17f + .61f * Mathf.SmoothStep(0, 1, ages[i] / .5f)) +
+                    Vector3 desired = flow * (horizontalFlow * (.17f + .61f * Mathf.SmoothStep(0, 1, ages[i] / .5f))) +
                         Vector3.up * (.19f - .05f * ages[i] / Lifetime) + side * curl;
                     velocities[i] = Vector3.Lerp(velocities[i], desired, 1 - Mathf.Exp(-step * 2.8f));
                     positions[i] += velocities[i] * step;
@@ -83,7 +84,7 @@ namespace HappyToy.V2
                     count = Mathf.Min(Capacity, count + 1);
                     for (int i = count - 1; i > 1; i--)
                     { positions[i] = positions[i - 1]; velocities[i] = velocities[i - 1]; ages[i] = ages[i - 1]; }
-                    positions[1] = emitter; velocities[1] = flow * .12f + Vector3.up * .18f; ages[1] = 0;
+                    positions[1] = emitter; velocities[1] = flow * (.12f * horizontalFlow) + Vector3.up * .18f; ages[1] = 0;
                 }
                 positions[0] = emitter;
             }

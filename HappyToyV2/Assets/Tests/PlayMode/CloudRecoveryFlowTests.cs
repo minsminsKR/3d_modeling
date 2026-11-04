@@ -31,6 +31,31 @@ namespace HappyToy.V2.CloudTests
                 Get<bool>(session, "CorridorMode") && RecoveryPage == "Playing", 45,
                 "Actual title submit did not finish preparing/fading into the corridor");
         }
+        IEnumerator RecoveryWaitForTempleEntry()
+        {
+            yield return Wait(() => !Get<bool>(shell, "CinematicLoading") && !Get<bool>(shell, "IsReloading") &&
+                Get<bool>(session, "PrologueMode") && RecoveryPage == "Playing", 45,
+                "Actual title submit did not finish preparing/fading into the temple");
+        }
+        // Corridor-focused fixtures explicitly advance the new prologue through
+        // its public interaction owners. The dedicated temple flow test also
+        // exercises the actual physical E key and target selection.
+        IEnumerator RecoveryAdvanceTempleToCorridor()
+        {
+            var world = Get<Component>(session, "Prologue");
+            var director = Get<Component>(world, "Director");
+            Assert.That((bool)Call(director, "PlaceIncense"), Is.True);
+            yield return Wait(() => Get<object>(director, "Phase").ToString() == "FirstDeparture", 8, "First prayer failed");
+            PlacePlayer(new Vector3(500, .04f, 481));
+            yield return Wait(() => Get<object>(director, "Phase").ToString() == "SecondApproach" && !Get<bool>(shell, "IsReloading"), 8, "Second day failed");
+            PlacePlayer(new Vector3(500, .04f, 505.2f));
+            Assert.That((bool)Call(director, "PlaceIncense"), Is.True);
+            yield return Wait(() => Get<object>(director, "Phase").ToString() == "GateRevealed", 8, "Second prayer failed");
+            player.transform.rotation = Quaternion.identity;
+            yield return Wait(() => world.transform.Find("나타난 대문").gameObject.activeSelf, 4, "Gate was not revealed");
+            Call(world.transform.Find("나타난 대문").GetComponent(RequireType("Interactable")), "Use", player);
+            yield return RecoveryWaitForCorridorEntry();
+        }
         IEnumerator RecoveryUiReady()
         {
             var view = One("GameShellView"); Call(view, "SetCaptureSize", 1280, 720);
@@ -56,7 +81,7 @@ namespace HappyToy.V2.CloudTests
                 target.SendEvent(up);
             yield return Delay(.15f);
             if(id=="begin"||id=="begin-school")yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),45,"Cinematic title entry did not finish preparing/fading into the selected chapter");
-            if (id == "continue-chapter" || id == "continue-run" || id == "begin-school")
+            if (id == "continue-chapter" || id == "continue-run" || id == "continue-temple" || id == "begin-school")
                 yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30,
                     "School checkpoint restore did not finish its navigation preparation");
         }

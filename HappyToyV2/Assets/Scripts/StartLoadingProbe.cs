@@ -93,7 +93,7 @@ namespace HappyToy.V2
                 report.minimumMenu=Mathf.Min(report.minimumMenu,shell.TransitionMenuOpacity);report.maximumBlack=Mathf.Max(report.maximumBlack,shell.TransitionBlack);
                 report.maximumApproach=Mathf.Max(report.maximumApproach,title.ApproachDistance);
                 report.maximumArmSwing=Mathf.Max(report.maximumArmSwing,Quaternion.Angle(armRest,arm.localRotation));
-                if(shell.CorridorPreparing){report.preparingFrames++;report.preparationCovered&=shell.TransitionBlack>=.999f;}
+                if(shell.TemplePreparing){report.preparingFrames++;report.preparationCovered&=shell.TransitionBlack>=.999f;}
                 else if(shell.Screen==GameShell.Page.Title&&title.ApproachDistance>previousDistance+.0001f)report.movingApproachFrames++;
                 previousDistance=title.ApproachDistance;
                 if(shell.Screen==GameShell.Page.Playing && shell.TransitionBlack<.9f)report.revealGated=true;
@@ -107,10 +107,26 @@ namespace HappyToy.V2
             report.approachFootstepsStopped=title.ApproachFootstepSource&&!title.ApproachFootstepSource.isPlaying;
             Require(report.approachFootstepCount>=2 && report.approachFootstepClip!=null,"Loading approach never emitted its recorded contacts");
             Require(report.approachFootstepsStopped,"Title footsteps leaked into gameplay");
-            Require(session.CorridorMode&&session.InputAllowed,"Corridor never became playable");
+            Require(session.PrologueMode&&session.InputAllowed,"Temple prologue never became playable");
             Require(report.preparationCovered&&report.preparingFrames>0&&report.movingApproachFrames>3&&report.maximumApproach>1,"Visible approach/preparation isolation failed");
             Require(report.maximumArmSwing>10,"Loading creature did not use its locomotion");
             Require(report.minimumMenu<.01f&&report.maximumBlack>.99f&&report.revealGated,"Missing menu fade, full black or gated reveal");
+            yield return new WaitForEndOfFrame();Capture(view,session,"temple-ready.png",Time.realtimeSinceStartup-begin);
+            // This diagnostic advances the two prayers through their explicit
+            // directors. The physical keyboard route is checked separately.
+            var prologue=session.Prologue;var director=prologue.Director;
+            Require(director.PlaceIncense(),"First prayer did not begin");float templeDeadline=Time.realtimeSinceStartup+12;
+            while(director.Phase!=TemplePrologueSequence.Phase.FirstDeparture){Require(Time.realtimeSinceStartup<templeDeadline,"First prayer timed out");yield return null;}
+            session.player.RelocateWorld(prologue.Spawn+Vector3.forward,Quaternion.identity);
+            templeDeadline=Time.realtimeSinceStartup+12;
+            while(director.Phase!=TemplePrologueSequence.Phase.SecondApproach || shell.IsReloading){Require(Time.realtimeSinceStartup<templeDeadline,"Second day timed out");yield return null;}
+            session.player.RelocateWorld(TemplePrologueWorld.Origin+new Vector3(0,.04f,5.2f),Quaternion.identity);
+            Require(director.PlaceIncense(),"Second prayer did not begin");templeDeadline=Time.realtimeSinceStartup+12;
+            while(director.Phase!=TemplePrologueSequence.Phase.GateRevealed){Require(Time.realtimeSinceStartup<templeDeadline,"Second prayer timed out");yield return null;}
+            var gate=prologue.transform.Find("나타난 대문");templeDeadline=Time.realtimeSinceStartup+5;
+            while(!gate.gameObject.activeSelf){Require(Time.realtimeSinceStartup<templeDeadline,"Gate reveal timed out");yield return null;}
+            gate.GetComponent<Interactable>().Use(session.player);templeDeadline=Time.realtimeSinceStartup+90;
+            while(!session.CorridorMode || shell.IsReloading){Require(Time.realtimeSinceStartup<templeDeadline,"Corridor transition timed out");yield return null;}
             yield return new WaitForEndOfFrame();Capture(view,session,"corridor-ready.png",Time.realtimeSinceStartup-begin);
             foreach(var brain in FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None))brain.gameObject.SetActive(false);
             var drawer=session.Corridor.Drawers.Single(x=>x.StableId=="drawer-atmosphere-0");
@@ -148,7 +164,7 @@ namespace HappyToy.V2
             }
             File.WriteAllBytes(Path.Combine(output,name),ui.EncodeToPNG());Destroy(ui);
             var shell=session.Shell;var title=FindAnyObjectByType<CinematicTitleScene>();
-            frames.Add(new Frame{image=name,page=shell.Screen.ToString(),seconds=elapsed,menu=shell.TransitionMenuOpacity,black=shell.TransitionBlack,approach=title.ApproachDistance,preparing=shell.CorridorPreparing,input=session.InputAllowed});
+            frames.Add(new Frame{image=name,page=shell.Screen.ToString(),seconds=elapsed,menu=shell.TransitionMenuOpacity,black=shell.TransitionBlack,approach=title.ApproachDistance,preparing=shell.CorridorPreparing||shell.TemplePreparing,input=session.InputAllowed});
         }
         void Finish(string failure)
         {

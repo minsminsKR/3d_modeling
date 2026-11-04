@@ -65,7 +65,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies()
         {
             var groups = new Dictionary<string, int> {
-                {"step-wood",5}, {"step-stone",5}, {"step-wet",3},
+                {"step-wood",5}, {"step-stone",5}, {"step-wet",3}, {"step-forest",4},
                 {"door-open",2}, {"door-close",4}, {"door-seat",1},
                 {"cabinet",1}, {"cabinet-rustle",4}, {"flashlight",1}, {"discovery",3},
                 {"cabinet-open",1}, {"cabinet-close",1},

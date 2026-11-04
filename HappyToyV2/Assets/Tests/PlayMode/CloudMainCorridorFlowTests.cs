@@ -39,12 +39,12 @@ namespace HappyToy.V2.CloudTests
                 yield return CaptureMenu(view,"main-corridor-title-large-"+size.x+"x"+size.y+".png",size.x,size.y,errors);
             var root=Get<VisualElement>(view,"Root");
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name,Is.EqualTo("begin"));
-            Assert.That(root.Q<Button>("begin").text,Does.Contain("회랑"));
-            Assert.That(root.Q<Button>("begin").tooltip,Does.Contain("기억 4개"));
+            Assert.That(root.Q<Button>("begin").text,Does.Contain("이야기"));
+            Assert.That(root.Q<Button>("begin").tooltip,Does.Contain("절"));
             Assert.That(root.Q<Button>("begin-school").text,Does.Contain("학교 복도"));
             Assert.That(root.Q<Label>("corridor-record-summary").text,Does.Contain("회랑 탐색 0회"));
             Assert.That(root.Q<Label>("school-record-summary").text,Does.Contain("학교 탐색 0회"));
-            yield return RecoveryClick("begin"); AssertMainCorridor();
+            yield return RecoveryClick("begin"); yield return RecoveryAdvanceTempleToCorridor(); AssertMainCorridor();
             yield return RecoveryPulse(Key.Escape); Assert.That(RecoveryPage,Is.EqualTo("Pause"));
             Assert.That(Get<VisualElement>(view,"Root").Q<Label>("pause-progress"),Is.Null,"Pause should not obscure the game with a progress card");
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-run"),Is.Not.Null);
@@ -81,7 +81,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name,Is.EqualTo("begin"));
             // Use the actual Input System keyboard and UI Toolkit submit path.
             // GameShell.Begin is intentionally reserved for original annex audits.
-            yield return RecoveryPulse(Key.Enter); yield return RecoveryWaitForCorridorEntry(); AssertMainCorridor();
+            yield return RecoveryPulse(Key.Enter); yield return RecoveryWaitForTempleEntry(); yield return RecoveryAdvanceTempleToCorridor(); AssertMainCorridor();
             Assert.That(RecoveryPage,Is.EqualTo("Playing"));
             var run=Get<Component>(session,"Corridor");
             Keys(Key.Enter); yield return Delay(.3f); Keys(); yield return null;
@@ -99,7 +99,7 @@ namespace HappyToy.V2.CloudTests
             var previous=session; yield return RecoveryClick("suspend-chapter"); yield return RecoveryRebind(previous);
             yield return RefreshSlotTitle(directory);
             string schoolPath=Path.Combine(directory,"chapter-suspend-v1.json"); string schoolBytes=File.ReadAllText(schoolPath);
-            yield return RecoveryClick("begin"); AssertMainCorridor();
+            yield return RecoveryClick("begin"); yield return RecoveryAdvanceTempleToCorridor(); AssertMainCorridor();
             Assert.That(File.ReadAllText(schoolPath),Is.EqualTo(schoolBytes),"Starting a new corridor consumed the separate school slot");
             // Controlled memory setup tests storage/navigation, not survival balance.
             foreach(var memory in CheckpointItems("CorridorMemory").Take(2)) Call(memory,"Use",player);
@@ -141,7 +141,7 @@ namespace HappyToy.V2.CloudTests
             // selection must not silently reuse that chapter or erase its slot.
             Call(session,"CreateChapter"); yield return RecoveryUiReady();
             Assert.That(RecoveryPage,Is.EqualTo("Title")); Assert.That(Get<bool>(session,"ChapterMode"),Is.True);
-            var previous=session; yield return RecoveryClick("begin"); yield return RecoveryRebind(previous); AssertMainCorridor();
+            var previous=session; yield return RecoveryClick("begin"); yield return RecoveryRebind(previous); yield return RecoveryWaitForTempleEntry(); yield return RecoveryAdvanceTempleToCorridor(); AssertMainCorridor();
             Assert.That(RecoveryPage,Is.EqualTo("Playing"));
         }
 
@@ -167,7 +167,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(notice.worldBound.yMax,Is.LessThan(root.Q<Button>("begin").worldBound.yMin),"Checkpoint notice overlaps primary navigation");
                 Assert.That(notice.worldBound.yMax,Is.LessThan(root.Query<Label>().ToList().Single(x=>x.text=="HAPPY TOY  /  FORGOTTEN CORRIDOR").worldBound.yMin),"Checkpoint notice overlaps footer");
             }
-            yield return RecoveryClick("begin"); AssertMainCorridor(); Call(shell,"Pause"); yield return null;
+            yield return RecoveryClick("begin"); yield return RecoveryAdvanceTempleToCorridor(); AssertMainCorridor(); Call(shell,"Pause"); yield return null;
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-run").enabledInHierarchy,Is.False);
             Assert.That(File.ReadAllText(schoolPath),Is.EqualTo(damagedSchool)); Assert.That(File.ReadAllText(corridorPath),Is.EqualTo(damagedCorridor));
             var previous=session; yield return RecoveryClick("title"); yield return RecoveryRebind(previous); yield return RefreshSlotTitle(directory);

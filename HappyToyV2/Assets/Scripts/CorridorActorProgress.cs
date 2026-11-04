@@ -19,14 +19,16 @@ namespace HappyToy.V2
             public CabinetHidingOutcome hidingOutcome;
             public CabinetTauntMemory.Visit[] cabinetTaunts;
             public void Validate()
-            { ValidatePosition(false); }
+            { ValidatePosition(CorridorCheckpoint.Point); }
             public void ValidateChapter()
-            { ValidatePosition(true); }
-            void ValidatePosition(bool chapter)
+            { ValidatePosition(ChapterCheckpoint.Point); }
+            public void ValidateTemple()
+            { ValidatePosition(TemplePrologueCheckpoint.Point); }
+            void ValidatePosition(Func<Vector3, bool> validPoint)
             {
                 CabinetHidingRules.Validate(hidingEntry, hidingRolls, hidingOutcome);
                 CabinetTauntMemory.Validate(cabinetTaunts,hidingEntry);
-                if(!(chapter ? ChapterCheckpoint.Point(position) : CorridorCheckpoint.Point(position)) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
+                if(!validPoint(position) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
                     !CorridorCheckpoint.Number(stamina,0,1) || !CorridorCheckpoint.Number(slow,0,3600) ||
                     !CorridorCheckpoint.Number(noiseRadius,0,28) || !CorridorCheckpoint.Number(noiseRemaining,0,.81f) ||
                     !CorridorCheckpoint.Number(itemCooldown,0,.51f) || stock < 0 || snapperStockVersion < 0 || snapperStockVersion > 1 ||
@@ -47,6 +49,8 @@ namespace HappyToy.V2
         { data.Validate(); RestoreValidatedProgress(data); }
         public void RestoreChapterProgress(Progress data)
         { data.ValidateChapter(); RestoreValidatedProgress(data); }
+        public void RestoreTempleProgress(Progress data)
+        { data.ValidateTemple(); RestoreValidatedProgress(data); }
         void RestoreValidatedProgress(Progress data)
         {
             controller.enabled=false;
@@ -68,9 +72,11 @@ namespace HappyToy.V2
         { data.Validate(); return CanRestoreValidatedProgress(data,(1<<8)|(1<<9)); }
         public bool CanRestoreChapterProgress(Progress data)
         { data.ValidateChapter(); return CanRestoreValidatedProgress(data,Physics.DefaultRaycastLayers); }
-        bool CanRestoreValidatedProgress(Progress data,int supportLayers)
+        public bool CanRestoreTempleProgress(Progress data)
+        { data.ValidateTemple(); return CanRestoreValidatedProgress(data,Physics.DefaultRaycastLayers,false); }
+        bool CanRestoreValidatedProgress(Progress data,int supportLayers,bool requireNavMesh=true)
         {
-            if(!NavMesh.SamplePosition(data.position,out _,.65f,NavMesh.AllAreas) ||
+            if(requireNavMesh && !NavMesh.SamplePosition(data.position,out _,.65f,NavMesh.AllAreas) ||
                 !Physics.Raycast(data.position+Vector3.up*.15f,Vector3.down,.4f,supportLayers,QueryTriggerInteraction.Ignore)) return false;
             float height=data.crouched?crouchedHeight:standingHeight;
             var center=standingCenter-Vector3.up*(standingHeight-height)*.5f+data.position;

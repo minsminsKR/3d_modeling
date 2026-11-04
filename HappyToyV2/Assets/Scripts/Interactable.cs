@@ -6,7 +6,7 @@ namespace HappyToy.V2
 {
     public sealed partial class Interactable : MonoBehaviour
     {
-        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle, Drawer, TrapSupply, IncenseSupply, TalismanFragment }
+        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle, Drawer, TrapSupply, IncenseSupply, TalismanFragment, TemplePrologue }
         public Kind kind;
         public string label;
         public string stableId;
@@ -23,6 +23,11 @@ namespace HappyToy.V2
             get
             {
                 if (!isActiveAndEnabled || !gameObject.activeInHierarchy || DoorBroken) return false;
+                if (kind == Kind.TemplePrologue)
+                {
+                    var target = GetComponent<TemplePrologueTarget>();
+                    return target && target.Available;
+                }
                 if (kind == Kind.Candle)
                 {
                     var candle = GetComponent<WaymarkCandle>();
@@ -259,6 +264,10 @@ namespace HappyToy.V2
             if (!player || !GameSession.Current || !GameSession.Current.InputAllowed || !InteractionAvailable) return;
             switch (kind)
             {
+                case Kind.TemplePrologue:
+                    var prologueTarget = GetComponent<TemplePrologueTarget>();
+                    if (prologueTarget) prologueTarget.Use(player);
+                    break;
                 case Kind.IncenseSupply:
                     if (player.Rituals && player.Rituals.CollectIncense()) gameObject.SetActive(false);
                     break;

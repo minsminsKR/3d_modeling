@@ -104,7 +104,7 @@ namespace HappyToy.V2
         void BuildCinematicTitle()
         {
             titleSelectionHint = null;
-            bool saved = session.Suspension.HasRun, schoolSaved = session.ChapterSuspension.HasRun;
+            bool saved = session.Suspension.HasRun, schoolSaved = session.ChapterSuspension.HasRun, templeSaved = session.TempleSuspension.HasRun;
             var chapter = Text("챕터 1", 70, 72, 540, 42, shell.LargeText ? 25 : 22);
             chapter.style.color = TitleInk;
             var heading = Text("' 잊힌 회랑 '", 66, 120, 650, 88, shell.LargeText ? 49 : 45);
@@ -114,6 +114,11 @@ namespace HappyToy.V2
             titleSelectionHint = Text(corridorIntroduction, 70, 256, 570, 106, shell.LargeText ? 23 : 20);
             titleSelectionHint.name = "title-introduction"; titleSelectionHint.style.color = TitleInk;
             float next = 500;
+            if (templeSaved)
+            {
+                TitleButton("continue-temple", "사찰 계속", "중단한 사찰 기도와 위치에서 이어갑니다.", next, shell.ContinueTempleWithLoading)
+                    .SetEnabled(session.TempleSuspension.Writable); next += 48;
+            }
             if (saved)
             {
                 var corridorResume = session.Suspension.Snapshot;
@@ -129,11 +134,11 @@ namespace HappyToy.V2
                 TitleButton("continue-chapter", resumeTitle, resumeHint, next, shell.ContinueChapterWithLoading)
                     .SetEnabled(session.ChapterSuspension.Writable); next += 48;
             }
-            if (!saved && !schoolSaved)
+            if (!saved && !schoolSaved && !templeSaved)
             {
                 TitleButton("continue-unavailable", "계속 · 저장된 탐색 없음", "저장된 탐색이 있으면 이곳에서 이어갈 수 있습니다.", next, () => { }).SetEnabled(false); next += 48;
             }
-            TitleButton("begin", "새 회랑 시작", corridorIntroduction, next, shell.BeginCorridorCinematic); next += 48;
+            TitleButton("begin", "새 이야기 시작", "숲속의 절에서 이야기가 시작됩니다.", next, shell.BeginTempleCinematic); next += 48;
             TitleButton("begin-school", "학교 복도", "반복되는 복도와 창문 너머의 음악실을 살펴보세요.", next, shell.BeginChapterCinematic); next += 48;
             TitleButton("settings", "설정", "화면과 조작, 사운드 및 접근성 옵션을 조정합니다.", next, shell.Settings); next += 48;
             TitleButton("school-records", "탐색 기록", "최근 학교 탐색의 기록을 확인합니다.", next, shell.ChapterHistory); next += 48;
@@ -141,10 +146,11 @@ namespace HappyToy.V2
             bool protectedRecords = !session.ChapterRecords.Writable && !string.IsNullOrEmpty(session.ChapterRecords.Status);
             bool protectedSchool = !session.ChapterSuspension.Writable && !string.IsNullOrEmpty(session.ChapterSuspension.Status);
             bool protectedCorridor = !session.Suspension.Writable && !string.IsNullOrEmpty(session.Suspension.Status);
-            if (protectedRecords || protectedSchool || protectedCorridor)
+            bool protectedTemple = !session.TempleSuspension.Writable && !string.IsNullOrEmpty(session.TempleSuspension.Status);
+            if (protectedRecords || protectedSchool || protectedCorridor || protectedTemple)
             {
-                string mode = protectedSchool && protectedCorridor ? "회랑·폐교" : protectedSchool ? "폐교" : "회랑";
-                string warning = protectedSchool || protectedCorridor ? mode + " 중단 기록을 읽을 수 없어 원문을 보존했습니다.\n새 탐색은 가능하며, 해당 중단 저장은 보호 중입니다." : "학교 기록 저장이 중지됐습니다.\n탐색 기록에서 상태를 확인하세요.";
+                string mode = string.Join("·", new[] { protectedTemple ? "사찰" : null, protectedCorridor ? "회랑" : null, protectedSchool ? "폐교" : null }.Where(x => x != null));
+                string warning = protectedTemple || protectedSchool || protectedCorridor ? mode + " 중단 기록을 읽을 수 없어 원문을 보존했습니다.\n새 탐색은 가능하며, 해당 중단 저장은 보호 중입니다." : "학교 기록 저장이 중지됐습니다.\n탐색 기록에서 상태를 확인하세요.";
                 var notice = Text(warning, 70, 380, 720, 100, shell.LargeText ? 21 : 18);
                 notice.name = protectedRecords ? "school-profile-notice" : "checkpoint-status";
                 notice.style.color = new Color(.98f, .67f, .53f);

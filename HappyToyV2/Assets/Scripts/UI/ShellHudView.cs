@@ -164,6 +164,7 @@ namespace HappyToy.V2
             batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
             int count = state.Firecrackers;
             meter.text = state.UnlimitedItems ? "콩알탄 ∞ · 덫 ∞ · 향 ∞ · 부적 ∞ · 손전등 ∞" : $"콩알탄 {SnapperStockRules.CurrentPack(count)}/6 · 예비 {SnapperStockRules.ReservePacks(count)}묶음 · 덫 {state.Traps}개";
+            Visible(meter, !state.PrologueMode);
             bool hasFocus = state.Hidden || state.Focused;
             string interact = usingGamepad ? "[아래 버튼]  " : "[E]  ";
             focus.text = state.Hidden ? interact + "숨은 곳에서 나오기" : state.Focused ? interact + state.FocusLabel : string.Empty;
@@ -184,7 +185,7 @@ namespace HappyToy.V2
         internal struct State
         {
             public bool HasPlayer, CaptionVisible, SprintExhausted, FlashlightLit, Hidden, Focused;
-            public bool ItemFeedbackVisible, Threatened, UnlimitedItems;
+            public bool ItemFeedbackVisible, Threatened, UnlimitedItems, PrologueMode;
             public int RecordsRecovered, Firecrackers, Traps;
             public string Caption, FocusLabel, ItemFeedback;
             public float Stamina, BatteryFraction, FeedbackOpacity, PeripheralStrength;
@@ -202,7 +203,7 @@ namespace HappyToy.V2
                 bool showAim = inventory && inventory.Aim && inventory.Aim.Visible;
                 bool showItem = trapFeedback || inventory && (inventory.FeedbackVisible || showAim);
                 return new State {
-                    HasPlayer = true, UnlimitedItems = player.Items.Unlimited, RecordsRecovered = session.RecordsRecovered, Caption = shell.Caption, CaptionVisible = shell.CaptionVisible,
+                    HasPlayer = true, PrologueMode = session.PrologueMode, UnlimitedItems = player.Items.Unlimited, RecordsRecovered = session.RecordsRecovered, Caption = shell.Caption, CaptionVisible = shell.CaptionVisible,
                     Stamina = player.Stamina, SprintExhausted = player.SprintExhausted,
                     BatteryFraction = charge.Fraction, FlashlightLit = charge.Lit,
                     Firecrackers = inventory ? inventory.Count : 0, Traps = traps ? traps.Count : 0,

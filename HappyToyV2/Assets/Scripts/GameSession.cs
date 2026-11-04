@@ -10,6 +10,35 @@ namespace HappyToy.V2
         public PlayerMotor player;
         public CorridorRun Corridor { get; private set; }
         public MemoryChapter Chapter { get; private set; }
+        public TemplePrologueWorld Prologue { get; private set; }
+        public bool PrologueMode => Prologue && Prologue.Ready;
+        public void CreatePrologue() => CreatePrologueCore(null);
+        public void CreatePrologueForCheckpoint(TemplePrologueCheckpoint checkpoint)
+        {
+            if (checkpoint == null) throw new System.ArgumentNullException(nameof(checkpoint));
+            checkpoint.Validate(); CreatePrologueCore(checkpoint); ElapsedPlayTime = checkpoint.seconds;
+        }
+        void CreatePrologueCore(TemplePrologueCheckpoint checkpoint)
+        {
+            if (Prologue || Chapter || Corridor || Finished) throw new System.InvalidOperationException("Fresh title session required");
+            var root = new GameObject("Temple prologue"); root.transform.SetParent(transform, false);
+            Prologue = root.AddComponent<TemplePrologueWorld>();
+            try { Prologue.Prepare(this, checkpoint); }
+            catch { Destroy(root); Prologue = null; throw; }
+            foreach (var director in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (director is StoryDirector || director is AnnexEncounter || director is V1HwacatEvent ||
+                    director is UncatAnnexEvent || director is LanternMaskEncounter || director is WeepingAngelEncounter || director is LovelyDollGuide)
+                    director.enabled = false;
+            foreach (var actor in FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (actor.gameObject.scene == gameObject.scene) actor.gameObject.SetActive(false);
+        }
+        public void RetirePrologue()
+        {
+            if (!PrologueMode) throw new System.InvalidOperationException("No active temple prologue");
+            var old = Prologue; old.Retire(); Prologue = null; Destroy(old.gameObject);
+            // Chapter records time the corridor itself, not the optional story introduction.
+            ElapsedPlayTime = 0;
+        }
         public bool ChapterMode => Chapter && Chapter.Ready;
         public int EncounterStep => ChapterMode ? Chapter.Recovered : StoryStep;
         public bool EncountersResolved => Finished || (!ChapterMode && StoryStep >= 4);
@@ -19,7 +48,7 @@ namespace HappyToy.V2
         { data.Validate(); CreateChapterVersion(data.simulationVersion); }
         public void CreateChapterVersion(int layoutVersion)
         {
-            if(Chapter || Corridor || Finished) return;
+            if(Prologue || Chapter || Corridor || Finished) return;
             if(layoutVersion!=1 && layoutVersion!=SchoolCampusLayout.Version && layoutVersion!=SchoolLoopPlan.Version) throw new System.ArgumentException("Unknown school layout");
             GraphicsLightingPresentation.BeginTransition(this);
             // Restart enters from GameShell.Start, before default-order presentation Start.
@@ -36,6 +65,7 @@ namespace HappyToy.V2
         }
         public CorridorRecords Records { get; private set; }
         public CorridorCheckpointStore Suspension { get; private set; }
+        public TemplePrologueCheckpointStore TempleSuspension { get; private set; }
         public ChapterCheckpointStore ChapterSuspension { get; private set; }
         public string RecordSaveMessage { get; private set; } = "";
         public bool RecordSaved { get; private set; }
@@ -47,9 +77,10 @@ namespace HappyToy.V2
         }
         public void ConfigureRecordDirectory(string directory)
         {
-            if (Chapter || Corridor || Finished) throw new System.InvalidOperationException("Record storage must be configured before a run");
+            if (Prologue || Chapter || Corridor || Finished) throw new System.InvalidOperationException("Record storage must be configured before a run");
             Records = new CorridorRecords(directory, true);
             Suspension = new CorridorCheckpointStore(directory, true);
+            TempleSuspension = new TemplePrologueCheckpointStore(directory, true);
             ChapterSuspension = new ChapterCheckpointStore(directory, true);
             ChapterRecords = new ChapterRecords(directory,true);
         }
@@ -85,7 +116,7 @@ namespace HappyToy.V2
         { CreateCorridorVersion(seed, CorridorLayout.CurrentVersion); }
         public System.Collections.IEnumerator CreateCorridorIncremental(int seed, System.Action<float> progress = null)
         {
-            if(Chapter || Corridor || Finished)throw new System.InvalidOperationException("Fresh title session required");
+            if(Prologue || Chapter || Corridor || Finished)throw new System.InvalidOperationException("Fresh title session required");
             GraphicsLightingPresentation.BeginTransition(this);
             Corridor=gameObject.AddComponent<CorridorRun>();
             var build=Corridor.BuildIncremental(seed, progress: progress);
@@ -96,7 +127,7 @@ namespace HappyToy.V2
         { data.Validate(); CreateCorridorVersion(data.seed, data.simulationVersion); }
         void CreateCorridorVersion(int seed, int layoutVersion)
         {
-            if (Chapter || Corridor || Finished) return;
+            if (Prologue || Chapter || Corridor || Finished) return;
             GraphicsLightingPresentation.BeginTransition(this);
             Corridor = gameObject.AddComponent<CorridorRun>();
             Corridor.Build(seed, layoutVersion);
@@ -130,7 +161,7 @@ namespace HappyToy.V2
                 return count;
             }
         }
-        public int TotalRecords => ChapterMode ? (Chapter.Loop ? 0 : 5) : CorridorMode ? Corridor.RequiredMemories : requireAnnexRecords ? 7 : 4;
+        public int TotalRecords => PrologueMode ? 0 : ChapterMode ? (Chapter.Loop ? 0 : 5) : CorridorMode ? Corridor.RequiredMemories : requireAnnexRecords ? 7 : 4;
         public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
         public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished && !CabinetDeathActive;
@@ -139,6 +170,7 @@ namespace HappyToy.V2
         {
             get
             {
+                if (PrologueMode) return Prologue.Objective;
                 if (ChapterMode) return Chapter.Objective;
                 if (CorridorMode) return Corridor.Objective;
                 if(StoryStep==3 && requireAnnexRecords)
@@ -199,6 +231,7 @@ namespace HappyToy.V2
             // They must never add artificial attempts to the player's profile.
             Records = new CorridorRecords(Application.persistentDataPath, !Application.isBatchMode);
             Suspension = new CorridorCheckpointStore(Application.persistentDataPath, !Application.isBatchMode);
+            TempleSuspension = new TemplePrologueCheckpointStore(Application.persistentDataPath, !Application.isBatchMode);
             ChapterSuspension = new ChapterCheckpointStore(Application.persistentDataPath, !Application.isBatchMode);
             ChapterRecords = new ChapterRecords(Application.persistentDataPath,!Application.isBatchMode);
             Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>();gameObject.AddComponent<AnnexRoomPresentation>();

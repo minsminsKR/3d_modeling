@@ -48,6 +48,16 @@ def play_tests(*files: str) -> tuple[str, ...]:
 PROFILES = {
     "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
         ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
+    "temple-prologue-flow": ("Actual title, two prayers, hold, next day, gate and corridor transition; CPU/physics only", [
+        ("PlayMode", play_tests("TemplePrologueFlowTests.cs"))]),
+    "temple-prologue-regressions": ("Title keyboard entry, replacing a prepared mode and existing school/corridor checkpoint preservation; CPU only", [
+        ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests")),
+        ("PlayMode", (PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
+                      PLAY + "MainCorridorSelectionReplacesPreparedTitleSchoolThroughRealReload",
+                      PLAY + "CorridorCheckpointRejectsUnknownVersionAndBlockedPoseBeforeMutatingWorld",
+                      PLAY + "SchoolCheckpointRejectsCorruptGeometryBeforeMutatingFreshChapter",
+                      PLAY + "SavedSlotIsConsumedWhenContinuingAfterSceneReloadFailure",
+                      PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
         ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
@@ -497,7 +507,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("temple-prologue-flow", "temple-prologue-regressions", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation"):
             editor_args += ["-noaudio"]

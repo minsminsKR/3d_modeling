@@ -4168,5 +4168,93 @@
     "peak": 0.199981689453125,
     "rms": 0.13792468935962565,
     "sha256": "2ebd36869e09bb8ba23b18a32a4ce93f3a7c6e23c0c5001bf991c94b21c7672b"
+  },
+  {
+    "resource": "Audio/External/step-forest-0",
+    "file": "step-forest-0.wav",
+    "pack": "temple-forest-steps",
+    "creator": "Sheyvan (Philipp Grzemba)",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Sheyvan/sounds/830876/",
+    "download": "https://cdn.freesound.org/previews/830/830876_3248005-hq.mp3",
+    "source_file": "forest-sneaker-hq.mp3",
+    "source_file_sha256": "c50bc4343fce1cfdd308ab7f41334f459f1dcd9b54a94ef046d1f243385a4236",
+    "seconds": 0.38,
+    "peak": 0.649993896484375,
+    "rms": 0.02803300110101945,
+    "sha256": "1d0a65be6d4a3b0926739e97f66b70a0acc51639bbf79b809e6f666cc4308afd",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Physical forest sneaker contact, centre 14.28s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+    }
+  },
+  {
+    "resource": "Audio/External/step-forest-1",
+    "file": "step-forest-1.wav",
+    "pack": "temple-forest-steps",
+    "creator": "Sheyvan (Philipp Grzemba)",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Sheyvan/sounds/830876/",
+    "download": "https://cdn.freesound.org/previews/830/830876_3248005-hq.mp3",
+    "source_file": "forest-sneaker-hq.mp3",
+    "source_file_sha256": "c50bc4343fce1cfdd308ab7f41334f459f1dcd9b54a94ef046d1f243385a4236",
+    "seconds": 0.38,
+    "peak": 0.649993896484375,
+    "rms": 0.0326247922578748,
+    "sha256": "e926397139dd8a83b936d8f5c8e6ef678ea486c20b176eb5bda30cfbdeba8d30",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Physical forest sneaker contact, centre 16.75s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+    }
+  },
+  {
+    "resource": "Audio/External/step-forest-2",
+    "file": "step-forest-2.wav",
+    "pack": "temple-forest-steps",
+    "creator": "Sheyvan (Philipp Grzemba)",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Sheyvan/sounds/830876/",
+    "download": "https://cdn.freesound.org/previews/830/830876_3248005-hq.mp3",
+    "source_file": "forest-sneaker-hq.mp3",
+    "source_file_sha256": "c50bc4343fce1cfdd308ab7f41334f459f1dcd9b54a94ef046d1f243385a4236",
+    "seconds": 0.38,
+    "peak": 0.649993896484375,
+    "rms": 0.039427085235293896,
+    "sha256": "669f572ab9b35b0c617e6aba55d34e23b1270bed388749ed11f17d10b53f94fd",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Physical forest sneaker contact, centre 18.33s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+    }
+  },
+  {
+    "resource": "Audio/External/step-forest-3",
+    "file": "step-forest-3.wav",
+    "pack": "temple-forest-steps",
+    "creator": "Sheyvan (Philipp Grzemba)",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Sheyvan/sounds/830876/",
+    "download": "https://cdn.freesound.org/previews/830/830876_3248005-hq.mp3",
+    "source_file": "forest-sneaker-hq.mp3",
+    "source_file_sha256": "c50bc4343fce1cfdd308ab7f41334f459f1dcd9b54a94ef046d1f243385a4236",
+    "seconds": 0.38,
+    "peak": 0.649993896484375,
+    "rms": 0.05869722089094438,
+    "sha256": "cae570f540ccc6891ae0faf45181a8542bb827b88f050d7c935fe6198b08993b",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Physical forest sneaker contact, centre 20.63s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+    }
   }
 ]

@@ -37,14 +37,17 @@ namespace HappyToy.V2
         static readonly SceneRestartGate restartGate = new SceneRestartGate();
         static bool corridorRestart;
         static bool chapterRestart;
+        static bool templeRestart;
         static int restartChapterVersion=SchoolCampusLayout.Version;
         int requestedChapterVersion=SchoolCampusLayout.Version;
         static bool chapterFromOffering;
         static string checkpointReloadError;
         string pendingSavedToken;
         string pendingChapterToken;
+        string pendingTempleToken;
         bool requestChapterOnReload;
         bool requestCorridorOnReload;
+        bool requestTempleOnReload;
         float volume = .8f, sensitivity = .09f, fieldOfView = 72f;
         float noticeTime, captionTime;
         int lastNoticeRevision = -1, captionPriority;
@@ -85,7 +88,7 @@ namespace HappyToy.V2
             if(SceneLoadingOverlay.Current && SceneLoadingOverlay.Current.LoadingScene) SceneLoadingOverlay.Current.Report(.88f);
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
-            { if (playAfterLoad) { if (chapterRestart) BeginChapterVersion(restartChapterVersion); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
+            { if (playAfterLoad) { if (templeRestart) BeginTempleCinematic(); else if (chapterRestart) BeginChapterVersion(restartChapterVersion); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
             else if (autoStartAudit) Begin();
             else Set(Page.Title);
             if (!GetComponent<GameShellView>()) gameObject.AddComponent<GameShellView>();
@@ -108,7 +111,7 @@ namespace HappyToy.V2
         bool windowHasFocus = true;
         public void SetItemWheelOpen(bool open)
         {
-            bool next = open && Screen == Page.Playing && !IsReloading && session && !session.Finished && !session.CabinetDeathActive;
+            bool next = open && Screen == Page.Playing && !IsReloading && session && !session.PrologueMode && !session.Finished && !session.CabinetDeathActive;
             if (next != ItemWheelOpen) ItemWheelChangedFrame = Time.frameCount;
             ItemWheelOpen = next;
             ApplyScreenState();
@@ -138,8 +141,8 @@ namespace HappyToy.V2
             if(Screen!=Page.Title || IsReloading) return;
             try
             {
-                if(session.ChapterMode || session.CorridorMode)
-                { requestedChapterVersion=layoutVersion; requestChapterOnReload=true; requestCorridorOnReload=false; Restart(true); return; }
+                if(session.ChapterMode || session.CorridorMode || session.PrologueMode)
+                { requestedChapterVersion=layoutVersion; requestChapterOnReload=true; requestCorridorOnReload=false; requestTempleOnReload=false; Restart(true); return; }
                 bool storyEntry=chapterFromOffering; chapterFromOffering=false;
                 session.CreateChapterVersion(layoutVersion);
                 if(!storyEntry && session.ChapterSuspension.HasRun && session.ChapterSuspension.Writable &&
@@ -178,8 +181,8 @@ namespace HappyToy.V2
             if (Screen != Page.Title || IsReloading) return;
             try
             {
-                if(session.CorridorMode || session.ChapterMode)
-                { requestCorridorOnReload=true; requestChapterOnReload=false; Restart(true); return; }
+                if(session.CorridorMode || session.ChapterMode || session.PrologueMode)
+                { requestCorridorOnReload=true; requestChapterOnReload=false; requestTempleOnReload=false; Restart(true); return; }
                 session.CreateCorridor(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
                 if(session.Suspension.HasRun && session.Suspension.Writable && !session.Suspension.Consume(session.Suspension.Snapshot.token))
                 { ReloadError=session.Suspension.Status; return; }
@@ -204,6 +207,37 @@ namespace HappyToy.V2
             }
             catch(InvalidOperationException error) { ReloadError=error.Message; }
             catch(ArgumentException) { ReloadError="현재 탐색 상태를 안전하게 저장할 수 없습니다. 탐색을 계속한 뒤 다시 시도하세요."; }
+        }
+        public void SuspendTemple()
+        {
+            if (Screen != Page.Pause || IsReloading || !session.PrologueMode) return;
+            try
+            {
+                var checkpoint = session.Prologue.Capture(session.ElapsedPlayTime);
+                if (!session.TempleSuspension.Save(checkpoint)) { ReloadError = session.TempleSuspension.Status; return; }
+                pendingTempleToken = checkpoint.token; Restart(false);
+            }
+            catch (InvalidOperationException error) { ReloadError = error.Message; }
+            catch (ArgumentException) { ReloadError = "현재 사찰 상태를 안전하게 저장할 수 없습니다."; }
+        }
+        public void ContinueTemple()
+        {
+            if (Screen != Page.Title || IsReloading || !session.TempleSuspension.HasRun || !session.TempleSuspension.Writable) return;
+            var data = session.TempleSuspension.Snapshot;
+            try
+            {
+                session.CreatePrologueForCheckpoint(data);
+                session.Prologue.NextDayRequested += TempleNextDay;
+                session.Prologue.CorridorRequested += TempleEnterCorridor;
+                if (!session.TempleSuspension.Consume(data.token)) throw new InvalidOperationException(session.TempleSuspension.Status);
+                Set(Page.Pause);
+            }
+            catch (Exception error) when (error is ArgumentException || error is InvalidOperationException)
+            {
+                ReloadError = "사찰 탐색을 복원하지 못했습니다. 중단 기록을 보존했습니다.";
+                Debug.LogWarning("Temple restore failed: " + error.Message, this);
+                if (session.PrologueMode) { checkpointReloadError = ReloadError; Restart(false); }
+            }
         }
         public void SuspendChapter()
         {
@@ -278,11 +312,13 @@ namespace HappyToy.V2
             { ReloadError=session.Suspension.Status; return; }
             if(pendingChapterToken!=null && !session.ChapterSuspension.Consume(pendingChapterToken) && !session.ChapterSuspension.Conflict)
             { ReloadError=session.ChapterSuspension.Status; return; }
-            pendingSavedToken=pendingChapterToken=null; Set(Page.Playing);
+            if(pendingTempleToken!=null && !session.TempleSuspension.Consume(pendingTempleToken) && !session.TempleSuspension.Conflict)
+            { ReloadError=session.TempleSuspension.Status; return; }
+            pendingSavedToken=pendingChapterToken=pendingTempleToken=null; Set(Page.Playing);
         }
         public void Journal()
         {
-            if (Screen != Page.Playing && Screen != Page.Pause) return;
+            if (session.PrologueMode || Screen != Page.Playing && Screen != Page.Pause) return;
             returnPage = Screen;
             Set(Page.Journal);
         }
@@ -323,8 +359,9 @@ namespace HappyToy.V2
             try
             {
                 SaveSettings();
-                chapterRestart = requestChapterOnReload || !requestCorridorOnReload && session && session.ChapterMode;
-                corridorRestart = requestCorridorOnReload || !chapterRestart && session && session.CorridorMode;
+                templeRestart = requestTempleOnReload || session && session.PrologueMode && !requestChapterOnReload && !requestCorridorOnReload;
+                chapterRestart = !templeRestart && (requestChapterOnReload || !requestCorridorOnReload && session && session.ChapterMode);
+                corridorRestart = !templeRestart && (requestCorridorOnReload || !chapterRestart && session && session.CorridorMode);
                 if(chapterRestart)restartChapterVersion=requestChapterOnReload?requestedChapterVersion:session.Chapter.LayoutVersion;
                 if (!restartGate.TryRequest(scene.path, play)) return;
                 IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
@@ -340,7 +377,7 @@ namespace HappyToy.V2
         {
             if(SceneLoadingOverlay.Current)SceneLoadingOverlay.Current.Hide();
             restartGate.Cancel(); IsReloading=false;
-            chapterFromOffering=false;requestChapterOnReload=false;requestCorridorOnReload=false;
+            chapterFromOffering=false;requestChapterOnReload=false;requestCorridorOnReload=false;requestTempleOnReload=false;
             ReloadError="다시 시작하지 못했습니다. 탐색 기록은 유지됩니다. 잠시 후 다시 시도하세요.";
             ApplyScreenState();Debug.LogWarning("HappyToy restart failed: "+detail,this);
         }

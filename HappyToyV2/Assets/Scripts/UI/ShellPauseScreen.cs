@@ -10,13 +10,16 @@ namespace HappyToy.V2
         internal struct State
         {
             public string SuspensionMessage;
-            public bool CorridorMode, ChapterMode, CanSuspendCorridor, CanSuspendChapter, ShowSuspensionMessage;
+            public bool CorridorMode, ChapterMode, TempleMode, CanSuspendCorridor, CanSuspendChapter, CanSuspendTemple, ShowSuspensionMessage;
             public static State Read(GameSession session, GameShell shell) => new State {
                 CorridorMode = session.CorridorMode, ChapterMode = session.ChapterMode,
+                TempleMode = session.PrologueMode, CanSuspendTemple = session.PrologueMode && session.TempleSuspension.Writable,
                 CanSuspendCorridor = session.CorridorMode && session.Suspension.Writable && string.IsNullOrEmpty(session.Corridor.SuspendBlockReason),
                 CanSuspendChapter = session.ChapterMode && session.ChapterSuspension.Writable && string.IsNullOrEmpty(session.Chapter.SuspendBlockReason),
                 ShowSuspensionMessage = string.IsNullOrEmpty(shell.ReloadError),
-                SuspensionMessage = session.ChapterMode && !session.ChapterSuspension.Writable ?
+                SuspensionMessage = session.PrologueMode && !session.TempleSuspension.Writable ?
+                    (string.IsNullOrWhiteSpace(session.TempleSuspension.Status) ? "현재 사찰 저장을 사용할 수 없습니다." : session.TempleSuspension.Status) :
+                    session.ChapterMode && !session.ChapterSuspension.Writable ?
                     (string.IsNullOrWhiteSpace(session.ChapterSuspension.Status) ? "현재 학교 저장을 사용할 수 없습니다." : session.ChapterSuspension.Status) :
                     session.ChapterMode && !string.IsNullOrEmpty(session.Chapter.SuspendBlockReason) ? session.Chapter.SuspendBlockReason :
                     session.CorridorMode && !session.Suspension.Writable ?
@@ -25,7 +28,7 @@ namespace HappyToy.V2
         }
         internal sealed class Actions
         {
-            public Action Resume, Journal, Settings, Restart, Title, SuspendCorridor, SuspendChapter;
+            public Action Resume, Journal, Settings, Restart, Title, SuspendCorridor, SuspendChapter, SuspendTemple;
         }
         public void Build(ShellLayout layout, State state, Actions actions, bool reducedMotion)
         {
@@ -37,7 +40,7 @@ namespace HappyToy.V2
 
             float y=278;
             PauseButton(layout,"resume","계속하기",y,actions.Resume,face,reducedMotion);y+=65;
-            PauseButton(layout,"journal","조사 기록",y,actions.Journal,face,reducedMotion);y+=65;
+            if (!state.TempleMode) { PauseButton(layout,"journal","조사 기록",y,actions.Journal,face,reducedMotion);y+=65; }
             PauseButton(layout,"settings","환경 설정 · 접근성",y,actions.Settings,face,reducedMotion);y+=65;
             if(state.CorridorMode)
             {
@@ -51,6 +54,12 @@ namespace HappyToy.V2
                 var suspend=PauseButton(layout,"suspend-chapter","학교 저장 후 나가기",y,actions.SuspendChapter,face,reducedMotion);
                 suspend.SetEnabled(state.CanSuspendChapter);
                 if(!state.CanSuspendChapter)suspend.style.opacity=.38f;
+                y+=65;
+            }
+            if(state.TempleMode)
+            {
+                var suspend = PauseButton(layout,"suspend-temple","사찰 저장 후 나가기",y,actions.SuspendTemple,face,reducedMotion);
+                suspend.SetEnabled(state.CanSuspendTemple); if(!state.CanSuspendTemple)suspend.style.opacity=.38f;
                 y+=65;
             }
             PauseButton(layout,"restart",state.CorridorMode?"새 회랑에서 다시 시작":"처음부터 다시 시작",y,actions.Restart,face,reducedMotion);y+=65;

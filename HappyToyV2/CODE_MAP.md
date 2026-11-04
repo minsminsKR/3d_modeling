@@ -1,14 +1,18 @@
 # HappyToyV2 기능별 수정 지도
 
-사찰 프롤로그는 아직 게임 진입에 연결되지 않았다. `Core/TemplePrologueSequence`는
-두 차례 향·기도·퇴장과 대문 순서 및 명시적 단계 값의 검증된 복원만 소유한다.
-저장 파일·플레이 장면·입력·연출은 미구현이며 기존 회랑 체크포인트를 대체하지 않는다.
-독립 규칙 확인: `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`
-(저장소 루트). 소나무 원본의 접합 전후 토폴로지 확인 도구는
-`SourceArt/TemplePrologue/inspect_pine.py`다.
-`TemplePrologueDirector`는 아직 미연결 상태로, 명시 입력을 받아 4초 기도·정지·단계
-전환을 소유한다. `temple-prologue-logic`은 Core와 실제 컴포넌트의 정지/완료를 검사하며
-장면, 저장, 입력 또는 회랑 전환의 검증이 아니다.
+사찰 프롤로그는 타이틀의 새 이야기에서 시작하며, `TemplePrologueWorld`가 기존 플레이어의
+향로/대문 E 상호작용과 첫날 귀가·둘째 날 회귀를 소유한다. `TemplePrologueDirector`와
+`Core/TemplePrologueSequence`/`TemplePrayerClock`은 4초 기도·정지·단계 전환을 소유하고,
+`TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡는다.
+가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다.
+`TemplePrologueCheckpointStore`는 별도 슬롯의 원자 저장·소비·충돌 보호를 소유한다. 기존 학교와
+회랑 저장은 별개이며 회랑 저장은 실제 새 회랑이 준비된 뒤에만 소비한다. 숲 발소리는 기존
+`PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용한다. 생성 원본·두 LOD·Blender와
+제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
+`temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원,
+`temple-prologue-regressions`는 기존 저장·제목 진입 경계를 확인한다. 별도 독립 규칙은
+`dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
+이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
 
 수정할 기능의 행에서 시작하고 해당 코드와 검증만 읽는다. 공유 규칙·저장·입력
 경계에 영향을 주면 관련 행까지 범위를 넓힌다. 전체 리팩터링과 배포 준비는 전체

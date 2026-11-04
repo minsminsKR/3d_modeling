@@ -209,3 +209,7 @@ https://commons.wikimedia.org/wiki/File:Birds_forest.ogg
 Released into the public domain by the copyright holder (PD-self).
 Original stereo field recording, reproduced without edits; gradual runtime gain in the school ending.
 Original file and SHA-256: ThirdParty/Audio/MorningBirds/README.md.
+
+Temple forest footsteps — Steps Mud Gravel Forest Sneaker — Sheyvan (Philipp Grzemba)
+https://freesound.org/people/Sheyvan/sounds/830876/
+CC0 1.0. Four edited contacts from the public HQ preview; source, comparison, hashes and reproducible extraction: ThirdParty/Audio/TempleForest/README.md.
