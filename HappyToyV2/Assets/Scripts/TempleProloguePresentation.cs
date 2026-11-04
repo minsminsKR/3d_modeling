@@ -20,6 +20,8 @@ namespace HappyToy.V2
         AudioSource cry, bell, air, gateSound;
         bool secondDay, captured;
         float pendingIncense = -1, nextBell;
+        bool waitingForIncenseEquip;
+        PlayerMotor incenseActor;
         bool oldFog;
         FogMode oldFogMode;
         Color oldFogColor, oldAmbient;
@@ -28,6 +30,8 @@ namespace HappyToy.V2
         RoomAmbience schoolAmbience;
         bool oldAmbienceEnabled;
         public bool GateVisible => gate && gate.gameObject.activeSelf;
+        public bool IncensePlaced => incense;
+        public bool IncensePending => waitingForIncenseEquip || pendingIncense >= 0;
 
         public void Prepare(TemplePrologueWorld owner, Camera eye)
         {
@@ -170,19 +174,18 @@ namespace HappyToy.V2
         {
             if (!player || !player.Hands || !player.Items) throw new InvalidOperationException("Player incense action is unavailable");
             player.Items.Select(PlayerItem.Incense);
-            player.Hands.PlayAction(PlayerItem.Incense);
-            pendingIncense = HandAnimationLibrary.Load().GetClip("UseIncense").releaseTime;
+            incenseActor = player;
+            waitingForIncenseEquip = true;
+            pendingIncense = -1;
         }
-        public void RestoreIncense(float elapsed, bool praying)
+        public void RestoreIncense(bool placed, PlayerMotor player)
         {
-            float release = HandAnimationLibrary.Load().GetClip("UseIncense").releaseTime;
-            if (praying && elapsed < release) pendingIncense = release - elapsed;
-            else PlaceIncense();
+            if (placed) PlaceIncense(); else BeginIncense(player);
         }
         public void BeginSecondDay()
         {
             secondDay = true;
-            pendingIncense = -1;
+            pendingIncense = -1; waitingForIncenseEquip = false; incenseActor = null;
             if (incense) Destroy(incense.gameObject);
             if (smoke) Destroy(smoke.gameObject);
             incense = null; smoke = null;
@@ -209,6 +212,12 @@ namespace HappyToy.V2
             }
             if (secondDay && cry && camera)
                 cry.volume = .30f * Mathf.InverseLerp(2, 8, Vector3.Distance(camera.transform.position, world.GatePoint + Vector3.up * 1.5f));
+            if (waitingForIncenseEquip && incenseActor && !incenseActor.HandActions.Busy && incenseActor.Hands.ReadyForAction(PlayerItem.Incense))
+            {
+                incenseActor.Hands.PlayAction(PlayerItem.Incense);
+                pendingIncense = HandAnimationLibrary.Load().GetClip("UseIncense").releaseTime;
+                waitingForIncenseEquip = false;
+            }
             if (pendingIncense >= 0)
             {
                 pendingIncense -= Time.deltaTime;

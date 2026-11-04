@@ -12,6 +12,27 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(90000)]
+        public IEnumerator TempleVersionOneCheckpointMigratesIncensePlacement()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var data = Call(world, "Capture", 0f);
+            var type = RequireType("TemplePrologueCheckpoint");
+            Set(data, "version", 1); Set(data, "phase", 2); Set(data, "incensePlaced", false);
+            var migrated = Call(type, "FromJson", JsonUtility.ToJson(data));
+            Assert.That(Get<int>(migrated, "version"), Is.EqualTo(2));
+            Assert.That(Get<bool>(migrated, "incensePlaced"), Is.True);
+            Set(data, "phase", 1); Set(data, "prayerElapsed", .12f);
+            migrated = Call(type, "FromJson", JsonUtility.ToJson(data));
+            Assert.That(Get<bool>(migrated, "incensePlaced"), Is.False);
+            Assert.That(Get<float>(migrated, "prayerElapsed"), Is.Zero);
+            Set(data, "prayerElapsed", .5f);
+            migrated = Call(type, "FromJson", JsonUtility.ToJson(data));
+            Assert.That(Get<bool>(migrated, "incensePlaced"), Is.True);
+            Assert.That(Get<float>(migrated, "prayerElapsed"), Is.EqualTo(.5f));
+        }
         [UnityTest, Timeout(180000)]
         public IEnumerator TempleFullWalkingRouteUsesKeyboardAndMouseWithoutTeleporting()
         {
@@ -74,6 +95,7 @@ namespace HappyToy.V2.CloudTests
             yield return null; yield return null; yield return RecoveryPulse(Key.E);
             Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo("FirstPrayer"));
             Call(shell, "Pause"); var source = Call(world, "Capture", Get<float>(session, "ElapsedPlayTime"));
+            Assert.That(Get<bool>(source, "incensePlaced"), Is.False, "The checkpoint should preserve the pending hand placement");
             var previous = session; yield return RecoveryClick("suspend-temple"); yield return RecoveryRebind(previous);
             yield return RefreshSlotTitle(directory);
             Assert.That(File.Exists(Path.Combine(directory, "temple-suspend-v1.json")), Is.True);
@@ -82,6 +104,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session, "PrologueMode"), Is.True);
             world = Get<Component>(session, "Prologue"); director = Get<Component>(world, "Director");
             Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo("FirstPrayer"));
+            var restoredPresentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            Assert.That(Get<bool>(restoredPresentation, "IncensePending"), Is.True);
+            Assert.That(Get<bool>(restoredPresentation, "IncensePlaced"), Is.False);
             Assert.That(Get<float>(director, "PrayerElapsed"), Is.EqualTo(Get<float>(source, "prayerElapsed")).Within(.03f));
             Assert.That(Vector3.Distance(player.transform.position, Get<Vector3>(Get<object>(source, "player"), "position")), Is.LessThan(.01f));
             Assert.That(File.Exists(Path.Combine(directory, "temple-suspend-v1.json")), Is.False);
@@ -122,7 +147,12 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
             yield return RecoveryPulse(Key.E);
             Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo("FirstPrayer"));
+            var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            Assert.That(Get<bool>(presentation, "IncensePending"), Is.True);
+            Assert.That(Get<float>(director, "PrayerElapsed"), Is.Zero, "Prayer started before the hand placed the incense");
             yield return Wait(() => world.GetComponentInChildren(RequireType("IncenseSmokeTrail")) != null, 3, "Incense did not appear after the authored release");
+            Assert.That(Get<bool>(presentation, "IncensePlaced"), Is.True);
+            Assert.That(Get<object>(Get<Component>(player, "Hands"), "PresentedItem").ToString(), Is.EqualTo("Incense"));
             var firstSmoke = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
             yield return Delay(1.1f);
             var positions = firstSmoke.GetType().GetField("positions", BindingFlags.Instance | BindingFlags.NonPublic);

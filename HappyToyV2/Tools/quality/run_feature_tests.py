@@ -58,6 +58,8 @@ PROFILES = {
                       PLAY + "SchoolCheckpointRejectsCorruptGeometryBeforeMutatingFreshChapter",
                       PLAY + "SavedSlotIsConsumedWhenContinuingAfterSceneReloadFailure",
                       PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
+    "temple-prologue-restore": ("Pending hand placement, pause/save restoration and version-one checkpoint migration; CPU only", [
+        ("PlayMode", (PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement"))]),
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
         ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
@@ -507,7 +509,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("temple-prologue-flow", "temple-prologue-regressions", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation"):
             editor_args += ["-noaudio"]

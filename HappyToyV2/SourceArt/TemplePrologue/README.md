@@ -93,7 +93,11 @@ projection are documented below; visual and performance review remain required.
 
 `TemplePrologueDirector` now coordinates the interaction
 sequence and a four-simulation-second prayer clock, with an explicit hold
-input and validated restoration inputs. `temple-prologue-logic` checks the
+input and validated restoration inputs. The player equips the existing hand
+asset before its placement action; the incense appears at the release marker,
+and the prayer clock begins only after placement. Checkpoint v2 records whether
+placement happened; v1 saves migrate and unfinished placements restart safely.
+`temple-prologue-logic` checks the
 actual component's hold and phase transition; the standalone CPU check also
 exercises invalid time and restoration. `temple-prologue-flow` adds the real
 title, physical E focus, directional smoke, both days, gate and corridor,

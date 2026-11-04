@@ -2,7 +2,7 @@
 
 사찰 프롤로그는 타이틀의 새 이야기에서 시작하며, `TemplePrologueWorld`가 기존 플레이어의
 향로/대문 E 상호작용과 첫날 귀가·둘째 날 회귀를 소유한다. `TemplePrologueDirector`와
-`Core/TemplePrologueSequence`/`TemplePrayerClock`은 4초 기도·정지·단계 전환을 소유하고,
+`Core/TemplePrologueSequence`/`TemplePrayerClock`은 향 장착·방출 후 4초 기도·정지·단계 전환을 소유하고,
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡는다.
 가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다.
 `TemplePrologueCheckpointStore`는 별도 슬롯의 원자 저장·소비·충돌 보호를 소유한다. 기존 학교와
@@ -10,7 +10,8 @@
 `PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
 `temple-prologue-flow`는 무화면 실제 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원,
-`temple-prologue-regressions`는 기존 저장·제목 진입 경계를 확인한다. 별도 독립 규칙은
+`temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
+장착 중 저장·복원과 사찰 v1 저장 이전을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
 이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
 

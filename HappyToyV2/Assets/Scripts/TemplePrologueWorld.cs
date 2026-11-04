@@ -45,7 +45,7 @@ namespace HappyToy.V2
             transform.position = Origin;
             Director = gameObject.AddComponent<TemplePrologueDirector>();
             if (checkpoint != null) checkpoint.Validate();
-            Director.Prepare(() => !session || !session.InputAllowed || TransitionRequested,
+            Director.Prepare(() => !session || !session.InputAllowed || TransitionRequested || presentation && presentation.IncensePending,
                 checkpoint == null ? 0 : checkpoint.phase, checkpoint == null ? 0 : checkpoint.prayerElapsed);
             presentation = gameObject.AddComponent<TempleProloguePresentation>();
             presentation.Prepare(this, session.player.eyes);
@@ -68,7 +68,7 @@ namespace HappyToy.V2
             {
                 if (checkpoint.phase >= 3) presentation.BeginSecondDay();
                 if (checkpoint.phase == 1 || checkpoint.phase == 2 || checkpoint.phase >= 4)
-                    presentation.RestoreIncense(checkpoint.prayerElapsed, checkpoint.phase == 1 || checkpoint.phase == 4);
+                    presentation.RestoreIncense(checkpoint.incensePlaced, session.player);
                 if (checkpoint.gateVisible) { presentation.RevealGate(); gateTarget.gameObject.SetActive(true); }
                 Physics.SyncTransforms();
                 if (!session.player.CanRestoreTempleProgress(checkpoint.player)) throw new InvalidOperationException("Saved position is obstructed");
@@ -84,7 +84,8 @@ namespace HappyToy.V2
             var light = session.player.FlashlightSystem;
             var result = new TemplePrologueCheckpoint {
                 token = Guid.NewGuid().ToString("N"), phase = (int)Director.Phase, prayerElapsed = Director.PrayerElapsed,
-                gateVisible = presentation.GateVisible, seconds = seconds, player = session.player.CaptureProgress(),
+                gateVisible = presentation.GateVisible, incensePlaced = presentation.IncensePlaced,
+                seconds = seconds, player = session.player.CaptureProgress(),
                 flashlightCharge = light.Charge, flashlightPacks = light.PacksCollected, flashlightDepletions = light.Depletions
             };
             result.Validate(); return result;
