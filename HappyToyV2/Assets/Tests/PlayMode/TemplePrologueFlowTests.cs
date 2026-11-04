@@ -13,6 +13,33 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var data = Call(world, "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            string[] phases = { "FirstApproach", "FirstPrayer", "FirstDeparture", "SecondApproach", "SecondPrayer", "GateRevealed" };
+            for (int phase = 0; phase < phases.Length; phase++)
+            {
+                bool incense = phase == 1 || phase == 2 || phase == 4 || phase == 5;
+                Set(data, "phase", phase); Set(data, "incensePlaced", incense);
+                Set(data, "prayerElapsed", phase == 1 || phase == 4 ? 1.5f : 0f);
+                Set(data, "gateVisible", phase == 5);
+                Call(session, "CreatePrologueForCheckpoint", data);
+                world = Get<Component>(session, "Prologue");
+                var director = Get<Component>(world, "Director");
+                var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+                Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo(phases[phase]));
+                Assert.That(Get<bool>(presentation, "IncensePlaced"), Is.EqualTo(incense), phases[phase]);
+                Assert.That(Get<bool>(presentation, "GateVisible"), Is.EqualTo(phase == 5), phases[phase]);
+                Assert.That(Get<float>(director, "PrayerElapsed"), Is.EqualTo(phase == 1 || phase == 4 ? 1.5f : 0f));
+                Call(world, "Capture", 0f);
+                Call(session, "RetirePrologue"); yield return null;
+            }
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleVersionOneCheckpointMigratesIncensePlacement()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

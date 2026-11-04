@@ -103,6 +103,9 @@ exercises invalid time and restoration. `temple-prologue-flow` adds the real
 title, physical E focus, directional smoke, both days, gate and corridor,
 pause, checkpoint and conflict protection. `temple-prologue-regressions`
 covers selected existing school/corridor storage and title-entry contracts.
+`temple-prologue-restore` checks all six resumable phases, including whether
+the incense and already revealed gate return, as well as unfinished hand
+placement and migration from the first checkpoint version.
 
 ### Rebuilding the pine LODs
 

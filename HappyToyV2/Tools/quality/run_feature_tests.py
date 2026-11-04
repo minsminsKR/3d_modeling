@@ -59,7 +59,8 @@ PROFILES = {
                       PLAY + "SavedSlotIsConsumedWhenContinuingAfterSceneReloadFailure",
                       PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
     "temple-prologue-restore": ("Pending hand placement, pause/save restoration and version-one checkpoint migration; CPU only", [
-        ("PlayMode", (PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement"))]),
+        ("PlayMode", (PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement",
+                      PLAY + "TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate"))]),
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
         ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
