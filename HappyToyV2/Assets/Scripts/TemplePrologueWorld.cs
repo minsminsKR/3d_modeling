@@ -75,8 +75,6 @@ namespace HappyToy.V2
             else
             {
                 if (checkpoint.phase >= 3) presentation.BeginSecondDay();
-                if (checkpoint.phase == 1 || checkpoint.phase == 2 || checkpoint.phase >= 4)
-                    presentation.RestoreIncense(checkpoint.incensePlaced, session.player);
                 if (checkpoint.gateVisible) { presentation.RevealGate(); gateTarget.gameObject.SetActive(true); }
                 if (checkpoint.version == 3)
                 {
@@ -88,6 +86,8 @@ namespace HappyToy.V2
                 if (!session.player.CanRestoreTempleProgress(checkpoint.player)) throw new InvalidOperationException("Saved position is obstructed");
                 session.player.RestoreTempleProgress(checkpoint.player);
                 session.player.FlashlightSystem.Restore(checkpoint.flashlightCharge, checkpoint.flashlightPacks, checkpoint.flashlightDepletions);
+                if (checkpoint.phase == 1 || checkpoint.phase == 2 || checkpoint.phase >= 4)
+                    presentation.RestoreIncense(checkpoint.incensePlaced, session.player);
             }
             Ready = true;
             session.Notify(checkpoint == null ? "숲길을 따라 절에 가서 향을 꽂으세요." : "사찰 탐색을 복원했습니다.");
@@ -214,6 +214,10 @@ namespace HappyToy.V2
             if (session && session.player && session.player.Items) session.player.Items.Select(PlayerItem.Snapper);
             if (presentation) presentation.ReleaseEnvironment();
             gameObject.SetActive(false);
+        }
+        internal void AbortPreparation()
+        {
+            if (presentation) presentation.ReleaseEnvironment();
         }
         public TempleGateReviewMotion InstallGateReview()
         {

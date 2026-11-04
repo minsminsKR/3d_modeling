@@ -24,7 +24,7 @@ namespace HappyToy.V2
             var root = new GameObject("Temple prologue"); root.transform.SetParent(transform, false);
             Prologue = root.AddComponent<TemplePrologueWorld>();
             try { Prologue.Prepare(this, checkpoint); }
-            catch { Destroy(root); Prologue = null; throw; }
+            catch { Prologue.AbortPreparation(); Destroy(root); Prologue = null; throw; }
             foreach (var director in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 if (director is StoryDirector || director is AnnexEncounter || director is V1HwacatEvent ||
                     director is UncatAnnexEvent || director is LanternMaskEncounter || director is WeepingAngelEncounter || director is LovelyDollGuide)

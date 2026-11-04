@@ -15,6 +15,30 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleObstructedResumePreservesPlayerSelectionAndEnvironment()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            var items = Get<Component>(player, "Items");
+            var snapper = System.Enum.Parse(RequireType("PlayerItem"), "Snapper");
+            Call(items, "Select", snapper);
+            var originalPosition = player.transform.position;
+            var fog = RenderSettings.fog; var fogColor = RenderSettings.fogColor;
+            var camera = Get<Camera>(player, "eyes"); var background = camera.backgroundColor;
+            Set(checkpoint, "phase", 1); Set(checkpoint, "prayerElapsed", 0f); Set(checkpoint, "incensePlaced", false);
+            Set(Get<object>(checkpoint, "player"), "position", new Vector3(500, .04f, 507.35f));
+            Assert.Throws<System.InvalidOperationException>(() => Call(session, "CreatePrologueForCheckpoint", checkpoint));
+            Assert.That(Get<bool>(session, "PrologueMode"), Is.False);
+            Assert.That(Get<object>(items, "Selected"), Is.EqualTo(snapper), "A failed restore changed the player's selected item");
+            Assert.That(player.transform.position, Is.EqualTo(originalPosition));
+            Assert.That(RenderSettings.fog, Is.EqualTo(fog));
+            Assert.That(RenderSettings.fogColor, Is.EqualTo(fogColor));
+            Assert.That(camera.backgroundColor, Is.EqualTo(background));
+            yield return null;
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TemplePlacedIncenseSmokeStartsAtVisibleMeshTip()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
