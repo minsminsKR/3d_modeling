@@ -314,6 +314,12 @@ namespace HappyToy.V2
         bool HasItem(PlayerItem item, bool burning, bool fallback)
         {
             if (!player || !player.Items) return fallback;
+            // The temple placement is a story prop, not a spend of the later
+            // corridor inventory. Remove it from the hand at the same marker
+            // that creates the placed incense, including after save/restore.
+            var session = GameSession.Current;
+            if (item == PlayerItem.Incense && session && session.PrologueMode)
+                return session.Prologue.IncensePlacementPending;
             return item == PlayerItem.Flashlight || burning && item == PlayerItem.Talisman ||
                 player.Items.Count(item) > 0 || item == PlayerItem.Incense && player.Rituals.Smoke;
         }

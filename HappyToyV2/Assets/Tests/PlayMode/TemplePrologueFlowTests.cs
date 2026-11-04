@@ -14,6 +14,26 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleRestoredPlacedIncenseDoesNotReturnToTheHand()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(data, "phase", 2); Set(data, "incensePlaced", true);
+            Call(session, "CreatePrologueForCheckpoint", data);
+            var world = Get<Component>(session, "Prologue");
+            var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            Assert.That(Get<bool>(presentation, "IncensePlaced"), Is.True);
+            var hands = Get<Component>(player, "Hands");
+            var held = hands.GetType().GetField("held", BindingFlags.Instance | BindingFlags.NonPublic);
+            Call(Get<Component>(player, "Items"), "Select", System.Enum.Parse(RequireType("PlayerItem"), "Incense"));
+            yield return Wait(() => Get<object>(hands, "PresentedItem").ToString() == "Incense" &&
+                Get<bool>(hands, "EquipmentSettled"), 4, "Restored incense selection did not settle");
+            Assert.That((bool)(Transform)held.GetValue(hands), Is.False, "Restored placed incense returned to the hand");
+            Assert.That(Get<int>(Get<Component>(player, "Rituals"), "Incense"), Is.GreaterThan(0));
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleIncensePlacementKeepsFlashlightFromInterruptingItsHandAction()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
@@ -21,6 +41,9 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
             var actions = Get<Component>(player, "HandActions");
+            var hands = Get<Component>(player, "Hands");
+            var heldField = hands.GetType().GetField("held", BindingFlags.Instance | BindingFlags.NonPublic);
+            int incenseStock = Get<int>(Get<Component>(player, "Rituals"), "Incense");
             var flashlight = Get<Light>(player, "flashlight");
             bool initialLight = flashlight.enabled;
             PlacePlayer(new Vector3(500, .04f, 505.2f));
@@ -31,10 +54,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(actions, "Busy"), Is.False, "Flashlight interrupted incense equip");
             var pending = presentation.GetType().GetField("pendingIncense", BindingFlags.Instance | BindingFlags.NonPublic);
             yield return Wait(() => (float)pending.GetValue(presentation) > 0, 3, "Incense action did not start");
+            Assert.That((bool)(Transform)heldField.GetValue(hands), Is.True, "Incense was not held before placement");
             yield return RecoveryPulse(Key.F);
             Assert.That(Get<bool>(actions, "Busy"), Is.False, "Flashlight interrupted the incense release");
             Assert.That(flashlight.enabled, Is.EqualTo(initialLight));
             yield return Wait(() => Get<bool>(presentation, "IncensePlaced"), 3, "Incense did not reach its release marker");
+            yield return null;
+            Assert.That((bool)(Transform)heldField.GetValue(hands), Is.False, "Placed incense remained in the hand");
+            Assert.That(Get<int>(Get<Component>(player, "Rituals"), "Incense"), Is.EqualTo(incenseStock), "Story placement spent corridor stock");
             yield return RecoveryPulse(Key.F);
             yield return Wait(() => flashlight.enabled != initialLight, 3, "Flashlight did not work after incense placement");
             yield return Wait(() => Get<object>(Get<Component>(world, "Director"), "Phase").ToString() == "FirstDeparture", 8,
@@ -331,11 +358,17 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(origin + new Vector3(0, .04f, -19));
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "SecondApproach" && !Get<bool>(shell, "IsReloading"), 8, "Next day did not load");
             Assert.That(player.transform.position.z, Is.LessThan(origin.z - 18));
+            var hand = Get<Component>(player, "Hands");
+            var held = hand.GetType().GetField("held", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That((bool)(Transform)held.GetValue(hand), Is.False, "Incense reappeared before the second prayer");
             PlacePlayer(origin + new Vector3(0, .04f, 5.2f)); pitch.SetValue(player, 12f);
             yield return null; yield return null;
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
             yield return RecoveryPulse(Key.E);
+            yield return Wait(() => (bool)(Transform)held.GetValue(hand), 3, "Second incense was not held before placement");
             yield return Wait(() => world.GetComponentInChildren(RequireType("IncenseSmokeTrail")) != null, 3, "Second incense did not appear");
+            yield return null;
+            Assert.That((bool)(Transform)held.GetValue(hand), Is.False, "Second placed incense remained in the hand");
             var secondSmoke = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
             yield return Delay(1.1f);
             var secondPoints = (Vector3[])positions.GetValue(secondSmoke);
