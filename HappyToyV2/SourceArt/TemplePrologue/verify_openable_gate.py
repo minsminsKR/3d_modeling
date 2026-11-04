@@ -69,28 +69,46 @@ if not thin_collection: raise RuntimeError('Thin leaf alternative missing')
 thin_collection.hide_viewport = False
 bpy.context.scene.frame_set(1)
 result['thinLeaves'] = {}
+repairs = {item['name']: item for item in report['thinRepair']}
 for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate leaf', 'Right thin leaf')):
     thick, thin = bpy.data.objects[thick_name], bpy.data.objects[thin_name]
     if len(thick.data.vertices) != len(thin.data.vertices) or len(thick.data.loops) != len(thin.data.loops):
         raise RuntimeError('Thin alternative changed topology')
-    differences = []
+    differences, rear_errors = [], []
     ys = []
     front_count = 0
     for old, new in zip(thick.data.vertices, thin.data.vertices):
         old_world = thick.matrix_world @ old.co; new_world = thin.matrix_world @ new.co
-        if old_world.y <= -1.30:
+        if old_world.y < 0:
             front_count += 1; differences.append((old_world-new_world).length)
+        else:
+            rear_errors.append((new_world - (old_world + Vector((0, -2.8, 0)))).length)
         ys.append(new_world.y)
     old_uv = thick.data.uv_layers.active.data; new_uv = thin.data.uv_layers.active.data
-    max_uv = max((old_uv[i].uv-new_uv[i].uv).length for i in range(len(old_uv)))
+    repair = repairs[thin_name]
+    faces = set(repair['uvFaces'])
+    if len(faces) != repair['expectedFaces']: raise RuntimeError('UV repair face list is inconsistent')
+    changed_loops = {i for face in thin.data.polygons if face.index in faces for i in face.loop_indices}
+    unchanged_uv = max((old_uv[i].uv-new_uv[i].uv).length for i in range(len(old_uv)) if i not in changed_loops)
+    coefficients = repair['coefficients']; corrected_errors = []
+    for face in thin.data.polygons:
+        if face.index not in faces: continue
+        for i in face.loop_indices:
+            point = thick.matrix_world @ thick.data.vertices[thick.data.loops[i].vertex_index].co
+            expected = Vector((coefficients[0][0]*point.x + coefficients[1][0]*point.z + coefficients[2][0],
+                               coefficients[0][1]*point.x + coefficients[1][1]*point.z + coefficients[2][1]))
+            corrected_errors.append((new_uv[i].uv-expected).length)
     depth = (max(ys)-min(ys))*5.5/10.771793316322146
     thin.data.calc_loop_triangles()
     degenerate = sum(1 for tri in thin.data.loop_triangles
         if (thin.data.vertices[tri.vertices[1]].co-thin.data.vertices[tri.vertices[0]].co).cross(
             thin.data.vertices[tri.vertices[2]].co-thin.data.vertices[tri.vertices[0]].co).length < 1e-8)
     result['thinLeaves'][thin_name] = dict(depthAtGameScaleMetres=depth, frontVertices=front_count,
-        frontMaxDisplacement=max(differences), maxUvDifference=max_uv, degenerateTriangles=degenerate)
-    if front_count < 100 or max(differences) > 1e-5 or max_uv > 1e-6 or depth > .5:
+        frontMaxDisplacement=max(differences), rearVertices=len(rear_errors), rearTranslationMaxError=max(rear_errors),
+        repairedFaces=len(faces), unchangedMaxUvDifference=unchanged_uv,
+        repairedMaxUvError=max(corrected_errors), degenerateTriangles=degenerate)
+    if (front_count < 100 or not rear_errors or max(differences) > 1e-5 or max(rear_errors) > 1e-5 or
+        unchanged_uv > 1e-6 or max(corrected_errors) > 1e-6 or depth > .51):
         result['status'] = 'FAIL'
 bpy.context.scene.frame_set(73)
 left = bpy.data.objects['Left gate leaf']

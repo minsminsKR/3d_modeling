@@ -23,6 +23,9 @@ thin_export = output / 'gate-opening-thin.fbx'
 report_path = output / 'geometry-report.json'
 sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 source_hash = sha(source)
+expected_source = 'bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623'
+if source_hash != expected_source:
+    raise RuntimeError('Gate source changed; re-evaluate the measured UV repair before rebuilding')
 bpy.ops.wm.open_mainfile(filepath=str(source))
 bpy.context.preferences.filepaths.save_version = 0
 original = bpy.data.objects.get('CE_temple-gate_LOD0')
@@ -101,22 +104,52 @@ for leaf, degrees in ((objects[1], 80), (objects[2], -80)):
     leaf.keyframe_insert(data_path='rotation_euler', index=2, frame=73)
 bpy.context.scene.frame_set(1)
 
-# A second, non-default review variant retains the front relief and atlas but
-# collapses the generated building's deep back toward the front. This provides
-# an approximately door-thickness candidate without altering the complete
-# closed-surface partition above. It has not been visually accepted.
+# A second, non-default review variant retains the generated front and back
+# surfaces. They are disconnected in this source; translating the intact back
+# avoids collapsing its ornament into a plane. A few source triangles on the
+# front wood point into unrelated atlas islands. Repair only those planar,
+# large outliers using a fit to neighbouring intact wooden faces.
 thin_collection = bpy.data.collections.new('PROTOTYPE - thin leaf alternative')
 bpy.context.scene.collection.children.link(thin_collection)
 thin_objects = []
-back_limit = -1.30
-for original_leaf, name in ((objects[1], 'Left thin leaf'), (objects[2], 'Right thin leaf')):
+rear_shift = 2.8
+uv_coefficients = (
+    ((.0168578873, -.0000304534), (-.0000597289, -.0169111336), (.3350465271, .8638267676)),
+    ((.0168607593, .0004335815), (.0003426450, -.0169427375), (.2250884295, .9899461657)),
+)
+repair_details = []
+for original_leaf, name, coefficients, expected_faces in (
+    (objects[1], 'Left thin leaf', uv_coefficients[0], 31),
+    (objects[2], 'Right thin leaf', uv_coefficients[1], 33),
+):
     leaf = original_leaf.copy(); leaf.data = original_leaf.data.copy(); leaf.name = name
     thin_collection.objects.link(leaf)
+    for face in leaf.data.polygons:
+        ys = [leaf.data.vertices[index].co.y + leaf.location.y for index in face.vertices]
+        if min(ys) < 0 < max(ys): raise RuntimeError('Front/back leaf surfaces are no longer disconnected')
     for vertex in leaf.data.vertices:
         world_y = vertex.co.y + leaf.location.y
-        if world_y > back_limit:
-            vertex.co.y = back_limit - leaf.location.y
+        if world_y > 0: vertex.co.y -= rear_shift
     leaf.data.update()
+    uv = leaf.data.uv_layers.active.data
+    repaired = []
+    for face in leaf.data.polygons:
+        position = face.center + leaf.location
+        if not (-1.64 < position.y < -1.54 and face.normal.y < -.95 and face.area > .01): continue
+        expected, errors = [], []
+        for loop_index in face.loop_indices:
+            point = leaf.data.vertices[leaf.data.loops[loop_index].vertex_index].co + leaf.location
+            u = coefficients[0][0] * point.x + coefficients[1][0] * point.z + coefficients[2][0]
+            v = coefficients[0][1] * point.x + coefficients[1][1] * point.z + coefficients[2][1]
+            expected.append((u, v))
+            errors.append(math.hypot(uv[loop_index].uv.x-u, uv[loop_index].uv.y-v))
+        if min(errors) <= .02: continue
+        for loop_index, coordinate in zip(face.loop_indices, expected): uv[loop_index].uv = coordinate
+        repaired.append(face.index)
+    if len(repaired) != expected_faces:
+        raise RuntimeError('Unexpected planar UV repair count: ' + name + ' ' + str(len(repaired)))
+    repair_details.append(dict(name=name, uvFaces=repaired, expectedFaces=expected_faces,
+                               coefficients=coefficients, rearTranslation=rear_shift))
     thin_objects.append(leaf)
 thin_collection.hide_viewport = True
 thin_collection.hide_render = True
@@ -158,7 +191,8 @@ report = dict(scope='Geometry-only prototype, not visually reviewed or integrate
     parts=[dict(name=o.name, hinge=list(o.location), vertices=len(o.data.vertices),
                 triangles=len(o.data.polygons), uvLoops=len(o.data.uv_layers.active.data)) for o in objects],
     prototypeAnimation='Editable blend only: frames 1–73 at 24 fps; static FBX has no baked animation',
-    thinAlternative='Hidden blend collection clamps back vertices to y=-1.30; front relief and UVs retained; static FBX uses the closed-surface parts',
+    thinAlternative='Hidden blend collection translates the intact back by -2.8 and repairs planar wood UV outliers; static FBX has no baked animation',
+    thinRepair=repair_details,
     limitations=['cut bounds and hinge pivots are provisional', 'thick source depth and open borders need visual review',
                  'no runtime integration, collision or camera validation'])
 report_path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')

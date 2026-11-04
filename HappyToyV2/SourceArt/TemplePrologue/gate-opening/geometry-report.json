@@ -3,11 +3,11 @@
   "source": "SourceArt/CorridorEntrance/temple-gate/temple-gate.blend",
   "sourceSha256": "bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623",
   "editable": "gate-opening.blend",
-  "editableSha256": "7d0f4c47d1df7c08110f7140b88c65c9882c71cafdca68cd2af38cbe904639ec",
+  "editableSha256": "4e078e55207b4076c83ea94e6fc1fdfc202bfa9d65b04195f1a71329788806bd",
   "export": "gate-opening.fbx",
-  "exportSha256": "58621e11ea50f8dd27e257a7500f2c4674ba3e8dfae30110f69b9d8cdd3175da",
+  "exportSha256": "d0d1b5c3c2993fe0dc24148817e5ede6e83bf7e550fab9b5b7a149560f2fdb60",
   "thinExport": "gate-opening-thin.fbx",
-  "thinExportSha256": "c3da5bab11fec823b942fb644dec366812a0ab0c2603665695a95d28dba3a483",
+  "thinExportSha256": "c54f0a14c32cf3385584df0a342692cfae8642bbc76f3ce80d4c094754370522",
   "halfWidth": 3.05,
   "bottom": 0.8,
   "top": 6.05,
@@ -55,7 +55,115 @@
     }
   ],
   "prototypeAnimation": "Editable blend only: frames 1\u201373 at 24 fps; static FBX has no baked animation",
-  "thinAlternative": "Hidden blend collection clamps back vertices to y=-1.30; front relief and UVs retained; static FBX uses the closed-surface parts",
+  "thinAlternative": "Hidden blend collection translates the intact back by -2.8 and repairs planar wood UV outliers; static FBX has no baked animation",
+  "thinRepair": [
+    {
+      "name": "Left thin leaf",
+      "uvFaces": [
+        65,
+        87,
+        127,
+        133,
+        167,
+        207,
+        274,
+        276,
+        280,
+        382,
+        401,
+        436,
+        462,
+        471,
+        494,
+        567,
+        593,
+        669,
+        683,
+        723,
+        728,
+        941,
+        960,
+        965,
+        972,
+        989,
+        2846,
+        2868,
+        3142,
+        3150,
+        3170
+      ],
+      "expectedFaces": 31,
+      "coefficients": [
+        [
+          0.0168578873,
+          -3.04534e-05
+        ],
+        [
+          -5.97289e-05,
+          -0.0169111336
+        ],
+        [
+          0.3350465271,
+          0.8638267676
+        ]
+      ],
+      "rearTranslation": 2.8
+    },
+    {
+      "name": "Right thin leaf",
+      "uvFaces": [
+        53,
+        80,
+        123,
+        157,
+        161,
+        228,
+        230,
+        644,
+        657,
+        660,
+        661,
+        679,
+        723,
+        747,
+        755,
+        769,
+        772,
+        1111,
+        1131,
+        1190,
+        1192,
+        1214,
+        1466,
+        1481,
+        1534,
+        1710,
+        1724,
+        1750,
+        2777,
+        2821,
+        3082,
+        3143,
+        3144
+      ],
+      "expectedFaces": 33,
+      "coefficients": [
+        [
+          0.0168607593,
+          0.0004335815
+        ],
+        [
+          0.000342645,
+          -0.0169427375
+        ],
+        [
+          0.2250884295,
+          0.9899461657
+        ]
+      ],
+      "rearTranslation": 2.8
+    }
+  ],
   "limitations": [
     "cut bounds and hinge pivots are provisional",
     "thick source depth and open borders need visual review",

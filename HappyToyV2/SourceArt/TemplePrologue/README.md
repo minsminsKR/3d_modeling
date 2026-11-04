@@ -20,11 +20,17 @@ rotating an existing child transform cannot open the leaves independently.
 The source-derived `gate-opening/gate-opening.blend` now contains a
 three-part frame and two hinged leaves, with an **unreviewed** 1–73 frame
 opening at 24 fps. The full-depth leaf partition preserves the closed source
-surface and UVs; the hidden `PROTOTYPE - thin leaf alternative` collection
-clamps only the deep back and retains the original front vertices and UVs.
-At the game's 5.5 m gate scale the full-depth leaves are about 1.9 m thick,
-while the alternate leaves are about .30 m. Their cut edges, backs, hinge
-positions, animation direction and appearance still require camera review.
+surface and UVs. The hidden `PROTOTYPE - thin leaf alternative` collection
+translates the source's disconnected rear surface by 2.8 source units without
+flattening it. It also repairs 31 left and 33 right planar wood faces whose
+UVs pointed to unrelated atlas islands, using affine fits to adjacent intact
+wood faces; other UVs and every front vertex are unchanged. The repair is tied
+to the preserved source hash and rejects changed face counts. At the game's
+5.5 m gate scale the full-depth leaves are about 1.9 m thick, while the
+repaired alternate leaves are about .47–.48 m. Low-sample CPU Blender previews
+show that the large triangular texture smears and flattened rear deformation
+are reduced. Their cut edges, hinges and appearance still require Unity camera
+review.
 The standalone `gate-opening.fbx` embeds its original textures and exports
 the static **full-depth** parts. `gate-opening-thin.fbx` exports the static
 thin parts with a placeholder material; the Unity importer connects the
@@ -41,9 +47,16 @@ blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/
 unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -executeMethod HappyToy.V2.Editor.TemplePrologueImport.ImportGateReview -v2-audit-no-desktop-interaction
 ```
 
-`geometry-report.json` records source and output hashes and provisional cut
-bounds. `surface-proof.json` records 4,713 closed-surface/UV samples, leaf
-depth and keyframes, a static-FBX reimport check including packed textures,
+The optional `preview_gate_cpu.py -- --output <new-directory>` Blender script
+creates six 512px, eight-sample CPU-only material views with two threads. Run it
+through `Tools/quality/run_isolated_desktop.py` with `-b -t 2`; the directory
+must not already exist. Its images and hashes are asset evidence, not game
+camera, device-audio or FPS validation. Preview outputs are not source assets.
+
+`geometry-report.json` records source and output hashes, repaired face indices
+and provisional cut bounds. `surface-proof.json` records 4,713 original
+closed-surface/UV samples, unchanged front geometry, the rear translation and
+UV repair boundaries, leaf depth and keyframes, a static-FBX reimport check including packed textures,
 and five central geometric rays that hit the closed leaves and clear at frame
 73 in both variants. Those rays do not verify player collision.
 The source area and sampled positions are preserved to numerical tolerance;
