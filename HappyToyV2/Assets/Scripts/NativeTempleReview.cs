@@ -15,6 +15,10 @@ namespace HappyToy.V2
     // play and its input are untouched. No desktop/window input is injected.
     public sealed class NativeTempleReview : MonoBehaviour
     {
+        // The central approach is stone. Start the separate forest-step audio
+        // sample off that visible path, with an unobstructed forward route.
+        static readonly Vector3 ForestWalkFeet = new Vector3(3, .04f, -20);
+        static readonly Vector3 ForestWalkLook = new Vector3(3, 1.4f, 7);
         [Serializable] sealed class Mark { public string name; public float wall, game; public double dsp; }
         [Serializable] sealed class Timing
         {
@@ -114,6 +118,7 @@ namespace HappyToy.V2
             MarkTime("first-day-forest");
             Pose(new Vector3(0,.04f,-20), new Vector3(0,1.4f,7)); yield return null; SaveCamera("01-forest-spawn.png");
             yield return Measure("forest-spawn");
+            Pose(ForestWalkFeet, ForestWalkLook); yield return null;
             MarkTime("forest-walk-audio"); yield return WalkForAudio();
             Pose(new Vector3(0,.04f,-6), new Vector3(0,1.4f,12)); yield return null; SaveCamera("02-forest-approach.png");
             yield return Measure("forest-approach");

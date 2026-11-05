@@ -15,6 +15,25 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleNativeReviewWalkingFixtureProducesForestFootsteps()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var field = RequireType("NativeTempleReview").GetField("ForestWalkFeet", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.That(field, Is.Not.Null);
+            PlacePlayer(new Vector3(500, 0, 500) + (Vector3)field.GetValue(null)); yield return null;
+            var feedback = Get<Component>(player, "Feedback");
+            int before = Get<int>(feedback, "FootstepsPlayed");
+            try
+            {
+                yield return KeysObserved(Key.W); yield return Delay(4); Keys(); yield return null;
+                Assert.That(Get<int>(feedback, "FootstepsPlayed") - before, Is.GreaterThan(0));
+                Assert.That(Get<string>(feedback, "LastFootstepSurface"), Is.EqualTo("forest"),
+                    "Native review's walking fixture must actually walk on forest soil");
+            }
+            finally { Keys(); }
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleBoundaryContactsRemainSaveableAndRestorable()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

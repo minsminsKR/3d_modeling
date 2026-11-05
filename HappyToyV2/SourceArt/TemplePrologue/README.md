@@ -167,6 +167,10 @@ with graphics and audio. Run it on the private, never-switched desktop via
 `Tools/quality/run_isolated_desktop.py`; its process-only audio mute guards
 the real pre-device listener recording. The review performs a short isolated
 keyboard walk, then controlled poses and interactions through the corridor.
+The forest-step recording now starts at x=3 m, outside the visible stone path;
+the previous center-path start produced stone steps and failed the review's
+forest-surface check. A headless player-input test follows this same start for
+four seconds and verifies forest contacts, without certifying the mixer output.
 For the incense handoff it records a separate hand-camera image before
 placement when the held visual is observed, then another after the placed
 incense has appeared and the hand presentation has updated. The result fields
