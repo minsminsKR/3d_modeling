@@ -60,6 +60,20 @@ for face in raw.polygons: face.use_smooth = True
 raw.calc_normals_split()
 normals = np.empty(len(raw.loops) * 3, dtype=np.float32)
 raw.loops.foreach_get('normal', normals); normals = normals.reshape(-1, 3)
+# Only remove faces whose three ordered corners have exactly the same
+# position, projected UV and custom normal. Opposite winding and any differing
+# attribute remain distinct; cyclic corner order does not change a triangle.
+qem_triangles = len(triangles)
+seen_surfaces = set(); keep = []
+for i, face in enumerate(triangles):
+    corners = tuple(tuple(reduced[vertex]) + tuple(uv[3*i+j]) + tuple(normals[3*i+j])
+                    for j, vertex in enumerate(face))
+    signature = min(corners, corners[1:] + corners[:1], corners[2:] + corners[:2])
+    if signature not in seen_surfaces:
+        seen_surfaces.add(signature); keep.append(i)
+triangles = triangles[keep]
+uv = uv.reshape(-1, 3, 2)[keep].reshape(-1, 2)
+normals = normals.reshape(-1, 3, 3)[keep].reshape(-1, 3)
 # QEM returns coincident triangles, sometimes with distinct UVs or opposite
 # winding. Blender's FBX importer otherwise merges those faces. Give only
 # repeated geometric faces their own vertices while keeping every loop UV and
@@ -76,6 +90,22 @@ newmesh.from_pydata(split_vertices, [], split_faces.tolist()); newmesh.update()
 newmesh.uv_layers.new(name='Projected source atlas').data.foreach_set('uv', uv.ravel())
 for face in newmesh.polygons: face.use_smooth = True
 newmesh.use_auto_smooth = True; newmesh.normals_split_custom_set(normals.tolist())
+# Blender's custom-normal encoding can cancel a normal after splitting even
+# when its QEM input was nonzero. Repair only those invalid corners using the
+# face normal, preserving the encoded normals for all other corners.
+newmesh.calc_normals_split()
+encoded = [loop.normal.copy() for loop in newmesh.loops]
+invalid = {i for i, normal in enumerate(encoded) if normal.length < 1e-6}
+if len(invalid) > 100: raise RuntimeError('Unexpected number of zero pine normals')
+for face in newmesh.polygons:
+    for i in face.loop_indices:
+        if i in invalid:
+            if face.normal.length < 1e-6: raise RuntimeError('Cannot repair degenerate pine face normal')
+            encoded[i] = face.normal.copy()
+if invalid:
+    newmesh.normals_split_custom_set(encoded); newmesh.calc_normals_split()
+    if any(loop.normal.length < 1e-6 for loop in newmesh.loops):
+        raise RuntimeError('Pine normal repair did not persist')
 for material in mesh.materials: newmesh.materials.append(material)
 lod = bpy.data.objects.new('CE_pine_distance_review', newmesh)
 bpy.context.scene.collection.objects.link(lod)
@@ -117,7 +147,9 @@ if sha(source) != source_hash: raise RuntimeError('Near review source changed')
 report = dict(scope='Distant review candidate; game-camera and performance unverified',
     source=source.name, sourceSha256=source_hash, editable=editable.name, editableSha256=sha(editable),
     export=export.name, exportSha256=sha(export), triangles=len(triangles), vertices=len(split_vertices),
-    qemVertices=len(reduced), coincidentFacesIsolated=isolated,
+    qemVertices=len(reduced), qemTriangles=qem_triangles,
+    identicalFacesRemoved=qem_triangles-len(triangles), coincidentFacesIsolated=isolated,
+    zeroNormalsRepaired=len(invalid),
     simplifier='fast-simplification 0.1.12', targetTriangles=30000, aggressiveness=5,
     groundOffset=ground_offset, projectionDistanceP95=float(np.percentile(projection_errors,95)),
     lowerTrunkDistanceMetres=comparison)

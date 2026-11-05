@@ -31,7 +31,7 @@ if len(samples) != report['lowerTrunkDistanceMetres']['samples']:
 ground = min((near.matrix_world @ vertex.co).z for vertex in near.data.vertices)
 
 def measure(obj):
-    obj.data.calc_loop_triangles()
+    obj.data.calc_loop_triangles(); obj.data.calc_normals_split()
     vertices = [obj.matrix_world @ v.co for v in obj.data.vertices]
     triangles = [tuple(t.vertices) for t in obj.data.loop_triangles]
     tree = BVHTree.FromPolygons(vertices, triangles, all_triangles=True)
@@ -39,7 +39,8 @@ def measure(obj):
     if not all(math.isfinite(value) for value in values): raise RuntimeError('Invalid surface distance')
     area = sum((vertices[b]-vertices[a]).cross(vertices[c]-vertices[a]).length*.5 for a,b,c in triangles)
     return dict(p95=values[math.ceil((len(values)-1)*.95)], maximum=values[-1],
-                ground=min(v.z for v in vertices), triangles=len(triangles), area=area)
+                ground=min(v.z for v in vertices), triangles=len(triangles), area=area,
+                zeroNormalLoops=sum(loop.normal.length < 1e-6 for loop in obj.data.loops))
 
 def signatures(obj):
     # Quantized multisets are independent of FBX face/vertex ordering. This
@@ -68,7 +69,7 @@ if not images or any(not image.packed_file for image in images):
     raise RuntimeError('Distant editable source lacks packed texture inputs')
 editable = measure(candidate)
 editable_uv, editable_normals = signatures(candidate)
-if (editable['triangles'] != report['triangles'] or abs(editable['ground']-ground) > .001 or
+if (editable['zeroNormalLoops'] or editable['triangles'] != report['triangles'] or abs(editable['ground']-ground) > .001 or
     abs(editable['p95']-report['lowerTrunkDistanceMetres']['candidate']['p95']) > .001):
     raise RuntimeError('Distant editable geometry differs from its report')
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -80,7 +81,7 @@ exported_uv, exported_normals = signatures(models[0])
 uv_match = sum((editable_uv & exported_uv).values()) / editable['triangles']
 normal_match = sum((editable_normals & exported_normals).values()) / editable['triangles']
 print('PINE_DISTANCE_REIMPORT',json.dumps(dict(editable=editable,exported=exported,ground=ground)),flush=True)
-if (exported['triangles'] != editable['triangles'] or uv_match < .99 or normal_match < .99 or
+if (exported['zeroNormalLoops'] or exported['triangles'] != editable['triangles'] or uv_match < .99 or normal_match < .99 or
     abs(exported['ground']-ground) > .001 or abs(exported['p95']-editable['p95']) > .002 or
     not math.isclose(exported['area'],editable['area'],rel_tol=.005,abs_tol=.001)):
     raise RuntimeError('Distant FBX does not preserve sampled geometry')

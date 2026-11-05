@@ -272,16 +272,23 @@ the forest views and timings before deciding whether to promote the candidate.
 The additional geometry and real displayed FPS remain unmeasured.
 
 The candidate now has its own distant LOD derived from the improved near
-mesh. Its 44,356 triangles are close to the production distant LOD's 44,161.
+mesh. Its 40,697 triangles are below the production distant LOD's 44,161.
 On 133 original lower-trunk samples, p95 surface distance changed from 1.13 m
 to 0.139 m; upper branches remain simplified and require visual inspection.
-The near and distant candidates share the same ground height. QEM generated
-12,734 coincident faces, some with different UVs or opposite winding; their
-vertices are separated so the FBX reimport retains all faces and surface area.
-Rounded per-corner position/UV/normal signatures match for 99.56% of faces;
+The near and distant candidates share the same ground height. The generator
+removes 3,659 QEM faces only when position, UV, normal and winding match exactly
+before Blender encodes the custom normals. It separates another 9,075
+coincident faces whose attributes or winding differ, so FBX reimport retains
+them. Comparison with the earlier 44,356-face candidate found the same 40,697
+unique oriented position/UV triangles. Normal encodings can differ slightly
+after splitting. Three editable loops at one vertex had zero-length normals;
+the generator now repairs those corners using the face normals and the
+independent check rejects zero-length normals in both editable and reimported
+FBX meshes. Their appearance still needs review.
+Rounded per-corner position/UV/normal signatures match for 99.54% of faces;
 rounding near thresholds can affect the comparison, so this is not exact proof.
-The editable and exported versions have 47,250 vertices, which can affect
-performance even though triangle count is similar. Both versions and the
+The editable and exported versions have 36,273 vertices; actual GPU cost is
+still unmeasured. Both versions and the
 independent comparison are recorded in `pine-review/`.
 
 To regenerate this distant candidate, install the pinned `fast-simplification`

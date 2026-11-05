@@ -41,7 +41,7 @@ namespace HappyToy.V2.CloudTests
                     Is.InRange(180000, 200000));
                 var distant = levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh;
                 Assert.That(distant, Is.Not.SameAs(oldLevels[i][1].renderers[0].GetComponent<MeshFilter>().sharedMesh));
-                Assert.That(distant.GetIndexCount(0) / 3, Is.EqualTo(44356));
+                Assert.That(distant.GetIndexCount(0) / 3, Is.EqualTo(40697));
                 Assert.That(levels[0].renderers[0].sharedMaterial,
                     Is.SameAs(oldLevels[i][0].renderers[0].sharedMaterial));
                 Assert.That(levels[1].renderers[0].sharedMaterial,
