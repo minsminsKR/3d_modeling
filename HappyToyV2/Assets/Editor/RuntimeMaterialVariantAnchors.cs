@@ -57,6 +57,9 @@ namespace HappyToy.V2.Editor
                 var emissive=new Material(lit);emissive.SetColor("_EmissionColor",new Color(1,.49f,.1f));emissive.EnableKeyword("_EMISSION");
                 emissive.globalIlluminationFlags=MaterialGlobalIlluminationFlags.RealtimeEmissive;
                 Add(emissive,"CorridorRun lantern shade, HauntedCorridorPresentation paper shade, LightExplorationRun candle/locator flame");
+                var puddle=new Material(lit);puddle.SetFloat("_EnvironmentReflections",0);
+                puddle.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+                Add(puddle,"TempleForestPuddles restrained dielectric water; direct light highlights retained");
                 // The authored mask uses baked normal, occlusion and packed
                 // metallic/smoothness together. Its recessed eyes add emission
                 // to that exact combination; retaining each flag separately

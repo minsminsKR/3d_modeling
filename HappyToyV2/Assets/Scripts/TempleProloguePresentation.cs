@@ -22,6 +22,7 @@ namespace HappyToy.V2
         IncenseSmokeTrail smoke;
         AudioSource cry, bell, air, gateSound;
         TempleGateReviewAudio reviewGateAudio;
+        TempleForestAtmosphere atmosphere;
         bool secondDay, captured;
         bool corridorAudioFading;
         float exitAirVolume, exitCryVolume;
@@ -64,8 +65,10 @@ namespace HappyToy.V2
             var earth = ForestEarth();
             var path = Surface(floorSource, "Old stone path", new Color(.57f, .53f, .46f), new Vector2(1, 8));
             var wood = Material("Prayer table", new Color(.16f, .095f, .055f));
-            Box("Forest ground", new Vector3(0, -.16f, -2), new Vector3(48, .3f, 64), earth, true);
+            var forestGround = Box("Forest ground", new Vector3(0, -.16f, -2), new Vector3(48, .3f, 64), earth, true).GetComponent<Renderer>();
             stoneApproach = Box("Stone approach", new Vector3(0, .005f, -5), new Vector3(3.4f, .025f, 31), path, false).GetComponent<Renderer>();
+            gameObject.AddComponent<TempleForestPath>().Prepare(stoneApproach);
+            gameObject.AddComponent<TempleForestPuddles>().Prepare(forestGround, stoneApproach);
             foreach (float side in new[] { -1f, 1f })
                 Box("Forest boundary", new Vector3(side * 22, 3, -2), new Vector3(.3f, 6, 64), earth, true, false);
             Box("Forest end", new Vector3(0, 3, -27), new Vector3(44, 6, .3f), earth, true, false);
@@ -100,6 +103,7 @@ namespace HappyToy.V2
                 var trunk = tree.AddComponent<CapsuleCollider>(); trunk.center = new Vector3(0, 2, 0);
                 trunk.height = 4; trunk.radius = .35f;
             }
+            gameObject.AddComponent<TempleForestTrees>().Prepare();
             gate = CorridorEntranceModels.Attach("temple-gate", transform, "Unfamiliar gate", new Vector3(0, 0, -8));
             CorridorEntranceModels.GroundAtHeight(gate, new Vector3(0, 0, -8), 5.5f, Quaternion.identity);
             gate.gameObject.SetActive(false);
@@ -122,6 +126,10 @@ namespace HappyToy.V2
                     CorridorEntranceModels.GroundAtHeight(rock, new Vector3(side * (4.5f + i), 0, -16 + i * 11),
                         .8f + .25f * i, Quaternion.Euler(0, i * 71, 0));
                 }
+            gameObject.AddComponent<TempleForestDressing>().Prepare();
+            gameObject.AddComponent<TempleForestFerns>().Prepare();
+            atmosphere = gameObject.AddComponent<TempleForestAtmosphere>();
+            atmosphere.Prepare(camera, moonlight, facadeLight, lamps, lanterns);
             air = Source("Forest air", "ambience-forest", new Vector3(5, 2, -3), true, .15f, 35);
             air.spatialBlend = 0; // Diffuse outdoor wind is not a single point in the forest.
             bell = Source("Distant temple bell", "story-bell", new Vector3(-3, 4, 15), false, .10f, 32);
@@ -260,6 +268,7 @@ namespace HappyToy.V2
             }
             RenderSettings.fogDensity = .045f;
             RenderSettings.ambientLight = new Color(.075f, .087f, .085f);
+            if (atmosphere) atmosphere.BeginSecondDay();
             if (cry) cry.Play();
         }
         public void RevealGate() { if (gate) gate.gameObject.SetActive(true); }

@@ -2,7 +2,7 @@
     "scope": "Owned Resources material anchors retain runtime shader_feature combinations; no original asset, scene, model or shader stripping setting modified.",
     "scene": "Assets/Annex/SchoolAnnex.unity",
     "unity": "6000.6.0f1",
-    "count": 8,
+    "count": 9,
     "entries": [
         {
             "asset": "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat",
@@ -58,6 +58,16 @@
             ],
             "sources": [
                 "MaskHorrorVisual recessed authored eye surface"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-d2319a0dcf682e4bc5ca85e2bba263af3597535a3758749aaf7f8864efa463d6.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_ENVIRONMENTREFLECTIONS_OFF"
+            ],
+            "sources": [
+                "TempleForestPuddles restrained dielectric water; direct light highlights retained"
             ]
         },
         {

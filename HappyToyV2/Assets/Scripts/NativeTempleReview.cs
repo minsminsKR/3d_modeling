@@ -29,7 +29,7 @@ namespace HappyToy.V2
         {
             public string scope = "Isolated Windows batch player; actual production eye camera and audio listener, scripted poses and interactions. Each timing submits one 1920x1080 offscreen eye render per update and synchronously reads one pixel to include GPU completion. Frames include readback/audit overhead and concurrent workloads; not presented/displayed FPS or manual play. Audio is the pre-device mixer, not device listening.";
             public string unity, device, graphics, phase, error;
-            public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate, walkCandidateGate, candidatePine;
+            public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate, walkCandidateGate, candidatePine, candidateAncient, productionAncient, productionPine;
             public bool incenseHeldBeforePlacement, incenseHeldAfterPlacement;
             public int forestFootsteps; public string lastForestStep;
             public string[] images; public Mark[] marks; public Timing[] timings;
@@ -103,12 +103,24 @@ namespace HappyToy.V2
             result.muted = true; yield return null; yield return null;
             session = GameSession.Current;
             Require(session && session.player && session.Shell && session.Shell.Screen == GameShell.Page.Title, "Fresh title required");
+            var forestMist = Resources.Load<Shader>("TempleForestAtmosphereMist");
+            Require(forestMist && forestMist.isSupported, "Temple forest mist shader is unsupported in the player");
             session.ConfigureRecordDirectory(Path.Combine(output, "isolated-profile"));
             phase = "title-to-forest"; session.Shell.BeginTempleCinematic();
             yield return Until(() => session.PrologueMode && !session.Shell.IsReloading, 30, "Temple start did not finish");
+            var forest = session.Prologue.GetComponent<TempleForestTrees>();
+            result.productionAncient = forest && forest.AncientCount > 0;
+            result.productionPine = forest && forest.PineCount > 0 && forest.TreeCount == 16;
+            Require(result.productionAncient && result.productionPine, "Production forest trees are missing");
             var args = Environment.GetCommandLineArgs();
             if (Array.IndexOf(args, "-v2-temple-pine-candidate") >= 0)
-            { InstallPineReview(session.Prologue); result.candidatePine = true; }
+            { result.candidatePine = true; } // Compatibility flag; these pines are now the production art.
+            if (Array.IndexOf(args, "-v2-temple-ancient-candidate") >= 0)
+            {
+                // Compatibility with the prior opt-in: the trees are now
+                // always present, while this flag retains the extra close view.
+                result.candidateAncient = true;
+            }
             walkGateReview = Array.IndexOf(args, "-v2-temple-gate-walk-candidate") >= 0;
             if (walkGateReview || Array.IndexOf(args, "-v2-temple-gate-candidate") >= 0)
             {
@@ -120,6 +132,12 @@ namespace HappyToy.V2
             MarkTime("first-day-forest");
             Pose(new Vector3(0,.04f,-20), new Vector3(0,1.4f,7)); yield return null; SaveCamera("01-forest-spawn.png");
             yield return Measure("forest-spawn");
+            var eyePosition = session.player.eyes.transform.position;
+            session.player.eyes.transform.position = eyePosition - Vector3.up * .65f;
+            SaveCamera("01c-forest-low.png"); session.player.eyes.transform.position = eyePosition;
+            Pose(new Vector3(-3.2f,.04f,-12), new Vector3(0,1.4f,12)); yield return null; SaveCamera("01d-forest-side.png");
+            Pose(new Vector3(-3.3f,.04f,-20), new Vector3(-7.8f,2,-16.5f)); yield return null;
+            SaveCamera("01e-ancient-close.png");
             Pose(new Vector3(2.5f,.04f,-19.3f), new Vector3(5.5f,2,-23)); yield return null; SaveCamera("01b-pine-close.png");
             Pose(ForestWalkFeet, ForestWalkLook); yield return null;
             MarkTime("forest-walk-audio"); yield return WalkForAudio();
@@ -197,35 +215,6 @@ namespace HappyToy.V2
             result.corridorReached = true; yield return null; SaveCamera("08-corridor.png"); MarkTime("corridor");
             yield return new WaitForSeconds(1); phase = "complete";
             Require(DiagnosticAudioSilence.DeviceSessionMuted, "Device mute was lost");
-        }
-        // Opt-in visual comparison only. Retain the original tree roots and
-        // trunk colliders so the review walks the same physical forest.
-        public static void InstallPineReview(TemplePrologueWorld world)
-        {
-            var prefab = Resources.Load<GameObject>("TemplePrologue/pine-trunk-review");
-            if (!world || !world.Ready || !prefab || !prefab.GetComponent<LODGroup>() ||
-                prefab.GetComponentInChildren<Collider>(true) || prefab.GetComponentInChildren<Rigidbody>(true))
-                throw new InvalidOperationException("Fresh temple and visual-only pine review are required");
-            var trees = new Transform[16];
-            for (int i = 0; i < trees.Length; i++)
-            {
-                trees[i] = world.transform.Find("Pine " + i);
-                var group = trees[i] ? trees[i].GetComponent<LODGroup>() : null;
-                if (!group || !group.enabled || !trees[i].GetComponent<CapsuleCollider>() ||
-                    trees[i].Find("Pine trunk review"))
-                    throw new InvalidOperationException("Original pine forest is not ready for review");
-                foreach (var level in group.GetLODs())
-                    foreach (var renderer in level.renderers)
-                        if (!renderer) throw new InvalidOperationException("Original pine LOD renderer is missing");
-            }
-            foreach (var tree in trees)
-            {
-                var original = tree.GetComponent<LODGroup>();
-                foreach (var level in original.GetLODs())
-                    foreach (var renderer in level.renderers) renderer.enabled = false;
-                original.enabled = false;
-                var replacement = Instantiate(prefab, tree, false); replacement.name = "Pine trunk review";
-            }
         }
         void Pose(Vector3 feet, Vector3 look)
         {

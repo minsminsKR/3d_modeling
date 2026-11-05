@@ -1,0 +1,24 @@
+{
+  "asset": "ancient-zelkova",
+  "purpose": "Standalone ancient gnarled tree for two prominent positions in the temple forest",
+  "reference": "reference.png",
+  "reference_sha256": "7cbfc3bf222c7a08e0682e000449973a29bbdd744e673f2e0d3d225848820082",
+  "reference_generation": "OpenAI built-in image generation; full prompt in reference-prompt.txt",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "a1f48e51-8c94-4c96-80c0-c79e34753659",
+  "job_id": "4ec49f48-d855-4ab1-87bc-2c991beb7729",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 1234,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "remove_background": true
+  },
+  "status": "completed",
+  "limitations": "Two trees retain their original trunk colliders. The source canopy is denser and less arching than the art reference, and individual LOD transitions and displayed FPS have not been measured.",
+  "archive_sha256": "402c63cb7b8c3a624b9a4c39f1e89c7723851d50c9d1142fe422b9e1f958ad5d",
+  "original_glb_sha256": "c79e590da5714d495fd4d4885b540b1187665ddf4fdcdef8246bd43f72f2838d",
+  "web_review": "Front, side and rear rotated in the same job IAB viewer; root silhouette and textured bark visible, canopy compressed relative to reference. The Unity camera review also checked a close root view."
+}

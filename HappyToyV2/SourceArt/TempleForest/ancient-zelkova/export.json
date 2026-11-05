@@ -1,0 +1,77 @@
+{
+  "key": "ancient-zelkova",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "c79e590da5714d495fd4d4885b540b1187665ddf4fdcdef8246bd43f72f2838d",
+  "editable": "ancient-zelkova/ancient-zelkova.blend",
+  "widthMetres": 10.205191135406494,
+  "heightMetres": 9.915038108825684,
+  "depthMetres": 10.92107343673706,
+  "normalizedAxis": "height",
+  "normalizedMetres": 7.6,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 7.6,
+    "texture": 2048,
+    "budgets": [
+      600000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 970492,
+  "originalTriangles": 970492,
+  "lods": [
+    {
+      "file": "ancient-zelkova-lod0.fbx",
+      "targetTriangles": 600000,
+      "triangles": 483427,
+      "vertices": 231999,
+      "boundsMin": [
+        -5.102377414703369,
+        -5.461568832397461,
+        0.0
+      ],
+      "boundsMax": [
+        5.102813720703125,
+        5.4595046043396,
+        9.915038108825684
+      ],
+      "sha256": "7bcdea10ea6a583307e81a0dbeb6dc2181bc73cdc242e675da21f4fdb7a2625a"
+    },
+    {
+      "file": "ancient-zelkova-lod1.fbx",
+      "triangles": 139544,
+      "vertices": 98442,
+      "sha256": "97d14174e87c56997a09c78e3448ad78c38e433c387685633981c86e0b2766ae",
+      "qemTriangles": 139998,
+      "identicalFacesRemoved": 454,
+      "coincidentFacesIsolated": 11489,
+      "zeroNormalsRepaired": 22,
+      "projectedCentroidDistanceP95": 0.013388553820550438,
+      "groundOffset": 0.00251840947894544,
+      "simplifier": "fast-simplification 0.1.12",
+      "targetTriangles": 140000,
+      "aggressiveness": 5
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_ancient-zelkova_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_ancient-zelkova_0-baseColor.png",
+      "metallicSmoothness": "CE_ancient-zelkova_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

@@ -10,6 +10,7 @@
 `PlayerItemWheel`은 사찰에서 휠 요청을 미리 차단해 커서를 옮기지 않고, 누른 입력은 놓을 때까지 재사용하지 않는다.
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡고,
 `TemplePrayerDressing`은 기존 제작 제단·도자기·촛불의 시각 자산과 재질/메시 수명을 맡는다.
+숲의 시각 구성은 `TempleForestTrees`(기존 충돌체를 유지하는 고목·소나무 LOD), `TempleForestPath`(기존 발소리 범위를 유지하는 돌길), `TempleForestPuddles`, `TempleForestFerns`, `TempleForestDressing`에 나뉜다. `TempleForestBackgroundTrees`는 외곽 나무와 이전 저장 위치에 겹친 충돌체의 안전한 활성화를 소유한다. `TempleForestAtmosphere`는 사찰의 달빛·안개·등불을, `TempleForestPresence`는 한 번만 나타나는 먼 형체를 소유한다. 원본·편집 자산과 재현법은 `SourceArt/TempleForest/README.md`를 참고한다.
 놓인 향의 연기는 고정 높이가 아닌 실제 향 렌더러 경계의 맨 위에서 시작한다.
 공통 `IncenseSmokeTrail`은 고정된 삼각형 연결을 최초 생성과 원천 위치가 크게 바뀌어 메시를 비운 뒤에만 갱신한다. 실제 사찰 향·회랑 향과 원천 위치 초기화 검사가 이를 확인하며, 렌더 성능 측정은 별개다.
 가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다. 회랑 암전 동안
@@ -23,13 +24,14 @@
 사찰에서만 `ShellHudView`가 기존 단계 안내를 잠시 표시한다. 보이지 않는 대문을 바라보거나
 출현 위치를 점유한 채 8초가 지나면 `TemplePrologueWorld`가 각각 시선 전환·이동 힌트를 주며,
 해결되지 않으면 20초 간격으로 반복한다. 힌트 시계는 일시정지에서 멈춘다.
-`temple-prologue-flow`는 숲 바닥 반복 경계의 색 변화와 질감 범위, 가상 키보드/마우스와 게임패드 각각의 전체 도보 경로·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·연기 원천 초기화·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
+`temple-prologue-flow`는 숲 바닥 반복 경계와 돌길·고목·식생·웅덩이·안개·형체의 경계 및 자원 수명, 가상 키보드/마우스와 게임패드 각각의 전체 도보 경로·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·연기 원천 초기화·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계를 확인한다.
+`temple-forest-environment`는 숲 환경 요소와 외곽 나무의 충돌·기존 저장 위치 보호를 빠르게 확인한다.
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
 장착 중 저장·복원, 같은 식별자의 외부 변경 감지, 실제 사방 경계 접촉 위치의 저장과 재생성 복원, 충돌로 복원이 거부될 때 환경과 선택 유지 및 타이틀 오류 표시·원본 저장 보존, 여섯 단계의 향/대문 복원, 사찰 v1 저장 이전과 걷기 검토용 v3 개방·통과 복원을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
 이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
 `NativeTempleReview`는 명시 플래그의 격리 Windows 플레이어에서 실제 카메라·믹서와
-1080p 오프스크린 동기 렌더를 확인한다. 숲 발소리 검토는 돌길 바깥에서 시작하며 같은 위치의 4초 실제 입력을 무화면으로 검증한다. `-v2-temple-pine-candidate`는 원본 줄기·뿌리 보존 시제품과 개선된 원거리 LOD를 검토할 때만 표시하며 기존 충돌·재질을 유지한다. 실제 화면·성능 검토 전에는 일반 숲을 바꾸지 않는다. 명시적 `-v2-temple-gate-candidate` 검토에서만
+1080p 오프스크린 동기 렌더를 확인한다. 숲 발소리 검토는 돌길 바깥에서 시작하며 같은 위치의 4초 실제 입력을 무화면으로 검증한다. 줄기·뿌리 보존 소나무와 고목은 일반 플레이에 적용되며 이전 나무 검토 플래그는 해당 배치를 확인한다. 명시적 `-v2-temple-gate-candidate` 검토에서만
 `TempleGateReviewMotion`이 시제품 문을 열고 `TempleGateReviewPassage`가 완전히 열린 후 중앙 차단을 해제하고 낮은 계단 경사 충돌을 켠 뒤 같은 가림 전환으로 이어진다.
 `-v2-temple-gate-walk-candidate` 검토는 `TempleGateReviewTraversal`이 개방과 일시정지를 관리하고 중앙을 앞으로 통과할 때 회랑 전환을 시작한다. 검토 전용 v3 중단 저장은 개방 진행·통과 직전 위치를 보존하며, v1/v2와 일반 플레이 저장은 유지한다.
 `TempleGateReviewAudio`는 기존 CC0 문소리 둘을 양쪽 경첩에 배치하고 개방 진행에 맞춰 이어 재생하며 일시정지·복원 위치를 따른다. 실제 장치 청감은 미검증이다.

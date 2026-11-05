@@ -1,0 +1,101 @@
+{
+  "scope": "CPU source sampling and Blender FBX reimport only; no visual, Unity or performance approval",
+  "sourceSha256": "87369f526456d64c422dec6a417df145d04840b2b29cd85e8b18f3f1e6eea6c0",
+  "editableSha256": "3fd3ec241d8c86bf578061cc79bc9a1e5abdf840d3790fa9f385a925cfb73e2c",
+  "exportSha256": [
+    "f1ae7ae85593c2481ff759c7b9e7832bedd8055981d928a2b416247aeb42f154",
+    "68291f9944d0ee049f9e136502922f34d2034a122e6500255be38cfffb55361f"
+  ],
+  "editable": [
+    {
+      "triangles": 74520,
+      "vertices": 33771,
+      "area": 1.7054666286123321,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 5147,
+        "p95": 0.0012481174198910594,
+        "maximum": 0.0032288003712892532
+      },
+      "lowDistance": {
+        "samples": 2828,
+        "p95": 0.001233063405379653,
+        "maximum": 0.0032288003712892532
+      },
+      "frondDistance": {
+        "samples": 2319,
+        "p95": 0.0012751491740345955,
+        "maximum": 0.0023692953400313854
+      }
+    },
+    {
+      "triangles": 34651,
+      "vertices": 21139,
+      "area": 1.4055967692811617,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 5147,
+        "p95": 0.004358957055956125,
+        "maximum": 0.06038951128721237
+      },
+      "lowDistance": {
+        "samples": 2828,
+        "p95": 0.003030268708243966,
+        "maximum": 0.015284265391528606
+      },
+      "frondDistance": {
+        "samples": 2319,
+        "p95": 0.005773984827101231,
+        "maximum": 0.06038951128721237
+      }
+    }
+  ],
+  "exported": [
+    {
+      "triangles": 74061,
+      "vertices": 33771,
+      "area": 1.7040380239052604,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 5147,
+        "p95": 0.0012481036828830838,
+        "maximum": 0.003228810615837574
+      },
+      "lowDistance": {
+        "samples": 2828,
+        "p95": 0.0012330705067142844,
+        "maximum": 0.003228810615837574
+      },
+      "frondDistance": {
+        "samples": 2319,
+        "p95": 0.001275136019103229,
+        "maximum": 0.0023693221155554056
+      },
+      "areaRelativeLoss": 0.0008376620703708118,
+      "triangleLoss": 459
+    },
+    {
+      "triangles": 34651,
+      "vertices": 21139,
+      "area": 1.4055967794008406,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 5147,
+        "p95": 0.004358900710940361,
+        "maximum": 0.060389529913663864
+      },
+      "lowDistance": {
+        "samples": 2828,
+        "p95": 0.0030302703380584717,
+        "maximum": 0.015284239314496517
+      },
+      "frondDistance": {
+        "samples": 2319,
+        "p95": 0.005773989018052816,
+        "maximum": 0.060389529913663864
+      },
+      "areaRelativeLoss": -7.199560424310546e-09,
+      "triangleLoss": 0
+    }
+  ]
+}

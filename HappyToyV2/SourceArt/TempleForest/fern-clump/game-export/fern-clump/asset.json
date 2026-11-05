@@ -1,0 +1,77 @@
+{
+  "key": "fern-clump",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "87369f526456d64c422dec6a417df145d04840b2b29cd85e8b18f3f1e6eea6c0",
+  "editable": "fern-clump/fern-clump.blend",
+  "widthMetres": 0.9987139999866486,
+  "heightMetres": 0.3438401852035895,
+  "depthMetres": 0.9500455558300018,
+  "normalizedAxis": "width",
+  "normalizedMetres": 1.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 1.0,
+    "texture": 1024,
+    "budgets": [
+      100000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 1024,
+  "originalFaces": 994047,
+  "originalTriangles": 994047,
+  "lods": [
+    {
+      "file": "fern-clump-lod0.fbx",
+      "targetTriangles": 100000,
+      "triangles": 74520,
+      "vertices": 33771,
+      "boundsMin": [
+        -0.4989006519317627,
+        -0.4744381904602051,
+        -0.0003039572620764375
+      ],
+      "boundsMax": [
+        0.49981334805488586,
+        0.47560736536979675,
+        0.34353622794151306
+      ],
+      "sha256": "f1ae7ae85593c2481ff759c7b9e7832bedd8055981d928a2b416247aeb42f154"
+    },
+    {
+      "file": "fern-clump-lod1.fbx",
+      "triangles": 34651,
+      "vertices": 21139,
+      "sha256": "68291f9944d0ee049f9e136502922f34d2034a122e6500255be38cfffb55361f",
+      "qemTriangles": 35000,
+      "identicalFacesRemoved": 349,
+      "coincidentFacesIsolated": 2747,
+      "zeroNormalsRepaired": 8,
+      "projectedCentroidDistanceP95": 0.0009427215787582087,
+      "groundOffset": 0.0,
+      "simplifier": "fast-simplification 0.1.12",
+      "targetTriangles": 35000,
+      "aggressiveness": 5
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_fern-clump_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_fern-clump_0-baseColor.png",
+      "metallicSmoothness": "CE_fern-clump_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

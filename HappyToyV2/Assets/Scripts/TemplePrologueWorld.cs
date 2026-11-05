@@ -55,6 +55,8 @@ namespace HappyToy.V2
                 checkpoint == null ? 0 : checkpoint.phase, checkpoint == null ? 0 : checkpoint.prayerElapsed);
             presentation = gameObject.AddComponent<TempleProloguePresentation>();
             presentation.Prepare(this, session.player.eyes);
+            var background = gameObject.AddComponent<TempleForestBackgroundTrees>();
+            background.Prepare(session.player);
             prayerTarget = Target("향로", new Vector3(0, 1.02f, 7), new Vector3(.8f, .75f, .55f), "향 꽂고 기도하기",
                 () => Director.Phase == TemplePrologueSequence.Phase.FirstApproach || Director.Phase == TemplePrologueSequence.Phase.SecondApproach,
                 player => { if (Director.PlaceIncense()) session.Notify("향을 꽂고 잠시 기도합니다."); });
@@ -89,6 +91,10 @@ namespace HappyToy.V2
                 if (checkpoint.phase == 1 || checkpoint.phase == 2 || checkpoint.phase >= 4)
                     presentation.RestoreIncense(checkpoint.incensePlaced, session.player);
             }
+            gameObject.AddComponent<TempleForestPresence>().Prepare(this, session, checkpoint != null);
+            // Old-save validation/relocation happens before any new trunk is
+            // enabled; overlapping trunks wait until the player steps away.
+            background.ActivateAtPlayer();
             Ready = true;
             session.Notify(checkpoint == null ? "숲길을 따라 절에 가서 향을 꽂으세요." : "사찰 탐색을 복원했습니다.");
         }

@@ -49,7 +49,9 @@ PROFILES = {
     "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
         ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
     "temple-prologue-flow": ("Actual title, two prayers, hold, next day, gate and corridor transition; CPU/physics only", [
-        ("PlayMode", play_tests("TemplePrologueFlowTests.cs") + (PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
+        ("PlayMode", play_tests("TemplePrologueFlowTests.cs", "TempleForestPathTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestBackgroundTreesTests.cs") + (PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
+    "temple-forest-environment": ("Forest art, path bounds, background tree collision and older checkpoint clearance; CPU/physics only", [
+        ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestBackgroundTreesTests.cs") + (PLAY + "TempleProductionForestKeepsTrunkCapsulesAndReviewedPineLods",))]),
     "temple-prologue-regressions": ("Title keyboard entry, replacing a prepared mode and existing school/corridor checkpoint preservation; CPU only", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests")),
         ("PlayMode", (PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",

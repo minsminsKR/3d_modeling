@@ -44,28 +44,55 @@ namespace HappyToy.V2.CloudTests
             yield return null;
         }
         [UnityTest, Timeout(90000)]
-        public IEnumerator TemplePineCandidateKeepsForestCollidersAndUsesReviewedLods()
+        public IEnumerator TempleProductionForestKeepsTrunkCapsulesAndReviewedPineLods()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var world = Get<Component>(session, "Prologue");
             var roots = Enumerable.Range(0, 16).Select(i => world.transform.Find("Pine " + i)).ToArray();
-            Assert.That(roots.All(root => root && !root.Find("Pine trunk review")), Is.True);
+            Assert.That(roots.All(root => root), Is.True);
             var colliders = roots.Select(root => root.GetComponent<CapsuleCollider>()).ToArray();
             var original = roots.Select(root => root.GetComponent<LODGroup>()).ToArray();
             var oldLevels = original.Select(group => group.GetLODs()).ToArray();
-            Call(RequireType("NativeTempleReview"), "InstallPineReview", world);
+            var forest = world.GetComponent(RequireType("TempleForestTrees"));
+            Assert.That(Get<int>(forest, "TreeCount"), Is.EqualTo(16));
+            Assert.That(Get<int>(forest, "AncientCount"), Is.EqualTo(2));
+            Assert.That(Get<int>(forest, "PineCount"), Is.EqualTo(14));
+            Physics.SyncTransforms();
             for (int i = 0; i < roots.Length; i++)
             {
+                int row = i / 2;
+                float side = i % 2 == 0 ? -1 : 1;
+                float scale = .78f + (i % 4) * .11f;
+                var expectedPosition = new Vector3(side * (5.5f + (row % 3) * 2.3f), -.15f, -23 + row * 6.5f);
+                var originalRotation = Quaternion.Euler(0, (i * 83) % 360, 0);
+                Assert.That(Vector3.Distance(roots[i].localPosition, expectedPosition), Is.LessThan(.0001f));
+                Assert.That(Quaternion.Angle(roots[i].localRotation, originalRotation), Is.LessThan(.05f));
+                Assert.That(Vector3.Distance(roots[i].localScale, Vector3.one * scale), Is.LessThan(.0001f));
                 Assert.That(roots[i].GetComponent<CapsuleCollider>(), Is.SameAs(colliders[i]));
                 Assert.That(colliders[i].enabled, Is.True);
+                Assert.That(colliders[i].radius, Is.EqualTo(.35f).Within(.0001f));
+                Assert.That(colliders[i].height, Is.EqualTo(4).Within(.0001f));
+                Assert.That(colliders[i].center, Is.EqualTo(new Vector3(0, 2, 0)));
+                Assert.That(colliders[i].direction, Is.EqualTo(1));
+                var ray = new Ray(roots[i].TransformPoint(new Vector3(-2, 2, 0)), roots[i].TransformDirection(Vector3.right));
+                Assert.That(colliders[i].Raycast(ray, out var hit, 4 * roots[i].lossyScale.x), Is.True);
+                Assert.That(hit.distance, Is.EqualTo(1.65f * roots[i].lossyScale.x).Within(.002f),
+                    "The original trunk collision radius changed in world space");
                 Assert.That(original[i].enabled, Is.False);
                 Assert.That(oldLevels[i].SelectMany(level => level.renderers).All(renderer => !renderer.enabled), Is.True);
-                var replacement = roots[i].Find("Pine trunk review");
+                bool ancient = (bool)Call(forest, "IsAncient", roots[i]);
+                Assert.That(ancient, Is.EqualTo(i == 2 || i == 3));
+                var replacement = roots[i].Find(ancient ? "Ancient forest tree" : "Reviewed forest pine");
                 Assert.That(replacement, Is.Not.Null);
                 Assert.That(replacement.GetComponentInChildren<Collider>(true), Is.Null);
+                var desiredRotation = Quaternion.Euler((row % 3 - 1) * 2.2f, (i * 83) % 360, side * (1.5f + row % 3));
+                Assert.That(Quaternion.Angle(roots[i].localRotation * replacement.localRotation, desiredRotation), Is.LessThan(.05f));
+                var expectedVisualScale = new Vector3(1 + .07f * (row % 3 - 1), 1, 1 + .05f * ((row + 1) % 3 - 1));
+                Assert.That(Vector3.Distance(replacement.localScale, expectedVisualScale), Is.LessThan(.0001f));
                 var group = replacement.GetComponent<LODGroup>(); var levels = group.GetLODs();
                 Assert.That(levels.Length, Is.EqualTo(2));
+                if (ancient) continue;
                 Assert.That(levels[0].renderers[0].GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0) / 3,
                     Is.InRange(180000, 200000));
                 var distant = levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh;
@@ -77,7 +104,7 @@ namespace HappyToy.V2.CloudTests
                     Is.SameAs(oldLevels[i][1].renderers[0].sharedMaterial));
                 Assert.That(group.size, Is.EqualTo(original[i].size).Within(.25f));
             }
-            Assert.Throws<System.InvalidOperationException>(() => Call(RequireType("NativeTempleReview"), "InstallPineReview", world));
+            Assert.Throws<System.InvalidOperationException>(() => Call(forest, "Prepare"));
         }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleNativeReviewWalkingFixtureProducesForestFootsteps()

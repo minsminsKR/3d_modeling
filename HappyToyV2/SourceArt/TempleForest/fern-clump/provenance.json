@@ -1,0 +1,24 @@
+{
+  "asset": "fern-clump",
+  "purpose": "Generated forest-floor fern clump for sparse decoration outside the Korean mountain temple approach",
+  "reference": "reference.png",
+  "reference_sha256": "19d373fb9e7e040fe04afdaac18278bc0683dd120bcb3bc74b93de8c14f5654e",
+  "reference_generation": "OpenAI built-in image generation; exact prompt in reference-prompt.txt",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "46f1b5a4-de29-4ee0-b849-0cad97785515",
+  "job_id": "44e1082e-5712-441b-8662-41e646da1d51",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 1234,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "remove_background": true
+  },
+  "status": "completed",
+  "limitations": "Original 3D was reviewed in the designated sidebar. Four sparse instances use shared two-level Unity LODs. Individual LOD transitions and displayed FPS have not been measured; the asset is too costly for broad ground coverage without further optimization.",
+  "archive_sha256": "c9e3a9a143a1c45976a1681f4ef7fe105842788cf358af68922a2059d3e45b04",
+  "original_glb_sha256": "87369f526456d64c422dec6a417df145d04840b2b29cd85e8b18f3f1e6eea6c0",
+  "web_review": "Completed by collaborating parent agent in the designated sidebar, on the same job 44e1082e-5712-441b-8662-41e646da1d51: original 3D appearance observed front-on and after rotation. No joint editing was reported."
+}

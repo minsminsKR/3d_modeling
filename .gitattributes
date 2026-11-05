@@ -226,3 +226,11 @@ HappyToyV2/SourceArt/SchoolStudyStudents/**/*.glb filter=lfs diff=lfs merge=lfs 
 HappyToyV2/SourceArt/SchoolStudyStudents/**/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/SchoolStudyStudents/**/*.json text eol=lf
 HappyToyV2/Assets/Resources/SchoolStudyStudents/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Generated temple forest originals, editable sources and game LODs.
+HappyToyV2/SourceArt/TempleForest/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleForest/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleForest/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleForest/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/TempleForest/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/TempleForest/**/*.png filter=lfs diff=lfs merge=lfs -text

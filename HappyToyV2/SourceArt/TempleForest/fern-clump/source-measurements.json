@@ -1,0 +1,44 @@
+{
+  "scope": "Generated original GLB, Blender import; not in-game appearance or performance",
+  "source": "original.glb",
+  "sourceSha256": "87369f526456d64c422dec6a417df145d04840b2b29cd85e8b18f3f1e6eea6c0",
+  "objects": [
+    {
+      "name": "geometry_0",
+      "vertices": 890260,
+      "triangles": 994047,
+      "uvLayers": 1,
+      "boundsMin": [
+        -0.5008785724639893,
+        -0.47668641805648804,
+        -0.16330572962760925
+      ],
+      "boundsMax": [
+        0.5007521510124207,
+        0.4767933487892151,
+        0.18126974999904633
+      ],
+      "materials": [
+        {
+          "name": "Material_0",
+          "images": [
+            {
+              "name": "Image_0",
+              "width": 4096,
+              "height": 4096,
+              "channels": 4,
+              "packed": true
+            },
+            {
+              "name": "Image_1",
+              "width": 4096,
+              "height": 4096,
+              "channels": 4,
+              "packed": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

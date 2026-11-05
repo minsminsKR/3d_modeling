@@ -13,7 +13,7 @@ namespace HappyToy.V2
         AudioLowPassFilter waterFilter;
         GameSession session;
         bool initialized, waterOccluded, appliedSchoolFog, corridorSuppressed;
-        bool CorridorOwnsAtmosphere => session && session.CorridorMode;
+        bool OtherWorldOwnsAtmosphere => session && (session.CorridorMode || session.PrologueMode);
 
         void Start()
         {
@@ -37,10 +37,10 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
-            // The generated corridor has its own fog and relocated ambience.
-            // Decide ownership before the input/pause gate so entering it from the
-            // title also stops the school water loop without waiting for gameplay.
-            if (CorridorOwnsAtmosphere)
+            // The generated corridor and outdoor temple own their fog and
+            // ambience. Decide ownership before the pause/input gate so their
+            // transitions stop the school water loop without waiting for play.
+            if (OtherWorldOwnsAtmosphere)
             {
                 corridorSuppressed = true;
                 if (waterSound) { waterSound.volume = 0; if (waterSound.isPlaying) waterSound.Stop(); }
@@ -75,13 +75,13 @@ namespace HappyToy.V2
             waterFilter.cutoffFrequency = Mathf.MoveTowards(waterFilter.cutoffFrequency, cutoff, Time.deltaTime * 8000);
         }
         void OnDisable() { if (waterSound) waterSound.Stop(); }
-        void OnEnable() { if (initialized && waterSound && !CorridorOwnsAtmosphere) waterSound.Play(); }
+        void OnEnable() { if (initialized && waterSound && !OtherWorldOwnsAtmosphere) waterSound.Play(); }
         void OnDestroy()
         {
             // An old scene's teardown must not overwrite the next scene's RenderSettings.
             // Only undo a school fog change we actually applied. Removing this
-            // component during a live corridor cannot restore a competing snapshot.
-            if (initialized && appliedSchoolFog && !CorridorOwnsAtmosphere && gameObject.scene == SceneManager.GetActiveScene())
+            // component during a corridor or temple cannot restore a competing snapshot.
+            if (initialized && appliedSchoolFog && !OtherWorldOwnsAtmosphere && gameObject.scene == SceneManager.GetActiveScene())
             { RenderSettings.fogColor = originalFog; RenderSettings.fogDensity = originalDensity; }
             if (waterSound) { waterSound.Stop(); Destroy(waterSound.gameObject); }
             if (waterClip) Destroy(waterClip);
