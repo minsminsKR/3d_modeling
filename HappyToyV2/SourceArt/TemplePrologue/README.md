@@ -271,6 +271,24 @@ baseline and candidate reviews capture `01b-pine-close.png`; compare these and
 the forest views and timings before deciding whether to promote the candidate.
 The additional geometry and real displayed FPS remain unmeasured.
 
+The near editable mesh has 55 zero-length loop normals at 13 vertices. The
+Blender-reimported FBX has none. An isolated Unity Editor audit of the four
+imported meshes also found no zero or non-finite normals. Local attempts to
+repair the editable mesh changed surrounding shading, so its source is left
+unchanged until the game-camera review. `verify_pine_trunk_review.py` records
+both counts and rejects zero normals in the Blender FBX reimport; it does not
+claim the editable mesh has been repaired.
+
+`TemplePineNormalsAudit.Run` checks both production and opt-in prefab LODs
+using Editor-only mesh data without enabling runtime read/write copies. Unity
+6000.6.0f1 imports production near/far as 433,273 / 117,280 vertices and review
+near/far as 363,459 / 120,217 vertices. These are imported vertex counts, not
+the Blender counts and not GPU timings. Repeat with:
+
+```powershell
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -executeMethod HappyToy.V2.Editor.TemplePineNormalsAudit.Run -v2-audit-no-desktop-interaction
+```
+
 The candidate now has its own distant LOD derived from the improved near
 mesh. Its 40,697 triangles are below the production distant LOD's 44,161.
 On 133 original lower-trunk samples, p95 surface distance changed from 1.13 m

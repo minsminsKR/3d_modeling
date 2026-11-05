@@ -29,5 +29,7 @@
   "editableTriangles": 195666,
   "exportedTriangles": 194527,
   "editableSurfaceArea": 790.5891280840021,
-  "exportedSurfaceArea": 788.9399470094313
+  "exportedSurfaceArea": 788.9399470094313,
+  "editableZeroNormalLoops": 55,
+  "exportedZeroNormalLoops": 0
 }

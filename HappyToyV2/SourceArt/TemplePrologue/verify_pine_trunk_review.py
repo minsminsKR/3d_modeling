@@ -25,6 +25,8 @@ bpy.ops.wm.open_mainfile(filepath=str(root / report['editable']))
 original = bpy.data.objects['geometry_0']
 candidate = bpy.data.objects['CE_pine_trunk_review']
 candidate.data.calc_loop_triangles()
+candidate.data.calc_normals_split()
+editable_zero_normals = sum(loop.normal.length < 1e-6 for loop in candidate.data.loops)
 if (len(candidate.data.loop_triangles) != report['triangles'] or
     not candidate.data.uv_layers.active or len(candidate.data.uv_layers.active.data) != len(candidate.data.loops)):
     raise RuntimeError('Editable review geometry or atlas differs from report')
@@ -92,6 +94,9 @@ models = [obj for obj in bpy.data.objects if obj.type == 'MESH']
 if len(models) != 1 or not models[0].data.uv_layers.active:
     raise RuntimeError('Review FBX must contain one atlased mesh')
 models[0].data.calc_loop_triangles()
+models[0].data.calc_normals_split()
+export_zero_normals = sum(loop.normal.length < 1e-6 for loop in models[0].data.loops)
+if export_zero_normals: raise RuntimeError('Review FBX contains zero-length normals')
 export_area = surface_area(models[0])
 print('PINE_REIMPORT_TRIANGLES', len(models[0].data.loop_triangles), 'EDITABLE', report['triangles'],
       'AREA', editable_area, export_area, flush=True)
@@ -109,6 +114,7 @@ proof = dict(scope='CPU Blender surface sampling and FBX reimport; not game-came
     samples=len(samples), editable=editable, exported=exported,
     upperWood=dict(samples=len(upper), baseline=upper_baseline, editable=upper_candidate, exported=upper_exported),
     editableTriangles=report['triangles'], exportedTriangles=len(models[0].data.loop_triangles),
-    editableSurfaceArea=editable_area, exportedSurfaceArea=export_area)
+    editableSurfaceArea=editable_area, exportedSurfaceArea=export_area,
+    editableZeroNormalLoops=editable_zero_normals, exportedZeroNormalLoops=export_zero_normals)
 (root / 'proof.json').write_text(json.dumps(proof, indent=2) + '\n', encoding='utf-8')
 print('PINE_TRUNK_REVIEW_PROOF_PASS', json.dumps(proof), flush=True)
