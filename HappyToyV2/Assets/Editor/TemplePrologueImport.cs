@@ -18,6 +18,51 @@ namespace HappyToy.V2.Editor
         public static void ImportTemple() => Import("temple");
         public static void ImportPine() => Import("pine");
 
+        // Trunk-preserving pine is an opt-in visual review, with the existing
+        // distant LOD and material. Production forest assets are not replaced.
+        public static void ImportPineReview()
+        {
+            const string source = "SourceArt/TemplePrologue/pine-review/pine-trunk-review.fbx";
+            const string modelPath = Target + "pine-trunk-review.fbx";
+            const string prefabPath = Target + "pine-trunk-review.prefab";
+            if (!File.Exists(source)) throw new InvalidOperationException("Missing pine review FBX");
+            Copy(source, modelPath); AssetDatabase.Refresh();
+            var importer = AssetImporter.GetAtPath(modelPath) as ModelImporter;
+            if (!importer) throw new InvalidOperationException("Missing pine review importer");
+            importer.importAnimation = false; importer.addCollider = false;
+            importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+            importer.materialLocation = ModelImporterMaterialLocation.InPrefab;
+            importer.SaveAndReimport();
+            var material = AssetDatabase.LoadAssetAtPath<Material>(Target + "pine/surface.mat");
+            var models = new[] { AssetDatabase.LoadAssetAtPath<GameObject>(modelPath),
+                                 AssetDatabase.LoadAssetAtPath<GameObject>(Target + "pine-lod1.fbx") };
+            if (!material || !models[0] || !models[1]) throw new InvalidOperationException("Pine review assets are missing");
+            var root = new GameObject("pine-trunk-review");
+            try
+            {
+                var levels = new LOD[2];
+                for (int i = 0; i < levels.Length; i++)
+                {
+                    var instance = UnityEngine.Object.Instantiate(models[i], root.transform, false);
+                    if (instance.GetComponentInChildren<Collider>(true) || instance.GetComponentInChildren<Rigidbody>(true))
+                        throw new InvalidOperationException("Pine review art unexpectedly owns physics");
+                    var renderers = instance.GetComponentsInChildren<Renderer>(true);
+                    if (renderers.Length == 0) throw new InvalidOperationException("Pine review renderer missing");
+                    foreach (var renderer in renderers)
+                    {
+                        var slots = renderer.sharedMaterials;
+                        if (slots.Length != 1) throw new InvalidOperationException("Unexpected pine review materials");
+                        slots[0] = material; renderer.sharedMaterials = slots;
+                    }
+                    levels[i] = new LOD(i == 0 ? .18f : .015f, renderers);
+                }
+                var group = root.AddComponent<LODGroup>(); group.SetLODs(levels); group.RecalculateBounds();
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+            AssetDatabase.SaveAssets(); Debug.Log("TEMPLE_PINE_REVIEW_IMPORT_PASS");
+        }
+
         // Opt-in prototype for camera review; the ordinary prologue continues
         // to use the original corridor gate until the opened result is reviewed.
         public static void ImportGateReview()
@@ -68,9 +113,15 @@ namespace HappyToy.V2.Editor
         {
             var temple = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "temple-visual.prefab");
             var pine = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "pine-visual.prefab");
+            var pineReview = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "pine-trunk-review.prefab");
             var review = AssetDatabase.LoadAssetAtPath<GameObject>(Target + "gate-opening-review.prefab");
             var gateMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0.mat");
-            if (!temple || !pine || !review || !gateMaterial) throw new InvalidOperationException("Temple prologue visual prefabs are missing");
+            if (!temple || !pine || !pineReview || !review || !gateMaterial) throw new InvalidOperationException("Temple prologue visual prefabs are missing");
+            var pineReviewGroup = pineReview.GetComponent<LODGroup>();
+            var pineReviewLevels = pineReviewGroup ? pineReviewGroup.GetLODs() : null;
+            if (pineReviewLevels == null || pineReviewLevels.Length != 2 ||
+                pineReview.GetComponentInChildren<Collider>(true) || pineReview.GetComponentInChildren<Rigidbody>(true))
+                throw new InvalidOperationException("Pine review must be visual-only with two LODs");
             if (review.GetComponentInChildren<Collider>(true) || review.GetComponentInChildren<Rigidbody>(true))
                 throw new InvalidOperationException("Gate review art unexpectedly owns physics");
             foreach (var name in new[] { "Gate frame", "Left thin leaf", "Right thin leaf" })
@@ -91,6 +142,15 @@ namespace HappyToy.V2.Editor
             var filter = levels[1].renderers[0] ? levels[1].renderers[0].GetComponent<MeshFilter>() : null;
             if (!filter || !filter.sharedMesh || filter.sharedMesh.subMeshCount != 1 || filter.sharedMesh.GetIndexCount(0) / 3 > 50000)
                 throw new InvalidOperationException("Forest pine distant LOD is missing or exceeds its budget");
+            foreach (var level in pineReviewLevels)
+                if (level.renderers == null || level.renderers.Length != 1 || !level.renderers[0])
+                    throw new InvalidOperationException("Pine review renderer is missing");
+            var nearReview = pineReviewLevels[0].renderers[0].GetComponent<MeshFilter>();
+            var distantReview = pineReviewLevels[1].renderers[0].GetComponent<MeshFilter>();
+            if (!nearReview || !nearReview.sharedMesh || nearReview.sharedMesh.subMeshCount != 1 ||
+                nearReview.sharedMesh.GetIndexCount(0) / 3 > 200000 || !distantReview || distantReview.sharedMesh != filter.sharedMesh ||
+                pineReviewLevels[0].renderers[0].sharedMaterial != levels[0].renderers[0].sharedMaterial)
+                throw new InvalidOperationException("Pine review LOD or shared material differs from the finished assets");
             foreach (string cue in new[] { "enemy-baby-cry", "story-bell", "ambience-forest", "door-open" })
                 if (!ExternalAudio.Shared(cue)) throw new InvalidOperationException("Missing prologue recording " + cue);
             for (int i = 0; i < 4; i++) if (!ExternalAudio.Shared("step-forest", i))

@@ -1,0 +1,28 @@
+{
+  "scope": "Review-only candidate; game camera, performance and device audio remain unverified",
+  "source": "pine/pine.blend",
+  "sourceSha256": "a1b98378393acd446f48a15fc77439d390df1f6c02134e41c6e6bab470d364f4",
+  "editable": "pine-trunk-review.blend",
+  "editableSha256": "e6fd0909ffa2a5d9bfaaba741c4c55cbf6bf211ecf5eb4b6b289014025a4a7b4",
+  "export": "pine-trunk-review.fbx",
+  "exportSha256": "415e85a8aad33241ab433f5ea2b98ff2a02f363379fd96bba64d384a7289a77f",
+  "vertices": 74654,
+  "triangles": 180501,
+  "weldDistance": 2e-05,
+  "nonmanifoldEdgesSplit": 17746,
+  "protectedBelowMetres": 4.6,
+  "decimateRatio": 0.075,
+  "invertedVertexGroup": true,
+  "vertexGroupStrength": 10,
+  "trunkSurfaceDistanceMetres": {
+    "samples": 223,
+    "baseline": {
+      "p95": 0.35367316007614136,
+      "maximum": 0.9620047807693481
+    },
+    "candidate": {
+      "p95": 0.0,
+      "maximum": 0.0
+    }
+  }
+}

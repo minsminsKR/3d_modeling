@@ -1,0 +1,18 @@
+{
+  "scope": "CPU Blender surface sampling and FBX reimport; not game-camera or FPS approval",
+  "editableSha256": "e6fd0909ffa2a5d9bfaaba741c4c55cbf6bf211ecf5eb4b6b289014025a4a7b4",
+  "exportSha256": "415e85a8aad33241ab433f5ea2b98ff2a02f363379fd96bba64d384a7289a77f",
+  "samples": 223,
+  "editable": {
+    "p95": 0.0,
+    "maximum": 0.0
+  },
+  "exported": {
+    "p95": 5.960464477539062e-07,
+    "maximum": 1.193582079395128e-06
+  },
+  "editableTriangles": 180501,
+  "exportedTriangles": 179342,
+  "editableSurfaceArea": 811.8471277503595,
+  "exportedSurfaceArea": 810.088381638425
+}

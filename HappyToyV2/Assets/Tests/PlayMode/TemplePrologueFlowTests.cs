@@ -15,6 +15,39 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TemplePineCandidateKeepsForestCollidersAndDistantLod()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var roots = Enumerable.Range(0, 16).Select(i => world.transform.Find("Pine " + i)).ToArray();
+            Assert.That(roots.All(root => root && !root.Find("Pine trunk review")), Is.True);
+            var colliders = roots.Select(root => root.GetComponent<CapsuleCollider>()).ToArray();
+            var original = roots.Select(root => root.GetComponent<LODGroup>()).ToArray();
+            var oldLevels = original.Select(group => group.GetLODs()).ToArray();
+            Call(RequireType("NativeTempleReview"), "InstallPineReview", world);
+            for (int i = 0; i < roots.Length; i++)
+            {
+                Assert.That(roots[i].GetComponent<CapsuleCollider>(), Is.SameAs(colliders[i]));
+                Assert.That(colliders[i].enabled, Is.True);
+                Assert.That(original[i].enabled, Is.False);
+                Assert.That(oldLevels[i].SelectMany(level => level.renderers).All(renderer => !renderer.enabled), Is.True);
+                var replacement = roots[i].Find("Pine trunk review");
+                Assert.That(replacement, Is.Not.Null);
+                Assert.That(replacement.GetComponentInChildren<Collider>(true), Is.Null);
+                var group = replacement.GetComponent<LODGroup>(); var levels = group.GetLODs();
+                Assert.That(levels.Length, Is.EqualTo(2));
+                Assert.That(levels[0].renderers[0].GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0) / 3,
+                    Is.InRange(180000, 200000));
+                Assert.That(levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh,
+                    Is.SameAs(oldLevels[i][1].renderers[0].GetComponent<MeshFilter>().sharedMesh));
+                Assert.That(levels[0].renderers[0].sharedMaterial,
+                    Is.SameAs(oldLevels[i][0].renderers[0].sharedMaterial));
+                Assert.That(group.size, Is.EqualTo(original[i].size).Within(.25f));
+            }
+            Assert.Throws<System.InvalidOperationException>(() => Call(RequireType("NativeTempleReview"), "InstallPineReview", world));
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleNativeReviewWalkingFixtureProducesForestFootsteps()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

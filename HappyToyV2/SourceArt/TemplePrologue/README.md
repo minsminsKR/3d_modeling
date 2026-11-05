@@ -233,6 +233,41 @@ review confirmed its corrected front-facing placement.
 
 ## Pine reference and generation
 
+### Trunk-preserving review candidate — 2026-11-05
+
+The archived game-camera forest shows conspicuous triangular damage on the
+current pine trunk and roots. A CPU-only comparison of the preserved generated
+original with the game LOD confirms that the reduction introduced much of the
+damage. `prepare_pine_trunk_review.py` derives an alternative from the same
+original, preserving source geometry below 4.6 m while reducing the canopy.
+It produces 180,501 triangles versus the current LOD0's 157,748. On 223
+sampled source vertices below 4.6 m, the original-to-surface p95 distance is
+0.354 m for the current LOD and less than 0.001 m for the candidate. These are
+samples, not a full geometry or quality guarantee. A low-sample Blender CPU
+comparison shows much improved roots and trunk; the canopy and in-game
+appearance still require inspection. The Blender FBX reimport has 179,342
+triangles and about 0.22% less total surface area; its sampled trunk distance
+remains below 0.002 mm. Inspect the canopy in the actual Unity camera before
+using the candidate in ordinary play.
+
+The `pine-review/` editable blend, FBX and report retain the candidate while
+the original `pine/pine.blend`, production LOD and textures remain intact.
+Recreate with Blender 4.0.2 in background, run the independent verifier, then
+import with the pinned Unity CLI:
+
+```powershell
+blender -b -t 2 --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/prepare_pine_trunk_review.py
+blender -b -t 2 --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/verify_pine_trunk_review.py
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -executeMethod HappyToy.V2.Editor.TemplePrologueImport.ImportPineReview -v2-audit-no-desktop-interaction
+```
+
+`-v2-temple-pine-candidate` works only with the explicit isolated native
+temple review. It replaces the visible trees for that review while retaining
+the original tree roots, collision capsules, distant LOD and material. Both
+baseline and candidate reviews capture `01b-pine-close.png`; compare these and
+the forest views and timings before deciding whether to promote the candidate.
+The additional geometry and real displayed FPS remain unmeasured.
+
 `pine/reference.png` was created with the built-in image generation tool.
 Prompt: “A single mature Korean red pine tree for realistic 3D game asset
 reconstruction, full tree visible including trunk roots and entire irregular
