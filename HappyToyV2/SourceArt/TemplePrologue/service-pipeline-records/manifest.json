@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "description": "Complete stage JSON structure with only absolute server paths replaced by consistent per-job symbols. Secrets are not included.",
+  "normalization": {
+    "scope": "Every JSON string that is an absolute POSIX, Windows, UNC or file URI path is replaced in full.",
+    "identity": "Equal absolute paths in the same job share a symbol; numbering follows record and JSON field order. Symbols do not contain source path text.",
+    "preserved": "All keys, array order, scalar settings and non-path results are retained. Original bytes are identified by SHA-256, not reconstructed.",
+    "source": "Original checksums also appear in ../generation-pipeline-records.json."
+  },
+  "jobs": [
+    {
+      "label": "pine-hunyuan",
+      "request_id": "aad4512f-d2b9-4082-b1d0-939f0fd14b1c",
+      "job_id": "25f9cb91-165b-4569-9b11-f61dc916bd4d",
+      "tracked_model": "pine/rejected-original.glb",
+      "tracked_reference": "pine/reference.png",
+      "records": [
+        {
+          "source_archive_entry": "outputs/generation_request.json",
+          "record_file": "pine-hunyuan/outputs/generation_request.json",
+          "original_sha256": "4bf0edce3ee874dbe60f61451555f11d7e6d998cabb7c8765c932c14c4640b6a",
+          "normalized_sha256": "312e12628e766674fd09a5bbfd3f19aba796d7121d024d8ea1fbd4f2dc71ff76"
+        },
+        {
+          "source_archive_entry": "outputs/generation_result.json",
+          "record_file": "pine-hunyuan/outputs/generation_result.json",
+          "original_sha256": "993120a0acad951bbf0025d0d7c784864b74e30f360b9192011b400010f34b33",
+          "normalized_sha256": "23a283b231e4ba99b55fbe4285b7d07f2a12c53db7143254695fa4ff3d21266a"
+        },
+        {
+          "source_archive_entry": "outputs/shape_request.json",
+          "record_file": "pine-hunyuan/outputs/shape_request.json",
+          "original_sha256": "d2fcb11ae2d3f9097aad435508776a366a9b913728d75e950c37e08295e2a9fb",
+          "normalized_sha256": "edc39241e7829b64b372eb0c04f78efc5eac1f7b2e790379b2016c0ea0ec2bac"
+        },
+        {
+          "source_archive_entry": "outputs/shape_result.json",
+          "record_file": "pine-hunyuan/outputs/shape_result.json",
+          "original_sha256": "6949f0e36932e76b8c73f9728afdccc88931cf0ee8c96766bee0158bb26c5d57",
+          "normalized_sha256": "09d5ba180584956ecc2564eb86b85c742d4e072e399255144c920c2587d5e11e"
+        },
+        {
+          "source_archive_entry": "outputs/texture_request.json",
+          "record_file": "pine-hunyuan/outputs/texture_request.json",
+          "original_sha256": "9b4c561f4862390c7600ff142b36805ea040a619a220dad197f5781237d43d17",
+          "normalized_sha256": "a2f98a95e1b16c449a0271eef3d132ffaef2e6fb3282c882591e965f1d45062c"
+        }
+      ],
+      "path_placeholders": {
+        "<SERVER_ABSOLUTE_PATH_01>": [
+          "pine-hunyuan/outputs/generation_request.json#$/image_paths/0"
+        ],
+        "<SERVER_ABSOLUTE_PATH_02>": [
+          "pine-hunyuan/outputs/generation_request.json#$/output_dir",
+          "pine-hunyuan/outputs/shape_request.json#$/output_dir"
+        ],
+        "<SERVER_ABSOLUTE_PATH_03>": [
+          "pine-hunyuan/outputs/generation_result.json#$/model_path"
+        ],
+        "<SERVER_ABSOLUTE_PATH_04>": [
+          "pine-hunyuan/outputs/generation_result.json#$/metadata_path"
+        ],
+        "<SERVER_ABSOLUTE_PATH_05>": [
+          "pine-hunyuan/outputs/shape_request.json#$/repo_path",
+          "pine-hunyuan/outputs/texture_request.json#$/repo_path"
+        ],
+        "<SERVER_ABSOLUTE_PATH_06>": [
+          "pine-hunyuan/outputs/shape_request.json#$/image_paths/0"
+        ],
+        "<SERVER_ABSOLUTE_PATH_07>": [
+          "pine-hunyuan/outputs/shape_request.json#$/hy3dgen_models_dir"
+        ],
+        "<SERVER_ABSOLUTE_PATH_08>": [
+          "pine-hunyuan/outputs/shape_request.json#$/local_model_dir",
+          "pine-hunyuan/outputs/texture_request.json#$/local_model_dir"
+        ],
+        "<SERVER_ABSOLUTE_PATH_09>": [
+          "pine-hunyuan/outputs/texture_request.json#$/mesh_path"
+        ],
+        "<SERVER_ABSOLUTE_PATH_10>": [
+          "pine-hunyuan/outputs/texture_request.json#$/image_paths/0"
+        ],
+        "<SERVER_ABSOLUTE_PATH_11>": [
+          "pine-hunyuan/outputs/texture_request.json#$/output_mesh_path"
+        ]
+      }
+    },
+    {
+      "label": "pine-trellis",
+      "request_id": "cc51c42e-431d-4392-bd03-5e2dcb87f4f2",
+      "job_id": "4ff43435-9370-4552-9e84-30d96ac8ec80",
+      "tracked_model": "pine/original.glb",
+      "tracked_reference": "pine/reference.png",
+      "records": [
+        {
+          "source_archive_entry": "outputs/generation_request.json",
+          "record_file": "pine-trellis/outputs/generation_request.json",
+          "original_sha256": "0fa509dfd2566dd3844c314187f1d6c3a34b53780f3f17aed99a8c1669287844",
+          "normalized_sha256": "693217727c51482e7a50614560ffaa251d377501a81cad4417d711453ef25dcb"
+        },
+        {
+          "source_archive_entry": "outputs/generation_result.json",
+          "record_file": "pine-trellis/outputs/generation_result.json",
+          "original_sha256": "f503a0b2da7311609e96362a1892d77cd6cec8ae57f9600afa7aba872c029f63",
+          "normalized_sha256": "23a283b231e4ba99b55fbe4285b7d07f2a12c53db7143254695fa4ff3d21266a"
+        }
+      ],
+      "path_placeholders": {
+        "<SERVER_ABSOLUTE_PATH_01>": [
+          "pine-trellis/outputs/generation_request.json#$/image_paths/0"
+        ],
+        "<SERVER_ABSOLUTE_PATH_02>": [
+          "pine-trellis/outputs/generation_request.json#$/output_dir"
+        ],
+        "<SERVER_ABSOLUTE_PATH_03>": [
+          "pine-trellis/outputs/generation_result.json#$/model_path"
+        ],
+        "<SERVER_ABSOLUTE_PATH_04>": [
+          "pine-trellis/outputs/generation_result.json#$/metadata_path"
+        ]
+      }
+    },
+    {
+      "label": "temple-trellis",
+      "request_id": "31bafef0-612f-4e41-886d-1f82024795a8",
+      "job_id": "8ce11907-69d7-4b74-ba4a-ded69ff731fc",
+      "tracked_model": "temple/original.glb",
+      "tracked_reference": "temple/reference.png",
+      "records": [
+        {
+          "source_archive_entry": "outputs/generation_request.json",
+          "record_file": "temple-trellis/outputs/generation_request.json",
+          "original_sha256": "917f81134609dd31628dd82d5167770bae7fd31045a1dc8b24bc0fc7f9fdf0df",
+          "normalized_sha256": "693217727c51482e7a50614560ffaa251d377501a81cad4417d711453ef25dcb"
+        },
+        {
+          "source_archive_entry": "outputs/generation_result.json",
+          "record_file": "temple-trellis/outputs/generation_result.json",
+          "original_sha256": "0d0bbce8b1810670dea9b832e2e759ece61207dc370737bb3f7584f71b9e76c2",
+          "normalized_sha256": "23a283b231e4ba99b55fbe4285b7d07f2a12c53db7143254695fa4ff3d21266a"
+        }
+      ],
+      "path_placeholders": {
+        "<SERVER_ABSOLUTE_PATH_01>": [
+          "temple-trellis/outputs/generation_request.json#$/image_paths/0"
+        ],
+        "<SERVER_ABSOLUTE_PATH_02>": [
+          "temple-trellis/outputs/generation_request.json#$/output_dir"
+        ],
+        "<SERVER_ABSOLUTE_PATH_03>": [
+          "temple-trellis/outputs/generation_result.json#$/model_path"
+        ],
+        "<SERVER_ABSOLUTE_PATH_04>": [
+          "temple-trellis/outputs/generation_result.json#$/metadata_path"
+        ]
+      }
+    }
+  ]
+}

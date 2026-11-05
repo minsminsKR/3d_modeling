@@ -1,0 +1,16 @@
+{
+  "repo_path": "<SERVER_ABSOLUTE_PATH_05>",
+  "mesh_path": "<SERVER_ABSOLUTE_PATH_09>",
+  "image_paths": [
+    "<SERVER_ABSOLUTE_PATH_10>"
+  ],
+  "output_mesh_path": "<SERVER_ABSOLUTE_PATH_11>",
+  "texture_views": 6,
+  "texture_resolution": 768,
+  "texture_render_size": 2048,
+  "texture_texture_size": 4096,
+  "texture_view_selection_resolution": 512,
+  "texture_render_device": "cuda",
+  "local_model_dir": "<SERVER_ABSOLUTE_PATH_08>",
+  "gpu_id": 1
+}

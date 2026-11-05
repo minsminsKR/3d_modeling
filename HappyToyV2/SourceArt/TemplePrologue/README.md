@@ -198,6 +198,7 @@ FPS, GPU time, a supported-hardware guarantee or a substitute for device audio.
 stage options, outcomes and source archive-member hashes for the temple and
 both pine jobs, including the rejected pine's shape and texture settings.
 Original job records, metadata and model inputs remain alongside each model.
+Complete path-normalized stage JSON and archive-independent verification are in [`service-pipeline-records/`](service-pipeline-records/README.md).
 
 `temple/reference.png` was created using the built-in image generation tool.
 Prompt: “Single isolated traditional small Korean Buddhist temple hall (법당),
