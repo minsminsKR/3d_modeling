@@ -60,6 +60,7 @@ PROFILES = {
                       PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
     "temple-prologue-restore": ("Temple pause/save restoration, legacy migration and opt-in walking gate checkpoints; CPU only", [
         ("PlayMode", (PLAY + "TempleBoundaryContactsRemainSaveableAndRestorable",
+                      PLAY + "TempleSameTokenExternalEditIsPreservedBeforeSaveAndContinue",
                       PLAY + "TempleObstructedResumePreservesPlayerSelectionAndEnvironment",
                       PLAY + "TempleObstructedContinueKeepsSaveAndShowsErrorOnTitle",
                       PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement",

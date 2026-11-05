@@ -838,6 +838,32 @@ namespace HappyToy.V2.CloudTests
                 "Gamepad gate interaction did not lead to the corridor");
         }
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleSameTokenExternalEditIsPreservedBeforeSaveAndContinue()
+        {
+            string directory = NewRecordFixture();
+            Call(session, "ConfigureRecordDirectory", directory);
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            var initial = Get<object>(session, "TempleSuspension");
+            Assert.That((bool)Call(initial, "Save", checkpoint), Is.True);
+            var storeType = RequireType("TemplePrologueCheckpointStore");
+            var staleSave = System.Activator.CreateInstance(storeType, directory, true);
+            var staleConsume = System.Activator.CreateInstance(storeType, directory, true);
+            var changed = Call(checkpoint, "Copy"); Set(changed, "phase", 3);
+            string path = Path.Combine(directory, "temple-suspend-v1.json");
+            string external = (string)Call(changed, "ToJson"); File.WriteAllText(path, external);
+            Assert.That((bool)Call(staleSave, "Save", checkpoint), Is.False);
+            Assert.That(File.ReadAllText(path), Is.EqualTo(external));
+            Assert.That((bool)Call(staleConsume, "Consume", Get<string>(checkpoint, "token")), Is.False);
+            Assert.That(Get<bool>(staleConsume, "Conflict"), Is.True);
+            Assert.That(File.ReadAllText(path), Is.EqualTo(external));
+            Assert.That(File.Exists(path + ".used"), Is.False);
+            var fresh = System.Activator.CreateInstance(storeType, directory, true);
+            Assert.That(Get<int>(Get<object>(fresh, "Snapshot"), "phase"), Is.EqualTo(3));
+            Assert.That((bool)Call(fresh, "Consume", Get<string>(checkpoint, "token")), Is.True);
+            Assert.That(File.ReadAllText(path + ".used"), Is.EqualTo(external));
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleSaveRejectsConcurrentCorruptionWithoutOverwriting()
         {
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
