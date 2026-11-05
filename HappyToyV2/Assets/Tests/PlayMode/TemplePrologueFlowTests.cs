@@ -15,6 +15,35 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator IncenseRibbonSurvivesSourceResetAndContinuesGrowing()
+        {
+            var smokeObject = new GameObject("Incense ribbon reset test");
+            try
+            {
+                var trail = smokeObject.AddComponent(RequireType("IncenseSmokeTrail"));
+                Call(trail, "Prepare", Get<Camera>(player, "eyes"));
+                var mesh = smokeObject.GetComponent<MeshFilter>().sharedMesh;
+                var source = new Vector3(0, 1, 0);
+                Call(trail, "Advance", source, Vector3.forward, .01f, 1f, 1f);
+                Assert.That(mesh.vertexCount, Is.Zero, "The ribbon appeared before its second sample");
+                Call(trail, "Advance", source, Vector3.forward, .04f, 1f, 1f);
+                Assert.That(mesh.vertexCount, Is.GreaterThan(0));
+                Assert.That(mesh.GetIndexCount(0), Is.GreaterThan(0));
+                var indices = mesh.triangles;
+                Call(trail, "Advance", source + Vector3.right * .1f, Vector3.forward, .04f, 1f, 1f);
+                CollectionAssert.AreEqual(indices, mesh.triangles, "The growing plume lost its surface");
+                source += Vector3.right * 3;
+                Call(trail, "Advance", source, Vector3.forward, .001f, 1f, 1f);
+                Assert.That(mesh.vertexCount, Is.Zero, "A distant source retained the old trail");
+                Call(trail, "Advance", source, Vector3.forward, .04f, 1f, 1f);
+                Assert.That(mesh.vertexCount, Is.GreaterThan(0));
+                CollectionAssert.AreEqual(indices, mesh.triangles, "The reset plume failed to rebuild its surface");
+                Assert.That(mesh.bounds.center.x, Is.GreaterThan(2.5f), "The rebuilt plume remained at the old source");
+            }
+            finally { Object.Destroy(smokeObject); }
+            yield return null;
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TemplePineCandidateKeepsForestCollidersAndUsesReviewedLods()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

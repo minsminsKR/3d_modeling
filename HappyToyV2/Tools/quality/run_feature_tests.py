@@ -174,6 +174,7 @@ PROFILES = {
             PLAY + "RealThrownFirecrackerUsesThreeRecordedTakesAndReleasesOnlyOwnedAudio"))]),
     "incense": ("Single stable nearest reachable memory, offering fallback, blackout ember/smoke, continuous plume pause, supported pickups and stock save compatibility", [
         ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs") + (
+            PLAY + "IncenseRibbonSurvivesSourceResetAndContinuesGrowing",
             PLAY + "LadyBlackoutKeepsOnlyPlayerIncenseLightAndVisibleGuidingSmokeUntilBurnout",))]),
     "ritual-pickups": ("Real support surfaces, rotated visual contact, above-surface focus targets and preserved pickup/save/presentation ownership", [
         ("PlayMode", play_tests("RitualPickupSupportTests.cs") + (

@@ -22,6 +22,7 @@ namespace HappyToy.V2
         Vector3 previousSource, flow;
         float emission;
         int count;
+        bool topologyReady;
         public int SampleCount => count;
         public float SimulationTime { get; private set; }
 
@@ -105,7 +106,7 @@ namespace HappyToy.V2
         }
         void BuildRibbon(float fade)
         {
-            if (count < 2) { mesh.Clear(); return; }
+            if (count < 2) { mesh.Clear(); topologyReady = false; return; }
             Vector3 previousAcross = eye.transform.right;
             for (int i = 0; i <= Sections; i++)
             {
@@ -133,7 +134,10 @@ namespace HappyToy.V2
                 uv[vertex] = new Vector2(0, fraction); uv[vertex + 1] = new Vector2(1, fraction);
                 colors[vertex] = colors[vertex + 1] = new Color(.61f, .65f, .63f, opacity);
             }
-            mesh.vertices = vertices; mesh.uv = uv; mesh.colors = colors; mesh.triangles = indices;
+            mesh.vertices = vertices; mesh.uv = uv; mesh.colors = colors;
+            // The ribbon always has the same sections and winding. Reupload
+            // indices only after creation or a source reset clears the mesh.
+            if (!topologyReady) { mesh.triangles = indices; topologyReady = true; }
             mesh.RecalculateBounds();
         }
         void OnDestroy()
