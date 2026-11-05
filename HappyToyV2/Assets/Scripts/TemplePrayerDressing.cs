@@ -20,7 +20,9 @@ namespace HappyToy.V2
             prepared = true;
             var source = Resources.Load<GameObject>("CorridorAltarChamber/offering-table");
             var pottery = Resources.Load<GameObject>("KoreanCorridorProps/onggi");
-            if (!source || !pottery) throw new InvalidOperationException("Authored prayer table and pottery are required");
+            var incenseVessel = Resources.Load<GameObject>("TempleForest/incense-vessel-visual");
+            if (!source || !pottery || !incenseVessel || !incenseVessel.GetComponent<LODGroup>())
+                throw new InvalidOperationException("Authored prayer table, pottery and incense vessel LODs are required");
 
             var table = Group("Authored wooden prayer table");
             var instance = Instantiate(source, table, false);
@@ -47,12 +49,14 @@ namespace HappyToy.V2
             // This model has a closed lid, so it is a side offering rather
             // than the open vessel that receives the incense sticks.
             GraphicsPropLibrary.Fit(jar, new Bounds(new Vector3(1.25f, .32f, 8.1f), new Vector3(.48f, .64f, .48f)));
-            var bowl = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            bowl.name = "Incense vessel"; bowl.layer = 8; bowl.transform.SetParent(transform, false);
-            bowl.transform.localPosition = new Vector3(0, .91f, 7.2f);
-            bowl.transform.localScale = new Vector3(.42f, .11f, .42f);
-            bowl.GetComponent<Renderer>().sharedMaterial = surfaces.Get("brass-tarnished", new Color(.72f, .63f, .45f));
-            Destroy(bowl.GetComponent<Collider>());
+            var bowl = Group("Incense vessel");
+            var bowlVisual = Instantiate(incenseVessel, bowl, false);
+            RequireVisualOnly(bowlVisual);
+            // Existing altar top is y=.845 and the placed incense starts at
+            // y=1.02. The source's central ash is .16726m above its foot, so
+            // the existing incense begins ~8mm above the visible ash; its
+            // release marker, position and all interaction physics stay intact.
+            CorridorEntranceModels.GroundAtHeight(bowl, new Vector3(0, .845f, 7.2f), .2214165f, Quaternion.identity);
 
             foreach (float side in new[] { -1f, 1f })
             {

@@ -28,8 +28,16 @@ namespace HappyToy.V2
         {
             if (prepared) throw new InvalidOperationException("Forest trees already prepared");
             var ancient = Resources.Load<GameObject>("TempleForest/ancient-zelkova-visual");
-            var pine = Resources.Load<GameObject>("TemplePrologue/pine-trunk-review");
+            var pine = Resources.Load<GameObject>("TemplePrologue/pine-far-branches-visual");
             ValidatePrefab(ancient); ValidatePrefab(pine);
+            var pineLods = pine.GetComponent<LODGroup>().GetLODs();
+            if (pineLods.Length != 3 || !Mathf.Approximately(pineLods[0].screenRelativeTransitionHeight, .18f) ||
+                !Mathf.Approximately(pineLods[1].screenRelativeTransitionHeight, .06f) ||
+                !Mathf.Approximately(pineLods[2].screenRelativeTransitionHeight, .015f))
+                throw new InvalidOperationException("The reviewed three-level forest pine is required");
+            foreach (var level in pineLods)
+                if (level.renderers.Length != 1 || !level.renderers[0])
+                    throw new InvalidOperationException("A forest pine LOD renderer is missing");
             for (int i = 0; i < trees.Length; i++)
             {
                 var tree = transform.Find("Pine " + i);

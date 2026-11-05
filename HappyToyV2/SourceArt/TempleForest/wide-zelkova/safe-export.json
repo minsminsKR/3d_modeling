@@ -1,0 +1,28 @@
+{
+  "scope": "Raw source near; 3-degree UV-delimited dissolve far; pending reimport and surface checks",
+  "metres": 8,
+  "low": [
+    -0.49686217308044434,
+    -0.4664439558982849,
+    -0.3359959125518799
+  ],
+  "high": [
+    0.4980275332927704,
+    0.4601805806159973,
+    0.3363403379917145
+  ],
+  "lods": [
+    {
+      "file": "wide-zelkova-safe-lod0.fbx",
+      "triangles": 990611,
+      "vertices": 1093243,
+      "zeroNormalsRepaired": 11
+    },
+    {
+      "file": "wide-zelkova-safe-lod1.fbx",
+      "triangles": 986361,
+      "vertices": 1090580,
+      "zeroNormalsRepaired": 11
+    }
+  ]
+}

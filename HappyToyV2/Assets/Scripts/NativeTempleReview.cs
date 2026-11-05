@@ -29,7 +29,8 @@ namespace HappyToy.V2
         {
             public string scope = "Isolated Windows batch player; actual production eye camera and audio listener, scripted poses and interactions. Each timing submits one 1920x1080 offscreen eye render per update and synchronously reads one pixel to include GPU completion. Frames include readback/audit overhead and concurrent workloads; not presented/displayed FPS or manual play. Audio is the pre-device mixer, not device listening.";
             public string unity, device, graphics, phase, error;
-            public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate, walkCandidateGate, candidatePine, candidateAncient, productionAncient, productionPine;
+        public bool batch, isolated, muted, frameTimingEnabled, corridorReached, candidateGate, walkCandidateGate, candidatePine, candidateAncient, candidateWide, candidateHall, candidateStone, candidateDepth, candidatePineBranches, candidatePineBranchesAll, productionAncient, productionPine, productionHall;
+            public bool candidatePineFar, candidatePineFarAll, forcePineFar;
             public bool incenseHeldBeforePlacement, incenseHeldAfterPlacement;
             public int forestFootsteps; public string lastForestStep;
             public string[] images; public Mark[] marks; public Timing[] timings;
@@ -105,6 +106,8 @@ namespace HappyToy.V2
             Require(session && session.player && session.Shell && session.Shell.Screen == GameShell.Page.Title, "Fresh title required");
             var forestMist = Resources.Load<Shader>("TempleForestAtmosphereMist");
             Require(forestMist && forestMist.isSupported, "Temple forest mist shader is unsupported in the player");
+            var forestSky = Resources.Load<Shader>("TempleForestNightSky");
+            Require(forestSky && forestSky.isSupported, "Temple forest night sky shader is unsupported in the player");
             session.ConfigureRecordDirectory(Path.Combine(output, "isolated-profile"));
             phase = "title-to-forest"; session.Shell.BeginTempleCinematic();
             yield return Until(() => session.PrologueMode && !session.Shell.IsReloading, 30, "Temple start did not finish");
@@ -112,7 +115,44 @@ namespace HappyToy.V2
             result.productionAncient = forest && forest.AncientCount > 0;
             result.productionPine = forest && forest.PineCount > 0 && forest.TreeCount == 16;
             Require(result.productionAncient && result.productionPine, "Production forest trees are missing");
+            result.productionHall = session.Prologue.GetComponent<TempleHallPresentation>();
+            Require(result.productionHall, "Production temple hall is missing");
             var args = Environment.GetCommandLineArgs();
+            bool pineOriginal = Array.IndexOf(args, "-v2-temple-pine-original-all") >= 0 ||
+                Array.IndexOf(args, "-v2-temple-pine-original-candidate") >= 0;
+            bool pineFar = Array.IndexOf(args, "-v2-temple-pine-far-original-all") >= 0 ||
+                Array.IndexOf(args, "-v2-temple-pine-far-original-candidate") >= 0;
+            Require(!(pineOriginal && pineFar), "Use one pine comparison at a time");
+            if (Array.IndexOf(args, "-v2-temple-pine-far-original-all") >= 0)
+            {
+                session.Prologue.gameObject.AddComponent<TemplePineFarCandidate>().PrepareAll();
+                result.candidatePineFarAll = true;
+            }
+            else if (Array.IndexOf(args, "-v2-temple-pine-far-original-candidate") >= 0)
+            {
+                session.Prologue.gameObject.AddComponent<TemplePineFarCandidate>().Prepare();
+                result.candidatePineFar = true;
+            }
+            if (Array.IndexOf(args, "-v2-temple-pine-original-all") >= 0)
+            {
+                session.Prologue.gameObject.AddComponent<TemplePineBranchesCandidate>().PrepareAll();
+                result.candidatePineBranchesAll = true;
+            }
+            else if (Array.IndexOf(args, "-v2-temple-pine-original-candidate") >= 0)
+            {
+                session.Prologue.gameObject.AddComponent<TemplePineBranchesCandidate>().Prepare();
+                result.candidatePineBranches = true;
+            }
+            if (Array.IndexOf(args, "-v2-temple-depth-candidate") >= 0)
+            {
+                session.Prologue.gameObject.AddComponent<TempleForestDepthCandidate>().Prepare();
+                result.candidateDepth = true;
+            }
+            if (Array.IndexOf(args, "-v2-temple-stone-candidate") >= 0)
+            {
+                session.Prologue.gameObject.AddComponent<TempleStonePathCandidate>().Prepare();
+                result.candidateStone = true;
+            }
             if (Array.IndexOf(args, "-v2-temple-pine-candidate") >= 0)
             { result.candidatePine = true; } // Compatibility flag; these pines are now the production art.
             if (Array.IndexOf(args, "-v2-temple-ancient-candidate") >= 0)
@@ -120,6 +160,31 @@ namespace HappyToy.V2
                 // Compatibility with the prior opt-in: the trees are now
                 // always present, while this flag retains the extra close view.
                 result.candidateAncient = true;
+            }
+            if (Array.IndexOf(args, "-v2-temple-wide-candidate") >= 0)
+            {
+                InstallWideTreeReview(session.Prologue);
+                result.candidateWide = true;
+            }
+            if (Array.IndexOf(args, "-v2-temple-hall-candidate") >= 0)
+            {
+                // Compatibility flag: the reviewed hall is now production art.
+                result.candidateHall = true;
+            }
+            result.forcePineFar = Array.IndexOf(args, "-v2-temple-force-pine-far") >= 0;
+            if (result.forcePineFar)
+            {
+                Require(!result.candidatePineFar && !result.candidatePineBranches && !result.candidatePineBranchesAll,
+                    "Force-far sampling requires either production pines or the all-pine far candidate");
+                string forcedName = result.candidatePineFarAll ? "Candidate original far forest pine" : "Reviewed forest pine";
+                for (int i = 0; i < 16; i++)
+                {
+                    if (i == 2 || i == 3) continue;
+                    var visual = session.Prologue.transform.Find("Pine " + i + "/" + forcedName);
+                    var group = visual ? visual.GetComponent<LODGroup>() : null;
+                    Require(group, "Forced far pine is missing");
+                    group.ForceLOD(1);
+                }
             }
             walkGateReview = Array.IndexOf(args, "-v2-temple-gate-walk-candidate") >= 0;
             if (walkGateReview || Array.IndexOf(args, "-v2-temple-gate-candidate") >= 0)
@@ -139,19 +204,34 @@ namespace HappyToy.V2
             Pose(new Vector3(-3.3f,.04f,-20), new Vector3(-7.8f,2,-16.5f)); yield return null;
             SaveCamera("01e-ancient-close.png");
             Pose(new Vector3(2.5f,.04f,-19.3f), new Vector3(5.5f,2,-23)); yield return null; SaveCamera("01b-pine-close.png");
+            // Compare the same physical tree at both LODs without moving the
+            // camera, then restore ordinary distance selection before walking.
+            var pineRoot = session.Prologue.transform.Find("Pine 1");
+            string pineName = result.candidatePineFar || result.candidatePineFarAll ? "Candidate original far forest pine"
+                : result.candidatePineBranches || result.candidatePineBranchesAll ? "Candidate original forest pine"
+                : "Reviewed forest pine";
+            var pineVisual = pineRoot ? pineRoot.Find(pineName) : null;
+            var pineLods = pineVisual ? pineVisual.GetComponent<LODGroup>() : null;
+            Require(pineLods, "Pine LOD comparison is missing");
+            pineLods.ForceLOD(0); yield return null; SaveCamera("01f-pine-lod-near.png");
+            pineLods.ForceLOD(1); yield return null; SaveCamera("01g-pine-lod-far.png");
+            if (pineLods.lodCount > 2)
+            {
+                pineLods.ForceLOD(2); yield return null; SaveCamera("01h-pine-lod-very-far.png");
+            }
+            pineLods.ForceLOD(result.forcePineFar ? 1 : -1); yield return null;
             Pose(ForestWalkFeet, ForestWalkLook); yield return null;
             MarkTime("forest-walk-audio"); yield return WalkForAudio();
             Pose(new Vector3(0,.04f,-6), new Vector3(0,1.4f,12)); yield return null; SaveCamera("02-forest-approach.png");
             yield return Measure("forest-approach");
-            var building = session.Prologue.transform.Find("Generated Korean temple");
+            var building = session.Prologue.transform.Find("Temple hall exterior");
             Require(building, "Temple model missing");
             var originalPosition = building.localPosition; var originalScale = building.localScale;
             var art = building.GetChild(0); var originalRotation = art.localRotation;
             for (int angle = 0; angle < 2; angle++)
             {
                 art.localRotation = Quaternion.identity; building.localScale = Vector3.one;
-                var rotation = angle == 0 ? Quaternion.Euler(0, 0, 90) * Quaternion.Euler(0, 90, 0) :
-                    Quaternion.Euler(0, 0, -90) * Quaternion.Euler(0, 270, 0);
+                var rotation = angle == 0 ? Quaternion.identity : Quaternion.Euler(0, 180, 0);
                 CorridorEntranceModels.GroundAtHeight(building, new Vector3(0, 0, 18), 6f, rotation);
                 yield return null; SaveCamera("corrected-orientation-" + angle + ".png");
             }
@@ -215,6 +295,26 @@ namespace HappyToy.V2
             result.corridorReached = true; yield return null; SaveCamera("08-corridor.png"); MarkTime("corridor");
             yield return new WaitForSeconds(1); phase = "complete";
             Require(DiagnosticAudioSilence.DeviceSessionMuted, "Device mute was lost");
+        }
+        // A separate candidate replaces only one rendered tree. The original
+        // root and collision capsule remain untouched for the comparison.
+        public static void InstallWideTreeReview(TemplePrologueWorld world)
+        {
+            var prefab = Resources.Load<GameObject>("TempleForest/wide-zelkova-visual");
+            var tree = world ? world.transform.Find("Pine 2") : null;
+            var previous = tree ? tree.Find("Ancient forest tree") : null;
+            var group = previous ? previous.GetComponent<LODGroup>() : null;
+            if (!world || !world.Ready || !tree || !tree.GetComponent<CapsuleCollider>() ||
+                !group || !group.enabled || tree.Find("Wide tree review") || !prefab || !prefab.GetComponent<LODGroup>() ||
+                prefab.GetComponentInChildren<Collider>(true) || prefab.GetComponentInChildren<Rigidbody>(true))
+                throw new InvalidOperationException("Fresh forest and visual-only wide tree are required");
+            foreach (var level in group.GetLODs()) foreach (var renderer in level.renderers)
+                if (renderer) renderer.enabled = false;
+            group.enabled = false;
+            var replacement = Instantiate(prefab, tree, false); replacement.name = "Wide tree review";
+            replacement.transform.localPosition = previous.localPosition;
+            replacement.transform.localRotation = previous.localRotation;
+            replacement.transform.localScale = previous.localScale;
         }
         void Pose(Vector3 feet, Vector3 look)
         {

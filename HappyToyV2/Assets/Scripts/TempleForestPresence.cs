@@ -10,7 +10,7 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class TempleForestPresence : MonoBehaviour
     {
-        const float FadeIn = 1.2f, Hold = 2.8f, FadeOut = 1.6f, MaximumOpacity = .58f;
+        const float FadeIn = 1.2f, Hold = 2.8f, FadeOut = 1.6f, MaximumOpacity = .34f;
         static readonly Vector3 Offset = new Vector3(-9.0f, 0, 3.5f);
         readonly List<Material> ownedMaterials = new List<Material>();
         TemplePrologueWorld world;
@@ -78,7 +78,7 @@ namespace HappyToy.V2
                         fade.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); fade.SetOverrideTag("RenderType", "Transparent");
                         fade.SetShaderPassEnabled("ShadowCaster", false);
                         var color = fade.GetColor("_BaseColor");
-                        color.r *= .19f; color.g *= .22f; color.b *= .24f; color.a = 0;
+                        color.r *= .12f; color.g *= .14f; color.b *= .16f; color.a = 0;
                         fade.SetColor("_BaseColor", color);
                         cache.Add(source, fade); ownedMaterials.Add(fade);
                     }

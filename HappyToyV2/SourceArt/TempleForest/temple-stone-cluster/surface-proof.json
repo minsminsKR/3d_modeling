@@ -1,0 +1,137 @@
+{
+  "scope": "Sampled source-to-LOD and LOD-to-source, top projection and Blender FBX reimport; not Unity/GPU approval",
+  "originalSha256": "ecd34fda97e8f087f0257091e0ad0b38a46a59bc158577002c19a0ff9b31bf45",
+  "editableSha256": "f675e057692ba006e70bfe4e0e0173620c25fe7551e84059f90c01dd5d3b589c",
+  "exportSha256": [
+    "0aee0b2057eab73d681851e900acb956e87edb07d009cb8e048d549b80269c20",
+    "71947918a9663cb592e752d65c1eae2a837dafe6b431175fb8e5e4e152baa0ae"
+  ],
+  "editable": [
+    {
+      "triangles": 24000,
+      "vertices": 10274,
+      "area": 7.694769266746788,
+      "zeroNormalLoops": 0,
+      "sourceToCandidate": {
+        "samples": 3272,
+        "p95": 0.0017522037960588932,
+        "maximum": 0.0068113780580461025
+      },
+      "sourceTopToCandidate": {
+        "samples": 2362,
+        "p95": 0.0015420627314597368,
+        "maximum": 0.005831885151565075
+      },
+      "candidateToSource": {
+        "samples": 934,
+        "p95": 0.0013842441840097308,
+        "maximum": 0.0038646962493658066
+      },
+      "candidateTopToSource": {
+        "samples": 584,
+        "p95": 0.0011997332330793142,
+        "maximum": 0.002500134753063321
+      },
+      "projection": {
+        "samples": 625,
+        "sourceHits": 607,
+        "candidateHits": 606,
+        "sourceOnlyHoles": 1,
+        "candidateOnlyHits": 0,
+        "heightDifferenceP95": 0.0016246438026428223
+      }
+    },
+    {
+      "triangles": 20000,
+      "vertices": 8274,
+      "area": 7.6748921725440935,
+      "zeroNormalLoops": 0,
+      "sourceToCandidate": {
+        "samples": 3272,
+        "p95": 0.0019543850794434547,
+        "maximum": 0.009933899156749249
+      },
+      "sourceTopToCandidate": {
+        "samples": 2362,
+        "p95": 0.001641106908209622,
+        "maximum": 0.008231401443481445
+      },
+      "candidateToSource": {
+        "samples": 753,
+        "p95": 0.001425496069714427,
+        "maximum": 0.003347695106640458
+      },
+      "candidateTopToSource": {
+        "samples": 461,
+        "p95": 0.001277659204788506,
+        "maximum": 0.002296888269484043
+      },
+      "projection": {
+        "samples": 625,
+        "sourceHits": 607,
+        "candidateHits": 605,
+        "sourceOnlyHoles": 2,
+        "candidateOnlyHits": 0,
+        "heightDifferenceP95": 0.0017982125282287598
+      }
+    }
+  ],
+  "reimported": [
+    {
+      "triangles": 23888,
+      "vertices": 10274,
+      "area": 7.693970200470387,
+      "zeroNormalLoops": 0,
+      "sourceToCandidate": {
+        "samples": 3272,
+        "p95": 0.001752160140313208,
+        "maximum": 0.006811322178691626
+      },
+      "sourceTopToCandidate": {
+        "samples": 2362,
+        "p95": 0.0015422019641846418,
+        "maximum": 0.005832016933709383
+      },
+      "candidateToSource": {
+        "samples": 934,
+        "p95": 0.0013843283522874117,
+        "maximum": 0.003864765865728259
+      },
+      "candidateTopToSource": {
+        "samples": 584,
+        "p95": 0.0011997238034382463,
+        "maximum": 0.0025002642069011927
+      },
+      "areaRelativeLoss": 0.00010384538492326478,
+      "triangleLoss": 112
+    },
+    {
+      "triangles": 19885,
+      "vertices": 8274,
+      "area": 7.6740596065007205,
+      "zeroNormalLoops": 0,
+      "sourceToCandidate": {
+        "samples": 3272,
+        "p95": 0.0019544665701687336,
+        "maximum": 0.009933889843523502
+      },
+      "sourceTopToCandidate": {
+        "samples": 2362,
+        "p95": 0.0016411748947575688,
+        "maximum": 0.00823136791586876
+      },
+      "candidateToSource": {
+        "samples": 753,
+        "p95": 0.0014254943234845996,
+        "maximum": 0.0033477728720754385
+      },
+      "candidateTopToSource": {
+        "samples": 461,
+        "p95": 0.001277744653634727,
+        "maximum": 0.0022970193531364202
+      },
+      "areaRelativeLoss": 0.00010847918441791284,
+      "triangleLoss": 115
+    }
+  ]
+}

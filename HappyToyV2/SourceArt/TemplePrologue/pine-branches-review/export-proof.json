@@ -1,0 +1,48 @@
+{
+  "scope": "Blender CPU samples; not proof of perceptual quality or player FPS",
+  "editable": {
+    "triangles": 257499,
+    "area_m2": 748.1607107660957,
+    "zero_normal_loops": 0,
+    "source_to_editable": {
+      "trunk": {
+        "n": 1200,
+        "p95_m": 2.0506578266576964e-07,
+        "max_m": 6.750078114237112e-07
+      },
+      "canopy": {
+        "n": 1200,
+        "p95_m": 0.04638122357428073,
+        "max_m": 0.15667851269245148
+      }
+    },
+    "top_projection": {
+      "source_hits": 1443,
+      "source_hit_candidate_miss": 51,
+      "grid_size": 2601
+    }
+  },
+  "fbx_reimport": {
+    "triangles": 256441,
+    "area_m2": 746.7351204478235,
+    "zero_normal_loops": 0,
+    "source_to_export": {
+      "trunk": {
+        "n": 1200,
+        "p95_m": 6.699551590827467e-07,
+        "max_m": 1.3486991292666062e-06
+      },
+      "canopy": {
+        "n": 1200,
+        "p95_m": 0.04638090971857309,
+        "max_m": 0.15667907893657684
+      }
+    },
+    "top_projection": {
+      "source_hits": 1443,
+      "source_hit_candidate_miss": 51,
+      "grid_size": 2601
+    },
+    "surface_area_loss_fraction": 0.0019054600138149747
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "source": "fern-clump.blend / CE_fern-clump_LOD0",
+  "sourceSha256": "3fd3ec241d8c86bf578061cc79bc9a1e5abdf840d3790fa9f385a925cfb73e2c",
+  "originalSha256": "87369f526456d64c422dec6a417df145d04840b2b29cd85e8b18f3f1e6eea6c0",
+  "editable": "fern-undergrowth.blend",
+  "editableSha256": "f40952cb761d53d6534e21dc24c001f735f3ad2cab640d607159f706c1d5d092",
+  "blender": "4.0.2",
+  "simplifier": "fast-simplification 0.1.12",
+  "atlas": "game-export/fern-clump/CE_fern-clump_0-baseColor.png",
+  "lods": [
+    {
+      "file": "fern-undergrowth-lod1.fbx",
+      "targetTriangles": 16000,
+      "triangles": 15477,
+      "vertices": 13146,
+      "sha256": "dd146d6a2ecb1d397cd2c62bb556251ae6e3d87dc05bc94d78546f9b9893ce0e",
+      "firstPassTriangles": 15999,
+      "identicalFacesRemoved": 522,
+      "coincidentFacesIsolated": 2585,
+      "zeroNormalsRepaired": 0,
+      "projectedCentroidDistanceP95": 0.0015998406568542122
+    }
+  ]
+}

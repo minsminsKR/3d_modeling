@@ -26,3 +26,24 @@ The second command replaces its own generated LOD1, not the original or near sou
 ## Review and remaining checks
 
 A collaborating agent inspected the original interactive 3D model for the same job in the designated sidebar, from the front and after rotation. No joint edits were reported. Unity uses shared material and LOD meshes without added fern colliders; the forest camera review includes the plants, while individual LOD transitions and displayed FPS remain unmeasured. The service ZIP is a redundant download cache preserved under the excluded `../work/fern-clump-download/` directory; all required source and records are extracted here. Preserve generated source, image input, editable blend, scripts, texture maps and records when handing off; do not commit credentials or personal CLI state.
+
+## Sparse outer-forest LOD — 2026-11-05
+
+`prepare_fern_undergrowth.py` reads the preserved `fern-clump.blend` without
+overwriting it, and writes a separate `fern-undergrowth.blend` and
+`game-export/fern-undergrowth-lod1.fbx`. It uses Blender 4.0.2 and the pinned
+`fast-simplification==0.1.12` Python 3.10 package. `verify_fern_undergrowth.py`
+checks the original and editable hashes, UVs, normals, surface samples and
+Blender FBX reimport. `preview_fern_undergrowth.py -- --output <new-directory>`
+renders two-angle CPU comparisons without altering source assets.
+
+The separate LOD contains 15,477 triangles versus 34,651 for the existing
+near fern LOD; FBX reimport retains all faces. Across 1,778 sampled near-mesh
+vertices, source-to-LOD surface distance is 1.07 cm p95 and 4.12 cm maximum
+at a one-metre model width. This is a sampling measure, not a fidelity proof.
+The far LOD loses visible leaflet detail, so use the existing 34,651-face
+model for the closer level and the 15,477-face version only at distance.
+Much stronger 9k/2.5k reductions removed most of the fronds in CPU review and
+were rejected. Unity in-game appearance, LOD transition and frame cost still
+require separate validation. Both Unity LODs reuse the existing fern atlas and
+instanced material; the scatter is visual-only and does not alter collision.

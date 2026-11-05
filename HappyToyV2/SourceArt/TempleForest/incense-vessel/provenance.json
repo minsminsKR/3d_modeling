@@ -1,0 +1,24 @@
+{
+  "asset": "incense-vessel",
+  "purpose": "Open aged Korean bronze incense vessel; gameplay supplies its own separate incense sticks",
+  "reference": "reference.png",
+  "reference_sha256": "7352724e8b3f0957f03d34b8157bf476312438a46be218f3e7e1eff9bb43bc68",
+  "reference_generation": "Built-in image generation followed by one framing edit; both images and prompts are retained",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "6e4e2dab-2071-4d2d-b0d8-99c35773060a",
+  "job_id": "61581450-e4dc-4684-90f6-eb9238bbb9f4",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 1234,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "remove_background": true
+  },
+  "status": "completed",
+  "archive_sha256": "93ad84d2e75916671417c4cc617c2e564e7004c97e7048bec5febebcbd162873",
+  "original_glb_sha256": "389b732b64d0571fb48816480a81bbd782429362f406ffb0f0e2efed5d222e22",
+  "web_review": "The parent agent inspected the same job in the designated IAB viewer from the front, rotated sides and above. The open rim, gray ash surface and absence of incense sticks were visible; bronze did not look excessively reflective in that viewer.",
+  "limitations": "Source contains no normal map. CPU-sampled surface and ash height are recorded separately; Unity placement, shader variant, actual game-camera appearance and performance require their own checks."
+}

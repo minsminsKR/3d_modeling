@@ -1,0 +1,50 @@
+{
+  "scope": "Blender CPU samples; not proof of perceptual quality or player FPS",
+  "blend_sha256": "1cd0ffb458742cd421a236b219d3340c052a0c5c8222129e9ec047bff72bcfe4",
+  "fbx_sha256": "08e035f95f8ef14849c949dc3c9220cb9f6f722638c8088e52c4094aacead071",
+  "editable": {
+    "triangles": 178760,
+    "area_m2": 774.7738112276332,
+    "zero_normal_loops": 0,
+    "source_to_editable": {
+      "trunk": {
+        "n": 1200,
+        "p95_m": 0.032812709175050254,
+        "max_m": 0.11271236836910248
+      },
+      "canopy": {
+        "n": 1200,
+        "p95_m": 0.049759839661419364,
+        "max_m": 0.15667851269245148
+      }
+    },
+    "top_projection": {
+      "source_hits": 1443,
+      "source_hit_candidate_miss": 62,
+      "grid_size": 2601
+    }
+  },
+  "fbx_reimport": {
+    "triangles": 177597,
+    "area_m2": 773.1532844096905,
+    "zero_normal_loops": 0,
+    "source_to_export": {
+      "trunk": {
+        "n": 1200,
+        "p95_m": 0.03281273916363715,
+        "max_m": 0.1127115860581398
+      },
+      "canopy": {
+        "n": 1200,
+        "p95_m": 0.04975933525711295,
+        "max_m": 0.15667907893657684
+      }
+    },
+    "top_projection": {
+      "source_hits": 1443,
+      "source_hit_candidate_miss": 62,
+      "grid_size": 2601
+    },
+    "surface_area_loss_fraction": 0.0020916127964818454
+  }
+}

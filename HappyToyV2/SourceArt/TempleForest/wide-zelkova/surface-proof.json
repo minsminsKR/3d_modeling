@@ -1,0 +1,97 @@
+{
+  "scope": "CPU original-source sampling and Blender FBX reimport only; no Unity or FPS approval",
+  "sourceSha256": "c944ed7981599293a40a1d9e9613fd8bc35f654bad1018edcb21897663b6eaf6",
+  "editableSha256": "1ae661bc0044ae6460c990dda3ab54829b4049505d21cf4ee53e155ab92c9e9d",
+  "exportSha256": [
+    "93f794088f5729634ea0f81bdc8917c42c73f5ebbed6fa9d50ca5fa2cf47bc83",
+    "0e7f194ead921c5bd32165c7c279b3de1941c29920ca0429d592f0d59cec8f30"
+  ],
+  "editable": [
+    {
+      "triangles": 754538,
+      "vertices": 400130,
+      "area": 539.9389604215629,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 3097,
+        "p95": 0.03722114861011505,
+        "maximum": 0.23908689618110657
+      },
+      "rootDistance": {
+        "samples": 1509,
+        "p95": 2.384185791015625e-07,
+        "maximum": 4.826228519050346e-07
+      },
+      "canopyDistance": {
+        "samples": 1588,
+        "p95": 0.0567951463162899,
+        "maximum": 0.23908689618110657
+      }
+    },
+    {
+      "triangles": 199893,
+      "vertices": 120509,
+      "area": 502.8385692697443,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 3097,
+        "p95": 0.06228267773985863,
+        "maximum": 0.27102941274642944
+      },
+      "rootDistance": {
+        "samples": 1509,
+        "p95": 0.013899995014071465,
+        "maximum": 0.05044930800795555
+      },
+      "canopyDistance": {
+        "samples": 1588,
+        "p95": 0.09118147939443588,
+        "maximum": 0.27102941274642944
+      }
+    }
+  ],
+  "exported": [
+    {
+      "triangles": 754538,
+      "vertices": 400130,
+      "area": 539.9389633638453,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 3097,
+        "p95": 0.037220414727926254,
+        "maximum": 0.23908689618110657
+      },
+      "rootDistance": {
+        "samples": 1509,
+        "p95": 5.623090828521526e-07,
+        "maximum": 1.01985904166213e-06
+      },
+      "canopyDistance": {
+        "samples": 1588,
+        "p95": 0.05679413303732872,
+        "maximum": 0.23908689618110657
+      }
+    },
+    {
+      "triangles": 199893,
+      "vertices": 120509,
+      "area": 502.8385716395769,
+      "zeroNormalLoops": 0,
+      "allSurfaceDistance": {
+        "samples": 3097,
+        "p95": 0.06228313222527504,
+        "maximum": 0.2710287570953369
+      },
+      "rootDistance": {
+        "samples": 1509,
+        "p95": 0.013899747282266617,
+        "maximum": 0.050449252128601074
+      },
+      "canopyDistance": {
+        "samples": 1588,
+        "p95": 0.0911821499466896,
+        "maximum": 0.2710287570953369
+      }
+    }
+  ]
+}

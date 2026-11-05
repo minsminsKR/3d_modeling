@@ -1,0 +1,20 @@
+[
+  {
+    "name": "current far",
+    "near_hits": 1429,
+    "near_hit_candidate_miss": 153,
+    "candidate_hit_near_miss": 30,
+    "near_to_candidate_p95_m": 0.16611011177301374,
+    "near_to_candidate_p99_m": 0.3742517963051795,
+    "near_to_candidate_max_m": 0.8455939292907715
+  },
+  {
+    "name": "economy far",
+    "near_hits": 1429,
+    "near_hit_candidate_miss": 28,
+    "candidate_hit_near_miss": 27,
+    "near_to_candidate_p95_m": 0.03153610527515409,
+    "near_to_candidate_p99_m": 0.05162954945117233,
+    "near_to_candidate_max_m": 0.13746832311153412
+  }
+]

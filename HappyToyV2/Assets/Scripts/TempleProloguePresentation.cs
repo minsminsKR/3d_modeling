@@ -88,6 +88,9 @@ namespace HappyToy.V2
             // view. Correct the art axes, then ground by actual renderer bounds.
             CorridorEntranceModels.GroundAtHeight(shrine, new Vector3(0, 0, 18), 6f,
                 Quaternion.Euler(0, 0, 90) * Quaternion.Euler(0, 90, 0));
+            // Swap only the visual hall before the world is marked Ready.
+            // The original remains available for rollback and teardown.
+            var displayedShrine = gameObject.AddComponent<TempleHallPresentation>().Prepare(shrine);
             // The preserved model is an exterior; keep the accessible prayer space in front.
             Box("Temple front physical wall", new Vector3(0, 2, 13.8f), new Vector3(9, 4, .3f), wood, true, false);
             Box("Prayer table top", new Vector3(0, .77f, 7.35f), new Vector3(1.8f, .15f, .75f), wood, true, false);
@@ -119,6 +122,7 @@ namespace HappyToy.V2
                 Lamp(new Vector3(side * 2.5f, 1.5f, 8.5f), 4.8f, 2.2f);
                 Lamp(new Vector3(side * 2.5f, 1.2f, -1f), 4.2f, 1.4f);
             }
+            gameObject.AddComponent<TempleShrineDressing>().Prepare(displayedShrine, lanterns);
             foreach (float side in new[] { -1f, 1f })
                 for (int i = 0; i < 3; i++)
                 {
@@ -127,7 +131,11 @@ namespace HappyToy.V2
                         .8f + .25f * i, Quaternion.Euler(0, i * 71, 0));
                 }
             gameObject.AddComponent<TempleForestDressing>().Prepare();
+            gameObject.AddComponent<TempleForestBanks>().Prepare();
             gameObject.AddComponent<TempleForestFerns>().Prepare();
+            gameObject.AddComponent<TempleForestUndergrowth>().Prepare();
+            gameObject.AddComponent<TempleForestFoliageFinish>().Prepare();
+            gameObject.AddComponent<TempleStoneLanterns>().Prepare();
             atmosphere = gameObject.AddComponent<TempleForestAtmosphere>();
             atmosphere.Prepare(camera, moonlight, facadeLight, lamps, lanterns);
             air = Source("Forest air", "ambience-forest", new Vector3(5, 2, -3), true, .15f, 35);
@@ -170,32 +178,16 @@ namespace HappyToy.V2
         }
         Material ForestEarth()
         {
-            // Small repeatable CPU texture for matte soil; no reflective indoor floor map.
-            const int size = 128;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, true) { name = "Temple forest soil", wrapMode = TextureWrapMode.Repeat };
-            var pixels = new Color[size * size];
-            for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
-                {
-                    float a = PeriodicSoilNoise(x, y, size, .125f, 0, 0);
-                    float b = PeriodicSoilNoise(x, y, size, .39f, 13, 7);
-                    float shade = .72f + .34f * a + .14f * b;
-                    pixels[y * size + x] = new Color(.18f * shade, .15f * shade, .105f * shade, 1);
-                }
-            texture.SetPixels(pixels); texture.Apply(true, false); textures.Add(texture);
-            var soil = Material("Matte forest soil", Color.white); soil.SetTexture("_BaseMap", texture);
-            soil.SetTextureScale("_BaseMap", new Vector2(14, 18)); soil.SetFloat("_Metallic", 0); soil.SetFloat("_Smoothness", .02f);
+            var albedo = Resources.Load<Texture2D>("TempleForest/forest-earth/forest-earth-albedo");
+            var normal = Resources.Load<Texture2D>("TempleForest/forest-earth/forest-earth-height");
+            if (!albedo || !normal) throw new InvalidOperationException("Forest earth PBR textures are required");
+            var soil = Material("Weathered forest soil", new Color(.78f, .82f, .84f));
+            soil.SetTexture("_BaseMap", albedo); soil.SetTexture("_BumpMap", normal);
+            soil.EnableKeyword("_NORMALMAP"); soil.SetFloat("_BumpScale", .38f);
+            soil.SetTextureScale("_BaseMap", new Vector2(14, 18));
+            soil.SetTextureScale("_BumpMap", new Vector2(14, 18));
+            soil.SetFloat("_Metallic", 0); soil.SetFloat("_Smoothness", .22f);
             return soil;
-        }
-        static float PeriodicSoilNoise(int x, int y, int size, float frequency, float offsetX, float offsetY)
-        {
-            float px = x * frequency + offsetX, py = y * frequency + offsetY;
-            float period = size * frequency;
-            float tx = Mathf.SmoothStep(0, 1, x / (float)size);
-            float ty = Mathf.SmoothStep(0, 1, y / (float)size);
-            float lower = Mathf.Lerp(Mathf.PerlinNoise(px, py), Mathf.PerlinNoise(px-period, py), tx);
-            float upper = Mathf.Lerp(Mathf.PerlinNoise(px, py-period), Mathf.PerlinNoise(px-period, py-period), tx);
-            return Mathf.Lerp(lower, upper, ty);
         }
         GameObject Box(string name, Vector3 pos, Vector3 scale, Material material, bool collision, bool visible = true)
         {
@@ -368,6 +360,7 @@ namespace HappyToy.V2
         public void ReleaseEnvironment()
         {
             if (!captured) return;
+            if (atmosphere) atmosphere.ReleaseSky();
             RenderSettings.fog = oldFog; RenderSettings.fogMode = oldFogMode; RenderSettings.fogColor = oldFogColor;
             RenderSettings.fogDensity = oldFogDensity; RenderSettings.ambientMode = oldAmbientMode;
             RenderSettings.ambientLight = oldAmbient; RenderSettings.ambientIntensity = oldAmbientIntensity;

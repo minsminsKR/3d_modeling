@@ -2,7 +2,7 @@
     "scope": "Owned Resources material anchors retain runtime shader_feature combinations; no original asset, scene, model or shader stripping setting modified.",
     "scene": "Assets/Annex/SchoolAnnex.unity",
     "unity": "6000.6.0f1",
-    "count": 9,
+    "count": 10,
     "entries": [
         {
             "asset": "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat",
@@ -67,7 +67,7 @@
                 "_ENVIRONMENTREFLECTIONS_OFF"
             ],
             "sources": [
-                "TempleForestPuddles restrained dielectric water; direct light highlights retained"
+                "TempleForestFoliageFinish dielectric leaves; direct light highlights retained"
             ]
         },
         {
@@ -81,6 +81,17 @@
             ],
             "sources": [
                 "Cyclopse / Assets/Generated/Cyclopse_skin 3.mat / Cyclopse_skin 3"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-5a08b85267db6554d0b3f654e7fb018f12c1907812981d5f866436da570e2d54.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_ENVIRONMENTREFLECTIONS_OFF",
+                "_SURFACE_TYPE_TRANSPARENT"
+            ],
+            "sources": [
+                "TempleForestPuddles translucent dielectric water; direct light highlights retained"
             ]
         },
         {

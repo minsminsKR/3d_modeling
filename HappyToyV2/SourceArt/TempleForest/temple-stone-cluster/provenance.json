@@ -1,0 +1,24 @@
+{
+  "asset": "temple-stone-cluster",
+  "purpose": "Candidate world-space 3D stone paver cluster for the Korean temple approach",
+  "reference": "reference.png",
+  "reference_sha256": "bc3e5771bf84860a2b99b95148fa3634059b4e7916a65afbba89e35fb2308821",
+  "reference_generation": "OpenAI built-in image generation, transparent background; prompt in reference-prompt.txt",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "657e5eb2-54db-43d6-91a3-c90e4f8755bc",
+  "job_id": "6e307723-b3fa-467c-a181-1dde4ca5c554",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 1234,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "remove_background": true
+  },
+  "status": "completed",
+  "archive_sha256": "0a16757295b68129b32c280bda6efc69e3d9e8e6c14f785d195c13285ca20d54",
+  "original_glb_sha256": "ecd34fda97e8f087f0257091e0ad0b38a46a59bc158577002c19a0ff9b31bf45",
+  "web_review": "Same job inspected in the IAB from front and a rotated side view: uneven individual stone surfaces, side thickness, and thin connected soil base visible; no obvious floating pieces or large holes. The rectangular outer edge may make repeated tiling apparent.",
+  "limitations": "Blender 24k/20k candidate LODs, sampled surface checks and CPU previews are complete. The rejected 13k LOD produced a visible hole. Unity camera, collision/footstep preservation, repeating-edge and performance validation remain required."
+}

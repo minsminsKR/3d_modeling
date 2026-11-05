@@ -54,3 +54,49 @@ developed than the current result. The path retains visible large gaps; the
 generated tree and fern sources do not include normal maps. More varied
 authored ground, temple materials, vegetation and lighting need further art
 and hardware review before claiming reference-level fidelity.
+
+## Subsequent forest refinement
+
+`forest-earth/` preserves a new built-in image-generation albedo and its exact
+prompt; Unity derives an approximate normal map from that same source at
+import. The image is used as a tiled material on the existing ground mesh, not
+as a background image. `TempleForestUndergrowth` adds 30 visual-only fern
+instances with separately authored lower LODs, and `TempleStoneLanterns` adds
+two generated 3D stone lanterns. The original GLB, reference, editable Blender
+file, textures, job record and reproduction scripts for the lantern are under
+`stone-lantern/`. `TempleForestNightSky` is a directional procedural sky; its
+material and the prior camera/global sky are restored when the temple ends.
+
+The 2026-11-05 refinement also introduces the generated temple exterior in
+`temple-hall-v2/` and the open bronze incense vessel in `incense-vessel/`.
+The existing physical wall and the incense placement coordinate are retained;
+the source-derived ash surface was checked against the placed incense. Existing
+rock LODs form asymmetric low banks and the authored fern materials share a
+muted runtime finish. The path's original visual stone relief now has an
+upward-facing, shallow stone bed, while its original physics and footstep
+region remain authoritative. The translucent puddles are world-space meshes.
+
+The original generated pine was also reprocessed for its near LOD by
+protecting branches during decimation; its source and measured trade-offs
+are in `../TemplePrologue/pine-branches-review/`. The protected middle LOD is
+documented in `../TemplePrologue/pine-branches-far-review/`; the original
+low-cost LOD is retained for very distant trees, as are trunk collisions.
+
+The generated `temple-stone-cluster/` and `wide-zelkova/` remain opt-in review
+candidates: the stone cluster revealed conspicuous rectangular seams in the
+native eye camera, and the safe tree LOD was too expensive to justify its
+appearance. A separate depth arrangement of existing trees remains opt-in as
+well; its repeated silhouettes and additional geometry did not meaningfully
+resolve the empty horizon. Do not mistake these review assets for production
+art. Their original GLBs, references, editing sources, diagnostics and the
+specific limitations are preserved in their source directories.
+
+The production arrangement was reviewed on an RTX 3090 Ti in an isolated
+Windows batch player from spawn, low and side views, at the prayer space, and
+through both incense placements and the gate-to-corridor route. The audit
+submits a 1920x1080 offscreen camera render and reads back a pixel on every
+sample; its rate includes audit/readback overhead and concurrent load and is
+not displayed FPS. No GPU timestamp samples were available. The screen still
+falls substantially short of the reference: tree silhouettes repeat and the
+very-distant foliage remains angular, the horizon is sparse, and the stone path and
+ground need richer non-repeating art and more convincing wet reflections.

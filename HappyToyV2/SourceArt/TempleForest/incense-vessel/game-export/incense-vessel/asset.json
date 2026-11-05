@@ -1,0 +1,80 @@
+{
+  "key": "incense-vessel",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "389b732b64d0571fb48816480a81bbd782429362f406ffb0f0e2efed5d222e22",
+  "editable": "incense-vessel/incense-vessel.blend",
+  "widthMetres": 0.4401528239250183,
+  "heightMetres": 0.22141253440713626,
+  "depthMetres": 0.37348534166812897,
+  "normalizedAxis": "width",
+  "normalizedMetres": 0.44,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 0.44,
+    "texture": 2048,
+    "budgets": [
+      65000,
+      20000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 983780,
+  "originalTriangles": 983780,
+  "lods": [
+    {
+      "file": "incense-vessel-lod0.fbx",
+      "targetTriangles": 65000,
+      "triangles": 64999,
+      "vertices": 30824,
+      "boundsMin": [
+        -0.22000429034233093,
+        -0.18669502437114716,
+        3.998586180387065e-06
+      ],
+      "boundsMax": [
+        0.22014853358268738,
+        0.1867903172969818,
+        0.22141653299331665
+      ],
+      "sha256": "24079c897d9251c4040d588e123f6e2a6511b9f4b9a93821d2db66cc51e61b90"
+    },
+    {
+      "file": "incense-vessel-lod1.fbx",
+      "targetTriangles": 20000,
+      "triangles": 19999,
+      "vertices": 8324,
+      "boundsMin": [
+        -0.22002065181732178,
+        -0.18565960228443146,
+        0.00018788347369991243
+      ],
+      "boundsMax": [
+        0.22056254744529724,
+        0.1863713413476944,
+        0.2214026004076004
+      ],
+      "sha256": "22effc75abbf0ef9aa07c64fab2d6b5f0b5d3250666fcb0d9b1bdf302f10c406"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_incense-vessel_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_incense-vessel_0-baseColor.png",
+      "metallicSmoothness": "CE_incense-vessel_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

@@ -2,8 +2,8 @@ Shader "HappyToy/TempleForestAtmosphereMist"
 {
     Properties
     {
-        _Density("Mist extinction per metre", Float) = 0.055
-        _MistColor("Cold mist tint", Color) = (0.19, 0.24, 0.30, 1)
+        _Density("Mist extinction per metre", Float) = 0.085
+        _MistColor("Cold mist tint", Color) = (0.20, 0.25, 0.30, 1)
     }
     SubShader
     {

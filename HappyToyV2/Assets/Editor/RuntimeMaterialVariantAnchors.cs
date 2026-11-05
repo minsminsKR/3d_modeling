@@ -59,7 +59,17 @@ namespace HappyToy.V2.Editor
                 Add(emissive,"CorridorRun lantern shade, HauntedCorridorPresentation paper shade, LightExplorationRun candle/locator flame");
                 var puddle=new Material(lit);puddle.SetFloat("_EnvironmentReflections",0);
                 puddle.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
-                Add(puddle,"TempleForestPuddles restrained dielectric water; direct light highlights retained");
+                Add(puddle,"TempleForestFoliageFinish dielectric leaves; direct light highlights retained");
+                var shallowWater=new Material(lit);shallowWater.SetFloat("_EnvironmentReflections",0);
+                shallowWater.SetFloat("_Surface",1);shallowWater.SetFloat("_Blend",0);
+                shallowWater.SetFloat("_BlendModePreserveSpecular",0);
+                shallowWater.SetFloat("_SrcBlend",(float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                shallowWater.SetFloat("_DstBlend",(float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                shallowWater.SetFloat("_SrcBlendAlpha",(float)UnityEngine.Rendering.BlendMode.One);
+                shallowWater.SetFloat("_DstBlendAlpha",(float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                shallowWater.SetFloat("_ZWrite",0);shallowWater.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+                shallowWater.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                Add(shallowWater,"TempleForestPuddles translucent dielectric water; direct light highlights retained");
                 // The authored mask uses baked normal, occlusion and packed
                 // metallic/smoothness together. Its recessed eyes add emission
                 // to that exact combination; retaining each flag separately
@@ -149,7 +159,12 @@ namespace HappyToy.V2.Editor
                         material=new Material(definition.prototype) {name=ownedName,hideFlags=HideFlags.None};
                         AssetDatabase.CreateAsset(material,definition.path);
                     }
-                    else {material.CopyPropertiesFromMaterial(definition.prototype);EditorUtility.SetDirty(material);}
+                    else
+                    {
+                        material.CopyPropertiesFromMaterial(definition.prototype);
+                        material.shaderKeywords=definition.prototype.shaderKeywords;
+                        EditorUtility.SetDirty(material);
+                    }
                     if(!material.shaderKeywords.OrderBy(x=>x,StringComparer.Ordinal).SequenceEqual(definition.prototype.shaderKeywords.OrderBy(x=>x,StringComparer.Ordinal)))
                         throw new InvalidOperationException("Runtime shader anchor keywords differ: "+definition.path);
                     entries.Add(new Entry {asset=definition.path,shader=material.shader.name,

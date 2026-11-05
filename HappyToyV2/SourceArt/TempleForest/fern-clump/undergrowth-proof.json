@@ -1,0 +1,32 @@
+{
+  "scope": "Source mesh sampling and Blender FBX reimport; not Unity visual or FPS approval",
+  "sourceSha256": "3fd3ec241d8c86bf578061cc79bc9a1e5abdf840d3790fa9f385a925cfb73e2c",
+  "editableSha256": "f40952cb761d53d6534e21dc24c001f735f3ad2cab640d607159f706c1d5d092",
+  "exportSha256": [
+    "dd146d6a2ecb1d397cd2c62bb556251ae6e3d87dc05bc94d78546f9b9893ce0e"
+  ],
+  "editable": [
+    {
+      "triangles": 15477,
+      "vertices": 13146,
+      "area": 1.0385746053768001,
+      "zeroNormals": 0,
+      "sourceSampleCount": 1778,
+      "surfaceDistanceP95": 0.010685916990041733,
+      "surfaceDistanceMaximum": 0.04121704027056694
+    }
+  ],
+  "reimported": [
+    {
+      "triangles": 15477,
+      "vertices": 13146,
+      "area": 1.0385746127928759,
+      "zeroNormals": 0,
+      "sourceSampleCount": 1778,
+      "surfaceDistanceP95": 0.010685940273106098,
+      "surfaceDistanceMaximum": 0.04121698811650276,
+      "areaRelativeLoss": -7.140628814822897e-09,
+      "triangleLoss": 0
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "asset": "temple-hall-v2",
+  "purpose": "Korean temple exterior at the end of the existing forest approach",
+  "reference": "reference.png",
+  "reference_sha256": "a499172897f691ef33172e41bcaed937dd5b6357a56d426a473b48b1b120cfab",
+  "reference_generation": "Built-in image generation followed by one framing edit; both inputs and exact prompts are retained",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "f5dd3782-81aa-49a7-b6b4-c5ec0871d9b4",
+  "job_id": "01881964-5e8d-4ce1-bebb-4ad3f8b468e5",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 1234,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "remove_background": true
+  },
+  "status": "completed",
+  "archive_sha256": "e677140c26a5842e27392c64671b63188101d281302bceca102efdda51a238a0",
+  "original_glb_sha256": "da73f502271964ef371b04e05214a1db47c4de57e14600d142396adac72ccf69",
+  "web_review": "The parent agent inspected the same job in the designated IAB viewer from the front and rotated sides; tiled roof, wood columns, lattice and mossy foundation were visible. No joint edits were made.",
+  "limitations": "The generated rear repeats a nearly identical front facade and steps. The source contains no normal map. Candidate placement and front-facing appearance were inspected in an isolated Unity player; per-asset GPU cost and production integration verification remain separate."
+}

@@ -1,0 +1,24 @@
+{
+  "asset": "stone-lantern",
+  "purpose": "Mossy Korean Buddhist stone lantern for the temple entrance",
+  "reference": "reference.png",
+  "reference_sha256": "b042ebcfd221ea0c56492f312abff745394542e8786940237ebee34387763511",
+  "reference_generation": "OpenAI built-in image generation; exact prompt in reference-prompt.txt",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "1ff1a3e1-3d9e-47c7-bca3-1e3176d1765e",
+  "job_id": "b8c6c0a5-63d0-4af2-8da4-5b5d67f61ee8",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 1234,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "remove_background": true
+  },
+  "status": "completed",
+  "archive_sha256": "2353d2af56e5e1576d259d7d2277fc9a2973e224cb8b7e3823d075473c41a73b",
+  "original_glb_sha256": "6c9edc1b1e9ff60e81b041498eea46ddeca35c3eca250905364da6e647775094",
+  "web_review": "The same job was inspected in the designated IAB viewer, from the front and two rotated directions. Stone roof, pedestal, weathered texture and square openings were visible. No joint edit was required.",
+  "limitations": "Source has no normal map. CPU LOD and FBX checks are documented in surface-proof.json. Unity rendering, collider/route and performance checks are separate."
+}

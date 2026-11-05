@@ -33,15 +33,31 @@ namespace HappyToy.V2
                 throw new ArgumentException("Forest floor and route dimensions are too small");
 
             material = new Material(shader) { name = "Temple forest shallow dielectric water", enableInstancing = true };
-            material.SetColor("_BaseColor", new Color(.032f, .041f, .047f, 1));
+            // Shallow rainwater lets the soil read through instead of looking
+            // like an opaque black cut-out. Real direct lights still make soft
+            // specular highlights; sky/reflection probes do not over-brighten it.
+            material.SetColor("_BaseColor", new Color(.09f, .105f, .115f, .48f));
             material.SetFloat("_Metallic", 0);
-            material.SetFloat("_Smoothness", .72f);
+            material.SetFloat("_Smoothness", .56f);
             material.SetFloat("_SpecularHighlights", 1);
             // The scene's default reflection was conspicuously bright blue on
             // these dark puddles. Keep direct moon/lantern highlights while
             // avoiding unrelated sky/reflection-probe reflections.
             material.SetFloat("_EnvironmentReflections", 0);
             material.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            material.SetFloat("_Surface", 1);
+            material.SetFloat("_Blend", 0);
+            material.SetFloat("_BlendModePreserveSpecular", 0);
+            material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_SrcBlendAlpha", (float)BlendMode.One);
+            material.SetFloat("_DstBlendAlpha", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_ZWrite", 0);
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.SetOverrideTag("RenderType", "Transparent");
+            // Render before the bounded mist (Transparent - 5) so fog
+            // naturally overlays water rather than sitting underneath it.
+            material.renderQueue = (int)RenderQueue.Transparent - 10;
             var vertices = new List<Vector3>();
             var uv = new List<Vector2>();
             var triangles = new List<int>();

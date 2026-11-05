@@ -1,0 +1,23 @@
+{
+  "scope": "Sampled FBX geometry, not GPU approval",
+  "lods": [
+    {
+      "lod": 0,
+      "triangles": 23888,
+      "frontTriangles": 12443,
+      "sampledRays": 4096,
+      "raysWithMultipleSurfaces": 220,
+      "adjacentPairs": 375,
+      "adjacentPairsUnderPointOneMillimetreAtFourCmHeight": 1
+    },
+    {
+      "lod": 1,
+      "triangles": 19885,
+      "frontTriangles": 10402,
+      "sampledRays": 4096,
+      "raysWithMultipleSurfaces": 203,
+      "adjacentPairs": 341,
+      "adjacentPairsUnderPointOneMillimetreAtFourCmHeight": 0
+    }
+  ]
+}

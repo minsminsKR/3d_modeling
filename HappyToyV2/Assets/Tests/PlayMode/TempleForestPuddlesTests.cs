@@ -33,7 +33,15 @@ namespace HappyToy.V2.CloudTests
             Assert.That(renderer.shadowCastingMode, Is.EqualTo(ShadowCastingMode.Off));
             Assert.That(renderer.sharedMaterial.shader.name, Is.EqualTo("Universal Render Pipeline/Lit"));
             Assert.That(renderer.sharedMaterial.GetFloat("_Metallic"), Is.Zero);
-            Assert.That(renderer.sharedMaterial.GetFloat("_Smoothness"), Is.InRange(.65f, .8f));
+            Assert.That(renderer.sharedMaterial.GetFloat("_Smoothness"), Is.InRange(.5f, .6f));
+            Assert.That(renderer.sharedMaterial.GetColor("_BaseColor").a, Is.InRange(.4f, .55f));
+            Assert.That(renderer.sharedMaterial.GetFloat("_Surface"), Is.EqualTo(1));
+            Assert.That(renderer.sharedMaterial.GetFloat("_ZWrite"), Is.Zero);
+            Assert.That(renderer.sharedMaterial.GetFloat("_SrcBlend"), Is.EqualTo((float)BlendMode.SrcAlpha));
+            Assert.That(renderer.sharedMaterial.GetFloat("_DstBlend"), Is.EqualTo((float)BlendMode.OneMinusSrcAlpha));
+            Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_SURFACE_TYPE_TRANSPARENT"), Is.True);
+            Assert.That(renderer.sharedMaterial.renderQueue, Is.LessThan((int)RenderQueue.Transparent - 5),
+                "The ground mist must render over the water");
             Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_ENVIRONMENTREFLECTIONS_OFF"), Is.True);
             Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_SPECULARHIGHLIGHTS_OFF"), Is.False);
             Assert.That(renderer.reflectionProbeUsage, Is.EqualTo(ReflectionProbeUsage.Off));

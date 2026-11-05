@@ -1,0 +1,26 @@
+{
+  "LOD0": {
+    "sampledLongFaces": 2,
+    "badAbove3cm": 0,
+    "above5cm": 0,
+    "above10cm": 0,
+    "areaAbove3cm": 0.0,
+    "areaAbove5cm": 0.0,
+    "areaAbove10cm": 0.0,
+    "deviationP95": 4.805480102731963e-07,
+    "deviationMax": 4.805480102731963e-07,
+    "longestBad": []
+  },
+  "LOD1": {
+    "sampledLongFaces": 348,
+    "badAbove3cm": 0,
+    "above5cm": 0,
+    "above10cm": 0,
+    "areaAbove3cm": 0.0,
+    "areaAbove5cm": 0.0,
+    "areaAbove10cm": 0.0,
+    "deviationP95": 0.0026663800119422366,
+    "deviationMax": 0.004111212212592363,
+    "longestBad": []
+  }
+}

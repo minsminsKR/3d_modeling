@@ -1,0 +1,102 @@
+[
+  {
+    "name": "original normalized 10m",
+    "all": {
+      "faces": 961875,
+      "longest_edge_m_p95": 0.09187026732689578,
+      "longest_edge_m_p99": 0.14851059012109197,
+      "max_edge_m": 0.33194943644621355,
+      "edges_over_0_25m": 135,
+      "edges_over_0_5m": 0,
+      "edges_over_1m": 0,
+      "area_over_0_03m2": 0,
+      "max_area_m2": 0.016699077501018903
+    },
+    "canopy": {
+      "faces": 938144,
+      "longest_edge_m_p95": 0.08473116654371952,
+      "longest_edge_m_p99": 0.13252859906515027,
+      "max_edge_m": 0.33194943644621355,
+      "edges_over_0_25m": 78,
+      "edges_over_0_5m": 0,
+      "edges_over_1m": 0,
+      "area_over_0_03m2": 0,
+      "max_area_m2": 0.013187642072327229
+    }
+  },
+  {
+    "name": "current near",
+    "all": {
+      "faces": 195666,
+      "longest_edge_m_p95": 0.2491019540249983,
+      "longest_edge_m_p99": 0.3950477600953087,
+      "max_edge_m": 2.6109158536236783,
+      "edges_over_0_25m": 9607,
+      "edges_over_0_5m": 1134,
+      "edges_over_1m": 193,
+      "area_over_0_03m2": 1072,
+      "max_area_m2": 1.00337367159862
+    },
+    "canopy": {
+      "faces": 172324,
+      "longest_edge_m_p95": 0.2561453687139364,
+      "longest_edge_m_p99": 0.413575487750999,
+      "max_edge_m": 2.6109158536236783,
+      "edges_over_0_25m": 9547,
+      "edges_over_0_5m": 1134,
+      "edges_over_1m": 193,
+      "area_over_0_03m2": 1072,
+      "max_area_m2": 1.00337367159862
+    }
+  },
+  {
+    "name": "current far",
+    "all": {
+      "faces": 40697,
+      "longest_edge_m_p95": 0.4176446259553777,
+      "longest_edge_m_p99": 0.890453372399389,
+      "max_edge_m": 3.329898903836533,
+      "edges_over_0_25m": 13894,
+      "edges_over_0_5m": 1140,
+      "edges_over_1m": 302,
+      "area_over_0_03m2": 2320,
+      "max_area_m2": 1.859408396404782
+    },
+    "canopy": {
+      "faces": 40273,
+      "longest_edge_m_p95": 0.4045591037467824,
+      "longest_edge_m_p99": 0.688359487481231,
+      "max_edge_m": 3.329898903836533,
+      "edges_over_0_25m": 13574,
+      "edges_over_0_5m": 864,
+      "edges_over_1m": 202,
+      "area_over_0_03m2": 2041,
+      "max_area_m2": 1.859408396404782
+    }
+  },
+  {
+    "name": "protected branches candidate",
+    "all": {
+      "faces": 257499,
+      "longest_edge_m_p95": 0.21503716155965688,
+      "longest_edge_m_p99": 0.2753019131406058,
+      "max_edge_m": 0.5585758567552589,
+      "edges_over_0_25m": 5151,
+      "edges_over_0_5m": 2,
+      "edges_over_1m": 0,
+      "area_over_0_03m2": 72,
+      "max_area_m2": 0.055199908169114534
+    },
+    "canopy": {
+      "faces": 234043,
+      "longest_edge_m_p95": 0.21774342677020925,
+      "longest_edge_m_p99": 0.27820585193561087,
+      "max_edge_m": 0.5585758567552589,
+      "edges_over_0_25m": 5094,
+      "edges_over_0_5m": 2,
+      "edges_over_1m": 0,
+      "area_over_0_03m2": 72,
+      "max_area_m2": 0.055199908169114534
+    }
+  }
+]

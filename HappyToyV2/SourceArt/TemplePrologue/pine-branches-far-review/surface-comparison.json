@@ -1,0 +1,161 @@
+{
+  "seed": "fixed",
+  "results": [
+    {
+      "name": "current near",
+      "triangles": 195666,
+      "original_to_candidate": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 2.1496556286137996e-07,
+          "p99_m": 4.7706993200336e-07,
+          "max_m": 5.331201577973843e-07
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.04840926248580216,
+          "p99_m": 0.08821234121918677,
+          "max_m": 0.19236931204795837
+        }
+      },
+      "candidate_to_original": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 2.086162567138672e-07,
+          "p99_m": 4.76837158203125e-07,
+          "max_m": 5.331201577973843e-07
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.015103084407746787,
+          "p99_m": 0.026523610465228557,
+          "max_m": 0.12408225238323212
+        }
+      },
+      "top_projection": {
+        "sample_grid": 2601,
+        "original_hits": 1443,
+        "source_hit_candidate_miss": 58,
+        "candidate_hit_source_miss": 51,
+        "both_hit_height_error_p95_m": 0.6466054916381828
+      }
+    },
+    {
+      "name": "protected near",
+      "triangles": 257499,
+      "original_to_candidate": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 2.1496556286137996e-07,
+          "p99_m": 4.7706993200336e-07,
+          "max_m": 5.331201577973843e-07
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.046236641518771646,
+          "p99_m": 0.08490447118878361,
+          "max_m": 0.19236931204795837
+        }
+      },
+      "candidate_to_original": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 2.086162567138672e-07,
+          "p99_m": 4.76837158203125e-07,
+          "max_m": 5.331201577973843e-07
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.011607199488207697,
+          "p99_m": 0.021040617339313027,
+          "max_m": 0.03532698005437851
+        }
+      },
+      "top_projection": {
+        "sample_grid": 2601,
+        "original_hits": 1443,
+        "source_hit_candidate_miss": 51,
+        "candidate_hit_source_miss": 37,
+        "both_hit_height_error_p95_m": 0.6659020900726323
+      }
+    },
+    {
+      "name": "current far",
+      "triangles": 40697,
+      "original_to_candidate": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 0.2189157053828238,
+          "p99_m": 0.3580332466959953,
+          "max_m": 0.5743874311447144
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.14475715979933737,
+          "p99_m": 0.233252707272768,
+          "max_m": 0.5703962445259094
+        }
+      },
+      "candidate_to_original": {
+        "trunk": {
+          "n": 311,
+          "p95_m": 0.06861843541264534,
+          "p99_m": 0.08869830518960953,
+          "max_m": 0.08966771513223648
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.03328236993402239,
+          "p99_m": 0.047760896384716034,
+          "max_m": 0.09404739737510681
+        }
+      },
+      "top_projection": {
+        "sample_grid": 2601,
+        "original_hits": 1443,
+        "source_hit_candidate_miss": 189,
+        "candidate_hit_source_miss": 52,
+        "both_hit_height_error_p95_m": 1.8049580097198474
+      }
+    },
+    {
+      "name": "economy far",
+      "triangles": 178760,
+      "original_to_candidate": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 0.03232522588223218,
+          "p99_m": 0.05373104717582463,
+          "max_m": 0.11186400800943375
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.05000994764268398,
+          "p99_m": 0.08489178895950315,
+          "max_m": 0.19236931204795837
+        }
+      },
+      "candidate_to_original": {
+        "trunk": {
+          "n": 1200,
+          "p95_m": 0.0037177540245465915,
+          "p99_m": 0.009616188425570724,
+          "max_m": 0.034891050308942795
+        },
+        "canopy": {
+          "n": 1200,
+          "p95_m": 0.015071031637489794,
+          "p99_m": 0.02516403453424573,
+          "max_m": 0.04149625822901726
+        }
+      },
+      "top_projection": {
+        "sample_grid": 2601,
+        "original_hits": 1443,
+        "source_hit_candidate_miss": 62,
+        "candidate_hit_source_miss": 47,
+        "both_hit_height_error_p95_m": 0.6009759902954102
+      }
+    }
+  ]
+}

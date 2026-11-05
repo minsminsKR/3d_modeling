@@ -1,0 +1,53 @@
+{
+  "scope": "CPU original surface sampling and Blender FBX reimport only; Unity visual and performance are separate",
+  "sourceSha256": "da73f502271964ef371b04e05214a1db47c4de57e14600d142396adac72ccf69",
+  "editableSha256": "b81ab5d6596cda642907b71a0c98aee56bc4c1b4991b5e1fc4a1a93aaddce7a9",
+  "exportSha256": [
+    "4d9079af8ef79a6e227642fc9256d78400957174a74ff455a46f3a0a19cf795a",
+    "d9352b930aa40bd7d4c2243df72582f2010687d863c40ac1874457aed0749c54"
+  ],
+  "editable": [
+    {
+      "triangles": 160000,
+      "vertices": 76152,
+      "area": 695.0497580388285,
+      "zeroNormalLoops": 0,
+      "sourceSampleCount": 1802,
+      "sourceP95": 0.005427578929811716,
+      "sourceMaximum": 0.010239099152386189
+    },
+    {
+      "triangles": 85000,
+      "vertices": 38652,
+      "area": 690.6631892419623,
+      "zeroNormalLoops": 0,
+      "sourceSampleCount": 1802,
+      "sourceP95": 0.009248165413737297,
+      "sourceMaximum": 0.01921932026743889
+    }
+  ],
+  "exported": [
+    {
+      "triangles": 159972,
+      "vertices": 76152,
+      "area": 695.0438361766062,
+      "zeroNormalLoops": 0,
+      "sourceSampleCount": 1802,
+      "sourceP95": 0.005427578929811716,
+      "sourceMaximum": 0.010239951312541962,
+      "areaRelativeLoss": 8.520055080665855e-06,
+      "triangleLoss": 28
+    },
+    {
+      "triangles": 84969,
+      "vertices": 38652,
+      "area": 690.6556541983966,
+      "zeroNormalLoops": 0,
+      "sourceSampleCount": 1802,
+      "sourceP95": 0.009248433634638786,
+      "sourceMaximum": 0.01921848952770233,
+      "areaRelativeLoss": 1.090986704233862e-05,
+      "triangleLoss": 31
+    }
+  ]
+}

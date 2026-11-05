@@ -12,15 +12,16 @@ namespace HappyToy.V2
     {
         const int SegmentCount = 12, Variants = 4;
         const float ReliefHeight = .030f;
-        Material wetStone;
-        Transform root;
+        Material wetStone, bedStone;
+        Mesh bedSurface;
+        Transform root, bedRoot;
         Renderer approachReference;
         bool oldForceRenderingOff;
         readonly Dictionary<Mesh, Mesh[]> stoneMeshes = new Dictionary<Mesh, Mesh[]>();
 
         public void Prepare(Renderer approach)
         {
-            if (root || wetStone) throw new InvalidOperationException("Forest path already prepared");
+            if (root || bedRoot || wetStone || bedStone) throw new InvalidOperationException("Forest path already prepared");
             if (!approach || !approach.enabled || approach.transform.parent != transform)
                 throw new ArgumentException("An active local approach renderer is required");
             var prefab = Resources.Load<GameObject>("CorridorEntrance/ritual-floor-visual");
@@ -31,15 +32,29 @@ namespace HappyToy.V2
                 throw new InvalidOperationException("Forest path art must not own physics");
 
             // Use the source color texture and actual generated stone geometry.
-            // Wet stone is dielectric: avoid the source's metallic map rather
-            // than making a mirror-like metallic floor. These values are subject
-            // to in-game light/visibility review.
+            // Damp stone is dielectric and still has a broad, restrained direct
+            // highlight. The cold sky probe otherwise turns the entire path into
+            // a bright blue mirror, so omit that environment reflection while
+            // retaining moon/lantern specular response and the authored albedo.
             wetStone = new Material(source) { name = "Temple forest wet stone", enableInstancing = true };
             if (wetStone.HasProperty("_MetallicGlossMap")) wetStone.SetTexture("_MetallicGlossMap", null);
             wetStone.DisableKeyword("_METALLICSPECGLOSSMAP");
             if (wetStone.HasProperty("_Metallic")) wetStone.SetFloat("_Metallic", 0);
-            if (wetStone.HasProperty("_Smoothness")) wetStone.SetFloat("_Smoothness", .42f);
-            if (wetStone.HasProperty("_BaseColor")) wetStone.SetColor("_BaseColor", new Color(.72f, .74f, .75f, 1));
+            if (wetStone.HasProperty("_Smoothness")) wetStone.SetFloat("_Smoothness", .31f);
+            if (wetStone.HasProperty("_BaseColor")) wetStone.SetColor("_BaseColor", new Color(.77f, .75f, .71f, 1));
+            if (wetStone.HasProperty("_EnvironmentReflections")) wetStone.SetFloat("_EnvironmentReflections", 0);
+            wetStone.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            // A darker, shallow bed retains the generated floor's actual
+            // stones and UVs between the exposed relief pieces. It removes
+            // the long bare-earth trench without placing a camera-facing card
+            // or adding physics to the old route.
+            bedStone = new Material(wetStone) { name = "Temple forest recessed stone bed", enableInstancing = true };
+            if (bedStone.HasProperty("_BaseColor")) bedStone.SetColor("_BaseColor", new Color(.68f, .66f, .62f, 1));
+            if (bedStone.HasProperty("_Smoothness")) bedStone.SetFloat("_Smoothness", .24f);
+            // The bed uses only the original's upward-facing base surface.
+            // Drawing the whole model double-sided after compressing it to
+            // two millimetres makes its front/back layers fight for depth.
+            if (bedStone.HasProperty("_Cull")) bedStone.SetFloat("_Cull", 2);
 
             var ground = transform.Find("Forest ground");
             if (!ground || ground.parent != transform) throw new InvalidOperationException("Forest ground is required");
@@ -56,6 +71,32 @@ namespace HappyToy.V2
             // the way to the temple. Move it gradually through the footprint.
             float[] seamOffsets = { -.24f, -.18f, -.08f, .04f, .14f, .22f,
                 .16f, .06f, -.04f, -.15f, -.23f, -.16f };
+            bedRoot = CorridorEntranceModels.Group(transform, "Recessed forest stone bed", Vector3.zero);
+            for (int i = 0; i < SegmentCount; i++)
+            {
+                var bed = CorridorEntranceModels.Attach("ritual-floor", bedRoot, "Recessed stone bed " + i, Vector3.zero);
+                var bedVisual = bed.GetChild(0);
+                var bedLods = bed.GetComponentInChildren<LODGroup>(true).GetLODs();
+                var sourceFilter = bedLods[0].renderers[0].GetComponent<MeshFilter>();
+                if (!bedSurface) bedSurface = BedSurface(sourceFilter, bedVisual);
+                // The detailed original base covers the path more completely
+                // than its distant LOD and is only ~1.7k triangles after trim.
+                foreach (var filter in bed.GetComponentsInChildren<MeshFilter>(true))
+                    filter.sharedMesh = bedSurface;
+                float z = center.z - size.z * .5f + (i + .5f) * segment;
+                float width = size.x * (.74f + .02f * ((i * 5) % 7));
+                float x = center.x + seamOffsets[i] * .35f;
+                CorridorEntranceModels.FitBox(bed, new Vector3(x, groundTop + .002f, z),
+                    new Vector3(width, .002f, segment - .004f), Quaternion.Euler(0, (i % 4) * 90, 0));
+                foreach (var renderer in bed.GetComponentsInChildren<Renderer>(true))
+                {
+                    var slots = renderer.sharedMaterials;
+                    for (int j = 0; j < slots.Length; j++) slots[j] = bedStone;
+                    renderer.sharedMaterials = slots;
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    renderer.receiveShadows = true;
+                }
+            }
             for (int column = 0; column < 2; column++)
             for (int i = 0; i < SegmentCount + column; i++)
             {
@@ -94,7 +135,7 @@ namespace HappyToy.V2
                 // The two columns are staggered by half a segment so joints
                 // never form a single straight stripe across the whole path.
                 // Neighbouring bounding rectangles remain disjoint.
-                CorridorEntranceModels.FitBox(tile, new Vector3(x, groundTop + .010f, z),
+                CorridorEntranceModels.FitBox(tile, new Vector3(x, groundTop + .025f, z),
                     new Vector3(width, ReliefHeight, length), Quaternion.Euler(0, yaw, 0));
                 foreach (var renderer in tile.GetComponentsInChildren<Renderer>(true))
                 {
@@ -105,6 +146,47 @@ namespace HappyToy.V2
                     renderer.receiveShadows = true;
                 }
             }
+        }
+
+        static Mesh BedSurface(MeshFilter filter, Transform visual)
+        {
+            if (!filter || !filter.sharedMesh || !filter.sharedMesh.isReadable)
+                throw new InvalidOperationException("Readable authored bed mesh required");
+            var source = filter.sharedMesh;
+            var vertices = source.vertices;
+            var map = visual.worldToLocalMatrix * filter.transform.localToWorldMatrix;
+            var bounds = GraphicsPropLibrary.LocalBounds(visual);
+            float cutoff = bounds.center.y;
+            var copy = Instantiate(source); copy.name = source.name + " upward base only";
+            var retained = new List<int>(); bool found = false;
+            try
+            {
+                for (int part = 0; part < source.subMeshCount; part++)
+                {
+                    if (source.GetTopology(part) != MeshTopology.Triangles)
+                        throw new InvalidOperationException("Unexpected stone bed topology");
+                    retained.Clear(); var triangles = source.GetTriangles(part);
+                    for (int i = 0; i < triangles.Length; i += 3)
+                    {
+                        int ia = triangles[i], ib = triangles[i + 1], ic = triangles[i + 2];
+                        Vector3 a = map.MultiplyPoint3x4(vertices[ia]);
+                        Vector3 b = map.MultiplyPoint3x4(vertices[ib]);
+                        Vector3 c = map.MultiplyPoint3x4(vertices[ic]);
+                        Vector3 normal = Vector3.Cross(b - a, c - a);
+                        // Keep only upward-facing triangles on the lower
+                        // substrate; the separate relief already owns the top.
+                        if ((a.y + b.y + c.y) / 3 > cutoff || normal.y <= normal.magnitude * .25f) continue;
+                        retained.Add(ia); retained.Add(ib); retained.Add(ic); found = true;
+                    }
+                    copy.SetTriangles(retained, part, false);
+                }
+                if (!found) throw new InvalidOperationException("No upward stone substrate found");
+                // Preserve the source bounds for stable alignment and height
+                // with the two original prefab LOD transforms.
+                copy.bounds = source.bounds;
+                return copy;
+            }
+            catch { Destroy(copy); throw; }
         }
 
         Mesh StoneMesh(MeshFilter filter, Transform visual, Bounds originalBounds, float cutoff, int variant)
@@ -159,10 +241,13 @@ namespace HappyToy.V2
         {
             if (approachReference) approachReference.forceRenderingOff = oldForceRenderingOff;
             if (root) Destroy(root.gameObject);
+            if (bedRoot) Destroy(bedRoot.gameObject);
             foreach (var variants in stoneMeshes.Values)
                 foreach (var mesh in variants) if (mesh) Destroy(mesh);
             stoneMeshes.Clear();
+            if (bedSurface) Destroy(bedSurface);
             if (wetStone) Destroy(wetStone);
+            if (bedStone) Destroy(bedStone);
         }
     }
 }

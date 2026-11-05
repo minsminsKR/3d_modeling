@@ -1,0 +1,82 @@
+{
+  "key": "temple-stone-cluster",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "ecd34fda97e8f087f0257091e0ad0b38a46a59bc158577002c19a0ff9b31bf45",
+  "editable": "temple-stone-cluster/temple-stone-cluster.blend",
+  "widthMetres": 1.7993817925453186,
+  "heightMetres": 0.11999418787308969,
+  "depthMetres": 1.799395203590393,
+  "normalizedAxis": "width",
+  "normalizedMetres": 1.8,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 1.8,
+    "texture": 2048,
+    "budgets": [
+      24000,
+      20000
+    ],
+    "square": true,
+    "max_height": 0.12
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 981654,
+  "originalTriangles": 981654,
+  "lods": [
+    {
+      "file": "temple-stone-cluster-lod0.fbx",
+      "targetTriangles": 24000,
+      "triangles": 24000,
+      "vertices": 10274,
+      "boundsMin": [
+        -0.8995714783668518,
+        -0.898485541343689,
+        0.0002740005438681692
+      ],
+      "boundsMax": [
+        0.8998103141784668,
+        0.9009096622467041,
+        0.12026818841695786
+      ],
+      "sha256": "0aee0b2057eab73d681851e900acb956e87edb07d009cb8e048d549b80269c20"
+    },
+    {
+      "file": "temple-stone-cluster-lod1.fbx",
+      "targetTriangles": 20000,
+      "triangles": 20000,
+      "vertices": 8274,
+      "boundsMin": [
+        -0.8995714783668518,
+        -0.898485541343689,
+        -0.0009482820169068873
+      ],
+      "boundsMax": [
+        0.9033039212226868,
+        0.9009096622467041,
+        0.1207321509718895
+      ],
+      "sha256": "71947918a9663cb592e752d65c1eae2a837dafe6b431175fb8e5e4e152baa0ae"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_temple-stone-cluster_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_temple-stone-cluster_0-baseColor.png",
+      "metallicSmoothness": "CE_temple-stone-cluster_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

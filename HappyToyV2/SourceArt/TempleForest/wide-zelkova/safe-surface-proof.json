@@ -1,0 +1,29 @@
+{
+  "scope": "Full source-correspondence and Blender FBX reimport, not a Unity/performance approval",
+  "sourceSha256": "c944ed7981599293a40a1d9e9613fd8bc35f654bad1018edcb21897663b6eaf6",
+  "blendSha256": "7affea58c257d0370dad2909a151be16a69954d0e228ed32946a2e7de1c57b06",
+  "fbxSha256": "36af5edb4dbebc39de22a641fdb585f2081e4247633b1bb0e602cdda512c757b",
+  "source": {
+    "triangles": 990611,
+    "area": 571.8460795109452,
+    "maxEdge": 0.2542462646961212,
+    "overHalfMetre": 0
+  },
+  "editable": {
+    "triangles": 990611,
+    "area": 571.8460648684256,
+    "maxEdge": 0.2542463541030884,
+    "overHalfMetre": 0
+  },
+  "reimport": {
+    "triangles": 990611,
+    "area": 571.8460665888156,
+    "maxEdge": 0.2542463541030884,
+    "overHalfMetre": 0
+  },
+  "maxPositionErrorMetres": 1.0925712103926344e-06,
+  "sourceZeroNormalLoops": 11,
+  "safeZeroNormalLoops": 0,
+  "normalsDotBelow099": 150,
+  "normalsDotP01": 0.9999999403953552
+}

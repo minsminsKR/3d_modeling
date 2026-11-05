@@ -1,0 +1,80 @@
+{
+  "key": "stone-lantern",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "6c9edc1b1e9ff60e81b041498eea46ddeca35c3eca250905364da6e647775094",
+  "editable": "stone-lantern/stone-lantern.blend",
+  "widthMetres": 0.6325125396251678,
+  "heightMetres": 1.4499364007142503,
+  "depthMetres": 0.6343757808208466,
+  "normalizedAxis": "height",
+  "normalizedMetres": 1.45,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 1.45,
+    "texture": 2048,
+    "budgets": [
+      65000,
+      18000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 929530,
+  "originalTriangles": 929530,
+  "lods": [
+    {
+      "file": "stone-lantern-lod0.fbx",
+      "targetTriangles": 65000,
+      "triangles": 64999,
+      "vertices": 32429,
+      "boundsMin": [
+        -0.316206693649292,
+        -0.3172857165336609,
+        1.2386974958644714e-05
+      ],
+      "boundsMax": [
+        0.31630584597587585,
+        0.31709006428718567,
+        1.449948787689209
+      ],
+      "sha256": "37f1b3e285aa047c70874a8eec06c12390575326114ae1bc1401eabe58c0d1ac"
+    },
+    {
+      "file": "stone-lantern-lod1.fbx",
+      "targetTriangles": 18000,
+      "triangles": 17999,
+      "vertices": 8929,
+      "boundsMin": [
+        -0.31563013792037964,
+        -0.31662994623184204,
+        5.270067049423233e-07
+      ],
+      "boundsMax": [
+        0.31655389070510864,
+        0.3165525794029236,
+        1.4503042697906494
+      ],
+      "sha256": "082e268fb865fbecb8cc00da191a76be5a9fa10bd2289ed9e5e72cde183aa12f"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_stone-lantern_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_stone-lantern_0-baseColor.png",
+      "metallicSmoothness": "CE_stone-lantern_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

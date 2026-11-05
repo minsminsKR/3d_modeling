@@ -1,0 +1,80 @@
+{
+  "key": "temple-hall-v2",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "da73f502271964ef371b04e05214a1db47c4de57e14600d142396adac72ccf69",
+  "editable": "temple-hall-v2/temple-hall-v2.blend",
+  "widthMetres": 8.998244285583496,
+  "heightMetres": 6.6195111505221575,
+  "depthMetres": 9.195017337799072,
+  "normalizedAxis": "width",
+  "normalizedMetres": 9.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 9.0,
+    "texture": 4096,
+    "budgets": [
+      160000,
+      85000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 4096,
+  "originalFaces": 947120,
+  "originalTriangles": 947120,
+  "lods": [
+    {
+      "file": "temple-hall-v2-lod0.fbx",
+      "targetTriangles": 160000,
+      "triangles": 160000,
+      "vertices": 76152,
+      "boundsMin": [
+        -4.499157428741455,
+        -4.598333358764648,
+        0.0006222494412213564
+      ],
+      "boundsMax": [
+        4.499086856842041,
+        4.596683979034424,
+        6.620133399963379
+      ],
+      "sha256": "4d9079af8ef79a6e227642fc9256d78400957174a74ff455a46f3a0a19cf795a"
+    },
+    {
+      "file": "temple-hall-v2-lod1.fbx",
+      "targetTriangles": 85000,
+      "triangles": 85000,
+      "vertices": 38652,
+      "boundsMin": [
+        -4.499157428741455,
+        -4.594168663024902,
+        0.0019456039881333709
+      ],
+      "boundsMax": [
+        4.49910306930542,
+        4.593717098236084,
+        6.624046325683594
+      ],
+      "sha256": "d9352b930aa40bd7d4c2243df72582f2010687d863c40ac1874457aed0749c54"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_temple-hall-v2_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_temple-hall-v2_0-baseColor.png",
+      "metallicSmoothness": "CE_temple-hall-v2_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

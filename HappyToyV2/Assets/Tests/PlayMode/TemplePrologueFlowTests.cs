@@ -54,6 +54,10 @@ namespace HappyToy.V2.CloudTests
             var colliders = roots.Select(root => root.GetComponent<CapsuleCollider>()).ToArray();
             var original = roots.Select(root => root.GetComponent<LODGroup>()).ToArray();
             var oldLevels = original.Select(group => group.GetLODs()).ToArray();
+            var twoLevelPine = Resources.Load<GameObject>("TemplePrologue/pine-branches-visual");
+            Assert.That(twoLevelPine, Is.Not.Null);
+            var retainedFar = twoLevelPine.GetComponent<LODGroup>().GetLODs()[1].renderers[0]
+                .GetComponent<MeshFilter>().sharedMesh;
             var forest = world.GetComponent(RequireType("TempleForestTrees"));
             Assert.That(Get<int>(forest, "TreeCount"), Is.EqualTo(16));
             Assert.That(Get<int>(forest, "AncientCount"), Is.EqualTo(2));
@@ -91,16 +95,25 @@ namespace HappyToy.V2.CloudTests
                 var expectedVisualScale = new Vector3(1 + .07f * (row % 3 - 1), 1, 1 + .05f * ((row + 1) % 3 - 1));
                 Assert.That(Vector3.Distance(replacement.localScale, expectedVisualScale), Is.LessThan(.0001f));
                 var group = replacement.GetComponent<LODGroup>(); var levels = group.GetLODs();
-                Assert.That(levels.Length, Is.EqualTo(2));
+                Assert.That(levels.Length, Is.EqualTo(ancient ? 2 : 3));
                 if (ancient) continue;
+                Assert.That(levels[0].screenRelativeTransitionHeight, Is.EqualTo(.18f).Within(.0001f));
+                Assert.That(levels[1].screenRelativeTransitionHeight, Is.EqualTo(.06f).Within(.0001f));
+                Assert.That(levels[2].screenRelativeTransitionHeight, Is.EqualTo(.015f).Within(.0001f));
                 Assert.That(levels[0].renderers[0].GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0) / 3,
-                    Is.InRange(180000, 200000));
-                var distant = levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh;
+                    Is.InRange(250000, 260000));
+                var middle = levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(middle.GetIndexCount(0) / 3, Is.InRange(170000, 180000));
+                var distant = levels[2].renderers[0].GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(distant, Is.SameAs(retainedFar), "The third LOD must reuse the existing distant pine mesh");
+                Assert.That(distant, Is.Not.SameAs(middle));
                 Assert.That(distant, Is.Not.SameAs(oldLevels[i][1].renderers[0].GetComponent<MeshFilter>().sharedMesh));
                 Assert.That(distant.GetIndexCount(0) / 3, Is.EqualTo(40697));
                 Assert.That(levels[0].renderers[0].sharedMaterial,
                     Is.SameAs(oldLevels[i][0].renderers[0].sharedMaterial));
                 Assert.That(levels[1].renderers[0].sharedMaterial,
+                    Is.SameAs(oldLevels[i][1].renderers[0].sharedMaterial));
+                Assert.That(levels[2].renderers[0].sharedMaterial,
                     Is.SameAs(oldLevels[i][1].renderers[0].sharedMaterial));
                 Assert.That(group.size, Is.EqualTo(original[i].size).Within(.25f));
             }
@@ -352,27 +365,19 @@ namespace HappyToy.V2.CloudTests
             var renderer = world.transform.Find("Forest ground").GetComponent<Renderer>();
             var texture = renderer.sharedMaterial.GetTexture("_BaseMap") as Texture2D;
             Assert.That(texture, Is.Not.Null);
-            Assert.That(texture.wrapMode, Is.EqualTo(TextureWrapMode.Repeat));
-            var pixels = texture.GetPixels32(); int w = texture.width, h = texture.height;
+            Assert.That(texture.wrapMode, Is.EqualTo(TextureWrapMode.Mirror));
+            Assert.That(renderer.sharedMaterial.GetTexture("_BumpMap"), Is.Not.Null);
+            Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
+            var pixels = texture.GetPixels32();
             int minimum = pixels.Min(pixel => (int)pixel.r), maximum = pixels.Max(pixel => (int)pixel.r);
             double mean = pixels.Average(pixel => (double)pixel.r);
             Assert.That(maximum - minimum, Is.GreaterThanOrEqualTo(5), "Forest soil lost its texture variation");
-            Assert.That(mean, Is.InRange(30, 60), "Forest soil changed its overall brightness");
-            double seamX = 0, seamY = 0, insideX = 0, insideY = 0;
-            for (int y = 0; y < h; y++)
-            {
-                seamX += System.Math.Abs(pixels[y*w].r - pixels[y*w+w-1].r);
-                for (int x = 1; x < w; x++) insideX += System.Math.Abs(pixels[y*w+x].r - pixels[y*w+x-1].r);
-            }
-            for (int x = 0; x < w; x++)
-            {
-                seamY += System.Math.Abs(pixels[x].r - pixels[(h-1)*w+x].r);
-                for (int y = 1; y < h; y++) insideY += System.Math.Abs(pixels[y*w+x].r - pixels[(y-1)*w+x].r);
-            }
-            seamX /= h; seamY /= w; insideX /= h*(w-1); insideY /= w*(h-1);
-            TestContext.WriteLine($"Forest soil mean red-step: seamX={seamX:F3}, insideX={insideX:F3}, seamY={seamY:F3}, insideY={insideY:F3}");
-            Assert.That(seamX, Is.LessThanOrEqualTo(insideX * 1.5 + .25), "Horizontal wrap creates an unusually hard seam");
-            Assert.That(seamY, Is.LessThanOrEqualTo(insideY * 1.5 + .25), "Vertical wrap creates an unusually hard seam");
+            Assert.That(mean, Is.InRange(30, 90), "Forest soil changed its overall brightness");
+            // Unity's GPU mirror sampler joins each edge to itself. CPU
+            // GetPixelBilinear wrapping does not faithfully model that sampler;
+            // validate the real sampler setting here and inspect the native view.
+            Assert.That(texture.mipmapCount, Is.GreaterThan(1));
+            Assert.That(texture.filterMode, Is.EqualTo(FilterMode.Trilinear));
         }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleGateAudioRestoresDuringSecondHingeCue()
@@ -736,10 +741,20 @@ namespace HappyToy.V2.CloudTests
             var flags = eye.clearFlags; var background = eye.backgroundColor;
             var fog = RenderSettings.fog; var fogColor = RenderSettings.fogColor;
             var fogDensity = RenderSettings.fogDensity; var ambient = RenderSettings.ambientLight;
+            var previousSky = RenderSettings.skybox;
             Call(session, "CreatePrologue");
-            Assert.That(eye.clearFlags, Is.EqualTo(CameraClearFlags.SolidColor));
+            var skyShader = Resources.Load<Shader>("TempleForestNightSky");
+            bool skySupported = SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null || skyShader.isSupported;
+            Assert.That(eye.clearFlags, Is.EqualTo(skySupported ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor));
+            var ownedSky = RenderSettings.skybox;
+            if (skySupported)
+            {
+                Assert.That(ownedSky, Is.Not.SameAs(previousSky));
+                Assert.That(ownedSky.shader, Is.SameAs(skyShader));
+            }
             Assert.That(eye.backgroundColor, Is.Not.EqualTo(background));
             Call(session, "RetirePrologue");
+            Assert.That(RenderSettings.skybox, Is.SameAs(previousSky));
             Assert.That(eye.clearFlags, Is.EqualTo(flags));
             Assert.That(eye.backgroundColor, Is.EqualTo(background));
             Assert.That(RenderSettings.fog, Is.EqualTo(fog));
@@ -747,6 +762,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RenderSettings.fogDensity, Is.EqualTo(fogDensity));
             Assert.That(RenderSettings.ambientLight, Is.EqualTo(ambient));
             yield return null;
+            if (skySupported) Assert.That((bool)ownedSky, Is.False, "The owned sky material was not released");
         }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate()

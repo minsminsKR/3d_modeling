@@ -1,0 +1,25 @@
+{
+  "asset": "wide-zelkova",
+  "purpose": "Generated broad-branched tree candidate for a small number of prominent Korean temple forest placements",
+  "reference": "reference.png",
+  "reference_sha256": "5d03811e4e347116034cd9418f47636c91da14fd64e4b2baa515f7be923b9bf2",
+  "reference_generation": "OpenAI built-in image generation; prompt retained in reference-prompt.txt",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "request_id": "6956fc8a-4250-41f9-bbc8-c64ad86428e2",
+  "job_id": "05b4032f-8a7b-47f5-a434-f008e865ce56",
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "seed": 790,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 49152,
+    "remove_background": true
+  },
+  "status": "completed",
+  "archive_sha256": "58a8b12f2b8a82ef8654699a65891452610ff17a42fa995de188e0b39f12cb86",
+  "original_glb_sha256": "c944ed7981599293a40a1d9e9613fd8bc35f654bad1018edcb21897663b6eaf6",
+  "web_review": "The parent agent inspected the same job in the designated sidebar, front-on and rotated. The result retains broader lateral branches and visible roots than the first 1024 candidate, but does not recreate the full arching canopy of the direction image.",
+  "limitations": "The initial 755k/200k collapse LODs were rejected after visible long triangle shards. The source-preserving near FBX has 990611 triangles; its cautious distance version remains 986361, so no verified low-cost LOD exists. Unity appearance, collision fit, LOD transitions, actual GPU cost and displayed FPS require independent validation. The source has no normal map."
+}
