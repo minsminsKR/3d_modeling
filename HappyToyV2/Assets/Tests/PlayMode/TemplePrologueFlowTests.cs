@@ -722,6 +722,37 @@ namespace HappyToy.V2.CloudTests
             }
             finally { Keys(); if (mouse.added) InputSystem.RemoveDevice(mouse); }
         }
+        [UnityTest, Timeout(180000)]
+        public IEnumerator TempleFullWalkingRouteUsesGamepadWithoutTeleporting()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            yield return RecoveryUiReady(); Call(shell, "RestoreDefaultSettings"); AddAuditPad();
+            yield return PadPulse(GamepadButton.South); yield return RecoveryWaitForTempleEntry();
+            var world = Get<Component>(session, "Prologue"); var director = Get<Component>(world, "Director");
+            yield return PadState(new GamepadState { leftStick = Vector2.up });
+            yield return Wait(() => player.transform.position.z >= 505, 20, "Gamepad could not walk from spawn to the incense");
+            yield return PadState(new GamepadState { rightStick = Vector2.down * .5f }, .01f);
+            yield return Wait(() => Get<Component>(player, "Focus")?.name == "향로", 3, "Gamepad could not aim at the incense");
+            yield return PadState(new GamepadState()); yield return PadPulse(GamepadButton.South);
+            yield return Wait(() => Get<object>(director, "Phase").ToString() == "FirstDeparture", 8, "Gamepad first prayer did not finish");
+            yield return PadState(new GamepadState { leftStick = Vector2.down });
+            yield return Wait(() => Get<object>(director, "Phase").ToString() == "SecondApproach", 20, "Gamepad could not walk home");
+            yield return PadState(new GamepadState());
+            yield return Wait(() => !Get<bool>(shell, "IsReloading"), 8, "Gamepad next day did not reveal");
+            yield return PadState(new GamepadState { leftStick = Vector2.up });
+            yield return Wait(() => player.transform.position.z >= 505, 20, "Gamepad second walk was blocked");
+            yield return PadState(new GamepadState());
+            yield return Wait(() => Get<Component>(player, "Focus")?.name == "향로", 3, "Gamepad second incense focus missing");
+            yield return PadPulse(GamepadButton.South);
+            yield return Wait(() => Get<object>(director, "Phase").ToString() == "GateRevealed", 8, "Gamepad second prayer did not finish");
+            yield return PadState(new GamepadState { leftStick = Vector2.down });
+            yield return Wait(() => player.transform.position.z <= 494.6f, 12, "Gamepad walk back to the gate was blocked");
+            yield return PadState(new GamepadState { rightStick = Vector2.right }, .01f);
+            yield return Wait(() => Get<Component>(player, "Focus")?.name == "나타난 대문", 3, "Gamepad could not turn to the gate");
+            yield return PadState(new GamepadState()); yield return PadPulse(GamepadButton.South);
+            yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60,
+                "Gamepad gate interaction did not lead to the corridor");
+        }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleSaveRejectsConcurrentCorruptionWithoutOverwriting()
         {
