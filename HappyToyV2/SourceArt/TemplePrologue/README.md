@@ -266,10 +266,32 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -execut
 
 `-v2-temple-pine-candidate` works only with the explicit isolated native
 temple review. It replaces the visible trees for that review while retaining
-the original tree roots, collision capsules, distant LOD and material. Both
+the original tree roots, collision capsules and material. Both
 baseline and candidate reviews capture `01b-pine-close.png`; compare these and
 the forest views and timings before deciding whether to promote the candidate.
 The additional geometry and real displayed FPS remain unmeasured.
+
+The candidate now has its own distant LOD derived from the improved near
+mesh. Its 44,356 triangles are close to the production distant LOD's 44,161.
+On 133 original lower-trunk samples, p95 surface distance changed from 1.13 m
+to 0.139 m; upper branches remain simplified and require visual inspection.
+The near and distant candidates share the same ground height. QEM generated
+12,734 coincident faces, some with different UVs or opposite winding; their
+vertices are separated so the FBX reimport retains all faces and surface area.
+Rounded per-corner position/UV/normal signatures match for 99.56% of faces;
+rounding near thresholds can affect the comparison, so this is not exact proof.
+The editable and exported versions have 47,250 vertices, which can affect
+performance even though triangle count is similar. Both versions and the
+independent comparison are recorded in `pine-review/`.
+
+To regenerate this distant candidate, install the pinned `fast-simplification`
+dependency described below, set its directory in `PYTHONPATH`, then run:
+
+```powershell
+blender -b -t 2 --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/prepare_pine_distance_review.py
+blender -b -t 2 --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/verify_pine_distance_review.py
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -executeMethod HappyToy.V2.Editor.TemplePrologueImport.ImportPineReview -v2-audit-no-desktop-interaction
+```
 
 `pine/reference.png` was created with the built-in image generation tool.
 Prompt: “A single mature Korean red pine tree for realistic 3D game asset

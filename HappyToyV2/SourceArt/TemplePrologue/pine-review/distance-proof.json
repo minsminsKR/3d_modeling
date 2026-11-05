@@ -1,0 +1,24 @@
+{
+  "scope": "CPU Blender sample/FBX check; not game-camera or FPS approval",
+  "editableSha256": "119fa8d23adf2a1f28029ae610142dbb86b8f3be8166d307f3afa499965f6655",
+  "exportSha256": "c1522eb7c76380b9404b8432b63cafb3a54bbfcd0411183951c77b4caec2be42",
+  "samples": 133,
+  "packedTextures": 2,
+  "editable": {
+    "p95": 0.13940659165382385,
+    "maximum": 0.37176087498664856,
+    "ground": 0.0,
+    "triangles": 44356,
+    "area": 617.0746111314845
+  },
+  "exported": {
+    "p95": 0.13940656185150146,
+    "maximum": 0.37176093459129333,
+    "ground": -3.3408704780413245e-07,
+    "triangles": 44356,
+    "area": 617.0746121844287
+  },
+  "positionUvMatchFraction": 0.9957615655153756,
+  "positionUvNormalMatchFraction": 0.9955812066011362,
+  "signatureRounding": "position/UV to 0.001, normals to 0.01"
+}

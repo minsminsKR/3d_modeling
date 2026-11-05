@@ -1,0 +1,29 @@
+{
+  "scope": "Distant review candidate; game-camera and performance unverified",
+  "source": "pine-trunk-review.blend",
+  "sourceSha256": "e50528c72629d38418940f5406ee039dedf6a9dbb083d96370b167d9221ad66a",
+  "editable": "pine-distance-review.blend",
+  "editableSha256": "119fa8d23adf2a1f28029ae610142dbb86b8f3be8166d307f3afa499965f6655",
+  "export": "pine-distance-review.fbx",
+  "exportSha256": "c1522eb7c76380b9404b8432b63cafb3a54bbfcd0411183951c77b4caec2be42",
+  "triangles": 44356,
+  "vertices": 47250,
+  "qemVertices": 9048,
+  "coincidentFacesIsolated": 12734,
+  "simplifier": "fast-simplification 0.1.12",
+  "targetTriangles": 30000,
+  "aggressiveness": 5,
+  "groundOffset": -0.039075651626554346,
+  "projectionDistanceP95": 0.02465367689728737,
+  "lowerTrunkDistanceMetres": {
+    "samples": 133,
+    "baseline": {
+      "p95": 1.1297608613967896,
+      "maximum": 1.3596097230911255
+    },
+    "candidate": {
+      "p95": 0.13940659165382385,
+      "maximum": 0.37176087498664856
+    }
+  }
+}

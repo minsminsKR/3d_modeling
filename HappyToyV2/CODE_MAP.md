@@ -28,7 +28,7 @@
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
 이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
 `NativeTempleReview`는 명시 플래그의 격리 Windows 플레이어에서 실제 카메라·믹서와
-1080p 오프스크린 동기 렌더를 확인한다. 숲 발소리 검토는 돌길 바깥에서 시작하며 같은 위치의 4초 실제 입력을 무화면으로 검증한다. `-v2-temple-pine-candidate`는 원본 줄기·뿌리 보존 시제품을 검토할 때만 표시하며 기존 충돌·원거리 LOD·재질을 유지한다. 실제 화면·성능 검토 전에는 일반 숲을 바꾸지 않는다. 명시적 `-v2-temple-gate-candidate` 검토에서만
+1080p 오프스크린 동기 렌더를 확인한다. 숲 발소리 검토는 돌길 바깥에서 시작하며 같은 위치의 4초 실제 입력을 무화면으로 검증한다. `-v2-temple-pine-candidate`는 원본 줄기·뿌리 보존 시제품과 개선된 원거리 LOD를 검토할 때만 표시하며 기존 충돌·재질을 유지한다. 실제 화면·성능 검토 전에는 일반 숲을 바꾸지 않는다. 명시적 `-v2-temple-gate-candidate` 검토에서만
 `TempleGateReviewMotion`이 시제품 문을 열고 `TempleGateReviewPassage`가 완전히 열린 후 중앙 차단을 해제하고 낮은 계단 경사 충돌을 켠 뒤 같은 가림 전환으로 이어진다.
 `-v2-temple-gate-walk-candidate` 검토는 `TempleGateReviewTraversal`이 개방과 일시정지를 관리하고 중앙을 앞으로 통과할 때 회랑 전환을 시작한다. 검토 전용 v3 중단 저장은 개방 진행·통과 직전 위치를 보존하며, v1/v2와 일반 플레이 저장은 유지한다.
 `TempleGateReviewAudio`는 기존 CC0 문소리 둘을 양쪽 경첩에 배치하고 개방 진행에 맞춰 이어 재생하며 일시정지·복원 위치를 따른다. 실제 장치 청감은 미검증이다.

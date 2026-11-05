@@ -15,7 +15,7 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
-        public IEnumerator TemplePineCandidateKeepsForestCollidersAndDistantLod()
+        public IEnumerator TemplePineCandidateKeepsForestCollidersAndUsesReviewedLods()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
             Call(session, "CreatePrologue"); Begin(); yield return null;
@@ -39,10 +39,13 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(levels.Length, Is.EqualTo(2));
                 Assert.That(levels[0].renderers[0].GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0) / 3,
                     Is.InRange(180000, 200000));
-                Assert.That(levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh,
-                    Is.SameAs(oldLevels[i][1].renderers[0].GetComponent<MeshFilter>().sharedMesh));
+                var distant = levels[1].renderers[0].GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(distant, Is.Not.SameAs(oldLevels[i][1].renderers[0].GetComponent<MeshFilter>().sharedMesh));
+                Assert.That(distant.GetIndexCount(0) / 3, Is.EqualTo(44356));
                 Assert.That(levels[0].renderers[0].sharedMaterial,
                     Is.SameAs(oldLevels[i][0].renderers[0].sharedMaterial));
+                Assert.That(levels[1].renderers[0].sharedMaterial,
+                    Is.SameAs(oldLevels[i][1].renderers[0].sharedMaterial));
                 Assert.That(group.size, Is.EqualTo(original[i].size).Within(.25f));
             }
             Assert.Throws<System.InvalidOperationException>(() => Call(RequireType("NativeTempleReview"), "InstallPineReview", world));

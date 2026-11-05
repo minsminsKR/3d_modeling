@@ -18,24 +18,30 @@ namespace HappyToy.V2.Editor
         public static void ImportTemple() => Import("temple");
         public static void ImportPine() => Import("pine");
 
-        // Trunk-preserving pine is an opt-in visual review, with the existing
-        // distant LOD and material. Production forest assets are not replaced.
+        // Trunk-preserving pine is an opt-in visual review with its own
+        // distant LOD and the existing material. Production is not replaced.
         public static void ImportPineReview()
         {
             const string source = "SourceArt/TemplePrologue/pine-review/pine-trunk-review.fbx";
+            const string distanceSource = "SourceArt/TemplePrologue/pine-review/pine-distance-review.fbx";
             const string modelPath = Target + "pine-trunk-review.fbx";
+            const string distancePath = Target + "pine-distance-review.fbx";
             const string prefabPath = Target + "pine-trunk-review.prefab";
-            if (!File.Exists(source)) throw new InvalidOperationException("Missing pine review FBX");
-            Copy(source, modelPath); AssetDatabase.Refresh();
-            var importer = AssetImporter.GetAtPath(modelPath) as ModelImporter;
-            if (!importer) throw new InvalidOperationException("Missing pine review importer");
-            importer.importAnimation = false; importer.addCollider = false;
-            importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
-            importer.materialLocation = ModelImporterMaterialLocation.InPrefab;
-            importer.SaveAndReimport();
+            if (!File.Exists(source) || !File.Exists(distanceSource)) throw new InvalidOperationException("Missing pine review FBX");
+            Copy(source, modelPath); Copy(distanceSource, distancePath); AssetDatabase.Refresh();
+            foreach (var path in new[] { modelPath, distancePath })
+            {
+                var importer = AssetImporter.GetAtPath(path) as ModelImporter;
+                if (!importer) throw new InvalidOperationException("Missing pine review importer");
+                importer.importAnimation = false; importer.addCollider = false;
+                if (path == distancePath) importer.weldVertices = false;
+                importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+                importer.materialLocation = ModelImporterMaterialLocation.InPrefab;
+                importer.SaveAndReimport();
+            }
             var material = AssetDatabase.LoadAssetAtPath<Material>(Target + "pine/surface.mat");
             var models = new[] { AssetDatabase.LoadAssetAtPath<GameObject>(modelPath),
-                                 AssetDatabase.LoadAssetAtPath<GameObject>(Target + "pine-lod1.fbx") };
+                                 AssetDatabase.LoadAssetAtPath<GameObject>(distancePath) };
             if (!material || !models[0] || !models[1]) throw new InvalidOperationException("Pine review assets are missing");
             var root = new GameObject("pine-trunk-review");
             try
@@ -148,8 +154,10 @@ namespace HappyToy.V2.Editor
             var nearReview = pineReviewLevels[0].renderers[0].GetComponent<MeshFilter>();
             var distantReview = pineReviewLevels[1].renderers[0].GetComponent<MeshFilter>();
             if (!nearReview || !nearReview.sharedMesh || nearReview.sharedMesh.subMeshCount != 1 ||
-                nearReview.sharedMesh.GetIndexCount(0) / 3 > 200000 || !distantReview || distantReview.sharedMesh != filter.sharedMesh ||
-                pineReviewLevels[0].renderers[0].sharedMaterial != levels[0].renderers[0].sharedMaterial)
+                nearReview.sharedMesh.GetIndexCount(0) / 3 > 200000 || !distantReview || !distantReview.sharedMesh ||
+                distantReview.sharedMesh.subMeshCount != 1 || distantReview.sharedMesh.GetIndexCount(0) / 3 > 50000 ||
+                pineReviewLevels[0].renderers[0].sharedMaterial != levels[0].renderers[0].sharedMaterial ||
+                pineReviewLevels[1].renderers[0].sharedMaterial != levels[1].renderers[0].sharedMaterial)
                 throw new InvalidOperationException("Pine review LOD or shared material differs from the finished assets");
             foreach (string cue in new[] { "enemy-baby-cry", "story-bell", "ambience-forest", "door-open" })
                 if (!ExternalAudio.Shared(cue)) throw new InvalidOperationException("Missing prologue recording " + cue);
