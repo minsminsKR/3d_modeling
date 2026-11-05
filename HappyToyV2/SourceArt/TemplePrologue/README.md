@@ -239,14 +239,17 @@ The archived game-camera forest shows conspicuous triangular damage on the
 current pine trunk and roots. A CPU-only comparison of the preserved generated
 original with the game LOD confirms that the reduction introduced much of the
 damage. `prepare_pine_trunk_review.py` derives an alternative from the same
-original, preserving source geometry below 4.6 m while reducing the canopy.
-It produces 180,501 triangles versus the current LOD0's 157,748. On 223
+original, preserving source geometry below 4.6 m and wood-colored central
+branches while reducing the canopy. It produces 195,666 triangles versus the current LOD0's 157,748. On 223
 sampled source vertices below 4.6 m, the original-to-surface p95 distance is
 0.354 m for the current LOD and less than 0.001 m for the candidate. These are
-samples, not a full geometry or quality guarantee. A low-sample Blender CPU
+samples, not a full geometry or quality guarantee. For 920 upper vertices
+classified by the source texture as wood, p95 is 0.094 m for the current LOD
+and 0.074 m for the candidate. Texture classification is approximate and does
+not identify every branch. A low-sample Blender CPU
 comparison shows much improved roots and trunk; the canopy and in-game
-appearance still require inspection. The Blender FBX reimport has 179,342
-triangles and about 0.22% less total surface area; its sampled trunk distance
+appearance still require inspection. The Blender FBX reimport has 194,527
+triangles and about 0.21% less total surface area; its sampled trunk distance
 remains below 0.002 mm. Inspect the canopy in the actual Unity camera before
 using the candidate in ordinary play.
 

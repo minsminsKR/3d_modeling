@@ -10,6 +10,7 @@ from pathlib import Path
 
 import bmesh
 import bpy
+import numpy as np
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
@@ -44,8 +45,30 @@ bmesh.ops.recalc_face_normals(mesh, faces=list(mesh.faces))
 nonmanifold = [edge for edge in mesh.edges if len(edge.link_faces) > 2]
 bmesh.ops.split_edges(mesh, edges=nonmanifold)
 mesh.to_mesh(candidate.data); mesh.free(); candidate.data.update()
-group = candidate.vertex_groups.new(name='Preserve trunk and roots below 4.6m')
-group.add([v.index for v in candidate.data.vertices if v.co.z < 4.6], 1, 'REPLACE')
+# Keep the lower trunk completely and protect wood-colored parts of the upper
+# central branches. Sample the existing preserved game atlas at each loop;
+# a majority vote avoids treating a single seam pixel as a whole vertex.
+atlas_path = here / 'game-export/pine/CE_pine_0-baseColor.png'
+atlas_hash = sha(atlas_path)
+image = bpy.data.images.load(str(atlas_path), check_existing=True)
+width, height = image.size
+pixels = np.empty(width * height * 4, dtype=np.float32)
+image.pixels.foreach_get(pixels); pixels = pixels.reshape(height, width, 4)
+loop_vertices = np.empty(len(candidate.data.loops), dtype=np.int32)
+candidate.data.loops.foreach_get('vertex_index', loop_vertices)
+uv = np.empty(len(candidate.data.loops) * 2, dtype=np.float32)
+candidate.data.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
+x = (np.mod(uv[:, 0], 1) * width).astype(np.int32)
+y = (np.mod(uv[:, 1], 1) * height).astype(np.int32)
+color = pixels[y, x, :3]
+wood = (color[:, 0] > color[:, 1] * 1.05) & (color[:, 0] > color[:, 2] * 1.10) & (color[:, 0] > .005)
+totals = np.bincount(loop_vertices, minlength=len(candidate.data.vertices))
+votes = np.bincount(loop_vertices, weights=wood, minlength=len(candidate.data.vertices))
+wood_vertices = votes / np.maximum(totals, 1) > .5
+protected = [v.index for v in candidate.data.vertices if v.co.z < 4.6 or
+             wood_vertices[v.index] and v.co.x * v.co.x + v.co.y * v.co.y < 1.6 ** 2]
+group = candidate.vertex_groups.new(name='Preserve trunk and central wooden branches')
+group.add(protected, 1, 'REPLACE')
 bpy.ops.object.select_all(action='DESELECT'); candidate.select_set(True)
 bpy.context.view_layer.objects.active = candidate
 modifier = candidate.modifiers.new('Reduce canopy, preserve trunk', 'DECIMATE')
@@ -91,6 +114,8 @@ report = dict(scope='Review-only candidate; game camera, performance and device 
     editableSha256=sha(editable), export=export.name, exportSha256=sha(export),
     vertices=len(candidate.data.vertices), triangles=len(candidate.data.loop_triangles),
     weldDistance=.00002, nonmanifoldEdgesSplit=len(nonmanifold), protectedBelowMetres=4.6,
+    woodAtlas='game-export/pine/CE_pine_0-baseColor.png', woodAtlasSha256=atlas_hash,
+    woodCoreRadiusMetres=1.6, protectedVertices=len(protected),
     decimateRatio=.075, invertedVertexGroup=True, vertexGroupStrength=10,
     trunkSurfaceDistanceMetres=comparison)
 (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')

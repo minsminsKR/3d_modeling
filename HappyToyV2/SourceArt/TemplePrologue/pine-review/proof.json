@@ -1,7 +1,7 @@
 {
   "scope": "CPU Blender surface sampling and FBX reimport; not game-camera or FPS approval",
-  "editableSha256": "e6fd0909ffa2a5d9bfaaba741c4c55cbf6bf211ecf5eb4b6b289014025a4a7b4",
-  "exportSha256": "415e85a8aad33241ab433f5ea2b98ff2a02f363379fd96bba64d384a7289a77f",
+  "editableSha256": "e50528c72629d38418940f5406ee039dedf6a9dbb083d96370b167d9221ad66a",
+  "exportSha256": "866c4aa9e1bb521a48c3b887abc7b0042bba00bf56681d42d7f7e6e65d37de21",
   "samples": 223,
   "editable": {
     "p95": 0.0,
@@ -11,8 +11,23 @@
     "p95": 5.960464477539062e-07,
     "maximum": 1.193582079395128e-06
   },
-  "editableTriangles": 180501,
-  "exportedTriangles": 179342,
-  "editableSurfaceArea": 811.8471277503595,
-  "exportedSurfaceArea": 810.088381638425
+  "upperWood": {
+    "samples": 920,
+    "baseline": {
+      "p95": 0.09440644085407257,
+      "maximum": 0.43907129764556885
+    },
+    "editable": {
+      "p95": 0.074278324842453,
+      "maximum": 0.43907129764556885
+    },
+    "exported": {
+      "p95": 0.07427787780761719,
+      "maximum": 0.4390716850757599
+    }
+  },
+  "editableTriangles": 195666,
+  "exportedTriangles": 194527,
+  "editableSurfaceArea": 790.5891280840021,
+  "exportedSurfaceArea": 788.9399470094313
 }
