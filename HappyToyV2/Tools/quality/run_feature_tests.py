@@ -59,7 +59,8 @@ PROFILES = {
                       PLAY + "SavedSlotIsConsumedWhenContinuingAfterSceneReloadFailure",
                       PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
     "temple-prologue-restore": ("Temple pause/save restoration, legacy migration and opt-in walking gate checkpoints; CPU only", [
-        ("PlayMode", (PLAY + "TempleObstructedResumePreservesPlayerSelectionAndEnvironment",
+        ("PlayMode", (PLAY + "TempleBoundaryContactsRemainSaveableAndRestorable",
+                      PLAY + "TempleObstructedResumePreservesPlayerSelectionAndEnvironment",
                       PLAY + "TempleObstructedContinueKeepsSaveAndShowsErrorOnTitle",
                       PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement",
                       PLAY + "TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate", PLAY + "TempleWalkReviewCheckpointValidatesAndRestoresBeforeOpening",

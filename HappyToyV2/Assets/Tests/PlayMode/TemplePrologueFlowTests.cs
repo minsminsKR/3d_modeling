@@ -15,6 +15,40 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleBoundaryContactsRemainSaveableAndRestorable()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            try
+            {
+                foreach (var sample in new[] {
+                    (new Vector3(521, .04f, 500), Key.D),
+                    (new Vector3(479, .04f, 500), Key.A),
+                    (new Vector3(515, .04f, 528), Key.W),
+                    (new Vector3(515, .04f, 474), Key.S) })
+                {
+                    PlacePlayer(sample.Item1); yield return null;
+                    yield return KeysObserved(sample.Item2); yield return Delay(1f);
+                    Assert.That((Get<CollisionFlags>(player, "LastCollision") & CollisionFlags.Sides) != 0, Is.True,
+                        "The player did not physically reach the boundary: " + player.transform.position);
+                    Keys(); yield return new WaitForFixedUpdate();
+                    var pose = player.transform.position;
+                    object checkpoint = null;
+                    Assert.DoesNotThrow(() => checkpoint = Call(world, "Capture", 0f),
+                        "A reachable boundary position could not be saved: " + pose);
+                    Assert.That((bool)Call(player, "CanRestoreTempleProgress", Get<object>(checkpoint, "player")), Is.True,
+                        "A boundary position accepted by save could not be restored: " + pose);
+                    Call(session, "RetirePrologue"); yield return null;
+                    Assert.DoesNotThrow(() => Call(session, "CreatePrologueForCheckpoint", checkpoint),
+                        "A reachable boundary position failed to restore in the rebuilt world: " + pose);
+                    world = Get<Component>(session, "Prologue");
+                    Assert.That(Vector3.Distance(player.transform.position, pose), Is.LessThan(.001f));
+                }
+            }
+            finally { Keys(); }
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleObstructedResumePreservesPlayerSelectionAndEnvironment()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
