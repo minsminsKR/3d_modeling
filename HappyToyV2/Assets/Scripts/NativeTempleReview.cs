@@ -195,6 +195,19 @@ namespace HappyToy.V2
             session.player.enabled = false; yield return null;
             AudioListener.volume = .8f; capture = RouteAudioCapture.Attach(Path.Combine(output, "audio"));
             MarkTime("first-day-forest");
+            // Isolated review from inside each physical boundary, looking outward.
+            // These poses never change the ordinary prologue or player saves.
+            if (args.Contains("-v2-temple-horizon-review"))
+            {
+                Pose(new Vector3(-21,.04f,-2), new Vector3(-45,1.4f,-2)); yield return null; SaveCamera("horizon-west.png");
+                Pose(new Vector3(21,.04f,-2), new Vector3(45,1.4f,-2)); yield return null; SaveCamera("horizon-east.png");
+                Pose(new Vector3(0,.04f,-26), new Vector3(0,1.4f,-50)); yield return null; SaveCamera("horizon-south.png");
+                Pose(new Vector3(0,.04f,28), new Vector3(0,1.4f,54)); yield return null; SaveCamera("horizon-north.png");
+                Pose(new Vector3(-21,.04f,-26), new Vector3(-45,1.4f,-50)); yield return null; SaveCamera("horizon-southwest.png");
+                Pose(new Vector3(21,.04f,-26), new Vector3(45,1.4f,-50)); yield return null; SaveCamera("horizon-southeast.png");
+                Pose(new Vector3(-21,.04f,28), new Vector3(-45,1.4f,54)); yield return null; SaveCamera("horizon-northwest.png");
+                Pose(new Vector3(21,.04f,28), new Vector3(45,1.4f,54)); yield return null; SaveCamera("horizon-northeast.png");
+            }
             Pose(new Vector3(0,.04f,-20), new Vector3(0,1.4f,7)); yield return null; SaveCamera("01-forest-spawn.png");
             yield return Measure("forest-spawn");
             var eyePosition = session.player.eyes.transform.position;

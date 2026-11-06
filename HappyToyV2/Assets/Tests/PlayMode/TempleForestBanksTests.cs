@@ -20,6 +20,7 @@ namespace HappyToy.V2.CloudTests
             var horizon = world.transform.Find("Forest horizon terrain");
             Assert.That(ground && horizon, Is.True);
             Assert.That(horizon.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(horizon.GetComponentsInChildren<LODGroup>(true).Length, Is.EqualTo(32));
             var renderer = horizon.GetComponent<MeshRenderer>();
             Assert.That(renderer.sharedMaterial, Is.SameAs(ground.GetComponent<Renderer>().sharedMaterial));
             var bounds = renderer.bounds;

@@ -32,7 +32,7 @@ namespace HappyToy.V2
                 float t = (i % SideSteps) / (float)SideSteps;
                 float x = side == 0 ? -1 + 2 * t : side == 1 ? 1 : side == 2 ? 1 - 2 * t : -1;
                 float z = side == 0 ? -1 : side == 1 ? -1 + 2 * t : side == 2 ? 1 : 1 - 2 * t;
-                float variation = ring == 0 ? 0 : ring * (.32f + .18f * Mathf.Sin(i * .43f) + .12f * Mathf.Sin(i * .91f));
+                float variation = ring == 0 ? 0 : ring * (3.2f + 1.0f * Mathf.Sin(i * .43f) + .55f * Mathf.Sin(i * .91f));
                 int index = ring * Perimeter + i;
                 vertices[index] = new Vector3(centre.x + x * size.x * .5f * expansion[ring],
                     top - .015f + variation, centre.z + z * size.z * .5f * expansion[ring]);
@@ -58,6 +58,35 @@ namespace HappyToy.V2
             renderer.sharedMaterial = ground.sharedMaterial;
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             renderer.receiveShadows = true;
+
+            // Reuse the authored pine's far mesh only; avoid new collision and
+            // expensive close LODs in scenery outside the physical boundary.
+            var pine = Resources.Load<GameObject>("TemplePrologue/pine-far-branches-visual");
+            if (!pine || !pine.GetComponent<LODGroup>() || pine.GetComponentInChildren<Collider>(true) ||
+                pine.GetComponentInChildren<Rigidbody>(true))
+                throw new InvalidOperationException("Visual-only forest pine LODs are required");
+            for (int row = 0; row < 2; row++)
+            for (int j = 0; j < 16; j++)
+            {
+                int i = (j * 4 + row * 2) % Perimeter;
+                int side = i / SideSteps;
+                float t = (i % SideSteps) / (float)SideSteps;
+                float x = side == 0 ? -1 + 2 * t : side == 1 ? 1 : side == 2 ? 1 - 2 * t : -1;
+                float z = side == 0 ? -1 : side == 1 ? -1 + 2 * t : side == 2 ? 1 : 1 - 2 * t;
+                float distance = row == 0 ? 1.55f : 2.10f;
+                var tree = Instantiate(pine, horizon.transform, false);
+                tree.name = "Distant forest pine " + row + "-" + j;
+                tree.transform.localPosition = new Vector3(centre.x + x * size.x * .5f * distance,
+                    top + (row == 0 ? 3.5f : 5.7f) * (3.2f + 1.0f * Mathf.Sin(i * .43f) + .55f * Mathf.Sin(i * .91f)) / 3.2f,
+                    centre.z + z * size.z * .5f * distance);
+                tree.transform.localRotation = Quaternion.Euler(0, (j * 83 + row * 41) % 360, 0);
+                tree.transform.localScale = Vector3.one * (.72f + .09f * (j % 4));
+                var lod = tree.GetComponent<LODGroup>();
+                if (lod.lodCount < 3) throw new InvalidOperationException("Far pine LOD is missing");
+                lod.ForceLOD(2);
+                foreach (var piece in tree.GetComponentsInChildren<Renderer>(true))
+                    piece.shadowCastingMode = ShadowCastingMode.Off;
+            }
         }
 
         void OnDestroy()
