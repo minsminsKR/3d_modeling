@@ -185,7 +185,7 @@ namespace HappyToy.V2.CloudTests
             var originalPosition = player.transform.position;
             var fog = RenderSettings.fog; var fogColor = RenderSettings.fogColor;
             var camera = Get<Camera>(player, "eyes"); var background = camera.backgroundColor;
-            Set(checkpoint, "phase", 1); Set(checkpoint, "prayerElapsed", 0f); Set(checkpoint, "incensePlaced", false);
+            Set(checkpoint, "phase", 1); Set(checkpoint, "firstClueRead", true); Set(checkpoint, "prayerElapsed", 0f); Set(checkpoint, "incensePlaced", false);
             Set(Get<object>(checkpoint, "player"), "position", new Vector3(500, .04f, 507.35f));
             Assert.Throws<System.InvalidOperationException>(() => Call(session, "CreatePrologueForCheckpoint", checkpoint));
             Assert.That(Get<bool>(session, "PrologueMode"), Is.False);
@@ -204,7 +204,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologue"); yield return null;
             var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(checkpoint, "phase", 1); Set(checkpoint, "prayerElapsed", 0f); Set(checkpoint, "incensePlaced", false);
+            Set(checkpoint, "phase", 1); Set(checkpoint, "firstClueRead", true); Set(checkpoint, "prayerElapsed", 0f); Set(checkpoint, "incensePlaced", false);
             Set(Get<object>(checkpoint, "player"), "position", new Vector3(500, .04f, 507.35f));
             Assert.That((bool)Call(Get<object>(session, "TempleSuspension"), "Save", checkpoint), Is.True);
             string path = Path.Combine(directory, "temple-suspend-v1.json");
@@ -280,7 +280,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(initialRoot.Q("temple-story-notice-panel").resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
             var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(checkpoint, "phase", 5); Set(checkpoint, "incensePlaced", true); Set(checkpoint, "gateVisible", false);
+            Set(checkpoint, "phase", 5); Set(checkpoint, "firstClueRead", true); Set(checkpoint, "secondClueRead", true); Set(checkpoint, "incensePlaced", true); Set(checkpoint, "gateVisible", false);
             Set(Get<object>(checkpoint, "player"), "position", new Vector3(500, .04f, 492.87f));
             Set(Get<object>(checkpoint, "player"), "yaw", 180f);
             Call(session, "CreatePrologueForCheckpoint", checkpoint); yield return null;
@@ -314,7 +314,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var checkpoint = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(checkpoint, "phase", 5); Set(checkpoint, "incensePlaced", true); Set(checkpoint, "gateVisible", true);
+            Set(checkpoint, "phase", 5); Set(checkpoint, "firstClueRead", true); Set(checkpoint, "secondClueRead", true); Set(checkpoint, "incensePlaced", true); Set(checkpoint, "gateVisible", true);
             Call(session, "CreatePrologueForCheckpoint", checkpoint); yield return null;
             var world = Get<Component>(session, "Prologue");
             var callback = shell.GetType().GetMethod("TempleEnterCorridor", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -388,7 +388,7 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             Call(world, "InstallGateWalkReview");
             var data = Call(world, "Capture", 0f);
-            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "phase", 5); Set(data, "firstClueRead", true); Set(data, "secondClueRead", true); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
             Set(data, "reviewGateStarted", true); Set(data, "reviewGateProgress", .75f);
             Call(shell, "Pause"); Call(session, "RetirePrologue"); yield return null;
             Call(session, "CreatePrologueForCheckpoint", data);
@@ -440,7 +440,7 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             Call(world, "InstallGateWalkReview");
             var data = Call(world, "Capture", 0f);
-            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "phase", 5); Set(data, "firstClueRead", true); Set(data, "secondClueRead", true); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
             Set(data, "reviewGateStarted", true); Set(data, "reviewGateProgress", 1f);
             Set(data, "reviewPreviousPosition", new Vector3(500, .45f, 491.1f));
             Set(Get<object>(data, "player"), "position", new Vector3(500, .04f, 490.6f));
@@ -459,7 +459,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "phase", 5); Set(data, "firstClueRead", true); Set(data, "secondClueRead", true); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
             Call(session, "CreatePrologueForCheckpoint", data); yield return null;
             var world = Get<Component>(session, "Prologue");
             var callback = shell.GetType().GetMethod("TempleEnterCorridor", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -490,7 +490,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "phase", 5); Set(data, "firstClueRead", true); Set(data, "secondClueRead", true); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
             Call(session, "CreatePrologueForCheckpoint", data); yield return null;
             var world = Get<Component>(session, "Prologue");
             var motion = (Component)Call(world, "InstallGateReview");
@@ -559,6 +559,7 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryUiReady(); yield return RecoveryClick("begin");
             var world = Get<Component>(session, "Prologue");
             var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            Call(world, "ReadStoryClue");
             PlacePlayer(new Vector3(500, .04f, 505.2f));
             player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
             yield return null; yield return null;
@@ -588,7 +589,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(data, "phase", 2); Set(data, "incensePlaced", true);
+            Set(data, "phase", 2); Set(data, "firstClueRead", true); Set(data, "incensePlaced", true);
             Call(session, "CreatePrologueForCheckpoint", data);
             var world = Get<Component>(session, "Prologue");
             var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
@@ -615,6 +616,7 @@ namespace HappyToy.V2.CloudTests
             int incenseStock = Get<int>(Get<Component>(player, "Rituals"), "Incense");
             var flashlight = Get<Light>(player, "flashlight");
             bool initialLight = flashlight.enabled;
+            Call(world, "ReadStoryClue");
             PlacePlayer(new Vector3(500, .04f, 505.2f));
             player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
             yield return null; yield return null; yield return RecoveryPulse(Key.E);
@@ -651,7 +653,7 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(new Vector3(500, .04f, 492.87f));
             var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", false);
+            Set(data, "phase", 5); Set(data, "firstClueRead", true); Set(data, "secondClueRead", true); Set(data, "incensePlaced", true); Set(data, "gateVisible", false);
             Call(session, "CreatePrologueForCheckpoint", data); yield return null;
             var world = Get<Component>(session, "Prologue");
             var gate = world.transform.Find("나타난 대문");
@@ -678,7 +680,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "phase", 5); Set(data, "firstClueRead", true); Set(data, "secondClueRead", true); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
             Call(session, "CreatePrologueForCheckpoint", data); yield return null;
             var world = Get<Component>(session, "Prologue");
             var motion = (Component)Call(world, "InstallGateReview");
@@ -777,7 +779,7 @@ namespace HappyToy.V2.CloudTests
             for (int phase = 0; phase < phases.Length; phase++)
             {
                 bool incense = phase == 1 || phase == 2 || phase == 4 || phase == 5;
-                Set(data, "phase", phase); Set(data, "incensePlaced", incense);
+                Set(data, "phase", phase); Set(data, "firstClueRead", phase >= 1); Set(data, "secondClueRead", phase >= 4); Set(data, "incensePlaced", incense);
                 Set(data, "prayerElapsed", phase == 1 || phase == 4 ? 1.5f : 0f);
                 Set(data, "gateVisible", phase == 5);
                 Call(session, "CreatePrologueForCheckpoint", data);
@@ -800,18 +802,175 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             var data = Call(world, "Capture", 0f);
             var type = RequireType("TemplePrologueCheckpoint");
-            Set(data, "version", 1); Set(data, "phase", 2); Set(data, "incensePlaced", false);
-            var migrated = Call(type, "FromJson", JsonUtility.ToJson(data));
+            Set(data, "version", 1); Set(data, "storyVersion", 0); Set(data, "firstClueRead", false); Set(data, "secondClueRead", false); Set(data, "phase", 2); Set(data, "incensePlaced", false);
+            string LegacyJson()
+            {
+                string json = JsonUtility.ToJson(data);
+                json = System.Text.RegularExpressions.Regex.Replace(json, ",\"storyVersion\":-?[0-9]+", "");
+                json = System.Text.RegularExpressions.Regex.Replace(json, ",\"legacyClueExemptMask\":-?[0-9]+", "");
+                json = System.Text.RegularExpressions.Regex.Replace(json, ",\"firstClueRead\":(true|false)", "");
+                json = System.Text.RegularExpressions.Regex.Replace(json, ",\"secondClueRead\":(true|false)", "");
+                return json;
+            }
+            var migrated = Call(type, "FromJson", LegacyJson());
             Assert.That(Get<int>(migrated, "version"), Is.EqualTo(2));
             Assert.That(Get<bool>(migrated, "incensePlaced"), Is.True);
-            Set(data, "phase", 1); Set(data, "prayerElapsed", .12f);
-            migrated = Call(type, "FromJson", JsonUtility.ToJson(data));
+            Set(data, "phase", 1); Set(data, "firstClueRead", false); Set(data, "prayerElapsed", .12f);
+            migrated = Call(type, "FromJson", LegacyJson());
             Assert.That(Get<bool>(migrated, "incensePlaced"), Is.False);
             Assert.That(Get<float>(migrated, "prayerElapsed"), Is.Zero);
             Set(data, "prayerElapsed", .5f);
-            migrated = Call(type, "FromJson", JsonUtility.ToJson(data));
+            migrated = Call(type, "FromJson", LegacyJson());
             Assert.That(Get<bool>(migrated, "incensePlaced"), Is.True);
             Assert.That(Get<float>(migrated, "prayerElapsed"), Is.EqualTo(.5f));
+        }
+        // Real test devices aim at the physical interaction target; no OS
+        // mouse or keyboard events are injected and no player teleport occurs.
+        IEnumerator TempleAimAt(Transform target, Mouse mouse, bool gamepad)
+        {
+            Assert.That(target, Is.Not.Null);
+            var pitch = player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(pitch, Is.Not.Null);
+            for (int frame = 0; frame < 240; frame++)
+            {
+                if (Get<Component>(player, "Focus")?.name == target.name)
+                {
+                    if (gamepad) { InputSystem.QueueStateEvent(auditPad, new GamepadState()); yield return null; }
+                    else { InputSystem.QueueStateEvent(mouse, new MouseState()); yield return null; }
+                    yield break;
+                }
+                var eye = Get<Camera>(player, "eyes").transform;
+                var direction = target.position - eye.position;
+                float desiredYaw = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+                float desiredPitch = -Mathf.Atan2(direction.y, new Vector2(direction.x, direction.z).magnitude) * Mathf.Rad2Deg;
+                float yawError = Mathf.DeltaAngle(player.transform.eulerAngles.y, desiredYaw);
+                float pitchError = desiredPitch - (float)pitch.GetValue(player);
+                if (gamepad)
+                {
+                    var stick = Vector2.ClampMagnitude(new Vector2(yawError, -pitchError) * .035f, .8f);
+                    InputSystem.QueueStateEvent(auditPad, new GamepadState { rightStick = stick });
+                    yield return null;
+                }
+                else
+                {
+                    float sensitivity = Get<float>(player, "sensitivity");
+                    InputSystem.QueueStateEvent(mouse, new MouseState { delta = new Vector2(yawError, -pitchError) / sensitivity });
+                    yield return null;
+                    InputSystem.QueueStateEvent(mouse, new MouseState()); yield return null;
+                }
+            }
+            Assert.Fail("Could not aim at the physical temple target: " + target.name + "; " + InputDiagnostics());
+        }
+        IEnumerator TempleStepAside(bool gamepad)
+        {
+            // The incense target sits in front of the note from the central
+            // path; walk right before aiming rather than raycasting through it.
+            if (gamepad) yield return PadState(new GamepadState { leftStick = Vector2.right }, .01f);
+            else yield return KeysObserved(Key.D);
+            yield return Wait(() => player.transform.position.x >= 500.64f, 5,
+                "The player could not step aside to inspect the note", InputDiagnostics);
+            if (gamepad) yield return PadState(new GamepadState(), .01f);
+            else { Keys(); yield return null; }
+        }
+        IEnumerator TempleFaceForward(Mouse mouse, bool gamepad)
+        {
+            for (int frame = 0; frame < 240; frame++)
+            {
+                float error = Mathf.DeltaAngle(player.transform.eulerAngles.y, 0);
+                if (Mathf.Abs(error) < 1.5f)
+                {
+                    if (gamepad) InputSystem.QueueStateEvent(auditPad, new GamepadState());
+                    else InputSystem.QueueStateEvent(mouse, new MouseState());
+                    yield return null; yield break;
+                }
+                if (gamepad)
+                {
+                    // The gamepad stick applies a dead zone; proportional
+                    // commands below it never turn the player. Keep a small
+                    // usable input until the real yaw reaches the tolerance.
+                    float stick = Mathf.Clamp(error * .035f, -.8f, .8f);
+                    if (Mathf.Abs(stick) < .2f) stick = Mathf.Sign(error) * .2f;
+                    InputSystem.QueueStateEvent(auditPad, new GamepadState { rightStick = new Vector2(stick, 0) });
+                }
+                else
+                    InputSystem.QueueStateEvent(mouse, new MouseState { delta = new Vector2(error / Get<float>(player, "sensitivity"), 0) });
+                yield return null;
+                if (!gamepad) { InputSystem.QueueStateEvent(mouse, new MouseState()); yield return null; }
+            }
+            Assert.Fail("Could not face forward after inspecting the note; yaw=" + player.transform.eulerAngles.y + "; " + InputDiagnostics());
+        }
+        IEnumerator TempleReadClueWithMouse(Component world, Mouse mouse)
+        {
+            var note = world.transform.Find("이름이 비어 있는 쪽지");
+            yield return TempleAimAt(note, mouse, false);
+            yield return RecoveryPulse(Key.E);
+            yield return null;
+            yield return TempleAimAt(world.transform.Find("향로"), mouse, false);
+        }
+        IEnumerator TempleReadClueWithTemporaryMouse(Component world)
+        {
+            var mouse = InputSystem.AddDevice<Mouse>();
+            try { yield return TempleReadClueWithMouse(world, mouse); }
+            finally { if (mouse.added) InputSystem.RemoveDevice(mouse); }
+        }
+        IEnumerator TempleReadClueWithPad(Component world)
+        {
+            var note = world.transform.Find("이름이 비어 있는 쪽지");
+            yield return TempleAimAt(note, null, true);
+            yield return PadPulse(GamepadButton.South);
+            yield return null;
+            yield return TempleAimAt(world.transform.Find("향로"), null, true);
+        }
+        [UnityTest, Timeout(120000)]
+        public IEnumerator TempleCluesRequireRealInputAndSurviveSavingAndRereading()
+        {
+            string directory = NewRecordFixture();
+            Call(session, "ConfigureRecordDirectory", directory);
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var director = Get<Component>(world, "Director");
+            PlacePlayer(new Vector3(500, .04f, 505.8f)); yield return null;
+            var mouse = InputSystem.AddDevice<Mouse>();
+            try
+            {
+                yield return TempleAimAt(world.transform.Find("향로"), mouse, false);
+                yield return RecoveryPulse(Key.E);
+                Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo("FirstApproach"));
+                Assert.That(Get<string>(session, "Notice"), Does.Contain("쪽지"));
+                yield return TempleFaceForward(mouse, false);
+                yield return TempleStepAside(false);
+                yield return TempleReadClueWithMouse(world, mouse);
+                var first = Call(world, "Capture", 0f);
+                Assert.That(Get<bool>(first, "firstClueRead"), Is.True);
+                Assert.That(Get<bool>(first, "secondClueRead"), Is.False);
+                Assert.That((bool)Call(Get<object>(session, "TempleSuspension"), "Save", first), Is.True);
+                var saved = Get<object>(Get<object>(session, "TempleSuspension"), "Snapshot");
+                Call(session, "RetirePrologue"); yield return null;
+                Call(session, "CreatePrologueForCheckpoint", saved); yield return null;
+                world = Get<Component>(session, "Prologue");
+                yield return TempleReadClueWithMouse(world, mouse);
+                var reread = Call(world, "Capture", 0f);
+                Assert.That(Get<bool>(reread, "firstClueRead"), Is.True);
+                Assert.That(Get<bool>(reread, "secondClueRead"), Is.False);
+                Set(reread, "phase", 3);
+                Call(session, "RetirePrologue"); yield return null;
+                Call(session, "CreatePrologueForCheckpoint", reread); yield return null;
+                world = Get<Component>(session, "Prologue"); director = Get<Component>(world, "Director");
+                AddAuditPad();
+                yield return TempleAimAt(world.transform.Find("향로"), null, true);
+                yield return PadPulse(GamepadButton.South);
+                Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo("SecondApproach"));
+                Assert.That(Get<string>(session, "Notice"), Does.Contain("쪽지"));
+                yield return TempleReadClueWithPad(world);
+                var second = Call(world, "Capture", 0f);
+                Assert.That(Get<bool>(second, "firstClueRead"), Is.True);
+                Assert.That(Get<bool>(second, "secondClueRead"), Is.True);
+                yield return TempleReadClueWithPad(world);
+                var repeated = Call(world, "Capture", 0f);
+                Assert.That(Get<bool>(repeated, "firstClueRead"), Is.True);
+                Assert.That(Get<bool>(repeated, "secondClueRead"), Is.True);
+            }
+            finally { if (mouse.added) InputSystem.RemoveDevice(mouse); }
         }
         [UnityTest, Timeout(180000)]
         public IEnumerator TempleFullWalkingRouteUsesKeyboardAndMouseWithoutTeleporting()
@@ -823,22 +982,28 @@ namespace HappyToy.V2.CloudTests
             {
                 var world = Get<Component>(session, "Prologue"); var director = Get<Component>(world, "Director");
                 yield return KeysObserved(Key.W);
-                yield return Wait(() => player.transform.position.z >= 505.0f, 20, "Walking from spawn to incense was blocked", InputDiagnostics);
+                yield return Wait(() => player.transform.position.z >= 505.8f, 20, "Walking from spawn to incense was blocked", InputDiagnostics);
                 Keys(); yield return null;
-                InputSystem.QueueStateEvent(mouse, new MouseState { delta = new Vector2(0, -133) });
-                yield return null; InputSystem.QueueStateEvent(mouse, new MouseState()); yield return null;
+                yield return TempleStepAside(false);
+                yield return TempleReadClueWithMouse(world, mouse);
+                Assert.That(Get<bool>(Call(world, "Capture", 0f), "firstClueRead"), Is.True);
                 yield return Wait(() => Get<Component>(player, "Focus")?.name == "향로", 3, "Mouse could not aim at the incense target", InputDiagnostics);
                 yield return RecoveryPulse(Key.E);
                 yield return Wait(() => Get<object>(director, "Phase").ToString() == "FirstDeparture", 8, "First prayer did not finish");
+                yield return TempleFaceForward(mouse, false);
                 yield return KeysObserved(Key.S);
                 yield return Wait(() => Get<object>(director, "Phase").ToString() == "SecondApproach", 20, "Walking home did not start the next day", InputDiagnostics);
                 Keys(); yield return Wait(() => !Get<bool>(shell, "IsReloading"), 8, "Next day did not reveal");
                 yield return KeysObserved(Key.W);
-                yield return Wait(() => player.transform.position.z >= 505.0f, 20, "Second walk to incense was blocked", InputDiagnostics);
+                yield return Wait(() => player.transform.position.z >= 505.8f, 20, "Second walk to incense was blocked", InputDiagnostics);
                 Keys(); yield return null;
+                yield return TempleStepAside(false);
+                yield return TempleReadClueWithMouse(world, mouse);
+                Assert.That(Get<bool>(Call(world, "Capture", 0f), "secondClueRead"), Is.True);
                 yield return Wait(() => Get<Component>(player, "Focus")?.name == "향로", 3, "Second incense focus missing", InputDiagnostics);
                 yield return RecoveryPulse(Key.E);
                 yield return Wait(() => Get<object>(director, "Phase").ToString() == "GateRevealed", 8, "Second prayer did not finish");
+                yield return TempleFaceForward(mouse, false);
                 yield return KeysObserved(Key.S);
                 yield return Wait(() => player.transform.position.z <= 494.6f, 12, "Walking back to the gate was blocked", InputDiagnostics);
                 Keys(); yield return null;
@@ -858,21 +1023,28 @@ namespace HappyToy.V2.CloudTests
             yield return PadPulse(GamepadButton.South); yield return RecoveryWaitForTempleEntry();
             var world = Get<Component>(session, "Prologue"); var director = Get<Component>(world, "Director");
             yield return PadState(new GamepadState { leftStick = Vector2.up });
-            yield return Wait(() => player.transform.position.z >= 505, 20, "Gamepad could not walk from spawn to the incense");
-            yield return PadState(new GamepadState { rightStick = Vector2.down * .5f }, .01f);
+            yield return Wait(() => player.transform.position.z >= 505.8f, 20, "Gamepad could not walk from spawn to the incense");
+            yield return TempleStepAside(true);
+            yield return TempleReadClueWithPad(world);
+            Assert.That(Get<bool>(Call(world, "Capture", 0f), "firstClueRead"), Is.True);
             yield return Wait(() => Get<Component>(player, "Focus")?.name == "향로", 3, "Gamepad could not aim at the incense");
             yield return PadState(new GamepadState()); yield return PadPulse(GamepadButton.South);
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "FirstDeparture", 8, "Gamepad first prayer did not finish");
+            yield return TempleFaceForward(null, true);
             yield return PadState(new GamepadState { leftStick = Vector2.down });
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "SecondApproach", 20, "Gamepad could not walk home");
             yield return PadState(new GamepadState());
             yield return Wait(() => !Get<bool>(shell, "IsReloading"), 8, "Gamepad next day did not reveal");
             yield return PadState(new GamepadState { leftStick = Vector2.up });
-            yield return Wait(() => player.transform.position.z >= 505, 20, "Gamepad second walk was blocked");
+            yield return Wait(() => player.transform.position.z >= 505.8f, 20, "Gamepad second walk was blocked");
             yield return PadState(new GamepadState());
+            yield return TempleStepAside(true);
+            yield return TempleReadClueWithPad(world);
+            Assert.That(Get<bool>(Call(world, "Capture", 0f), "secondClueRead"), Is.True);
             yield return Wait(() => Get<Component>(player, "Focus")?.name == "향로", 3, "Gamepad second incense focus missing");
             yield return PadPulse(GamepadButton.South);
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "GateRevealed", 8, "Gamepad second prayer did not finish");
+            yield return TempleFaceForward(null, true);
             yield return PadState(new GamepadState { leftStick = Vector2.down });
             yield return Wait(() => player.transform.position.z <= 494.6f, 12, "Gamepad walk back to the gate was blocked");
             yield return PadState(new GamepadState { rightStick = Vector2.right }, .01f);
@@ -893,7 +1065,7 @@ namespace HappyToy.V2.CloudTests
             var storeType = RequireType("TemplePrologueCheckpointStore");
             var staleSave = System.Activator.CreateInstance(storeType, directory, true);
             var staleConsume = System.Activator.CreateInstance(storeType, directory, true);
-            var changed = Call(checkpoint, "Copy"); Set(changed, "phase", 3);
+            var changed = Call(checkpoint, "Copy"); Set(changed, "phase", 3); Set(changed, "firstClueRead", true);
             string path = Path.Combine(directory, "temple-suspend-v1.json");
             string external = (string)Call(changed, "ToJson"); File.WriteAllText(path, external);
             Assert.That((bool)Call(staleSave, "Save", checkpoint), Is.False);
@@ -927,6 +1099,7 @@ namespace HappyToy.V2.CloudTests
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
             yield return RecoveryUiReady(); yield return RecoveryClick("begin");
             var world = Get<Component>(session, "Prologue"); var director = Get<Component>(world, "Director");
+            Call(world, "ReadStoryClue");
             PlacePlayer(new Vector3(500, .04f, 505.2f));
             player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
             yield return null; yield return null; yield return RecoveryPulse(Key.E);
@@ -992,10 +1165,10 @@ namespace HappyToy.V2.CloudTests
             Keys(); yield return null;
             Assert.That(Get<string>(feedback, "LastFootstepSurface"), Is.EqualTo("forest"));
             Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioClip>(feedback, "LastFootstepClip"), "step-forest", 4), Is.True);
-            PlacePlayer(origin + new Vector3(0, .04f, 5.2f));
+            PlacePlayer(origin + new Vector3(.65f, .04f, 5.8f));
             var pitch = player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.That(pitch, Is.Not.Null); pitch.SetValue(player, 12f);
-            yield return null; yield return null;
+            Assert.That(pitch, Is.Not.Null);
+            yield return TempleReadClueWithTemporaryMouse(world);
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
             yield return RecoveryPulse(Key.E);
             Assert.That(Get<object>(director, "Phase").ToString(), Is.EqualTo("FirstPrayer"));
@@ -1023,8 +1196,8 @@ namespace HappyToy.V2.CloudTests
             var hand = Get<Component>(player, "Hands");
             var held = hand.GetType().GetField("held", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That((bool)(Transform)held.GetValue(hand), Is.False, "Incense reappeared before the second prayer");
-            PlacePlayer(origin + new Vector3(0, .04f, 5.2f)); pitch.SetValue(player, 12f);
-            yield return null; yield return null;
+            PlacePlayer(origin + new Vector3(.65f, .04f, 5.8f));
+            yield return TempleReadClueWithTemporaryMouse(world);
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
             yield return RecoveryPulse(Key.E);
             yield return Wait(() => (bool)(Transform)held.GetValue(hand), 3, "Second incense was not held before placement");

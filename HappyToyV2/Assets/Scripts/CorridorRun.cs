@@ -15,6 +15,15 @@ namespace HappyToy.V2
         public CorridorLayout Layout { get; private set; }
         public bool Ready { get; private set; }
         public int Recovered => recovered.Count;
+        public StoryNarration StoryNarration { get; private set; }
+        public const string FirstMemoryStory = "흐릿한 기억을 들여다보니 작은 집 그림과 빈 이름칸이 보인다.";
+        // First *recovered* memory, independently of which physical relic was
+        // reached first. Older saves retain enough information to derive this.
+        public string MemoryJournalEntry(int index)
+        {
+            if (index < 0 || index >= Recovered) return null;
+            return index == 0 ? FirstMemoryStory : $"회수한 기억 {index + 1}/{RequiredMemories} — 어두운 복도에서도 돌아갈 길을 잊지 말자.";
+        }
         public int RequiredMemories => Layout == null ? Required : Layout.Relics.Length;
         public int Seed => Layout == null ? 0 : Layout.Seed;
         public string Objective => Recovered < RequiredMemories ? $"회랑에 흩어진 기억 {RequiredMemories}개를 찾으세요. 발소리를 듣고 길을 고르세요." :
@@ -58,6 +67,8 @@ namespace HappyToy.V2
             maskTemplate.gameObject.SetActive(false);
             world = new GameObject("The forgotten corridor — seed " + seed).transform;
             world.SetParent(transform, true);
+            StoryNarration = world.gameObject.AddComponent<StoryNarration>();
+            StoryNarration.Prepare(() => !session || !session.InputAllowed);
             var plaster = MakeMaterial("Damp plaster", new Color(.54f, .56f, .50f), 83);
             var floor = MakeMaterial("Worn wooden floor", new Color(.17f, .13f, .10f), 41);
             var timber = MakeMaterial("Dark timber", new Color(.085f, .068f, .048f), 27);
@@ -363,7 +374,8 @@ namespace HappyToy.V2
         public bool Collect(string id)
         {
             if (!Ready || !session.InputAllowed || !Enumerable.Range(0, RequiredMemories).Any(i => id == "memory-" + i) || !recovered.Add(id)) return false;
-            session.Inspect(id, "회수한 기억 " + Recovered + "/" + RequiredMemories + " — 어두운 복도에서도 돌아갈 길을 잊지 말자.");
+            session.Inspect(id, MemoryJournalEntry(Recovered - 1));
+            if (Recovered == 1) StoryNarration.Replace(FirstMemoryStory, 8f);
             session.Notify(Recovered == RequiredMemories ? Objective : "기억을 회수했습니다 · " + Recovered + "/" + RequiredMemories);
             if(Recovered==RequiredMemories&&Lady)Lady.Begin();
             return true;

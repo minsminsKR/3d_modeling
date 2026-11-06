@@ -26,10 +26,10 @@ namespace HappyToy.V2
                 if (!Director) return "숲길을 따라 절로 가세요.";
                 switch (Director.Phase)
                 {
-                    case TemplePrologueSequence.Phase.FirstApproach: return "숲길을 따라 절로 가서 향을 꽂으세요.";
+                    case TemplePrologueSequence.Phase.FirstApproach: return clues != null && !clues.CanPlaceIncense(Director.Phase) ? "절의 제단에 놓인 쪽지를 살펴보세요." : "제단의 향로에 향을 꽂으세요.";
                     case TemplePrologueSequence.Phase.FirstPrayer: return "잠시 기도합니다.";
                     case TemplePrologueSequence.Phase.FirstDeparture: return "오늘은 돌아가고 내일 다시 오세요.";
-                    case TemplePrologueSequence.Phase.SecondApproach: return "다시 절에 와서 향을 꽂으세요.";
+                    case TemplePrologueSequence.Phase.SecondApproach: return clues != null && !clues.CanPlaceIncense(Director.Phase) ? "다시 절에 가서 쪽지를 확인하세요." : "제단의 향로에 다시 향을 꽂으세요.";
                     case TemplePrologueSequence.Phase.SecondPrayer: return "기도하는 동안 향의 움직임을 살펴보세요.";
                     default: return "향 연기가 향하는 곳을 살펴보세요.";
                 }
@@ -37,11 +37,15 @@ namespace HappyToy.V2
         }
         GameSession session;
         TempleProloguePresentation presentation;
+        TemplePrologueClueState clues;
+        TempleStoryEvidence evidence;
+        StoryNarration narration;
         Interactable prayerTarget, gateTarget;
         BoxCollider[] gateColliders;
+        Collider noteCollider;
         TempleGateReviewTraversal walkReview;
         float hiddenGateWait, nextGateReminder;
-        bool hintedGateClearance, hintedGateGlance;
+        bool hintedGateClearance, hintedGateGlance, noticedGate;
 
         public void Prepare(GameSession owner, TemplePrologueCheckpoint checkpoint = null)
         {
@@ -53,13 +57,34 @@ namespace HappyToy.V2
             if (checkpoint != null) checkpoint.Validate();
             Director.Prepare(() => !session || !session.InputAllowed || TransitionRequested || presentation && presentation.IncensePending,
                 checkpoint == null ? 0 : checkpoint.phase, checkpoint == null ? 0 : checkpoint.prayerElapsed);
+            bool legacy = checkpoint != null && checkpoint.storyVersion == 0;
+            clues = new TemplePrologueClueState(checkpoint != null && checkpoint.firstClueRead,
+                checkpoint != null && checkpoint.secondClueRead,
+                legacy ? 3 : checkpoint != null ? checkpoint.legacyClueExemptMask : 0);
+            Director.SetIncensePermission(clues.CanPlaceIncense);
+            narration = gameObject.AddComponent<StoryNarration>();
+            narration.Prepare(() => !session || !session.InputAllowed || TransitionRequested);
             presentation = gameObject.AddComponent<TempleProloguePresentation>();
             presentation.Prepare(this, session.player.eyes);
+            evidence = gameObject.AddComponent<TempleStoryEvidence>();
+            evidence.Prepare();
+            evidence.SetSecondDay(checkpoint != null && checkpoint.phase >= 3);
+            var noteTarget = Target("이름이 비어 있는 쪽지", new Vector3(.65f, .87f, 7.46f), new Vector3(.20f, .06f, .25f),
+                "쪽지 살펴보기", () => Ready && !TransitionRequested, player => ReadStoryClue());
+            // A new observation must not invalidate an old saved player pose.
+            // Enable the raycast target only after restore clearance succeeds.
+            noteTarget.GetComponent<TemplePrologueTarget>().SetObservationOnly();
+            noteCollider = noteTarget.GetComponent<Collider>();
+            noteCollider.enabled = false;
             var background = gameObject.AddComponent<TempleForestBackgroundTrees>();
             background.Prepare(session.player);
             prayerTarget = Target("향로", new Vector3(0, 1.02f, 7), new Vector3(.8f, .75f, .55f), "향 꽂고 기도하기",
                 () => Director.Phase == TemplePrologueSequence.Phase.FirstApproach || Director.Phase == TemplePrologueSequence.Phase.SecondApproach,
-                player => { if (Director.PlaceIncense()) session.Notify("향을 꽂고 잠시 기도합니다."); });
+                player => {
+                    if (!clues.CanPlaceIncense(Director.Phase))
+                    { session.Notify("제단의 쪽지를 먼저 살펴보자."); return; }
+                    if (Director.PlaceIncense()) session.Notify("향을 꽂고 잠시 기도합니다.");
+                });
             gateTarget = Target("나타난 대문", new Vector3(0, 2, -7.13f), new Vector3(4.7f, 4, .35f), "문 열고 들어가기",
                 () => presentation.GateVisible && Director.Phase == TemplePrologueSequence.Phase.GateRevealed &&
                     (!walkReview || !walkReview.Started),
@@ -95,8 +120,20 @@ namespace HappyToy.V2
             // Old-save validation/relocation happens before any new trunk is
             // enabled; overlapping trunks wait until the player steps away.
             background.ActivateAtPlayer();
+            noteCollider.enabled = true;
+            IgnoreNotePlayerCollision();
             Ready = true;
-            session.Notify(checkpoint == null ? "숲길을 따라 절에 가서 향을 꽂으세요." : "사찰 탐색을 복원했습니다.");
+            session.Notify(checkpoint == null ? "절의 제단에 놓인 쪽지를 먼저 살펴보세요." : "사찰 탐색을 복원했습니다. " + Objective);
+            if (checkpoint == null || checkpoint.phase == 0 && !clues.CanPlaceIncense(Director.Phase))
+            {
+                narration.Enqueue("아이를 찾으러, 함께 숨바꼭질하던 이 절에 돌아왔다.", 5.5f);
+                narration.Enqueue("얼굴은 떠오르는데 이름만 기억나지 않는다.", 5.5f);
+            }
+            else if (checkpoint.phase == 0 && clues.FirstClueRead ||
+                     checkpoint.phase == 3 && clues.SecondClueRead)
+                ShowClueNarration(checkpoint.phase >= 3);
+            else if (checkpoint.phase == 3 && !clues.CanPlaceIncense(Director.Phase))
+                narration.Enqueue("쪽지를 확인하고 오늘도 향을 피우자.", 5.5f);
         }
         public TemplePrologueCheckpoint Capture(float seconds)
         {
@@ -104,6 +141,8 @@ namespace HappyToy.V2
             var light = session.player.FlashlightSystem;
             var result = new TemplePrologueCheckpoint {
                 token = Guid.NewGuid().ToString("N"), phase = (int)Director.Phase, prayerElapsed = Director.PrayerElapsed,
+                storyVersion = 2, firstClueRead = clues.FirstClueRead, secondClueRead = clues.SecondClueRead,
+                legacyClueExemptMask = clues.LegacyClueExemptMask,
                 gateVisible = presentation.GateVisible, incensePlaced = presentation.IncensePlaced,
                 version = walkReview ? 3 : 2, reviewGateWalk = walkReview,
                 reviewGateStarted = walkReview && walkReview.Started,
@@ -122,14 +161,61 @@ namespace HappyToy.V2
             go.AddComponent<TemplePrologueTarget>().Prepare(available, action);
             return item;
         }
+        // The same note remains readable after its first inspection. New
+        // progress is accepted only in the matching day and is saved separately.
+        public void ReadStoryClue()
+        {
+            if (!Ready || TransitionRequested || !session || !session.InputAllowed) return;
+            var phase = Director.Phase;
+            bool newlyRead = clues.TryRead(phase);
+            ShowClueNarration((int)phase >= (int)TemplePrologueSequence.Phase.SecondApproach);
+            // Rereading a clue must not erase the current phase's next lead.
+            if (phase == TemplePrologueSequence.Phase.FirstDeparture)
+                narration.Enqueue("이름이 떠오르지 않는다. 쪽지대로 내일 다시 오자.", 6f);
+            else if (phase == TemplePrologueSequence.Phase.GateRevealed)
+            {
+                narration.Enqueue("향 연기가 숲길 쪽으로 흐르고 있다.", 6f);
+                if (noticedGate) narration.Enqueue("저 문 안에 아이의 이름을 찾을 단서가 있을까?", 5.5f);
+            }
+            if (newlyRead && (phase == TemplePrologueSequence.Phase.FirstApproach ||
+                phase == TemplePrologueSequence.Phase.SecondApproach))
+                session.Notify("쪽지를 확인했습니다. 향로에 향을 꽂으세요.");
+        }
+        void ShowClueNarration(bool secondDay)
+        {
+            if (!secondDay)
+            {
+                narration.ReplaceEvidence("‘오늘과 내일, 이곳에 향을 피워 주세요.\n이름을 잊기 전에.’ 이름칸은 비어 있다.", 7f, evidence.InkTexture);
+                narration.Enqueue("찾으러 온 아이의 이름이 떠오를 듯하다.", 5.5f);
+            }
+            else
+            {
+                if (clues.FirstClueRead)
+                {
+                    narration.ReplaceEvidence("‘오늘과 내일 이곳에 향을 피워 주세요.’\n빈 이름칸 아래에 작은 집 그림이 생겼다.", 7f, evidence.InkTexture);
+                    narration.Enqueue("어제는 없던 그림이다. 누가 다녀간 걸까?", 5.5f);
+                }
+                else
+                {
+                    narration.ReplaceEvidence("‘오늘과 내일 이곳에 향을 피워 주세요.’\n빈 이름칸 아래에 작은 집 그림이 있다.", 7f, evidence.InkTexture);
+                    narration.Enqueue("누가 그린 걸까?", 5.5f);
+                }
+            }
+        }
         void PhaseChanged(TemplePrologueSequence.Phase phase)
         {
             if (phase == TemplePrologueSequence.Phase.FirstPrayer || phase == TemplePrologueSequence.Phase.SecondPrayer)
                 presentation.BeginIncense(session.player);
             else if (phase == TemplePrologueSequence.Phase.FirstDeparture)
-                session.Notify("오늘은 이만 돌아가야겠다. 내일 다시 와야지.");
+            {
+                session.Notify("온 길을 따라 돌아가세요.");
+                narration.Enqueue("이름이 떠오르지 않는다. 쪽지대로 내일 다시 오자.", 6f);
+            }
             else if (phase == TemplePrologueSequence.Phase.GateRevealed)
-                session.Notify("향 연기가 뒤쪽으로 흐르고 있다.");
+            {
+                session.Notify("향 연기가 숲길 쪽으로 흐르고 있다.");
+                narration.Enqueue("향 연기가 숲길 쪽으로 흐르고 있다.", 6f);
+            }
         }
         void UseGate()
         {
@@ -153,6 +239,13 @@ namespace HappyToy.V2
             {
                 if (Director.LeaveFirstDay()) { TransitionRequested = true; NextDayRequested?.Invoke(); }
                 return;
+            }
+            if (Director.Phase == TemplePrologueSequence.Phase.GateRevealed && presentation.GateVisible &&
+                !noticedGate && session.player.Focus == gateTarget)
+            {
+                noticedGate = true;
+                narration.Enqueue("이런 문이 있었나…", 5.5f);
+                narration.Enqueue("저 안에 아이의 이름을 찾을 단서가 있을까?", 5.5f);
             }
             if (Director.Phase == TemplePrologueSequence.Phase.GateRevealed && !presentation.GateVisible)
             {
@@ -180,6 +273,14 @@ namespace HappyToy.V2
                         session.Notify("잠시 시선을 돌려 주변을 둘러보자.");
                     }
                 }
+            }
+        }
+        void IgnoreNotePlayerCollision()
+        {
+            if (noteCollider && session && session.player)
+            {
+                var controller = session.player.GetComponent<CharacterController>();
+                if (controller && controller.enabled) Physics.IgnoreCollision(noteCollider, controller);
             }
         }
         bool GateClearOfPlayer()
@@ -210,7 +311,10 @@ namespace HappyToy.V2
             if (!TransitionRequested || Director.Phase != TemplePrologueSequence.Phase.SecondApproach)
                 throw new InvalidOperationException("First day has not finished");
             presentation.BeginSecondDay();
+            evidence.SetSecondDay(true);
+            narration.Replace("다시 와도 이름이 떠오르지 않는다. 쪽지를 확인해 보자.", 6f);
             session.player.RelocateWorld(Spawn, Quaternion.identity);
+            IgnoreNotePlayerCollision();
             TransitionRequested = false;
             session.Notify("다음 날 — 다시 절로 향합니다.");
         }

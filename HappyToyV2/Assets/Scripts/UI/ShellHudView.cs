@@ -9,8 +9,10 @@ namespace HappyToy.V2
     {
         readonly ShellLayout layout;
         readonly VisualElement threatVeil;
-        VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip, templeNoticePanel;
-        Label focus, meter, caption, itemFeedback, controlsFooter, templeNotice;
+        VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip, templeNoticePanel, templeNarrationPanel;
+        Label focus, meter, caption, itemFeedback, controlsFooter, templeNotice, templeNarration, templeEvidenceHeading;
+        VisualElement templeEvidencePaper;
+        Image templeEvidenceInk;
         FlashlightGauge batteryMeter;
         readonly MemoryToken[] memoryTokens = new MemoryToken[7];
         Color Rust => layout.Rust;
@@ -92,6 +94,58 @@ namespace HappyToy.V2
             templeNotice.style.unityTextAlign = TextAnchor.MiddleCenter;
             templeNotice.style.color = layout.Paper;
             templeNoticePanel.Add(templeNotice);
+            // Story text is separate from sound captions and short action
+            // notices. It grows upward so wrapped large text stays above both
+            // the sound-caption line and the interaction prompt.
+            templeNarrationPanel = layout.Panel(300, 535, 1000, 110,
+                new Color(.012f, .019f, .017f, layout.HighContrast ? .98f : .86f));
+            templeNarrationPanel.name = "temple-narration-panel";
+            templeNarrationPanel.style.top = StyleKeyword.Auto;
+            templeNarrationPanel.style.bottom = 235;
+            templeNarrationPanel.style.height = StyleKeyword.Auto;
+            templeNarrationPanel.style.minHeight = 64;
+            templeNarrationPanel.style.paddingLeft = templeNarrationPanel.style.paddingRight = 22;
+            templeNarrationPanel.style.paddingTop = templeNarrationPanel.style.paddingBottom = 12;
+            templeNarrationPanel.style.flexDirection = FlexDirection.Row;
+            templeNarrationPanel.style.alignItems = Align.Center;
+            templeNarrationPanel.style.justifyContent = Justify.Center;
+            layout.Outline(templeNarrationPanel, layout.Edge);
+            // Exact world ink texture, not a second interpretation of the clue.
+            // Its paper backing gives the transparent ink enough contrast in
+            // dark scenes and the row stays below the aiming reticle.
+            templeEvidencePaper = new VisualElement { name = "temple-evidence-paper", pickingMode = PickingMode.Ignore };
+            templeEvidencePaper.style.width = 112;
+            templeEvidencePaper.style.height = 168;
+            templeEvidencePaper.style.flexShrink = 0;
+            templeEvidencePaper.style.marginRight = 20;
+            templeEvidencePaper.style.backgroundColor = layout.HighContrast ? Color.white : new Color(.86f, .82f, .72f);
+            templeEvidenceInk = new Image { name = "temple-evidence-ink", pickingMode = PickingMode.Ignore,
+                scaleMode = ScaleMode.ScaleToFit, tintColor = new Color(.09f, .065f, .045f, 1) };
+            templeEvidenceInk.style.width = 112; templeEvidenceInk.style.height = 168;
+            templeEvidencePaper.Add(templeEvidenceInk); templeNarrationPanel.Add(templeEvidencePaper);
+            var narrativeCopy = new VisualElement { name = "temple-narration-copy", pickingMode = PickingMode.Ignore };
+            narrativeCopy.style.flexGrow = 1; narrativeCopy.style.flexShrink = 1;
+            narrativeCopy.style.flexBasis = 0; narrativeCopy.style.minWidth = 0;
+            narrativeCopy.style.justifyContent = Justify.Center;
+            templeNarrationPanel.Add(narrativeCopy);
+            templeEvidenceHeading = new Label("쪽지 판독") { name = "temple-evidence-heading", pickingMode = PickingMode.Ignore };
+            templeEvidenceHeading.style.fontSize = layout.LargeText ? 20 : 18;
+            templeEvidenceHeading.style.color = layout.Gold;
+            templeEvidenceHeading.style.unityTextAlign = TextAnchor.MiddleCenter;
+            templeEvidenceHeading.style.marginBottom = 5;
+            narrativeCopy.Add(templeEvidenceHeading);
+            templeNarration = new Label { name = "temple-narration", pickingMode = PickingMode.Ignore };
+            templeNarration.style.alignSelf = Align.Stretch;
+            templeNarration.style.flexShrink = 0;
+            templeNarration.style.marginLeft = templeNarration.style.marginRight = 0;
+            templeNarration.style.marginTop = templeNarration.style.marginBottom = 0;
+            templeNarration.style.paddingLeft = templeNarration.style.paddingRight = 0;
+            templeNarration.style.paddingTop = templeNarration.style.paddingBottom = 0;
+            templeNarration.style.fontSize = layout.LargeText ? 27 : 23;
+            templeNarration.style.whiteSpace = WhiteSpace.Normal;
+            templeNarration.style.unityTextAlign = TextAnchor.MiddleCenter;
+            templeNarration.style.color = layout.Paper;
+            narrativeCopy.Add(templeNarration);
             var focusAnchor = layout.Panel(0, 753, 1600, 54, Color.clear);
             focusAnchor.style.alignItems = Align.Center;
             focusAnchor.style.justifyContent = Justify.Center;
@@ -174,6 +228,12 @@ namespace HappyToy.V2
             Visible(caption, state.CaptionVisible);
             templeNotice.text = state.TempleNoticeVisible ? state.TempleNotice : string.Empty;
             Visible(templeNoticePanel, state.TempleNoticeVisible);
+            templeNarration.text = state.TempleNarrationVisible ? state.TempleNarration : string.Empty;
+            bool evidenceVisible = state.TempleNarrationVisible && state.TempleNarrationInk;
+            templeEvidenceInk.image = evidenceVisible ? state.TempleNarrationInk : null;
+            Visible(templeEvidencePaper, evidenceVisible);
+            Visible(templeEvidenceHeading, evidenceVisible);
+            Visible(templeNarrationPanel, state.TempleNarrationVisible);
             stamina.style.width = 265 * Mathf.Clamp01(state.Stamina);
             stamina.style.backgroundColor = state.SprintExhausted ? Rust : Gold;
             batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
@@ -200,16 +260,18 @@ namespace HappyToy.V2
         internal struct State
         {
             public bool HasPlayer, CaptionVisible, SprintExhausted, FlashlightLit, Hidden, Focused;
-            public bool ItemFeedbackVisible, Threatened, UnlimitedItems, PrologueMode, TempleNoticeVisible;
+            public bool ItemFeedbackVisible, Threatened, UnlimitedItems, PrologueMode, TempleNoticeVisible, TempleNarrationVisible;
             public int RecordsRecovered, Firecrackers, Traps;
-            public string Caption, FocusLabel, ItemFeedback, TempleNotice;
+            public string Caption, FocusLabel, ItemFeedback, TempleNotice, TempleNarration;
             public float Stamina, BatteryFraction, FeedbackOpacity, PeripheralStrength;
-            public Texture2D PeripheralTexture;
+            public Texture2D PeripheralTexture, TempleNarrationInk;
             public Color OverlayColor;
             public static State Read(GameSession session, GameShell shell)
             {
                 var player = session.player;
                 if (!player) return default;
+                var narration = session.PrologueMode ? session.Prologue.GetComponent<StoryNarration>() :
+                    session.CorridorMode ? session.Corridor.StoryNarration : null;
                 var charge = player.FlashlightSystem;
                 var inventory = player.Firecrackers;
                 var traps = player.Traps;
@@ -220,6 +282,9 @@ namespace HappyToy.V2
                 return new State {
                     HasPlayer = true, PrologueMode = session.PrologueMode, UnlimitedItems = player.Items.Unlimited, RecordsRecovered = session.RecordsRecovered, Caption = shell.Caption, CaptionVisible = shell.CaptionVisible,
                     TempleNoticeVisible = session.PrologueMode && shell.NoticeVisible, TempleNotice = session.Notice,
+                    TempleNarrationVisible = narration && !string.IsNullOrEmpty(narration.CurrentText),
+                    TempleNarration = narration ? narration.CurrentText : string.Empty,
+                    TempleNarrationInk = narration ? narration.CurrentInk : null,
                     Stamina = player.Stamina, SprintExhausted = player.SprintExhausted,
                     BatteryFraction = charge.Fraction, FlashlightLit = charge.Lit,
                     Firecrackers = inventory ? inventory.Count : 0, Traps = traps ? traps.Count : 0,

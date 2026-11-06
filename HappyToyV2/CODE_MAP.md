@@ -1,5 +1,7 @@
 # HappyToyV2 기능별 수정 지도
 
+사찰 서사 재구성의 소유권과 검증 경로는 다음과 같다. `Core/TemplePrologueClueState`가 양일 쪽지 조사 순서·향 허용과 구형 저장 면제를, `TemplePrologueWorld`가 조사·저장 연결을, `TempleStoryEvidence`가 기존 종이와 두 날의 잉크를, `StoryNarration`과 `ShellHudView`가 정지 가능한 독립 대사와 판독 표시를 소유한다. `CorridorRun`의 첫 회수 기억은 회수 개수로 기록을 복원하며 `ShellJournalScreen`은 기억과 주변 조사를 구분한다. `temple-prologue-restore`는 새 쪽지와 구형 저장의 위치·자세·충돌 및 마이그레이션을, `temple-prologue-flow`는 양일 진행과 입력을, `corridor-story-logic`은 무음·무화면으로 회랑 수집·기록·저장과 실제 사찰 전환을, `temple-story-ui-presentation`은 격리된 UI와 카메라의 화면비별 합성을 검증한다. 세 화면비·두 글씨 크기의 게임 카메라/UI 합성은 확인했고 청음과 표시 FPS는 별도 확인이 필요하다. 목표·장면 설계는 `SourceArt/TemplePrologue/STORY_DESIGN.md`다.
+
 사찰 프롤로그는 타이틀의 새 이야기에서 시작하며, `TemplePrologueWorld`가 기존 플레이어의
 향로/대문 E 상호작용과 첫날 귀가·둘째 날 회귀를 소유한다. 보이지 않는 대문은 플레이어가
 문짝·기둥 충돌 영역을 벗어난 뒤 나타나며, 중단 복원에서도 같은 기준을 사용한다. `TemplePrologueDirector`와
@@ -26,7 +28,7 @@
 출현 위치를 점유한 채 8초가 지나면 `TemplePrologueWorld`가 각각 시선 전환·이동 힌트를 주며,
 해결되지 않으면 20초 간격으로 반복한다. 힌트 시계는 일시정지에서 멈춘다.
 `temple-prologue-flow`는 숲 바닥 반복 경계와 돌길·고목·식생·웅덩이·안개·형체의 경계 및 자원 수명, 가상 키보드/마우스와 게임패드 각각의 전체 도보 경로·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·연기 원천 초기화·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계를 확인한다.
-`TempleForestHorizon`은 기존 지면과 사방 구릉을 연결한 시각 메시, 기존 소나무 원거리 LOD·양치 32개와 자원 해제를 소유하며 이동·저장 충돌은 유지한다. 바닥 렌더 상태도 해제 시 복원한다. 변경 후 실제 카메라와 GPU 비용은 미검증이다.
+`TempleForestHorizon`은 기존 지면과 사방 구릉을 연결한 시각 메시, 기존 소나무 32그루의 거리별 중간/원거리 LOD, 양치 32개와 자원 해제를 소유하며 이동·저장 충돌은 유지한다. 바닥 렌더 상태도 해제 시 복원한다. `temple-horizon-logic`은 바닥 연속·나무 접지와 충돌·LOD 참조·해제를, `temple-story-ui-presentation`은 격리된 카메라의 사방·모서리와 판독 화면을 확인한다. 실제 표시 FPS는 별도 검증이 필요하다.
 
 `temple-forest-environment`는 숲 환경 요소와 외곽 나무의 충돌·기존 저장 위치 보호를 빠르게 확인한다.
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는

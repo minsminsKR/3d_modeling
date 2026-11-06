@@ -44,11 +44,13 @@ namespace HappyToy.V2.CloudTests
         {
             var world = Get<Component>(session, "Prologue");
             var director = Get<Component>(world, "Director");
+            Call(world, "ReadStoryClue");
             Assert.That((bool)Call(director, "PlaceIncense"), Is.True);
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "FirstDeparture", 8, "First prayer failed");
             PlacePlayer(new Vector3(500, .04f, 481));
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "SecondApproach" && !Get<bool>(shell, "IsReloading"), 8, "Second day failed");
             PlacePlayer(new Vector3(500, .04f, 505.2f));
+            Call(world, "ReadStoryClue");
             Assert.That((bool)Call(director, "PlaceIncense"), Is.True);
             yield return Wait(() => Get<object>(director, "Phase").ToString() == "GateRevealed", 8, "Second prayer failed");
             player.transform.rotation = Quaternion.identity;

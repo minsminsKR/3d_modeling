@@ -11,6 +11,7 @@ namespace HappyToy.V2
         TemplePrologueSequence sequence;
         TemplePrayerClock prayer;
         Func<bool> held;
+        Func<TemplePrologueSequence.Phase, bool> incensePermission;
         public TemplePrologueSequence.Phase Phase => sequence.Current;
         public float PrayerElapsed => prayer == null ? 0 : prayer.Elapsed;
         public event Action<TemplePrologueSequence.Phase> PhaseChanged;
@@ -28,9 +29,14 @@ namespace HappyToy.V2
             held = simulationHeld; sequence = restored; prayer = restoredClock;
         }
 
+        public void SetIncensePermission(Func<TemplePrologueSequence.Phase, bool> permission)
+        {
+            if (sequence == null || incensePermission != null) throw new InvalidOperationException("Fresh prepared director required");
+            incensePermission = permission ?? throw new ArgumentNullException(nameof(permission));
+        }
         public bool PlaceIncense()
         {
-            if (sequence == null || held() || !sequence.PlaceIncense()) return false;
+            if (sequence == null || held() || incensePermission != null && !incensePermission(sequence.Current) || !sequence.PlaceIncense()) return false;
             prayer = new TemplePrayerClock(PrayerSeconds); Notify(); return true;
         }
         public bool LeaveFirstDay()

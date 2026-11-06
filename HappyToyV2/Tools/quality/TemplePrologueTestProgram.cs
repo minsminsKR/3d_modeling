@@ -33,6 +33,29 @@ static class TemplePrologueTestProgram
             try { TemplePrologueSequence.Restore(invalid); throw new Exception("Invalid phase accepted"); }
             catch (ArgumentOutOfRangeException) { }
         }
+        var clues = new TemplePrologueClueState();
+        Check(!clues.CanPlaceIncense(TemplePrologueSequence.Phase.FirstApproach));
+        Check(!clues.TryRead(TemplePrologueSequence.Phase.SecondApproach));
+        Check(clues.TryRead(TemplePrologueSequence.Phase.FirstApproach));
+        Check(!clues.TryRead(TemplePrologueSequence.Phase.FirstApproach));
+        Check(clues.CanPlaceIncense(TemplePrologueSequence.Phase.FirstApproach));
+        Check(!clues.CanPlaceIncense(TemplePrologueSequence.Phase.SecondApproach));
+        Check(clues.TryRead(TemplePrologueSequence.Phase.SecondApproach));
+        Check(clues.CanPlaceIncense(TemplePrologueSequence.Phase.SecondApproach));
+        Check(!clues.TryRead(TemplePrologueSequence.Phase.SecondApproach));
+        Check(!clues.CanPlaceIncense(TemplePrologueSequence.Phase.GateRevealed));
+        var restoredClues = new TemplePrologueClueState(clues.FirstClueRead, clues.SecondClueRead);
+        Check(restoredClues.CanPlaceIncense(TemplePrologueSequence.Phase.SecondApproach));
+        try { new TemplePrologueClueState(false, true); throw new Exception("Invalid clue state accepted"); }
+        catch (ArgumentException) { }
+        var legacyClues = new TemplePrologueClueState(false, false, 3);
+        Check(!legacyClues.FirstClueRead && !legacyClues.SecondClueRead);
+        Check(legacyClues.CanPlaceIncense(TemplePrologueSequence.Phase.FirstApproach));
+        Check(legacyClues.CanPlaceIncense(TemplePrologueSequence.Phase.SecondApproach));
+        Check(legacyClues.TryRead(TemplePrologueSequence.Phase.SecondPrayer));
+        Check(!legacyClues.FirstClueRead && legacyClues.SecondClueRead && legacyClues.LegacyClueExemptMask == 1);
+        var resumedLegacy = new TemplePrologueClueState(false, false, 3);
+        Check(resumedLegacy.TryRead(TemplePrologueSequence.Phase.FirstDeparture) && resumedLegacy.LegacyClueExemptMask == 2);
         var prayer = new TemplePrayerClock(4);
         Check(!prayer.Advance(3, false) && prayer.Elapsed == 3);
         Check(!prayer.Advance(10, true) && prayer.Elapsed == 3);

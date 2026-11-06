@@ -9,6 +9,8 @@ namespace HappyToy.V2
     {
         Func<bool> available;
         Action<PlayerMotor> action;
+        public bool ObservationOnly { get; private set; }
+        public void SetObservationOnly() => ObservationOnly = true;
         public bool Available => available != null && available();
         public void Prepare(Func<bool> canUse, Action<PlayerMotor> use)
         {

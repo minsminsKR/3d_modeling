@@ -251,6 +251,8 @@ namespace HappyToy.V2
             art.localRotation = originalRotation; building.localScale = originalScale; building.localPosition = originalPosition; yield return null;
             Pose(new Vector3(0,.04f,5.1f), new Vector3(0,1.0f,7.2f)); yield return null; SaveCamera("03-prayer-space.png");
             yield return Measure("prayer-space");
+            Pose(new Vector3(.5f,.04f,5.8f), new Vector3(.65f,.85f,7.46f)); yield return null; SaveCamera("03a-first-clue.png");
+            session.Prologue.ReadStoryClue();
             phase = "first-prayer"; MarkTime("first-prayer");
             Require(session.Prologue.Director.PlaceIncense(), "First prayer did not start");
             var templePresentation = session.Prologue.GetComponent<TempleProloguePresentation>();
@@ -272,6 +274,8 @@ namespace HappyToy.V2
             yield return Until(() => session.Prologue.Director.Phase == TemplePrologueSequence.Phase.SecondApproach && !session.Shell.IsReloading, 20, "Second day did not finish");
             MarkTime("second-day-forest"); yield return null; SaveCamera("05-second-day.png");
             Pose(new Vector3(0,.04f,5.1f), new Vector3(0,1.0f,7.2f)); yield return null;
+            Pose(new Vector3(.5f,.04f,5.8f), new Vector3(.65f,.85f,7.46f)); yield return null; SaveCamera("05a-second-clue.png");
+            session.Prologue.ReadStoryClue();
             phase = "second-prayer"; MarkTime("second-prayer");
             Require(session.Prologue.Director.PlaceIncense(), "Second prayer did not start");
             yield return Until(() => session.Prologue.GetComponent<TempleProloguePresentation>().IncensePlaced, 8, "Second incense was not placed");

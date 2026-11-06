@@ -183,7 +183,13 @@ namespace HappyToy.V2
             // A full buffer cannot prove that all remaining colliders belong to the player.
             if (count >= stanceOverlaps.Length) return true;
             for (int i = 0; i < count; i++)
-                if (stanceOverlaps[i] && !stanceOverlaps[i].transform.IsChildOf(transform)) return true;
+            {
+                var hit = stanceOverlaps[i];
+                if (!hit || hit.transform.IsChildOf(transform)) continue;
+                var observation = hit.GetComponent<TemplePrologueTarget>();
+                if (observation && observation.ObservationOnly) continue;
+                return true;
+            }
             return false;
         }
         /// <summary>Called only when a real distance-driven foot contact plays its sound.</summary>

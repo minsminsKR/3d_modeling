@@ -115,7 +115,7 @@ namespace HappyToy.V2
             for (float t = 0; t < 1.1f; t += Time.unscaledDeltaTime)
             { TransitionBlack = 1 - Mathf.SmoothStep(0, 1, t / 1.1f); yield return null; }
             TransitionBlack = 0; IsReloading = false; GameplayEntryFrame = Time.frameCount; ApplyScreenState();
-            session.Notify("제1장 — 잊힌 회랑");
+            session.Corridor.StoryNarration.Enqueue("제1장 — 잊힌 회랑\n아이를 찾을 단서가 있을지도 모른다.", 7f);
         }
         void FailTempleTransition(string detail)
         {

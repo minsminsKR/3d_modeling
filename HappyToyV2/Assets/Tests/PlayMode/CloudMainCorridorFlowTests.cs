@@ -45,6 +45,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(root.Q<Label>("corridor-record-summary").text,Does.Contain("회랑 탐색 0회"));
             Assert.That(root.Q<Label>("school-record-summary").text,Does.Contain("학교 탐색 0회"));
             yield return RecoveryClick("begin"); yield return RecoveryAdvanceTempleToCorridor(); AssertMainCorridor();
+            yield return Wait(() => Get<VisualElement>(view,"Root").Q<Label>("temple-narration")?.text.Contains("제1장 — 잊힌 회랑") == true,
+                4, "The successful story transition did not show its chapter line");
+            Assert.That(Get<VisualElement>(view,"Root").Q<Label>("temple-narration").text, Does.Contain("아이를 찾을 단서"));
             yield return RecoveryPulse(Key.Escape); Assert.That(RecoveryPage,Is.EqualTo("Pause"));
             Assert.That(Get<VisualElement>(view,"Root").Q<Label>("pause-progress"),Is.Null,"Pause should not obscure the game with a progress card");
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-run"),Is.Not.Null);

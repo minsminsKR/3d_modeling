@@ -90,7 +90,7 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             var checkpoint = Call(world, "Capture", 0f);
             Call(session, "RetirePrologue"); yield return null;
-            Set(checkpoint, "phase", 3);
+            Set(checkpoint, "phase", 3); Set(checkpoint, "firstClueRead", true);
             Call(session, "CreatePrologueForCheckpoint", checkpoint); yield return null;
             world = Get<Component>(session, "Prologue");
             Assert.That(world.GetComponent(RequireType("TempleForestAtmosphere")), Is.Not.Null);

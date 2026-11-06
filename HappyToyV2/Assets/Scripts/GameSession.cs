@@ -199,11 +199,30 @@ namespace HappyToy.V2
         public string ExplorationEntry(int index)=>index>=0&&index<exploration.Count?exploration[index]:null;
         public int ExplorationCount=>exploration.Count;
         readonly List<string> exploration=new List<string>();
+        readonly List<string> explorationIds=new List<string>();
+        // Memory entries are reconstructed from the saved recovery count.
+        // Other inspected objects remain a separate session-local list.
+        bool IsCorridorMemoryRecord(string id)
+        {
+            if (!CorridorMode || string.IsNullOrEmpty(id) || !id.StartsWith("memory-", System.StringComparison.Ordinal)) return false;
+            return int.TryParse(id.Substring(7), out int i) && i >= 0 && i < Corridor.RequiredMemories;
+        }
+        public int CorridorExplorationCount
+        {
+            get { int count = 0; foreach (var id in explorationIds) if (!IsCorridorMemoryRecord(id)) count++; return count; }
+        }
+        public string CorridorExplorationEntry(int index)
+        {
+            if (index < 0) return null;
+            for (int i = 0; i < explorationIds.Count; i++)
+                if (!IsCorridorMemoryRecord(explorationIds[i]) && index-- == 0) return exploration[i];
+            return null;
+        }
         readonly HashSet<string> inspected=new HashSet<string>();
         public void Inspect(string id,string text)
         {
             if(!InputAllowed||string.IsNullOrWhiteSpace(text))return;
-            if(inspected.Add(id)){exploration.Add(text);RecordInspected?.Invoke(id);if(player&&player.Feedback)player.Feedback.PlayDiscovery();}
+            if(inspected.Add(id)){exploration.Add(text);explorationIds.Add(id);RecordInspected?.Invoke(id);if(player&&player.Feedback)player.Feedback.PlayDiscovery();}
             Notify(text);
         }
         public event System.Action<int> StoryChanged;

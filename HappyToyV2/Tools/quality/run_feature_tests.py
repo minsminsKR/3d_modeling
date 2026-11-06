@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 PROJECT = Path(__file__).resolve().parents[2]
 VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
-    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests", "FrameRateCounterTests", "HandActionTimelineTests", "HandMotionStateTests",
+    "TemplePrologueClueStateTests", "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests", "FrameRateCounterTests", "HandActionTimelineTests", "HandMotionStateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
     "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
@@ -48,8 +48,14 @@ def play_tests(*files: str) -> tuple[str, ...]:
 PROFILES = {
     "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
         ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
+    "temple-story-ui-presentation": ("Opt-in offscreen actual temple camera and evidence reading HUD, normal/large text at 16:9, 4:3 and 21:9; no desktop input or native FPS claim", [
+        ("PlayMode", (PLAY + "TempleStoryEvidenceUiOffscreenAspectReview",))]),
+    "temple-horizon-logic": ("Visual terrain continuity, backdrop tree placement and safe cleanup; CPU only", [
+        ("PlayMode", (PLAY + "TempleForestHorizonExtendsAllFourSidesWithoutCollision",))]),
+    "corridor-story-logic": ("First memory story, real temple-to-corridor entry, journal and old/new checkpoint restoration; CPU only", [
+        ("PlayMode", play_tests("CloudCorridorStoryTests.cs"))]),
     "temple-prologue-flow": ("Actual title, two prayers, hold, next day, gate and corridor transition; CPU/physics only", [
-        ("PlayMode", play_tests("TemplePrologueFlowTests.cs", "TempleForestPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
+        ("PlayMode", play_tests("TemplePrologueFlowTests.cs", "TempleStoryNarrationTests.cs", "TempleClueCollisionTests.cs", "TempleForestPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (CLOUD + "TempleStoryEvidenceTests", PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "temple-forest-environment": ("Forest art, path bounds, background tree collision and older checkpoint clearance; CPU/physics only", [
         ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (PLAY + "TempleProductionForestKeepsTrunkCapsulesAndReviewedPineLods", PLAY + "TempleForestSoilRepeatsWithoutHardSeams"))]),
     "temple-prologue-regressions": ("Title keyboard entry, replacing a prepared mode and existing school/corridor checkpoint preservation; CPU only", [
@@ -61,13 +67,14 @@ PROFILES = {
                       PLAY + "SavedSlotIsConsumedWhenContinuingAfterSceneReloadFailure",
                       PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies"))]),
     "temple-prologue-restore": ("Temple pause/save restoration, legacy migration and opt-in walking gate checkpoints; CPU only", [
-        ("PlayMode", (PLAY + "TempleBoundaryContactsRemainSaveableAndRestorable",
+        ("PlayMode", (PLAY + "TempleClueCheckpointMigratesLegacyAndRejectsInvalidProgress",
+                      PLAY + "TempleBoundaryContactsRemainSaveableAndRestorable",
                       PLAY + "TempleSameTokenExternalEditIsPreservedBeforeSaveAndContinue",
                       PLAY + "TempleObstructedResumePreservesPlayerSelectionAndEnvironment",
                       PLAY + "TempleObstructedContinueKeepsSaveAndShowsErrorOnTitle",
                       PLAY + "TempleSuspendDuringPrayerRestoresOnce", PLAY + "TempleVersionOneCheckpointMigratesIncensePlacement",
                       PLAY + "TempleAllSavedPhasesRestoreTheirWorldAndVisibleGate", PLAY + "TempleWalkReviewCheckpointValidatesAndRestoresBeforeOpening",
-                      PLAY + "TempleWalkReviewPreservesCrossingInterruptedByPause", PLAY + "TempleRealTitleAndInteractionReachCorridor"))]),
+                      PLAY + "TempleWalkReviewPreservesCrossingInterruptedByPause", PLAY + "TempleRealTitleAndInteractionReachCorridor") + play_tests("TempleClueCollisionTests.cs"))]),
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
         ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
@@ -80,7 +87,7 @@ PROFILES = {
     "corridor-roster": ("Four-memory current corridor without Baby, three staged threats, fourth-memory Lady, real altar/school transition, current UI and legacy checkpoint/record compatibility", [
         ("EditMode", (EDIT + "CorridorLayoutTests", CLOUD + "CorridorSectorPlanTests",
                       CLOUD + "CorridorCheckpointStoreTests", EDIT + "CorridorRecordsTests", CLOUD + "CheckpointTrapCodecTests")),
-        ("PlayMode", play_tests("CorridorRosterTests.cs", "CloudCorridorTests.cs", "CloudCorridorThreatProgressionTests.cs",
+        ("PlayMode", play_tests("CloudCorridorStoryTests.cs", "CorridorRosterTests.cs", "CloudCorridorTests.cs", "CloudCorridorThreatProgressionTests.cs",
                                 "CloudCorridorRecordsTests.cs", "CloudMainCorridorFlowTests.cs", "LadyEncounterTests.cs",
                                 "LadyFinaleLightingTests.cs", "LadyItemResponseTests.cs", "LadyHeartbeatTests.cs",
                                 "RitualWorldTests.cs", "RitualPickupSupportTests.cs",
@@ -518,10 +525,12 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
-        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation"):
+        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation"):
             editor_args += ["-noaudio"]
+        if profile == "temple-story-ui-presentation":
+            editor_args += ["-v2-story-ui-review-output", str(output / "story-ui")]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]
         if no_desktop_interaction:
