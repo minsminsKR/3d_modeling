@@ -10,6 +10,7 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class TempleProloguePresentation : MonoBehaviour
     {
+        const float DistantCryVolume = .075f;
         readonly List<Material> materials = new List<Material>();
         readonly List<Texture2D> textures = new List<Texture2D>();
         readonly List<Light> lamps = new List<Light>();
@@ -142,7 +143,7 @@ namespace HappyToy.V2
             air = Source("Forest air", "ambience-forest", new Vector3(5, 2, -3), true, .15f, 35);
             air.spatialBlend = 0; // Diffuse outdoor wind is not a single point in the forest.
             bell = Source("Distant temple bell", "story-bell", new Vector3(-3, 4, 15), false, .10f, 32);
-            cry = Source("Distant child crying", "enemy-baby-cry", new Vector3(0, 1.5f, -8), true, .30f, 22);
+            cry = Source("Distant child crying", "enemy-baby-cry", new Vector3(0, 1.5f, -8), true, DistantCryVolume, 22);
             gateSound = Source("Gate opening", "door-open", new Vector3(0, 1.5f, -8), false, .65f, 16);
             gateSound.ignoreListenerPause = true; // The interaction immediately enters the masked transition.
             cry.Stop(); air.Play(); bell.Play(); nextBell = 18f;
@@ -340,7 +341,7 @@ namespace HappyToy.V2
                 if (nextBell <= 0) { bell.Play(); nextBell = 18f; }
             }
             if (secondDay && cry && camera)
-                cry.volume = .30f * Mathf.InverseLerp(2, 8, Vector3.Distance(camera.transform.position, world.GatePoint + Vector3.up * 1.5f));
+                cry.volume = DistantCryVolume * Mathf.InverseLerp(2, 8, Vector3.Distance(camera.transform.position, world.GatePoint + Vector3.up * 1.5f));
             if (waitingForIncenseEquip && incenseActor && !incenseActor.HandActions.Busy && incenseActor.Hands.ReadyForAction(PlayerItem.Incense))
             {
                 incenseActor.Hands.PlayAction(PlayerItem.Incense);

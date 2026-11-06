@@ -333,6 +333,7 @@ namespace HappyToy.V2.CloudTests
             Call(shell, "Resume"); yield return null;
             float airStart = air.volume, cryStart = cry.volume;
             Assert.That(airStart, Is.GreaterThan(0)); Assert.That(cryStart, Is.GreaterThan(0));
+            Assert.That(cryStart, Is.LessThanOrEqualTo(.075f), "Distant crying must remain a quiet background cue");
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("나타난 대문"));
             yield return RecoveryPulse(Key.E);
             Assert.That(Get<bool>(shell, "IsReloading"), Is.True);
