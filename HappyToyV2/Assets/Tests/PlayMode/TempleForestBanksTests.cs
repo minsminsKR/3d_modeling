@@ -11,6 +11,32 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleForestHorizonExtendsAllFourSidesWithoutCollision()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var ground = world.transform.Find("Forest ground");
+            var horizon = world.transform.Find("Forest horizon terrain");
+            Assert.That(ground && horizon, Is.True);
+            Assert.That(horizon.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var renderer = horizon.GetComponent<MeshRenderer>();
+            Assert.That(renderer.sharedMaterial, Is.SameAs(ground.GetComponent<Renderer>().sharedMaterial));
+            var bounds = renderer.bounds;
+            var floor = ground.GetComponent<Renderer>().bounds;
+            Assert.That(bounds.min.x, Is.LessThan(floor.min.x - 30));
+            Assert.That(bounds.max.x, Is.GreaterThan(floor.max.x + 30));
+            Assert.That(bounds.min.z, Is.LessThan(floor.min.z - 30));
+            Assert.That(bounds.max.z, Is.GreaterThan(floor.max.z + 30));
+            var mesh = horizon.GetComponent<MeshFilter>().sharedMesh;
+            Assert.That(mesh.normals.All(normal => normal.y > 0), Is.True);
+            var owner = world.GetComponent(RequireType("TempleForestHorizon"));
+            Object.Destroy(owner); yield return null; yield return null;
+            Assert.That(horizon == null, Is.True);
+            Assert.That(ground.GetComponent<Collider>(), Is.Not.Null);
+        }
+
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleForestBanksReuseRockLodsOutsideTheWalkableApproach()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
