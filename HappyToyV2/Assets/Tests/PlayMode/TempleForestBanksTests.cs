@@ -21,6 +21,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(ground && horizon, Is.True);
             Assert.That(horizon.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(horizon.GetComponentsInChildren<LODGroup>(true).Length, Is.EqualTo(32));
+            var edge = world.transform.Find("Forest edge undergrowth");
+            Assert.That(edge, Is.Not.Null);
+            Assert.That(edge.childCount, Is.EqualTo(32));
+            Assert.That(edge.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(ground.GetComponent<Renderer>().forceRenderingOff, Is.True);
             var renderer = horizon.GetComponent<MeshRenderer>();
             Assert.That(renderer.sharedMaterial, Is.SameAs(ground.GetComponent<Renderer>().sharedMaterial));
             var bounds = renderer.bounds;
@@ -34,6 +39,8 @@ namespace HappyToy.V2.CloudTests
             var owner = world.GetComponent(RequireType("TempleForestHorizon"));
             Object.Destroy(owner); yield return null; yield return null;
             Assert.That(horizon == null, Is.True);
+            Assert.That(edge == null, Is.True);
+            Assert.That(ground.GetComponent<Renderer>().forceRenderingOff, Is.False);
             Assert.That(ground.GetComponent<Collider>(), Is.Not.Null);
         }
 
