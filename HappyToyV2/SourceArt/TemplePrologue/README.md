@@ -402,3 +402,19 @@ the recorded centroid projection distance is 0.0243m at the 95th percentile,
 seams look correct. `TemplePrologueImport.ImportPine` imports both levels and
 `QualityValidation.BuildWindows` checks their presence and the 50k LOD1 budget.
 Subjective hearing and displayed FPS evaluation remain separate.
+
+## Altar intrusion — 2026-11-07
+
+The original Korean temple building, authored table and incense interaction
+remain in place. `TemplePrayerDressing` adds a restrained weathered three-strand
+cord across the front of the table, with inked seals alternating with folded
+zigzag streamers. This is an interpretation of an intrusive Japanese ritual
+presence, not a copy of any real inscription. The folded paper is a runtime-only
+copy of `CorridorDetails/hanging-seal-lod0`, with its original UVs and both
+faces; the authored sources and generator remain in `SourceArt/GraphicsUpgrade/`.
+Brush marks reuse `CorridorEntranceSealInk`; aged paper, charcoal ink and cord
+reuse the existing `GraphicsPbr` materials. The component owns and destroys its
+meshes; no new external model or texture is required. `temple-prologue-flow`
+includes a CPU/physics check for collider absence, actual incense focus and
+resource cleanup. Offscreen camera review and final appearance are not yet
+verified by the author of this change.

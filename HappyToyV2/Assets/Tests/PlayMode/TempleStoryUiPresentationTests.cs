@@ -196,7 +196,7 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(paper.resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
                     Assert.That(image.image, Is.SameAs(actualInk), "Reading must use the actual world paper ink");
                     Assert.That(text.text, Does.Contain(day == "first" ? "이름칸" : "집 그림"));
-                    Assert.That(text.resolvedStyle.fontSize, Is.GreaterThanOrEqualTo(large ? 27 : 23));
+                    AssertStoryFontSize(text, large);
                     Assert.That(caption.resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
                     Assert.That(text.MeasureTextSize(text.text, text.contentRect.width, VisualElement.MeasureMode.Exactly,
                         0, VisualElement.MeasureMode.Undefined).y, Is.LessThanOrEqualTo(text.contentRect.height + 1), "Transcript text is clipped");

@@ -18,7 +18,8 @@ namespace HappyToy.V2
         GameObject set, creature;
         Camera camera;
         AnimationClip pose,headMotion;
-        float headClock;
+        float headClock, bodyClock;
+        TitleBodyTremor bodyTremor;
         public float HeadMotionTime=>headClock;
         public AnimationClip HeadMotionClip=>headMotion;
         Shader titleShader;
@@ -143,6 +144,7 @@ namespace HappyToy.V2
             approachDirection=camera.transform.position-faceJoint.position;approachDirection.y=0;
             maximumApproach=Mathf.Max(.5f,approachDirection.magnitude-1.8f);approachDirection.Normalize();
             idleJoints=creature.GetComponentsInChildren<Transform>(true).Select(t=>new JointPose(t)).ToArray();
+            bodyTremor = new TitleBodyTremor(titlePivot, creature.transform);
             camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
             set.SetActive(false);
         }
@@ -169,8 +171,9 @@ namespace HappyToy.V2
             if(shell&&shell.CinematicLoading&&shell.TransitionBlack>=.999f)
             {approachFootsteps.Stop();return;}
             // Title time is unscaled; the game intentionally pauses on this page.
-            // Sampling only Head leaves every planted limb and body pose fixed.
-            if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime*HeadPlaybackSpeed;
+            // Keep the head action and planted-body shiver on independent clocks.
+            if (!shell || !shell.ReducedMotion)
+            { headClock += Time.unscaledDeltaTime * HeadPlaybackSpeed; bodyClock += Time.unscaledDeltaTime; }
             double now=Time.unscaledTimeAsDouble;
             if(now < nextFrame)return;
             bool approaching=shell && shell.CinematicLoading;
@@ -188,6 +191,7 @@ namespace HappyToy.V2
                 titlePivot.position=idlePivotPosition;camera.transform.rotation=idleCameraRotation;
                 ApproachDistance=0;wasApproaching=false;UpdateContactShadows();
             }
+            if (!approaching) bodyTremor.Apply(bodyClock, !shell || !shell.ReducedMotion);
             approachFootsteps.Tick(approaching && shell.Screen==GameShell.Page.Title,ApproachDistance,maximumApproach,1-shell.TransitionBlack);
             headMotion.SampleAnimation(creature,shell && shell.ReducedMotion ? 0 : Mathf.Repeat(headClock,headMotion.length));
             if(approaching)

@@ -9,7 +9,7 @@ namespace HappyToy.V2
     {
         readonly ShellLayout layout;
         readonly VisualElement threatVeil;
-        VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip, templeNoticePanel, templeNarrationPanel;
+        VisualElement stamina, crosshair, focusAnchor, focusPanel, itemFeedbackPanel, memoryStrip, templeNoticePanel, templeNarrationPanel;
         Label focus, focusKey, meter, caption, itemFeedback, controlsFooter, templeNotice, templeNarration, templeEvidenceHeading;
         VisualElement templeEvidencePaper;
         Image templeEvidenceInk;
@@ -148,9 +148,8 @@ namespace HappyToy.V2
             templeNotice.style.unityTextAlign = TextAnchor.MiddleCenter;
             templeNotice.style.color = layout.Paper;
             templeNoticePanel.Add(templeNotice);
-            // Story text is separate from sound captions and short action
-            // notices. It grows upward so wrapped large text stays above both
-            // the sound-caption line and the interaction prompt.
+            // Ordinary dialogue sits at the bottom like a subtitle. Evidence
+            // readings retain room for the original paper and its transcript.
             templeNarrationPanel = layout.Panel(300, 535, 1000, 110, Color.clear);
             templeNarrationPanel.name = "temple-narration-panel";
             templeNarrationPanel.style.top = StyleKeyword.Auto;
@@ -195,13 +194,13 @@ namespace HappyToy.V2
             templeNarration.style.marginTop = templeNarration.style.marginBottom = 0;
             templeNarration.style.paddingLeft = templeNarration.style.paddingRight = 0;
             templeNarration.style.paddingTop = templeNarration.style.paddingBottom = 0;
-            templeNarration.style.fontSize = layout.LargeText ? 35 : 25;
+            templeNarration.style.fontSize = layout.LargeText ? 28 : 21;
             templeNarration.style.whiteSpace = WhiteSpace.Normal;
             templeNarration.style.unityTextAlign = TextAnchor.MiddleCenter;
             templeNarration.style.color = layout.Paper;
             AddTextShadow(templeNarration);
             narrativeCopy.Add(templeNarration);
-            var focusAnchor = layout.Panel(0, 748, 1600, 72, Color.clear);
+            focusAnchor = layout.Panel(0, 748, 1600, 72, Color.clear);
             focusAnchor.style.alignItems = Align.Center;
             focusAnchor.style.justifyContent = Justify.Center;
             focusPanel = new VisualElement { name = "focus-panel", pickingMode = PickingMode.Ignore };
@@ -303,6 +302,20 @@ namespace HappyToy.V2
             Visible(templeNoticePanel, state.TempleNoticeVisible);
             templeNarration.text = state.TempleNarrationVisible ? state.TempleNarration : string.Empty;
             bool evidenceVisible = state.TempleNarrationVisible && state.TempleNarrationInk;
+            bool bottomSubtitle = state.TempleNarrationVisible && !evidenceVisible;
+            float subtitleBottom = 24 - layout.BelowSafeArea;
+            templeNarrationPanel.style.bottom = bottomSubtitle ? subtitleBottom : 235;
+            // Keep the two other messages above the actual wrapped subtitle,
+            // including when large text or localization changes its height.
+            float subtitleHeight = templeNarrationPanel.resolvedStyle.height;
+            if (float.IsNaN(subtitleHeight) || subtitleHeight <= 0) subtitleHeight = 64;
+            focusAnchor.style.top = bottomSubtitle ? new StyleLength(StyleKeyword.Auto) : new StyleLength(748);
+            focusAnchor.style.bottom = bottomSubtitle ? new StyleLength(subtitleBottom + subtitleHeight + 12) : new StyleLength(StyleKeyword.Auto);
+            caption.style.top = bottomSubtitle ? new StyleLength(StyleKeyword.Auto) : new StyleLength(688);
+            caption.style.bottom = bottomSubtitle ? new StyleLength(subtitleBottom + subtitleHeight + 92) : new StyleLength(StyleKeyword.Auto);
+            // The persistent corner hints share the subtitle's baseline; hide
+            // them only while ordinary dialogue is being shown, then restore.
+            Visible(controlsFooter, !bottomSubtitle);
             templeEvidenceInk.image = evidenceVisible ? state.TempleNarrationInk : null;
             Visible(templeEvidencePaper, evidenceVisible);
             Visible(templeEvidenceHeading, evidenceVisible);
@@ -312,7 +325,7 @@ namespace HappyToy.V2
             batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
             int count = state.Firecrackers;
             meter.text = state.UnlimitedItems ? "콩알탄 ∞ · 덫 ∞ · 향 ∞ · 부적 ∞ · 손전등 ∞" : $"콩알탄 {SnapperStockRules.CurrentPack(count)}/6 · 예비 {SnapperStockRules.ReservePacks(count)}묶음 · 덫 {state.Traps}개";
-            Visible(meter, !state.PrologueMode);
+            Visible(meter, !state.PrologueMode && !bottomSubtitle);
             bool hasFocus = state.Hidden || state.Focused;
             focusKey.text = usingGamepad ? "아래 버튼" : "E";
             focusKey.style.fontSize = usingGamepad ? (layout.LargeText ? 20 : 17) : (layout.LargeText ? 25 : 21);

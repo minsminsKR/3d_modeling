@@ -42,6 +42,7 @@ namespace HappyToy.V2
             // textile, within the old table's footprint.
             GraphicsPropLibrary.Fit(table, new Bounds(new Vector3(0, .4225f, 7.35f), new Vector3(1.8f, .845f, .75f)));
             Batch(table);
+            AddCorruptedSeals();
 
             var jar = Group("Authored ceramic offering jar");
             var jarVisual = Instantiate(pottery, jar, false);
@@ -67,6 +68,105 @@ namespace HappyToy.V2
                 GraphicsPropLibrary.Fit(candle, new Bounds(new Vector3(0, .09f, 0), new Vector3(.075f, .18f, .075f)));
                 var flame = GraphicsPropLibrary.CreateFlame(holder, owned);
                 GraphicsPropLibrary.Fit(flame, new Bounds(new Vector3(0, .22f, 0), new Vector3(.035f, .09f, .035f)));
+            }
+        }
+
+        // A restrained cord of inked paper has been tied across the original
+        // Korean prayer table, as if a foreign presence had claimed it. Reuse
+        // the authored folded paper and its conforming ink from the corridor;
+        // neither the table's collision nor the offering target is touched.
+        void AddCorruptedSeals()
+        {
+            var binding = Group("Intruding altar binding");
+            var paper = surfaces.Get("paper-aged", new Color(.80f, .74f, .61f));
+            var ink = surfaces.Get("cloth-charred", new Color(.08f, .025f, .019f));
+            var cord = surfaces.Get("cloth-charred", new Color(.31f, .24f, .16f));
+            // Keep all decoration in front of the old table collider. The cord
+            // is three gently intertwined strands rather than a rigid bar.
+            var geometry = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, .15f);
+            Vector3 Strand(float t, int strand)
+            {
+                float phase = 20 * Mathf.PI * t + strand * Mathf.PI * 2 / 3;
+                return new Vector3(Mathf.Lerp(-.83f, .83f, t),
+                    .785f - .035f * 4 * t * (1 - t) + .004f * Mathf.Cos(phase),
+                    6.946f + .004f * Mathf.Sin(phase));
+            }
+            const int steps = 64;
+            for (int strand = 0; strand < 3; strand++)
+                for (int i = 0; i < steps; i++)
+                    CordSegment(geometry, Strand(i / (float)steps, strand), Strand((i + 1f) / steps, strand), .0045f);
+            var mesh = geometry.Mesh("Owned braided altar cord"); owned.Add(mesh);
+            var rope = new GameObject("Weathered braided altar cord"); rope.layer = 8;
+            rope.transform.SetParent(binding, false);
+            rope.AddComponent<MeshFilter>().sharedMesh = mesh;
+            rope.AddComponent<MeshRenderer>().sharedMaterial = cord;
+
+            Mesh brushMarks = null;
+            var xPositions = new[] { -.66f, -.34f, -.02f, .30f, .64f };
+            for (int i = 0; i < xPositions.Length; i++)
+            {
+                float t = (xPositions[i] + .83f) / 1.66f;
+                var holder = new GameObject("Inked altar paper seal").transform;
+                holder.gameObject.layer = 8; holder.SetParent(binding, false);
+                holder.localPosition = new Vector3(xPositions[i], .785f - .035f * 4 * t * (1 - t), 6.938f);
+                holder.localRotation = Quaternion.Euler(0, (i % 3 - 1) * 5, (i % 2 == 0 ? -1 : 1) * (2 + i));
+                holder.localScale = new Vector3(.115f + .008f * (i % 2), .24f + .035f * (i % 3), 1);
+                var foldedPaper = CorridorDetailLibrary.Attach("hanging-seal", holder,
+                    slot => slot == "CD_paper" ? paper : slot == "CD_ink" ? ink : cord, 0);
+                if (i % 2 == 1)
+                {
+                    // Fold the existing paper geometry into alternating angular
+                    // streamers; this retains the original UV and thickness.
+                    FoldStreamer(foldedPaper, holder);
+                }
+                else
+                {
+                    if (!brushMarks) { brushMarks = CorridorEntranceSealInk.Create(foldedPaper, holder); owned.Add(brushMarks); }
+                    var marks = new GameObject("Brush marks on altar paper"); marks.layer = 8;
+                    marks.transform.SetParent(holder, false);
+                    marks.AddComponent<MeshFilter>().sharedMesh = brushMarks;
+                    marks.AddComponent<MeshRenderer>().sharedMaterial = ink;
+                }
+            }
+            Batch(binding);
+        }
+
+        void FoldStreamer(Transform paper, Transform holder)
+        {
+            foreach (var filter in paper.GetComponentsInChildren<MeshFilter>(true))
+            {
+                // Work in the normalized authored-paper frame, then return to
+                // the FBX frame; imported axis conversion must remain intact.
+                var toPaper = holder.worldToLocalMatrix * filter.transform.localToWorldMatrix;
+                var fromPaper = toPaper.inverse;
+                var mesh = Instantiate(filter.sharedMesh);
+                mesh.name = "Owned folded ritual paper";
+                var vertices = mesh.vertices;
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    var p = toPaper.MultiplyPoint3x4(vertices[i]);
+                    float fold = Mathf.PingPong(Mathf.Clamp01(-p.y) * 4, 2) - 1;
+                    p.x = p.x * .46f + fold * .48f;
+                    vertices[i] = fromPaper.MultiplyPoint3x4(p);
+                }
+                mesh.vertices = vertices;
+                mesh.RecalculateNormals(); mesh.RecalculateBounds();
+                filter.sharedMesh = mesh; owned.Add(mesh);
+            }
+        }
+
+        static void CordSegment(GraphicsSurfaceLibrary.Geometry geometry, Vector3 a, Vector3 b, float radius)
+        {
+            var direction = (b - a).normalized;
+            var across = Vector3.Cross(direction, Vector3.up).normalized;
+            if (across.sqrMagnitude < .01f) across = Vector3.right;
+            var other = Vector3.Cross(direction, across).normalized;
+            for (int n = 0; n < 6; n++)
+            {
+                float u = n * Mathf.PI / 3, v = (n + 1) * Mathf.PI / 3;
+                var p = (across * Mathf.Cos(u) + other * Mathf.Sin(u)) * radius;
+                var q = (across * Mathf.Cos(v) + other * Mathf.Sin(v)) * radius;
+                geometry.Quad(a + p, b + p, b + q, a + q);
             }
         }
 

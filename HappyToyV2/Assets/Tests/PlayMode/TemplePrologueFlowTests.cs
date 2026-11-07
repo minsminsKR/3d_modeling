@@ -715,6 +715,49 @@ namespace HappyToy.V2.CloudTests
             yield return null;
         }
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleAltarBindingReusesPaperWithoutChangingInteractionOrLeavingResources()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var binding = world.transform.Find("Intruding altar binding");
+            Assert.That(binding, Is.Not.Null);
+            Assert.That(binding.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(binding.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
+            var seals = binding.Cast<Transform>().Where(x => x.name == "Inked altar paper seal").ToArray();
+            Assert.That(seals.Length, Is.EqualTo(5));
+            Assert.That(binding.GetComponentsInChildren<Transform>(true).Count(x => x.name == "Brush marks on altar paper"), Is.EqualTo(3));
+            var foldedFilters = binding.GetComponentsInChildren<MeshFilter>(true)
+                .Where(x => x.sharedMesh && x.sharedMesh.name == "Owned folded ritual paper").ToArray();
+            Assert.That(foldedFilters.Length, Is.EqualTo(2));
+            var folded = foldedFilters.Select(x => x.sharedMesh).ToArray();
+            Assert.That(folded.All(x => x.vertexCount > 0 && x.uv.Length == x.vertexCount && x.normals.Length == x.vertexCount), Is.True);
+            foreach (var filter in foldedFilters)
+            {
+                var holder = filter.transform;
+                while (holder && holder.name != "Inked altar paper seal") holder = holder.parent;
+                Assert.That(holder, Is.Not.Null);
+                var matrix = holder.worldToLocalMatrix * filter.transform.localToWorldMatrix;
+                var points = filter.sharedMesh.vertices.Select(matrix.MultiplyPoint3x4).ToArray();
+                var top = points.Where(x => Mathf.Abs(x.y) < .025f).ToArray();
+                var middle = points.Where(x => Mathf.Abs(x.y + .5f) < .025f).ToArray();
+                Assert.That(top.Length, Is.GreaterThan(0)); Assert.That(middle.Length, Is.GreaterThan(0));
+                Assert.That(Mathf.Abs(top.Average(x => x.x) - middle.Average(x => x.x)), Is.GreaterThan(.5f),
+                    "Folded paper must have a visible alternating silhouette between top and middle");
+            }
+            var cord = binding.Find("Weathered braided altar cord").GetComponent<MeshFilter>().sharedMesh;
+            Assert.That(cord.vertexCount, Is.GreaterThan(0));
+            Assert.That(binding.GetComponentsInChildren<MeshRenderer>(true).Count(x => x.enabled), Is.InRange(1, 3));
+            Assert.That(world.transform.Find("Prayer table top").GetComponent<BoxCollider>().enabled, Is.True);
+            PlacePlayer(new Vector3(500, .04f, 505.2f));
+            player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
+            yield return null; yield return null;
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
+            Call(session, "RetirePrologue"); yield return null; yield return null;
+            Assert.That(folded.All(x => !x), Is.True, "Folded copies must be released with the prologue");
+            Assert.That(!cord, Is.True, "Generated cord must be released with the prologue");
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TemplePrayerFurnishingsPreserveInteractionAndPhysics()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

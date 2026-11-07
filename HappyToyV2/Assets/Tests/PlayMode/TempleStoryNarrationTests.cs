@@ -101,7 +101,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(heading.resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
             Assert.That(Get<bool>(shell, "Subtitles"), Is.False);
             Assert.That(panel.resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
-            Assert.That(label.resolvedStyle.fontSize, Is.GreaterThanOrEqualTo(27));
+            AssertStoryFontSize(label, true);
             Assert.That(label.resolvedStyle.whiteSpace, Is.EqualTo(WhiteSpace.Normal));
             Assert.That(panel.worldBound.yMin, Is.GreaterThan(notice.worldBound.yMax));
             Assert.That(panel.worldBound.yMax, Is.LessThan(panel.parent.worldBound.yMin + panel.parent.worldBound.height * (688f / 900f)), "Story panel must stay above the sound-caption position");

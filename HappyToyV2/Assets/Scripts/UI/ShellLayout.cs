@@ -32,6 +32,17 @@ namespace HappyToy.V2
         public Color Edge => new Color(.22f, .30f, .25f);
         public Color Rust => HighContrast ? new Color(1f, .66f, .48f) : new Color(.91f, .55f, .39f);
         public int ReadingSize => LargeText ? 26 : 22;
+        // The fixed 16:9 safe area is vertically centered inside a taller
+        // viewport. Bottom subtitles may extend into that unused margin.
+        public float BelowSafeArea
+        {
+            get
+            {
+                if (stage.parent == null) return 0;
+                float extra = stage.parent.worldBound.yMax - stage.worldBound.yMax;
+                return float.IsNaN(extra) ? 0 : Mathf.Max(0, extra);
+            }
+        }
 
         public VisualElement Place(VisualElement element, float x, float y, float width, float height)
         {

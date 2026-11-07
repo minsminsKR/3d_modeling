@@ -134,6 +134,13 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(caption.resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
                     Assert.That(key.text, Is.EqualTo(expectedKey)); Assert.That(action.text, Is.EqualTo("쪽지 살펴보기"));
                     Assert.That(paper.resolvedStyle.display == DisplayStyle.None, Is.EqualTo(!evidence));
+                    AssertStoryFontSize(storyText, large);
+                    if (!evidence)
+                    {
+                        AssertOrdinaryStoryAtScreenBottom(root, story);
+                        Assert.That(story.worldBound.yMin, Is.GreaterThanOrEqualTo(focus.worldBound.yMax - 1), "Focus must be above dialogue");
+                        Assert.That(story.worldBound.yMin, Is.GreaterThanOrEqualTo(caption.worldBound.yMax - 1), "Sound captions must be above dialogue");
+                    }
                     if (evidence) Assert.That(image.image, Is.SameAs(actualInk));
                     else Assert.That(image.image, Is.Null);
                     foreach (var text in new[] { key, action, storyText, caption })

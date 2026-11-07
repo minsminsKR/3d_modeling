@@ -118,7 +118,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest,Timeout(90000)]
-        public IEnumerator BaeksugwiTitleHeadMovesAtZeroTimeScaleWithAllBodySupportsPlanted()
+        public IEnumerator BaeksugwiTitleHeadAndBodyTrembleAtZeroTimeScaleWithSupportsPlanted()
         {
             yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;yield return null;
             var title=One("CinematicTitleScene");Assert.That(Time.timeScale,Is.Zero);
@@ -127,8 +127,15 @@ namespace HappyToy.V2.CloudTests
                 "The runtime key must resolve the extracted head-only clip, not the source FBX Scene take");
             var creature=GameObject.Find("Actual Baeksugwi source clone");Assert.That(creature,Is.Not.Null);
             var nodes=creature.GetComponentsInChildren<Transform>(true);var head=nodes.Single(t=>t.name=="Head");
-            var others=nodes.Where(t=>t!=head).ToArray();var rotations=others.Select(t=>t.localRotation).ToArray();var positions=others.Select(t=>t.localPosition).ToArray();
-            var first=head.localRotation;float swing=0;
+            var torso=nodes.Single(t=>t.name=="SpineFront");
+            var elbow=nodes.Single(t=>t.name=="Arm1L_Elbow");
+            var wrists=Enumerable.Range(1,6).SelectMany(limb=>new[]{"L","R"}.Select(side=>
+                nodes.Single(t=>t.name=="Arm"+limb+side+"_Wrist"))).ToArray();
+            Assert.That(wrists.Length,Is.EqualTo(12));
+            var wristPositions=wrists.Select(t=>t.position).ToArray();
+            var wristRotations=wrists.Select(t=>t.rotation).ToArray();
+            var firstTorso=torso.localRotation;var firstElbow=elbow.localRotation;
+            var first=head.localRotation;float swing=0,torsoShake=0,elbowShake=0;
             var titleTarget=Get<RenderTexture>(title,"Image");
             var firstImage=CloudExperienceTests.Read(titleTarget);Color32[] firstPixels;
             try{firstPixels=firstImage.GetPixels32();}finally{Object.Destroy(firstImage);}
@@ -138,16 +145,20 @@ namespace HappyToy.V2.CloudTests
             while(Get<float>(title,"HeadMotionTime")-motionStart<2.4f && Time.realtimeSinceStartup-wallStart<18)
             {
                 yield return Delay(.15f);swing=Mathf.Max(swing,Quaternion.Angle(first,head.localRotation));
-                for(int i=0;i<others.Length;i++)
+                torsoShake=Mathf.Max(torsoShake,Quaternion.Angle(firstTorso,torso.localRotation));
+                elbowShake=Mathf.Max(elbowShake,Quaternion.Angle(firstElbow,elbow.localRotation));
+                for(int i=0;i<wrists.Length;i++)
                 {
-                    Assert.That(Quaternion.Angle(rotations[i],others[i].localRotation),Is.LessThan(.01f),"Title body rotated: "+others[i].name);
-                    Assert.That(Vector3.Distance(positions[i],others[i].localPosition),Is.LessThan(.00001f),"Title joint moved: "+others[i].name);
+                    Assert.That(Vector3.Distance(wristPositions[i],wrists[i].position),Is.LessThan(.003f),"A planted wrist moved: "+wrists[i].name);
+                    Assert.That(Quaternion.Angle(wristRotations[i],wrists[i].rotation),Is.LessThan(.06f),"A planted wrist rotated: "+wrists[i].name);
                 }
             }
             Assert.That(Get<float>(title,"HeadMotionTime")-motionStart,Is.GreaterThanOrEqualTo(2.4f),"The looming title head did not advance");
             Assert.That((Get<float>(title,"HeadMotionTime")-motionStart)/(Time.realtimeSinceStartup-wallStart),Is.InRange(.12f,.25f),
                 "The giant title head must turn slowly in unscaled time");
             Assert.That(swing,Is.GreaterThan(15));Assert.That(Get<int>(title,"PlantedLimbCount"),Is.EqualTo(12));
+            Assert.That(torsoShake,Is.GreaterThan(.2f),"Title torso did not tremble");
+            Assert.That(elbowShake,Is.GreaterThan(.2f),"Title limbs did not tremble independently of the head");
             // Check the production texture separately: moving CPU joints alone
             // cannot prove that an offscreen camera presents a moving head.
             var lastImage=CloudExperienceTests.Read(titleTarget);Color32[] lastPixels;
@@ -161,11 +172,17 @@ namespace HappyToy.V2.CloudTests
                 }
             Assert.That(changed,Is.GreaterThanOrEqualTo(24),"Actual title head-region texture stayed still while CPU joints moved");
             Assert.That(Get<float>(title,"MaximumSupportFloorGap"),Is.LessThan(.006f));
-            Call(title,"SetVisible",false);float clock=Get<float>(title,"HeadMotionTime");yield return Delay(.15f);
+            Call(title,"SetVisible",false);float clock=Get<float>(title,"HeadMotionTime");
+            float bodyClock=TitleSceneField<float>(title,"bodyClock");yield return Delay(.15f);
             Assert.That(Get<float>(title,"HeadMotionTime"),Is.EqualTo(clock));
+            Assert.That(TitleSceneField<float>(title,"bodyClock"),Is.EqualTo(bodyClock));
             Call(title,"SetVisible",true);Call(shell,"ToggleReducedMotion");yield return Delay(1.1f);
-            first=head.localRotation;clock=Get<float>(title,"HeadMotionTime");yield return Delay(1.1f);
+            first=head.localRotation;firstTorso=torso.localRotation;firstElbow=elbow.localRotation;
+            clock=Get<float>(title,"HeadMotionTime");bodyClock=TitleSceneField<float>(title,"bodyClock");yield return Delay(1.1f);
             Assert.That(Get<float>(title,"HeadMotionTime"),Is.EqualTo(clock));Assert.That(Quaternion.Angle(first,head.localRotation),Is.LessThan(.01f));
+            Assert.That(TitleSceneField<float>(title,"bodyClock"),Is.EqualTo(bodyClock));
+            Assert.That(Quaternion.Angle(firstTorso,torso.localRotation),Is.LessThan(.01f),"Reduced motion must stop the torso");
+            Assert.That(Quaternion.Angle(firstElbow,elbow.localRotation),Is.LessThan(.01f),"Reduced motion must stop limb tremor");
         }
 
         static T TitleSceneField<T>(Component title,string name) => (T)title.GetType()

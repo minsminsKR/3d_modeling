@@ -25,6 +25,20 @@ namespace HappyToy.V2.CloudTests
             Assert.That(measured.y, Is.LessThanOrEqualTo(label.contentRect.height + 1.5f), description + " is clipped");
         }
 
+        static void AssertOrdinaryStoryAtScreenBottom(VisualElement root, VisualElement story)
+        {
+            Assert.That(story.worldBound.yMax, Is.GreaterThanOrEqualTo(root.worldBound.yMin + root.worldBound.height * .92f),
+                "Ordinary dialogue should sit at the bottom of the screen");
+            Assert.That(story.worldBound.yMax, Is.LessThanOrEqualTo(root.worldBound.yMax + 1),
+                "Ordinary dialogue must stay within the screen");
+        }
+
+        static void AssertStoryFontSize(Label label, bool large)
+        {
+            Assert.That(label.resolvedStyle.fontSize, Is.InRange(large ? 26f : 19f, large ? 30f : 22f),
+                "Dialogue text should be compact while retaining a larger accessible option");
+        }
+
         void AssertHudElementsDoNotOverlap()
         {
             var root = HudReviewRoot();
@@ -45,6 +59,10 @@ namespace HappyToy.V2.CloudTests
             Assert.That(focusPanel.worldBound.Overlaps(caption.worldBound), Is.False, "Interaction must not cover sound captions");
             Assert.That(focusPanel.worldBound.Overlaps(crosshair.worldBound), Is.False, "Interaction must not cover the reticle");
             Assert.That(story.worldBound.Overlaps(caption.worldBound), Is.False, "Story text must not cover sound captions");
+            AssertOrdinaryStoryAtScreenBottom(root, story);
+            Assert.That(story.worldBound.yMin, Is.GreaterThanOrEqualTo(focusPanel.worldBound.yMax - 1), "Interaction must be above ordinary dialogue");
+            Assert.That(story.worldBound.yMin, Is.GreaterThanOrEqualTo(caption.worldBound.yMax - 1), "Sound captions must be above ordinary dialogue");
+            AssertStoryFontSize(root.Q<Label>("temple-narration"), true);
             Assert.That(story.worldBound.Overlaps(crosshair.worldBound), Is.False, "Story text must not cover the reticle");
             Assert.That(focusPanel.worldBound.xMin, Is.GreaterThanOrEqualTo(root.worldBound.xMin - 1));
             Assert.That(focusPanel.worldBound.xMax, Is.LessThanOrEqualTo(root.worldBound.xMax + 1));
@@ -132,7 +150,7 @@ namespace HappyToy.V2.CloudTests
             var image = root.Q<Image>("temple-evidence-ink"); var paper = root.Q("temple-evidence-paper");
             Assert.That(Get<bool>(shell, "HighContrast") && Get<bool>(shell, "LargeText"), Is.True);
             Assert.That(Get<bool>(shell, "Subtitles"), Is.False);
-            Assert.That(text.resolvedStyle.fontSize, Is.GreaterThanOrEqualTo(27));
+            AssertStoryFontSize(text, true);
             AssertHudLabelFits(text, "Evidence reading");
             Assert.That(paper.resolvedStyle.display, Is.Not.EqualTo(DisplayStyle.None));
             Assert.That(image.image, Is.SameAs(ink), "The actual in-world ink must remain visible");
@@ -154,6 +172,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(HudReviewRoot().Q("temple-evidence-paper").resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
             Assert.That(HudReviewRoot().Q<Image>("temple-evidence-ink").image, Is.Null);
             AssertHudLabelFits(HudReviewRoot().Q<Label>("temple-narration"), "Ordinary story");
+            AssertOrdinaryStoryAtScreenBottom(root, root.Q("temple-narration-panel"));
             Call(narration, "Clear"); yield return null; yield return null;
             Assert.That(HudReviewRoot().Q("temple-narration-panel").resolvedStyle.display, Is.EqualTo(DisplayStyle.None));
         }
