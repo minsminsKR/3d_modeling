@@ -48,6 +48,8 @@ namespace HappyToy.V2.CloudTests
             ((Behaviour)narration).enabled = false; // Freeze a real active line during the offscreen review.
             CaptureHorizonComparison(eyes, world, output);
             CaptureMistComparison(eyes, world, output);
+            if (args.Contains("-v2-temple-forest-gap-review"))
+                CaptureTempleForestGapComparison(eyes, world, output);
             yield return CaptureHorizonEdges(eyes, world, output);
             yield return CaptureTempleStoryUiAspects(view, eyes, world, output, "first");
 
@@ -141,6 +143,135 @@ namespace HappyToy.V2.CloudTests
                 if (visible) Object.Destroy(visible);
                 if (hidden) Object.Destroy(hidden);
             }
+        }
+
+        // Explicitly opt-in visual experiment. The candidate pines exist only
+        // while these two images are captured; neither gameplay nor the normal
+        // story UI camera are changed. This is not a performance benchmark.
+        void CaptureTempleForestGapComparison(Camera eyes, Component world, string output)
+        {
+            var terrain = world.transform.Find("Forest horizon terrain");
+            Assert.That(terrain, Is.Not.Null);
+            var filter = terrain.GetComponent<MeshFilter>();
+            Assert.That(filter && filter.sharedMesh, Is.True);
+            var vertices = filter.sharedMesh.vertices;
+            Assert.That(vertices.Length, Is.GreaterThan(2 * 128 + 93));
+            var pine = Resources.Load<GameObject>("TemplePrologue/pine-far-branches-visual");
+            Assert.That(pine, Is.Not.Null);
+            Assert.That(pine.GetComponentInChildren<Collider>(true), Is.Null);
+            Assert.That(pine.GetComponentInChildren<Rigidbody>(true), Is.Null);
+            var prefabLod = pine.GetComponent<LODGroup>();
+            Assert.That(prefabLod && prefabLod.lodCount == 3, Is.True);
+            Vector3 oldPosition = player.transform.position;
+            Quaternion oldRotation = player.transform.rotation, oldEyeRotation = eyes.transform.rotation;
+            GameObject candidateRoot = null;
+            Texture2D baseline = null, candidate = null;
+            try
+            {
+                Call(player, "RelocateWorld", new Vector3(500, .04f, 503.5f), Quaternion.identity);
+                eyes.transform.rotation = Quaternion.LookRotation(new Vector3(500, 1.9f, 509) - eyes.transform.position);
+                Physics.SyncTransforms();
+                baseline = SchoolHorrorFrame(eyes, 1280, 720);
+                File.WriteAllBytes(Path.Combine(output, "temple-forest-gap-off.png"), baseline.EncodeToPNG());
+                candidateRoot = new GameObject("Diagnostic temple forest gap candidates");
+                candidateRoot.transform.SetParent(terrain, false);
+                int[] indices = { 93, 62 };
+                float[] yaws = { 127, 289 };
+                float[] scales = { .83f, .91f };
+                for (int i = 0; i < indices.Length; i++)
+                {
+                    var tree = Object.Instantiate(pine, candidateRoot.transform, false);
+                    tree.name = "Diagnostic forest gap pine " + indices[i];
+                    // Ring 2 is the exact 1.5x slope; take the actual mesh
+                    // vertex so the visual roots stay on its current surface.
+                    tree.transform.localPosition = vertices[2 * 128 + indices[i]] + Vector3.down * .06f;
+                    tree.transform.localRotation = Quaternion.Euler(0, yaws[i], 0);
+                    tree.transform.localScale = Vector3.one * scales[i];
+                    tree.GetComponent<LODGroup>().ForceLOD(2);
+                    foreach (var piece in tree.GetComponentsInChildren<Renderer>(true))
+                        piece.shadowCastingMode = ShadowCastingMode.Off;
+                }
+                candidate = SchoolHorrorFrame(eyes, 1280, 720);
+                File.WriteAllBytes(Path.Combine(output, "temple-forest-gap-on.png"), candidate.EncodeToPNG());
+            }
+            finally
+            {
+                if (candidateRoot) Object.DestroyImmediate(candidateRoot);
+                if (baseline) Object.Destroy(baseline);
+                if (candidate) Object.Destroy(candidate);
+                Call(player, "RelocateWorld", oldPosition, oldRotation);
+                eyes.transform.rotation = oldEyeRotation;
+                Physics.SyncTransforms();
+            }
+        }
+
+        // Separate, explicit fern experiment. Four captures use the same
+        // real camera pose in one frame, so mist/time do not change between
+        // the baseline, individual plants and combined view.
+        [UnityTest, Timeout(240000)]
+        public IEnumerator TempleFernGapOffscreenReview()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            int option = Array.IndexOf(args, "-v2-temple-fern-gap-output");
+            if (option < 0) yield break;
+            Assert.That(option + 1, Is.LessThan(args.Length), "Fern review output is required");
+            Assert.That(Application.isBatchMode && args.Contains("-v2-audit-no-desktop-interaction") && args.Contains("-noaudio"), Is.True,
+                "This offscreen review requires batch mode, desktop isolation and muted output");
+            Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(GraphicsDeviceType.Null), "Actual camera rendering is required");
+            string builds = Path.GetFullPath(Path.Combine(Application.dataPath, "../Builds/Verification"));
+            string output = Path.GetFullPath(args[option + 1]);
+            Assert.That(output.StartsWith(builds + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase), Is.True);
+            Assert.That(Directory.Exists(output), Is.False, "Never reuse a prior review");
+            Directory.CreateDirectory(output);
+            TestContext.Out.WriteLine("Temple fern review output: " + output);
+
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            Call(shell, "RestoreDefaultSettings"); yield return null; yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var eyes = Get<Camera>(player, "eyes");
+            var existing = world.transform.Find("Forest undergrowth");
+            Assert.That(existing, Is.Not.Null, "Existing forest finish is required");
+            var left = existing.Cast<Transform>().Single(plant =>
+                (plant.localPosition - new Vector3(-3.8f, -.01f, 7.2f)).sqrMagnitude < .0001f).gameObject;
+            var right = existing.Cast<Transform>().Single(plant =>
+                (plant.localPosition - new Vector3(3.5f, -.01f, 6.6f)).sqrMagnitude < .0001f).gameObject;
+            bool oldLeftActive = left.activeSelf, oldRightActive = right.activeSelf;
+            Vector3 oldPosition = player.transform.position;
+            Quaternion oldRotation = player.transform.rotation, oldEyeRotation = eyes.transform.rotation;
+            var playerBehaviour = (Behaviour)player;
+            bool oldPlayerEnabled = playerBehaviour.enabled;
+            try
+            {
+                playerBehaviour.enabled = false;
+                Call(player, "RelocateWorld", new Vector3(500, .04f, 503.5f), Quaternion.identity);
+                eyes.transform.rotation = Quaternion.LookRotation(new Vector3(500, 1.9f, 509) - eyes.transform.position);
+                Physics.SyncTransforms();
+                left.SetActive(false); right.SetActive(false);
+                WriteTempleFernFrame(eyes, output, "temple-fern-gap-off.png");
+                left.SetActive(true);
+                WriteTempleFernFrame(eyes, output, "temple-fern-gap-left.png");
+                left.SetActive(false); right.SetActive(true);
+                WriteTempleFernFrame(eyes, output, "temple-fern-gap-right.png");
+                left.SetActive(true);
+                WriteTempleFernFrame(eyes, output, "temple-fern-gap-both.png");
+            }
+            finally
+            {
+                if (left) left.SetActive(oldLeftActive);
+                if (right) right.SetActive(oldRightActive);
+                Call(player, "RelocateWorld", oldPosition, oldRotation);
+                eyes.transform.rotation = oldEyeRotation;
+                playerBehaviour.enabled = oldPlayerEnabled;
+                Physics.SyncTransforms();
+            }
+        }
+
+        static void WriteTempleFernFrame(Camera eyes, string output, string filename)
+        {
+            var frame = SchoolHorrorFrame(eyes, 1280, 720);
+            try { File.WriteAllBytes(Path.Combine(output, filename), frame.EncodeToPNG()); }
+            finally { Object.Destroy(frame); }
         }
 
         // Offscreen eye-camera views from inside the established physical

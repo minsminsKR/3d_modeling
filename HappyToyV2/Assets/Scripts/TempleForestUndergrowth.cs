@@ -31,7 +31,9 @@ namespace HappyToy.V2
             new Placement(-4.75f,-12.6f, 319,1.15f), new Placement( 3.35f,-10.6f,  45,1.35f),
             new Placement(-2.65f, -8.9f, 164,1.20f), new Placement( 5.05f, -5.4f, 292,1.38f),
             new Placement(-3.15f, -2.9f, 205,1.30f), new Placement( 2.85f,  .1f,  73,1.22f),
-            new Placement(-4.55f,  3.3f, 333,1.35f), new Placement( 3.15f,  6.1f, 141,1.18f)
+            new Placement(-4.55f,  3.3f, 333,1.35f), new Placement( 3.15f,  6.1f, 141,1.18f),
+            // Subtle foreground framing, reviewed separately from the walkable route.
+            new Placement(-3.80f,  7.2f,  87, .95f), new Placement( 3.50f,  6.6f, 248, .85f)
         };
         bool prepared;
         public int PlantCount => prepared ? Plants.Length : 0;

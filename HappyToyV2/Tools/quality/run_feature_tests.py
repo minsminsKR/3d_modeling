@@ -70,6 +70,8 @@ PROFILES = {
         ("PlayMode", (PLAY + "TempleForestSoilMaterialOffscreenReview",))]),
     "temple-altar-soil-cost-presentation": ("Opt-in offscreen ABBA altar vapor and soil cost; not displayed FPS", [
         ("PlayMode", (PLAY + "TempleAltarSoilCostOffscreenAbbaReview",))]),
+    "temple-facade-color-presentation": ("Opt-in frozen offscreen facade-color ABBA review; no desktop input or displayed FPS claim", [
+        ("PlayMode", (PLAY + "TempleFacadeColorOffscreenAbbaReview",))]),
     "temple-candle-presentation": ("Opt-in candle light and existing-light contribution comparison; no desktop input or displayed FPS claim", [
         ("PlayMode", (PLAY + "TempleCandleLightOffscreenReview",))]),
     "temple-altar-vapor-presentation": ("Opt-in offscreen altar vapor on/off and pause baseline; no desktop input or native FPS claim", [
@@ -523,6 +525,16 @@ PROFILES["school-anomaly-presentation"]=("All-nine-lamp blackout retains actual 
         PLAY+"SchoolWalkerRecordedTileContactsReachTheSpatialMixerAndStopForObstructionPauseTalismanAndMute"))])
 
 
+PROFILES["temple-forest-gap-presentation"] = (
+    "Opt-in front-camera comparison of two visual-only low-LOD forest gap candidates; not a performance audit",
+    [("PlayMode", (PLAY + "TempleStoryEvidenceUiOffscreenAspectReview",))])
+
+
+PROFILES["temple-fern-gap-presentation"] = (
+    "Opt-in front camera comparison of individual and combined visual-only fern candidates; not a performance audit",
+    [("PlayMode", (PLAY + "TempleFernGapOffscreenReview",))])
+
+
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])
     if profile != "full":
@@ -553,14 +565,21 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
         if profile in ("hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
-        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
+        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-facade-color-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]
         if profile in ("temple-story-ui-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-v2-story-ui-review-output", str(output / "story-ui")]
+        if profile == "temple-forest-gap-presentation":
+            editor_args += ["-noaudio", "-v2-story-ui-review-output", str(output / "story-ui"),
+                            "-v2-temple-forest-gap-review"]
+        if profile == "temple-fern-gap-presentation":
+            editor_args += ["-noaudio", "-v2-temple-fern-gap-output", str(output / "fern-gap")]
         if profile in ("temple-soil-original-logic", "temple-soil-original-presentation"):
             editor_args += ["-v2-forest-earth-original"]
         if profile == "temple-altar-soil-cost-presentation":
             editor_args += ["-v2-temple-cost-output", str(output / "temple-cost")]
+        if profile == "temple-facade-color-presentation":
+            editor_args += ["-v2-facade-color-review-output", str(output / "facade-color")]
         if profile == "temple-candle-presentation":
             editor_args += ["-v2-altar-light-review-output", str(output / "altar-light")]
         if profile == "temple-altar-vapor-presentation":
