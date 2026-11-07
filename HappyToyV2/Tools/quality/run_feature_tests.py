@@ -46,10 +46,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "hud-interaction-logic": ("Actual keyboard/gamepad prompts, accessible story/evidence layout and pause; CPU only", [
+        ("PlayMode", play_tests("CloudHudPresentationTests.cs"))]),
     "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
         ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
     "temple-story-ui-presentation": ("Opt-in offscreen actual temple camera and evidence reading HUD, normal/large text at 16:9, 4:3 and 21:9; no desktop input or native FPS claim", [
-        ("PlayMode", (PLAY + "TempleStoryEvidenceUiOffscreenAspectReview",))]),
+        ("PlayMode", (PLAY + "TempleStoryEvidenceUiOffscreenAspectReview", PLAY + "TemplePhysicalFocusHudOffscreenReview"))]),
     "temple-horizon-logic": ("Visual terrain continuity, backdrop tree placement and safe cleanup; CPU only", [
         ("PlayMode", (PLAY + "TempleForestHorizonExtendsAllFourSidesWithoutCollision",))]),
     "corridor-story-logic": ("First memory story, real temple-to-corridor entry, journal and old/new checkpoint restoration; CPU only", [
@@ -525,7 +527,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("hud-interaction-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation"):
             editor_args += ["-noaudio"]

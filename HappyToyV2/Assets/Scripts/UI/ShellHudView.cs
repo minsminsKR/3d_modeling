@@ -10,7 +10,7 @@ namespace HappyToy.V2
         readonly ShellLayout layout;
         readonly VisualElement threatVeil;
         VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip, templeNoticePanel, templeNarrationPanel;
-        Label focus, meter, caption, itemFeedback, controlsFooter, templeNotice, templeNarration, templeEvidenceHeading;
+        Label focus, focusKey, meter, caption, itemFeedback, controlsFooter, templeNotice, templeNarration, templeEvidenceHeading;
         VisualElement templeEvidencePaper;
         Image templeEvidenceInk;
         FlashlightGauge batteryMeter;
@@ -58,6 +58,59 @@ namespace HappyToy.V2
             }
         }
 
+        // A small feathered veil keeps text legible without a hard HUD box.
+        // It is generated in the UI mesh, so it owns no runtime texture or
+        // input and scales with the content it protects.
+        sealed class SoftBackdrop : VisualElement
+        {
+            readonly float strength;
+            const int Columns = 9, Rows = 7;
+            public SoftBackdrop(float strength)
+            {
+                this.strength = strength; pickingMode = PickingMode.Ignore;
+                style.position = Position.Absolute;
+                style.left = -16; style.right = -16; style.top = -10; style.bottom = -10;
+                generateVisualContent += Draw;
+            }
+            static float Feather(float t, float falloff)
+            {
+                float edge = Mathf.Clamp01(Mathf.Min(t, 1 - t) * falloff);
+                return edge * edge * (3 - 2 * edge);
+            }
+            void Draw(MeshGenerationContext context)
+            {
+                var rect = contentRect;
+                if (rect.width <= 0 || rect.height <= 0) return;
+                var mesh = context.Allocate(Columns * Rows, (Columns - 1) * (Rows - 1) * 6, null);
+                for (int y = 0; y < Rows; y++)
+                for (int x = 0; x < Columns; x++)
+                {
+                    float u = x / (float)(Columns - 1), v = y / (float)(Rows - 1);
+                    float alpha = strength * Feather(u, 6f) * Feather(v, 5f);
+                    mesh.SetNextVertex(new Vertex {
+                        position = new Vector3(u * rect.width, v * rect.height, Vertex.nearZ),
+                        tint = new Color(0, 0, 0, alpha) });
+                }
+                for (int y = 0; y < Rows - 1; y++)
+                for (int x = 0; x < Columns - 1; x++)
+                {
+                    ushort a = (ushort)(y * Columns + x), b = (ushort)(a + 1);
+                    ushort c = (ushort)(a + Columns), d = (ushort)(c + 1);
+                    mesh.SetNextIndex(a); mesh.SetNextIndex(b); mesh.SetNextIndex(c);
+                    mesh.SetNextIndex(b); mesh.SetNextIndex(d); mesh.SetNextIndex(c);
+                }
+            }
+        }
+        static void AddBackdrop(VisualElement owner, float strength)
+        {
+            owner.Insert(0, new SoftBackdrop(strength));
+        }
+        static void AddTextShadow(Label label)
+        {
+            label.style.textShadow = new TextShadow { color = new Color(0, 0, 0, .95f),
+                offset = new Vector2(0, 2), blurRadius = 4 };
+        }
+
         public void Build(int totalRecords, string controlText)
         {
             int tokenCount = Mathf.Clamp(totalRecords, 0, memoryTokens.Length);
@@ -81,6 +134,7 @@ namespace HappyToy.V2
             caption.name = "sound-caption";
             caption.style.unityTextAlign = TextAnchor.UpperCenter;
             caption.style.color = layout.Gold;
+            AddTextShadow(caption);
             // The prologue has a short authored sequence; its existing phase
             // notices must be readable without changing other modes' quiet HUD.
             templeNoticePanel = layout.Panel(400, 64, 800, 72, new Color(.017f, .026f, .022f, layout.HighContrast ? .96f : .78f));
@@ -97,8 +151,7 @@ namespace HappyToy.V2
             // Story text is separate from sound captions and short action
             // notices. It grows upward so wrapped large text stays above both
             // the sound-caption line and the interaction prompt.
-            templeNarrationPanel = layout.Panel(300, 535, 1000, 110,
-                new Color(.012f, .019f, .017f, layout.HighContrast ? .98f : .86f));
+            templeNarrationPanel = layout.Panel(300, 535, 1000, 110, Color.clear);
             templeNarrationPanel.name = "temple-narration-panel";
             templeNarrationPanel.style.top = StyleKeyword.Auto;
             templeNarrationPanel.style.bottom = 235;
@@ -109,7 +162,7 @@ namespace HappyToy.V2
             templeNarrationPanel.style.flexDirection = FlexDirection.Row;
             templeNarrationPanel.style.alignItems = Align.Center;
             templeNarrationPanel.style.justifyContent = Justify.Center;
-            layout.Outline(templeNarrationPanel, layout.Edge);
+            AddBackdrop(templeNarrationPanel, layout.HighContrast ? .98f : .89f);
             // Exact world ink texture, not a second interpretation of the clue.
             // Its paper backing gives the transparent ink enough contrast in
             // dark scenes and the row stays below the aiming reticle.
@@ -133,6 +186,7 @@ namespace HappyToy.V2
             templeEvidenceHeading.style.color = layout.Gold;
             templeEvidenceHeading.style.unityTextAlign = TextAnchor.MiddleCenter;
             templeEvidenceHeading.style.marginBottom = 5;
+            AddTextShadow(templeEvidenceHeading);
             narrativeCopy.Add(templeEvidenceHeading);
             templeNarration = new Label { name = "temple-narration", pickingMode = PickingMode.Ignore };
             templeNarration.style.alignSelf = Align.Stretch;
@@ -141,33 +195,52 @@ namespace HappyToy.V2
             templeNarration.style.marginTop = templeNarration.style.marginBottom = 0;
             templeNarration.style.paddingLeft = templeNarration.style.paddingRight = 0;
             templeNarration.style.paddingTop = templeNarration.style.paddingBottom = 0;
-            templeNarration.style.fontSize = layout.LargeText ? 27 : 23;
+            templeNarration.style.fontSize = layout.LargeText ? 35 : 25;
             templeNarration.style.whiteSpace = WhiteSpace.Normal;
             templeNarration.style.unityTextAlign = TextAnchor.MiddleCenter;
             templeNarration.style.color = layout.Paper;
+            AddTextShadow(templeNarration);
             narrativeCopy.Add(templeNarration);
-            var focusAnchor = layout.Panel(0, 753, 1600, 54, Color.clear);
+            var focusAnchor = layout.Panel(0, 748, 1600, 72, Color.clear);
             focusAnchor.style.alignItems = Align.Center;
             focusAnchor.style.justifyContent = Justify.Center;
             focusPanel = new VisualElement { name = "focus-panel", pickingMode = PickingMode.Ignore };
-            focusPanel.style.backgroundColor = new Color(.017f, .026f, .022f, .95f);
-            focusPanel.style.maxWidth = 680;
+            focusPanel.style.maxWidth = 1000;
             focusPanel.style.flexShrink = 0;
-            focusPanel.style.paddingLeft = focusPanel.style.paddingRight = 20;
-            focusPanel.style.paddingTop = focusPanel.style.paddingBottom = 10;
+            focusPanel.style.flexDirection = FlexDirection.Row;
+            focusPanel.style.alignItems = Align.Center;
+            focusPanel.style.justifyContent = Justify.Center;
+            focusPanel.style.paddingLeft = focusPanel.style.paddingRight = 14;
+            focusPanel.style.paddingTop = focusPanel.style.paddingBottom = 5;
             focusAnchor.Add(focusPanel);
-            layout.Outline(focusPanel, layout.Edge);
+            AddBackdrop(focusPanel, layout.HighContrast ? .98f : .90f);
+            focusKey = new Label { name = "interaction-key", pickingMode = PickingMode.Ignore };
+            focusKey.style.minWidth = layout.LargeText ? 48 : 40;
+            focusKey.style.height = layout.LargeText ? 48 : 40;
+            focusKey.style.paddingLeft = focusKey.style.paddingRight = 9;
+            focusKey.style.paddingTop = focusKey.style.paddingBottom = 0;
+            focusKey.style.marginTop = focusKey.style.marginBottom = 0;
+            focusKey.style.marginRight = 12;
+            focusKey.style.unityTextAlign = TextAnchor.MiddleCenter;
+            focusKey.style.whiteSpace = WhiteSpace.NoWrap;
+            focusKey.style.color = layout.Paper;
+            focusKey.style.backgroundColor = new Color(.035f, .040f, .036f, layout.HighContrast ? .98f : .83f);
+            focusKey.style.borderTopLeftRadius = focusKey.style.borderTopRightRadius = 22;
+            focusKey.style.borderBottomLeftRadius = focusKey.style.borderBottomRightRadius = 22;
+            layout.Outline(focusKey, layout.HighContrast ? layout.Gold : new Color(.74f, .69f, .55f, .8f));
+            AddTextShadow(focusKey); focusPanel.Add(focusKey);
             focus = new Label { name = "interaction-prompt", pickingMode = PickingMode.Ignore };
-            focus.style.fontSize = layout.LargeText ? 27 : 23;
+            focus.style.fontSize = layout.LargeText ? 30 : 25;
             focus.style.minHeight = layout.LargeText ? 44 : 38;
+            focus.style.flexShrink = 1;
             focus.style.color = layout.Paper;
             focus.style.whiteSpace = WhiteSpace.Normal;
             focus.style.marginLeft = focus.style.marginRight = 0;
             focus.style.marginTop = focus.style.marginBottom = 0;
             focus.style.paddingLeft = focus.style.paddingRight = 0;
             focus.style.paddingTop = focus.style.paddingBottom = 0;
-            focus.style.unityTextAlign = TextAnchor.MiddleCenter;
-            focusPanel.Add(focus);
+            focus.style.unityTextAlign = TextAnchor.MiddleLeft;
+            AddTextShadow(focus); focusPanel.Add(focus);
             layout.Small("호흡", 47, 781, 170);
             layout.Panel(47, 817, 265, 6, layout.Edge);
             stamina = layout.Panel(47, 817, 265, 6, layout.Gold);
@@ -241,8 +314,9 @@ namespace HappyToy.V2
             meter.text = state.UnlimitedItems ? "콩알탄 ∞ · 덫 ∞ · 향 ∞ · 부적 ∞ · 손전등 ∞" : $"콩알탄 {SnapperStockRules.CurrentPack(count)}/6 · 예비 {SnapperStockRules.ReservePacks(count)}묶음 · 덫 {state.Traps}개";
             Visible(meter, !state.PrologueMode);
             bool hasFocus = state.Hidden || state.Focused;
-            string interact = usingGamepad ? "[아래 버튼]  " : "[E]  ";
-            focus.text = state.Hidden ? interact + "숨은 곳에서 나오기" : state.Focused ? interact + state.FocusLabel : string.Empty;
+            focusKey.text = usingGamepad ? "아래 버튼" : "E";
+            focusKey.style.fontSize = usingGamepad ? (layout.LargeText ? 20 : 17) : (layout.LargeText ? 25 : 21);
+            focus.text = state.Hidden ? "숨은 곳에서 나오기" : state.Focused ? state.FocusLabel : string.Empty;
             Visible(focus, hasFocus);
             Visible(focusPanel, hasFocus);
             UpdateCrosshair(state.Focused);

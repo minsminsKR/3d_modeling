@@ -2,6 +2,8 @@
 
 사찰 서사 재구성의 소유권과 검증 경로는 다음과 같다. `Core/TemplePrologueClueState`가 양일 쪽지 조사 순서·향 허용과 구형 저장 면제를, `TemplePrologueWorld`가 조사·저장 연결을, `TempleStoryEvidence`가 기존 종이와 두 날의 잉크를, `StoryNarration`과 `ShellHudView`가 정지 가능한 독립 대사와 판독 표시를 소유한다. `CorridorRun`의 첫 회수 기억은 회수 개수로 기록을 복원하며 `ShellJournalScreen`은 기억과 주변 조사를 구분한다. `temple-prologue-restore`는 새 쪽지와 구형 저장의 위치·자세·충돌 및 마이그레이션을, `temple-prologue-flow`는 양일 진행과 입력을, `corridor-story-logic`은 무음·무화면으로 회랑 수집·기록·저장과 실제 사찰 전환을, `temple-story-ui-presentation`은 격리된 UI와 카메라의 화면비별 합성을 검증한다. 세 화면비·두 글씨 크기의 게임 카메라/UI 합성은 확인했고 청음과 표시 FPS는 별도 확인이 필요하다. 목표·장면 설계는 `SourceArt/TemplePrologue/STORY_DESIGN.md`다.
 
+공통 하단 HUD는 `ShellHudView`가 대사·증거·상호작용 키 표시와 입력을 가로채지 않는 페더 배경 메시를 소유하고, `StoryNarration`은 대사 순서와 시간을 소유한다. `hud-interaction-logic`은 실제 가상 키보드·게임패드 입력, 대사·증거·일시정지와 큰 글씨·고대비 배치를 무화면으로 검사한다. `temple-story-ui-presentation`은 사찰 게임 카메라에서 실제 조준과 입력을 사용해 일반/증거 화면, 키보드/게임패드, 보통/큰 글씨, 일반/고대비와 세 화면비를 오프스크린 합성해 검사한다. 화면 표시 FPS나 실제 기기 사용감은 별도다.
+
 사찰 프롤로그는 타이틀의 새 이야기에서 시작하며, `TemplePrologueWorld`가 기존 플레이어의
 향로/대문 E 상호작용과 첫날 귀가·둘째 날 회귀를 소유한다. 보이지 않는 대문은 플레이어가
 문짝·기둥 충돌 영역을 벗어난 뒤 나타나며, 중단 복원에서도 같은 기준을 사용한다. `TemplePrologueDirector`와
@@ -285,6 +287,8 @@ Unity **6000.6.0f1**을 설치하고 기존 Packages lock을 복원한다.
 ```powershell
 python HappyToyV2/Tools/quality/run_feature_tests.py --list
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile core
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile hud-interaction-logic --no-desktop-interaction
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile temple-story-ui-presentation --graphics-api d3d12 --no-desktop-interaction
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile title
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile ui --dry-run
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile drawer
