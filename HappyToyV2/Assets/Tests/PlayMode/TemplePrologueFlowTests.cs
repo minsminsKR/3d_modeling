@@ -752,13 +752,7 @@ namespace HappyToy.V2.CloudTests
                 var holder = filter.transform;
                 while (holder && holder.name != "Inked altar paper seal") holder = holder.parent;
                 Assert.That(holder, Is.Not.Null);
-                var matrix = holder.worldToLocalMatrix * filter.transform.localToWorldMatrix;
-                var points = filter.sharedMesh.vertices.Select(matrix.MultiplyPoint3x4).ToArray();
-                var top = points.Where(x => Mathf.Abs(x.y) < .025f).ToArray();
-                var middle = points.Where(x => Mathf.Abs(x.y + .5f) < .025f).ToArray();
-                Assert.That(top.Length, Is.GreaterThan(0)); Assert.That(middle.Length, Is.GreaterThan(0));
-                Assert.That(Mathf.Abs(top.Average(x => x.x) - middle.Average(x => x.x)), Is.GreaterThan(.5f),
-                    "Folded paper must have a visible alternating silhouette between top and middle");
+                AssertTwoSidedRitualZigzag(filter, holder);
             }
             var cord = binding.Find("Weathered braided altar cord").GetComponent<MeshFilter>().sharedMesh;
             Assert.That(cord.vertexCount, Is.GreaterThan(0));

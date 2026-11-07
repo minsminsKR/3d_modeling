@@ -98,11 +98,15 @@ namespace HappyToy.V2.CloudTests
             var beds = bedGroups.Select(group => group.GetLODs()[0].renderers[0]).OrderBy(renderer => renderer.bounds.center.z).ToArray();
             Assert.That(beds.All(renderer => renderer.bounds.min.x < 500 && renderer.bounds.max.x > 500), Is.True,
                 "The bed must cover the center of the original walkable route");
+            var walkBounds = backing.GetComponent<Renderer>().bounds;
+            Assert.That(beds.All(renderer => renderer.bounds.size.x >= walkBounds.size.x * .89f &&
+                renderer.bounds.min.x >= walkBounds.min.x - .001f && renderer.bounds.max.x <= walkBounds.max.x + .001f), Is.True,
+                "The underlying stone must cover the path without leaving its original footstep footprint");
             for (int i = 1; i < beds.Length; i++)
                 Assert.That(beds[i].bounds.min.z - beds[i - 1].bounds.max.z, Is.InRange(0, .01f),
                     "A bed segment left a visible transverse gap or overlaps a neighbour");
             var derived = renderers.Select(renderer => renderer.GetComponent<MeshFilter>().sharedMesh).Distinct().ToArray();
-            Assert.That(derived.Length, Is.EqualTo(8), "Four derived variants per authored LOD must be shared");
+            Assert.That(derived.Length, Is.EqualTo(16), "Eight derived variants per authored LOD must be shared");
             var sourceGroup = Resources.Load<GameObject>("CorridorEntrance/ritual-floor-visual").GetComponent<LODGroup>();
             var original = sourceGroup.GetLODs().SelectMany(level => level.renderers)
                 .Select(renderer => renderer.GetComponent<MeshFilter>().sharedMesh).ToArray();

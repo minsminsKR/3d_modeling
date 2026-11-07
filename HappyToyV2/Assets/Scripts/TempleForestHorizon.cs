@@ -11,7 +11,8 @@ namespace HappyToy.V2
     {
         const int SideSteps = 32;
         const int Perimeter = SideSteps * 4;
-        Mesh mesh;
+        Mesh mesh, hazeMesh;
+        Material hazeMaterial;
         GameObject horizon, undergrowth;
         Renderer groundRenderer;
         bool previousGroundRenderingOff;
@@ -110,6 +111,7 @@ namespace HappyToy.V2
             groundRenderer = ground;
             previousGroundRenderingOff = ground.forceRenderingOff;
             groundRenderer.forceRenderingOff = true;
+            AddFarTerrainHaze(vertices);
 
             // Reuse the authored pine's far mesh only; avoid new collision and
             // expensive close LODs in scenery outside the physical boundary.
@@ -188,12 +190,54 @@ namespace HappyToy.V2
             }
         }
 
+        // A world-space haze follows the far terrain itself instead of hiding
+        // the horizon with a camera-facing wall. Only the outer two rings are
+        // drawn; the walkable ground keeps its authored PBR material. The last
+        // ring approaches the same linear color as the procedural horizon sky.
+        void AddFarTerrainHaze(Vector3[] terrainVertices)
+        {
+            var shader = Resources.Load<Shader>("TempleForestTerrainHaze");
+            if (!shader || (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null && !shader.isSupported)) return;
+            var points = new Vector3[Perimeter * 3];
+            var colors = new Color[points.Length];
+            var triangles = new int[Perimeter * 12];
+            float[] opacity = { 0, .42f, .94f };
+            for (int ring = 0; ring < 3; ring++)
+            for (int i = 0; i < Perimeter; i++)
+            {
+                int index = ring * Perimeter + i;
+                points[index] = terrainVertices[(ring + 2) * Perimeter + i] + Vector3.up * .012f;
+                colors[index] = new Color(1, 1, 1, opacity[ring]);
+            }
+            int n = 0;
+            for (int ring = 0; ring < 2; ring++)
+            for (int i = 0; i < Perimeter; i++)
+            {
+                int a = ring * Perimeter + i, b = ring * Perimeter + (i + 1) % Perimeter;
+                int c = a + Perimeter, d = b + Perimeter;
+                triangles[n++] = a; triangles[n++] = b; triangles[n++] = c;
+                triangles[n++] = b; triangles[n++] = d; triangles[n++] = c;
+            }
+            hazeMesh = new Mesh { name = "Owned far forest terrain haze" };
+            hazeMesh.vertices = points; hazeMesh.colors = colors; hazeMesh.triangles = triangles;
+            hazeMesh.RecalculateBounds();
+            hazeMaterial = new Material(shader) { name = "Owned far forest terrain haze" };
+            var haze = new GameObject("Far forest terrain haze"); haze.layer = 8;
+            haze.transform.SetParent(horizon.transform, false);
+            haze.AddComponent<MeshFilter>().sharedMesh = hazeMesh;
+            var surface = haze.AddComponent<MeshRenderer>(); surface.sharedMaterial = hazeMaterial;
+            surface.shadowCastingMode = ShadowCastingMode.Off; surface.receiveShadows = false;
+            surface.lightProbeUsage = LightProbeUsage.Off; surface.reflectionProbeUsage = ReflectionProbeUsage.Off;
+        }
+
         void OnDestroy()
         {
             if (groundRenderer) groundRenderer.forceRenderingOff = previousGroundRenderingOff;
             if (undergrowth) { if (Application.isPlaying) Destroy(undergrowth); else DestroyImmediate(undergrowth); }
             if (horizon) { if (Application.isPlaying) Destroy(horizon); else DestroyImmediate(horizon); }
             if (mesh) { if (Application.isPlaying) Destroy(mesh); else DestroyImmediate(mesh); }
+            if (hazeMesh) { if (Application.isPlaying) Destroy(hazeMesh); else DestroyImmediate(hazeMesh); }
+            if (hazeMaterial) { if (Application.isPlaying) Destroy(hazeMaterial); else DestroyImmediate(hazeMaterial); }
         }
     }
 }

@@ -47,6 +47,7 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => Get<string>(narration, "CurrentText").Contains("이름칸"), 5, "First-day note did not appear");
             ((Behaviour)narration).enabled = false; // Freeze a real active line during the offscreen review.
             CaptureHorizonComparison(eyes, world, output);
+            CaptureMistComparison(eyes, world, output);
             yield return CaptureHorizonEdges(eyes, world, output);
             yield return CaptureTempleStoryUiAspects(view, eyes, world, output, "first");
 
@@ -67,9 +68,9 @@ namespace HappyToy.V2.CloudTests
             Call(view, "RestoreDisplayOutput");
         }
 
-        // Compare the exact same first-day eye camera before and after hiding
-        // only the terrain renderer. Child pine renderers and all colliders
-        // remain untouched; restore the prior flag even if readback fails.
+        // Compare the same first-day eye camera with the entire terrain surface
+        // hidden, including its far haze. Trees and colliders remain untouched;
+        // restore both rendering flags even if readback fails.
         void CaptureHorizonComparison(Camera eyes, Component world, string output)
         {
             var horizon = world.transform.Find("Forest horizon terrain");
@@ -77,20 +78,67 @@ namespace HappyToy.V2.CloudTests
             var terrain = horizon.GetComponent<MeshRenderer>();
             Assert.That(terrain, Is.Not.Null, "The horizon must own a terrain renderer");
             bool previousForceOff = terrain.forceRenderingOff;
-            Assert.That(previousForceOff, Is.False, "The baseline must show the terrain");
+            var haze = horizon.Find("Far forest terrain haze")?.GetComponent<MeshRenderer>();
+            Assert.That(haze, Is.Not.Null, "The terrain haze must exist for this GPU review");
+            bool previousHazeForceOff = haze.forceRenderingOff;
+            Assert.That(previousForceOff || previousHazeForceOff, Is.False, "The baseline must show the terrain and haze");
             Texture2D baseline = null, hidden = null;
             try
             {
                 baseline = SchoolHorrorFrame(eyes, 1280, 720);
                 File.WriteAllBytes(Path.Combine(output, "first-world-horizon-on.png"), baseline.EncodeToPNG());
                 terrain.forceRenderingOff = true;
+                haze.forceRenderingOff = true;
                 hidden = SchoolHorrorFrame(eyes, 1280, 720);
                 File.WriteAllBytes(Path.Combine(output, "first-world-horizon-off.png"), hidden.EncodeToPNG());
             }
             finally
             {
                 terrain.forceRenderingOff = previousForceOff;
+                haze.forceRenderingOff = previousHazeForceOff;
                 if (baseline) Object.Destroy(baseline);
+                if (hidden) Object.Destroy(hidden);
+            }
+        }
+
+        // Compare the same rendered scene with only the five mist volumes
+        // hidden. This verifies that the production shader actually affects
+        // the world instead of merely existing in the hierarchy.
+        void CaptureMistComparison(Camera eyes, Component world, string output)
+        {
+            var volumes = world.GetComponentsInChildren<MeshRenderer>(true)
+                .Where(r => r.sharedMaterial && r.sharedMaterial.shader &&
+                    r.sharedMaterial.shader.name == "HappyToy/TempleForestAtmosphereMist").ToArray();
+            Assert.That(volumes.Length, Is.EqualTo(5));
+            var saved = volumes.Select(r => r.forceRenderingOff).ToArray();
+            Texture2D visible = null, hidden = null;
+            try
+            {
+                visible = SchoolHorrorFrame(eyes, 1280, 720);
+                File.WriteAllBytes(Path.Combine(output, "first-world-mist-on.png"), visible.EncodeToPNG());
+                foreach (var volume in volumes) volume.forceRenderingOff = true;
+                hidden = SchoolHorrorFrame(eyes, 1280, 720);
+                File.WriteAllBytes(Path.Combine(output, "first-world-mist-off.png"), hidden.EncodeToPNG());
+                var a = visible.GetPixels32(); var b = hidden.GetPixels32();
+                int changed = 0, mistErrorPixels = 0, baselineErrorPixels = 0;
+                for (int i = 0; i < a.Length; i++)
+                {
+                    if (Mathf.Max(Mathf.Abs(a[i].r - b[i].r), Mathf.Abs(a[i].g - b[i].g), Mathf.Abs(a[i].b - b[i].b)) >= 3)
+                        changed++;
+                    // Error shader magenta can otherwise look like a valid
+                    // on/off difference, even when isSupported is true before
+                    // lazy D3D compilation. Compare with the same mist-off frame.
+                    if (a[i].r >= 220 && a[i].b >= 220 && a[i].g <= 64) mistErrorPixels++;
+                    if (b[i].r >= 220 && b[i].b >= 220 && b[i].g <= 64) baselineErrorPixels++;
+                }
+                Assert.That(mistErrorPixels, Is.LessThanOrEqualTo(baselineErrorPixels + 128),
+                    "The mist introduced magenta error-shader pixels");
+                Assert.That(changed, Is.GreaterThan(200), "The mist must visibly affect the actual camera scene");
+            }
+            finally
+            {
+                for (int i = 0; i < volumes.Length; i++) if (volumes[i]) volumes[i].forceRenderingOff = saved[i];
+                if (visible) Object.Destroy(visible);
                 if (hidden) Object.Destroy(hidden);
             }
         }

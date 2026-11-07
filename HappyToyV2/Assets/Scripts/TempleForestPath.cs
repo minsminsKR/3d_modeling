@@ -10,7 +10,7 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class TempleForestPath : MonoBehaviour
     {
-        const int SegmentCount = 12, Variants = 4;
+        const int SegmentCount = 12, Variants = 8;
         const float ReliefHeight = .030f;
         Material wetStone, bedStone;
         Mesh bedSurface;
@@ -84,8 +84,10 @@ namespace HappyToy.V2
                 foreach (var filter in bed.GetComponentsInChildren<MeshFilter>(true))
                     filter.sharedMesh = bedSurface;
                 float z = center.z - size.z * .5f + (i + .5f) * segment;
-                float width = size.x * (.74f + .02f * ((i * 5) % 7));
-                float x = center.x + seamOffsets[i] * .35f;
+                // Wider source-derived coverage keeps broken relief gaps from
+                // exposing broad strips of unrelated soil at the path edges.
+                float width = size.x * (.90f + .01f * ((i * 5) % 7));
+                float x = center.x + seamOffsets[i] * .20f;
                 CorridorEntranceModels.FitBox(bed, new Vector3(x, groundTop + .002f, z),
                     new Vector3(width, .002f, segment - .004f), Quaternion.Euler(0, (i % 4) * 90, 0));
                 foreach (var renderer in bed.GetComponentsInChildren<Renderer>(true))
@@ -104,7 +106,7 @@ namespace HappyToy.V2
                 var visual = tile.GetChild(0);
                 var originalBounds = GraphicsPropLibrary.LocalBounds(visual);
                 float cutoff = Mathf.Lerp(originalBounds.min.y, originalBounds.max.y, .5f);
-                int variant = (i * 3 + column * 2) % Variants;
+                int variant = (i * 3 + column * 5) % Variants;
                 foreach (var filter in visual.GetComponentsInChildren<MeshFilter>(true))
                     filter.sharedMesh = StoneMesh(filter, visual, originalBounds, cutoff, variant);
                 float z = center.z - size.z * .5f + (i + .5f - column * .5f) * segment;

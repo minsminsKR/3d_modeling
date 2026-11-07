@@ -100,11 +100,11 @@ namespace HappyToy.V2
             volumeMesh = MakeVolumeMesh();
             AddVolume("Forest mist near trail entrance", new Vector3(0, .43f, -19), new Vector3(23, 1.45f, 14));
             AddVolume("Forest mist along trail", new Vector3(0, .43f, -5), new Vector3(23, 1.45f, 14));
-            AddVolume("Forest mist near prayer space", new Vector3(0, .43f, 9), new Vector3(19, 1.45f, 14), .10f);
-            AddVolume("Denser mist around the temple", new Vector3(0, .50f, 16), new Vector3(14, 1.6f, 8), .115f);
+            AddVolume("Forest mist near prayer space", new Vector3(0, .43f, 9), new Vector3(19, 1.45f, 14), .075f);
+            AddVolume("Denser mist around the temple", new Vector3(0, .50f, 16), new Vector3(14, 1.6f, 8), .075f);
             // A low-density 3D layer behind the existing forest softens the
             // rectangular ground's far boundary from moving camera positions.
-            AddVolume("Distant forest horizon mist", new Vector3(0, 1.05f, 27), new Vector3(54, 2.1f, 14), .045f);
+            AddVolume("Distant forest horizon mist", new Vector3(0, 1.05f, 27), new Vector3(54, 2.1f, 14), .035f);
             UpdateLampData(); ready = true;
         }
 

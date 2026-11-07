@@ -48,6 +48,8 @@ def play_tests(*files: str) -> tuple[str, ...]:
 PROFILES = {
     "hud-interaction-logic": ("Actual keyboard/gamepad prompts, accessible story/evidence layout and pause; CPU only", [
         ("PlayMode", play_tests("CloudHudPresentationTests.cs"))]),
+    "temple-concept-environment-logic": ("Temple path, shrine bindings and mist lifecycle; CPU only", [
+        ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleShrineDressingTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestBanksTests.cs"))]),
     "temple-altar-logic": ("Altar binding, existing prayer interaction and resource cleanup; CPU only", [
         ("PlayMode", (PLAY + "TempleAltarBindingReusesPaperWithoutChangingInteractionOrLeavingResources",
                       PLAY + "TemplePrayerFurnishingsPreserveInteractionAndPhysics"))]),
@@ -532,7 +534,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("hud-interaction-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("hud-interaction-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation"):
             editor_args += ["-noaudio"]

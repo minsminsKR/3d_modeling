@@ -156,7 +156,7 @@ namespace HappyToy.V2
                 for (int i = 0; i < vertices.Length; i++)
                 {
                     var p = toPaper.MultiplyPoint3x4(vertices[i]);
-                    float fold = Mathf.PingPong(Mathf.Clamp01(-p.y) * 4, 2) - 1;
+                    float fold = Mathf.PingPong(Mathf.Clamp01(-p.y) * 8, 2) - 1;
                     p.x = p.x * .46f + fold * .48f;
                     vertices[i] = fromPaper.MultiplyPoint3x4(p);
                 }

@@ -288,6 +288,7 @@ Unity **6000.6.0f1**을 설치하고 기존 Packages lock을 복원한다.
 python HappyToyV2/Tools/quality/run_feature_tests.py --list
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile core
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile hud-interaction-logic --no-desktop-interaction
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile temple-concept-environment-logic --no-desktop-interaction
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile temple-altar-logic --no-desktop-interaction
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile title-tremor-presentation --graphics-api d3d12 --no-desktop-interaction
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile temple-story-ui-presentation --graphics-api d3d12 --no-desktop-interaction

@@ -3,7 +3,7 @@ Shader "HappyToy/TempleForestAtmosphereMist"
     Properties
     {
         _Density("Mist extinction per metre", Float) = 0.085
-        _MistColor("Cold mist tint", Color) = (0.20, 0.25, 0.30, 1)
+        _MistColor("Cold mist tint", Color) = (0.23, 0.28, 0.34, 1)
     }
     SubShader
     {
@@ -39,6 +39,22 @@ Shader "HappyToy/TempleForestAtmosphereMist"
                 float reach = saturate(1 - distanceSquared * lampLocation.w);
                 return radiance * (reach * reach / (1 + distanceSquared * .5));
             }
+            // Continuous world-space value noise forms irregular fog banks;
+            // no screen-space pattern, new textures or additional ray steps.
+            float MistHash(float2 cell)
+            {
+                float3 p = frac(float3(cell.xyx) * .1031);
+                p += dot(p, p.yzx + 33.33);
+                return frac((p.x + p.y) * p.z);
+            }
+            float MistNoise(float2 samplePosition)
+            {
+                float2 cell = floor(samplePosition), f = frac(samplePosition);
+                f = f * f * (3 - 2 * f);
+                float a = MistHash(cell), b = MistHash(cell + float2(1, 0));
+                float c = MistHash(cell + float2(0, 1)), d = MistHash(cell + float2(1, 1));
+                return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
+            }
             half4 frag(Varyings i) : SV_Target
             {
                 float3 origin = GetCameraPositionWS();
@@ -66,19 +82,25 @@ Shader "HappyToy/TempleForestAtmosphereMist"
                     float rayDistance = start + (stepIndex + .5) * stepLength;
                     float3 at = origin + direction * rayDistance;
                     float3 local = localOrigin + localDirection * rayDistance;
-                    float3 boundary = saturate((.5 - abs(local)) * float3(5, 5, 5));
+                    // Smooth box edges prevent visible rectangular mist seams.
+                    float3 boundary = smoothstep(0, .20, .5 - abs(local));
                     float edge = boundary.x * boundary.y * boundary.z;
-                    // Three moving world-space waves avoid repeating sprite outlines.
-                    float wisp = .62 + .16 * sin(at.x * .71 + at.z * .24 + _FlowTime * .09)
-                        + .13 * sin(at.z * .47 - at.y * 1.3 - _FlowTime * .12)
-                        + .09 * sin(at.x * 1.13 - at.z * .36 + _FlowTime * .07);
-                    float extinction = max(0, _Density * edge * wisp);
+                    // A slowly drifting bank is varied across the ground,
+                    // with gaps rather than a uniform bright horizontal strip.
+                    // A second frequency breaks up the bank edges; time is the
+                    // same pause-aware atmosphere clock as the original mist.
+                    float2 drift = float2(_FlowTime * .025, -_FlowTime * .017);
+                    float broad = MistNoise(at.xz * .16 + drift);
+                    float detail = .5 + .5 * sin(at.x * .47 - at.z * .39 - _FlowTime * .04);
+                    float bank = lerp(.12, 1.30, smoothstep(.30, .68, broad * .78 + detail * .22));
+                    float groundLayer = 1 - .38 * smoothstep(.12, .88, local.y + .5);
+                    float extinction = max(0, _Density * edge * groundLayer * bank);
                     float alpha = 1 - exp(-extinction * stepLength);
                     float3 light = Lamp(at, _LampPosition0, _LampRadiance0.rgb)
                                  + Lamp(at, _LampPosition1, _LampRadiance1.rgb)
                                  + Lamp(at, _LampPosition2, _LampRadiance2.rgb)
                                  + Lamp(at, _LampPosition3, _LampRadiance3.rgb);
-                    float3 color = _MistColor.rgb + light * .055;
+                    float3 color = _MistColor.rgb + light * .075;
                     scattered += transmittance * alpha * color;
                     transmittance *= 1 - alpha;
                 }

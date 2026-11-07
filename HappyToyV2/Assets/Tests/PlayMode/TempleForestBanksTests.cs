@@ -49,6 +49,17 @@ namespace HappyToy.V2.CloudTests
             Assert.That(ground.GetComponent<Renderer>().forceRenderingOff, Is.True);
             var renderer = horizon.GetComponent<MeshRenderer>();
             Assert.That(renderer.sharedMaterial, Is.SameAs(ground.GetComponent<Renderer>().sharedMaterial));
+            var haze = horizon.Find("Far forest terrain haze");
+            Assert.That(haze, Is.Not.Null, "Far terrain should blend toward the horizon sky");
+            Assert.That(haze.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var hazeMesh = haze.GetComponent<MeshFilter>().sharedMesh;
+            var hazeMaterial = haze.GetComponent<MeshRenderer>().sharedMaterial;
+            Assert.That(hazeMesh.vertexCount, Is.EqualTo(128 * 3));
+            Assert.That(hazeMesh.triangles.Length, Is.EqualTo(128 * 12));
+            var alpha = hazeMesh.colors;
+            Assert.That(alpha.Take(128).All(c => c.a == 0), Is.True);
+            Assert.That(alpha.Skip(128).Take(128).All(c => c.a > 0 && c.a < 1), Is.True);
+            Assert.That(alpha.Skip(256).All(c => c.a > .9f && c.a <= 1), Is.True);
             var bounds = renderer.bounds;
             var floor = ground.GetComponent<Renderer>().bounds;
             Assert.That(bounds.min.x, Is.LessThan(floor.min.x - 30));
@@ -108,6 +119,7 @@ namespace HappyToy.V2.CloudTests
             var owner = world.GetComponent(RequireType("TempleForestHorizon"));
             Object.Destroy(owner); yield return null; yield return null;
             Assert.That(horizon == null, Is.True);
+            Assert.That(hazeMesh == null && hazeMaterial == null, Is.True, "Owned terrain haze must be destroyed");
             Assert.That(edge == null, Is.True);
             var originalGround = ground.GetComponent<Renderer>();
             Assert.That(originalGround.forceRenderingOff, Is.False);

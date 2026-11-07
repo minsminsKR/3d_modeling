@@ -19,7 +19,8 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<OriginalMaterials> originals = new List<OriginalMaterials>();
         Material lanternMaterial;
-        Mesh ritualCord;
+        Mesh ritualCord, ritualInk;
+        readonly List<Mesh> foldedPapers = new List<Mesh>();
         Transform details;
         bool prepared;
 
@@ -82,27 +83,49 @@ namespace HappyToy.V2
                 CorridorDetailLibrary.Attach("hanging-seal", holder,
                     slot => slot == "CD_paper" ? paper : slot == "CD_ink" ? ink : binding, 1);
             }
-            // Foreign bindings encroach on the facade without replacing the
-            // original Korean architecture or its colliders. A shallow sag
-            // preserves the doorway and existing readable approach.
+            // Foreign bindings interrupt the Korean facade: three unevenly
+            // twisted strands and alternating written and folded papers use
+            // the existing authored rope surface and original paper mesh.
             var ropeGeometry = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, .15f);
-            Vector3 RopePoint(float t) => new Vector3(Mathf.Lerp(min.x, max.x, .15f + .70f * t),
-                Mathf.Lerp(min.y, max.y, .52f) - .12f * 4 * t * (1 - t), min.z - .085f);
-            const int segments = 32;
-            for (int i = 0; i < segments; i++)
-                AddRopeSegment(ropeGeometry, RopePoint(i / (float)segments), RopePoint((i + 1f) / segments));
+            Vector3 RopePoint(float t) => new Vector3(Mathf.Lerp(min.x, max.x, .16f + .68f * t),
+                Mathf.Lerp(min.y, max.y, .52f) - .16f * 4 * t * (1 - t), min.z - .085f);
+            Vector3 Strand(float t, int strand)
+            {
+                var point = RopePoint(t);
+                float phase = t * Mathf.PI * 28 + strand * Mathf.PI * 2 / 3;
+                point.y += .012f * Mathf.Cos(phase); point.z += .012f * Mathf.Sin(phase);
+                return point;
+            }
+            const int segments = 64;
+            for (int strand = 0; strand < 3; strand++)
+                for (int i = 0; i < segments; i++)
+                    AddRopeSegment(ropeGeometry, Strand(i / (float)segments, strand), Strand((i + 1f) / segments, strand));
             ritualCord = ropeGeometry.Mesh("Owned shrine intrusion cord");
             var rope = CorridorEntranceModels.Group(details, "Intruding shrine cord", Vector3.zero);
             rope.gameObject.AddComponent<MeshFilter>().sharedMesh = ritualCord;
             rope.gameObject.AddComponent<MeshRenderer>().sharedMaterial = binding;
-            var palePaper = surfaces.Get("paper-aged", new Color(.70f, .62f, .47f));
-            for (int i = 0; i < 7; i++)
+            // Subtle cool bounce keeps the weathered paper readable under the
+            // deliberately red facade light without adding another light.
+            var palePaper = surfaces.Get("paper-aged", new Color(.76f, .73f, .65f), new Color(.028f, .035f, .042f));
+            var darkInk = surfaces.Get("cloth-charred", new Color(.055f, .045f, .038f));
+            float[] positions = { .055f, .19f, .315f, .46f, .61f, .765f, .93f };
+            float[] lengths = { .46f, .35f, .56f, .39f, .49f, .33f, .53f };
+            float[] paperWidths = { .19f, .17f, .21f, .18f, .20f, .16f, .19f };
+            for (int i = 0; i < positions.Length; i++)
             {
-                var seal = CorridorEntranceModels.Group(details, "Intruding shrine seal", RopePoint((i + .5f) / 7));
-                seal.localRotation = Quaternion.Euler(0, (i % 3 - 1) * 5, (i % 2 == 0 ? -1 : 1) * (3 + i));
-                seal.localScale = new Vector3(.13f + .012f * (i % 2), .34f + .07f * (i % 3), 1);
-                CorridorDetailLibrary.Attach("hanging-seal", seal,
-                    slot => slot == "CD_paper" ? palePaper : slot == "CD_ink" ? ink : binding, 1);
+                var seal = CorridorEntranceModels.Group(details, "Intruding shrine seal", RopePoint(positions[i]));
+                seal.localRotation = Quaternion.Euler((i % 3 - 1) * 3, (i % 3 - 1) * 7, (i % 2 == 0 ? -1 : 1) * (3 + i));
+                seal.localScale = new Vector3(paperWidths[i], lengths[i], 1);
+                var authored = CorridorDetailLibrary.Attach("hanging-seal", seal,
+                    slot => slot == "CD_paper" ? palePaper : slot == "CD_ink" ? darkInk : binding, 0);
+                if (i % 2 == 1) FoldRitualPaper(authored, seal);
+                else
+                {
+                    if (!ritualInk) ritualInk = CorridorEntranceSealInk.Create(authored, seal);
+                    var marks = CorridorEntranceModels.Group(seal, "Intruding shrine brush marks", Vector3.zero);
+                    marks.gameObject.AddComponent<MeshFilter>().sharedMesh = ritualInk;
+                    marks.gameObject.AddComponent<MeshRenderer>().sharedMaterial = darkInk;
+                }
             }
             for (int i = 0; i < 2; i++)
             {
@@ -118,6 +141,27 @@ namespace HappyToy.V2
             prepared = true;
         }
 
+        void FoldRitualPaper(Transform paper, Transform holder)
+        {
+            foreach (var filter in paper.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var toPaper = holder.worldToLocalMatrix * filter.transform.localToWorldMatrix;
+                var fromPaper = toPaper.inverse;
+                var mesh = Instantiate(filter.sharedMesh);
+                mesh.name = "Owned shrine folded paper";
+                var vertices = mesh.vertices;
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    var p = toPaper.MultiplyPoint3x4(vertices[i]);
+                    float fold = Mathf.PingPong(Mathf.Clamp01(-p.y) * 8, 2) - 1;
+                    p.x = p.x * .46f + fold * .48f;
+                    vertices[i] = fromPaper.MultiplyPoint3x4(p);
+                }
+                mesh.vertices = vertices; mesh.RecalculateNormals(); mesh.RecalculateBounds();
+                filter.sharedMesh = mesh; foldedPapers.Add(mesh);
+            }
+        }
+
         static void AddRopeSegment(GraphicsSurfaceLibrary.Geometry geometry, Vector3 a, Vector3 b)
         {
             Vector3 direction = (b - a).normalized;
@@ -127,8 +171,8 @@ namespace HappyToy.V2
             for (int n = 0; n < 6; n++)
             {
                 float u = n * Mathf.PI / 3, v = (n + 1) * Mathf.PI / 3;
-                Vector3 p = (across * Mathf.Cos(u) + other * Mathf.Sin(u)) * .022f;
-                Vector3 q = (across * Mathf.Cos(v) + other * Mathf.Sin(v)) * .022f;
+                Vector3 p = (across * Mathf.Cos(u) + other * Mathf.Sin(u)) * .014f;
+                Vector3 q = (across * Mathf.Cos(v) + other * Mathf.Sin(v)) * .014f;
                 geometry.Quad(a + p, b + p, b + q, a + q);
             }
         }
@@ -140,6 +184,9 @@ namespace HappyToy.V2
             if (details) Destroy(details.gameObject);
             if (lanternMaterial) Destroy(lanternMaterial);
             if (ritualCord) Destroy(ritualCord);
+            if (ritualInk) Destroy(ritualInk);
+            foreach (var mesh in foldedPapers) if (mesh) Destroy(mesh);
+            foldedPapers.Clear();
             surfaces.Dispose();
         }
     }

@@ -27,13 +27,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(volumes.All(renderer => renderer.GetComponent<MeshFilter>().sharedMesh.vertexCount == 8), Is.True);
             var horizon = world.transform.Find("Distant forest horizon mist").GetComponent<MeshRenderer>();
             var properties = new MaterialPropertyBlock(); horizon.GetPropertyBlock(properties);
-            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.045f).Within(.0001f));
+            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.035f).Within(.0001f));
             var prayerMist = world.transform.Find("Forest mist near prayer space").GetComponent<MeshRenderer>();
             prayerMist.GetPropertyBlock(properties);
-            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.10f).Within(.0001f));
+            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.075f).Within(.0001f));
             var templeMist = world.transform.Find("Denser mist around the temple").GetComponent<MeshRenderer>();
             templeMist.GetPropertyBlock(properties);
-            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.115f).Within(.0001f));
+            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.075f).Within(.0001f));
             var facade = world.transform.Find("Temple facade fill").GetComponent<Light>();
             Assert.That(facade.transform.localPosition.z, Is.EqualTo(12.2f).Within(.0001f));
             Assert.That(facade.intensity, Is.InRange(3.5f, 4.5f));
