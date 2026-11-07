@@ -22,6 +22,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(root.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
             Assert.That(root.Cast<Transform>().Count(child => child.name == "Weathered eave talisman"), Is.EqualTo(4));
+            Assert.That(root.Cast<Transform>().Count(child => child.name == "Intruding shrine seal"), Is.EqualTo(7));
+            var cord = root.Find("Intruding shrine cord").GetComponent<MeshFilter>().sharedMesh;
+            Assert.That(cord && cord.vertexCount > 0, Is.True);
             var jars = root.Cast<Transform>().Where(child => child.name == "Weathered exterior offering jar").ToArray();
             Assert.That(jars.Length, Is.EqualTo(2));
             Assert.That(jars.All(jar => Mathf.Abs(jar.localPosition.x) > 3.2f), Is.True);
@@ -38,6 +41,7 @@ namespace HappyToy.V2.CloudTests
             Object.Destroy(dressing); yield return null; yield return null;
             Assert.That(renderers.All(renderer => renderer.sharedMaterial == source), Is.True);
             Assert.That((bool)material, Is.False, "Owned lantern material was not released");
+            Assert.That((bool)cord, Is.False, "Owned intrusion cord was not released");
             Assert.That(source, Is.Not.Null, "Shared authored material was destroyed");
         }
     }

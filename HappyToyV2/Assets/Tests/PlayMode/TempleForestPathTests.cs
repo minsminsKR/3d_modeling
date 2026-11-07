@@ -44,7 +44,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(renderers.All(renderer => renderer && renderer.sharedMaterial == renderers[0].sharedMaterial), Is.True);
             var surfaceMaterial = renderers[0].sharedMaterial;
             Assert.That(surfaceMaterial.GetFloat("_Metallic"), Is.EqualTo(0).Within(.0001f));
-            Assert.That(surfaceMaterial.GetFloat("_Smoothness"), Is.InRange(.28f, .34f));
+            Assert.That(surfaceMaterial.GetFloat("_Smoothness"), Is.InRange(.39f, .45f));
             Assert.That(surfaceMaterial.GetFloat("_EnvironmentReflections"), Is.Zero);
             Assert.That(surfaceMaterial.IsKeywordEnabled("_ENVIRONMENTREFLECTIONS_OFF"), Is.True,
                 "Sky reflections must not turn the stone path into a blue mirror");
@@ -67,7 +67,7 @@ namespace HappyToy.V2.CloudTests
                 renderer.bounds.max.y <= groundTop + .0031f), Is.True, "Bed must stay above soil and below stone relief");
             Assert.That(bedRenderers.All(renderer => renderer.sharedMaterial == bedRenderers[0].sharedMaterial), Is.True);
             Assert.That(bedRenderers[0].sharedMaterial, Is.Not.SameAs(renderers[0].sharedMaterial));
-            Assert.That(bedRenderers[0].sharedMaterial.GetFloat("_Smoothness"), Is.InRange(.20f, .28f));
+            Assert.That(bedRenderers[0].sharedMaterial.GetFloat("_Smoothness"), Is.InRange(.30f, .34f));
             Assert.That(bedRenderers[0].sharedMaterial.IsKeywordEnabled("_ENVIRONMENTREFLECTIONS_OFF"), Is.True);
             var tintDifference = surfaceMaterial.GetColor("_BaseColor").r - bedRenderers[0].sharedMaterial.GetColor("_BaseColor").r;
             Assert.That(tintDifference, Is.InRange(.05f, .12f), "Relief and bed must not read as disconnected slabs");

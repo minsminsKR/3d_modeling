@@ -23,6 +23,8 @@ namespace HappyToy.V2
         float emission;
         int count;
         bool topologyReady;
+        Color tint = new Color(.61f, .65f, .63f, 1);
+        float widthScale = 1, opacityScale = 1;
         public int SampleCount => count;
         public float SimulationTime { get; private set; }
 
@@ -45,6 +47,13 @@ namespace HappyToy.V2
                 indices[index] = vertex; indices[index + 1] = vertex + 2; indices[index + 2] = vertex + 1;
                 indices[index + 3] = vertex + 1; indices[index + 4] = vertex + 2; indices[index + 5] = vertex + 3;
             }
+        }
+        // Optional art direction for this instance; ordinary incense keeps its defaults.
+        public void SetAppearance(Color color, float width, float opacity)
+        {
+            tint = color;
+            widthScale = Mathf.Clamp(width, .1f, 4f);
+            opacityScale = Mathf.Clamp(opacity, 0f, 3f);
         }
         public void Advance(Vector3 source, Vector3 direction, float delta, float remaining, float horizontalFlow = 1)
         {
@@ -125,14 +134,14 @@ namespace HappyToy.V2
                 float alignment = Vector3.Cross(tangent, (eye.transform.position - center).normalized).magnitude;
                 float viewFade = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.025f, .25f, alignment));
                 float fraction = age / Lifetime;
-                float width = .006f + .025f * Mathf.SmoothStep(0, 1, age / .8f) + .028f * fraction * fraction;
+                float width = (.006f + .025f * Mathf.SmoothStep(0, 1, age / .8f) + .028f * fraction * fraction) * widthScale;
                 float opacity = Mathf.SmoothStep(0, 1, age / .08f) *
-                    (1 - Mathf.SmoothStep(0, 1, (age - 2.4f) / 1.2f)) * .21f * fade * viewFade;
+                    (1 - Mathf.SmoothStep(0, 1, (age - 2.4f) / 1.2f)) * .21f * fade * viewFade * opacityScale;
                 int vertex = i * 2;
                 vertices[vertex] = transform.InverseTransformPoint(center - across * width);
                 vertices[vertex + 1] = transform.InverseTransformPoint(center + across * width);
                 uv[vertex] = new Vector2(0, fraction); uv[vertex + 1] = new Vector2(1, fraction);
-                colors[vertex] = colors[vertex + 1] = new Color(.61f, .65f, .63f, opacity);
+                colors[vertex] = colors[vertex + 1] = new Color(tint.r, tint.g, tint.b, opacity);
             }
             mesh.vertices = vertices; mesh.uv = uv; mesh.colors = colors;
             // The ribbon always has the same sections and winding. Reupload

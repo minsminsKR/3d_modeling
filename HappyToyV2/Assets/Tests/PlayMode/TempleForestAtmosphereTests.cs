@@ -27,7 +27,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(volumes.All(renderer => renderer.GetComponent<MeshFilter>().sharedMesh.vertexCount == 8), Is.True);
             var horizon = world.transform.Find("Distant forest horizon mist").GetComponent<MeshRenderer>();
             var properties = new MaterialPropertyBlock(); horizon.GetPropertyBlock(properties);
-            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.035f).Within(.0001f));
+            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.045f).Within(.0001f));
+            var prayerMist = world.transform.Find("Forest mist near prayer space").GetComponent<MeshRenderer>();
+            prayerMist.GetPropertyBlock(properties);
+            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.10f).Within(.0001f));
+            var templeMist = world.transform.Find("Denser mist around the temple").GetComponent<MeshRenderer>();
+            templeMist.GetPropertyBlock(properties);
+            Assert.That(properties.GetFloat("_Density"), Is.EqualTo(.115f).Within(.0001f));
             var facade = world.transform.Find("Temple facade fill").GetComponent<Light>();
             Assert.That(facade.transform.localPosition.z, Is.EqualTo(12.2f).Within(.0001f));
             Assert.That(facade.intensity, Is.InRange(3.5f, 4.5f));
@@ -43,7 +49,7 @@ namespace HappyToy.V2.CloudTests
                 Vector3 visibleMoon = sky.GetVector("_MoonDirection");
                 Assert.That(Vector3.Dot(visibleMoon.normalized, -moon.transform.forward), Is.GreaterThan(.9999f));
             }
-            Assert.That(RenderSettings.fogDensity, Is.EqualTo(.026f).Within(.0001f));
+            Assert.That(RenderSettings.fogDensity, Is.EqualTo(.028f).Within(.0001f));
             yield return Delay(.2f);
             Call(shell, "Pause"); float frozen = Get<float>(atmosphere, "SimulationTime");
             var lamp = world.GetComponentsInChildren<Light>().First(light => light.name == "Temple lantern light");
@@ -94,7 +100,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreatePrologueForCheckpoint", checkpoint); yield return null;
             world = Get<Component>(session, "Prologue");
             Assert.That(world.GetComponent(RequireType("TempleForestAtmosphere")), Is.Not.Null);
-            Assert.That(RenderSettings.fogDensity, Is.EqualTo(.031f).Within(.0001f));
+            Assert.That(RenderSettings.fogDensity, Is.EqualTo(.033f).Within(.0001f));
             var lanterns = world.GetComponentsInChildren<Light>(true)
                 .Where(light => light.name == "Temple lantern light").ToArray();
             Assert.That(lanterns.Length, Is.EqualTo(4));

@@ -19,6 +19,7 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<OriginalMaterials> originals = new List<OriginalMaterials>();
         Material lanternMaterial;
+        Mesh ritualCord;
         Transform details;
         bool prepared;
 
@@ -81,6 +82,28 @@ namespace HappyToy.V2
                 CorridorDetailLibrary.Attach("hanging-seal", holder,
                     slot => slot == "CD_paper" ? paper : slot == "CD_ink" ? ink : binding, 1);
             }
+            // Foreign bindings encroach on the facade without replacing the
+            // original Korean architecture or its colliders. A shallow sag
+            // preserves the doorway and existing readable approach.
+            var ropeGeometry = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, .15f);
+            Vector3 RopePoint(float t) => new Vector3(Mathf.Lerp(min.x, max.x, .15f + .70f * t),
+                Mathf.Lerp(min.y, max.y, .52f) - .12f * 4 * t * (1 - t), min.z - .085f);
+            const int segments = 32;
+            for (int i = 0; i < segments; i++)
+                AddRopeSegment(ropeGeometry, RopePoint(i / (float)segments), RopePoint((i + 1f) / segments));
+            ritualCord = ropeGeometry.Mesh("Owned shrine intrusion cord");
+            var rope = CorridorEntranceModels.Group(details, "Intruding shrine cord", Vector3.zero);
+            rope.gameObject.AddComponent<MeshFilter>().sharedMesh = ritualCord;
+            rope.gameObject.AddComponent<MeshRenderer>().sharedMaterial = binding;
+            var palePaper = surfaces.Get("paper-aged", new Color(.70f, .62f, .47f));
+            for (int i = 0; i < 7; i++)
+            {
+                var seal = CorridorEntranceModels.Group(details, "Intruding shrine seal", RopePoint((i + .5f) / 7));
+                seal.localRotation = Quaternion.Euler(0, (i % 3 - 1) * 5, (i % 2 == 0 ? -1 : 1) * (3 + i));
+                seal.localScale = new Vector3(.13f + .012f * (i % 2), .34f + .07f * (i % 3), 1);
+                CorridorDetailLibrary.Attach("hanging-seal", seal,
+                    slot => slot == "CD_paper" ? palePaper : slot == "CD_ink" ? ink : binding, 1);
+            }
             for (int i = 0; i < 2; i++)
             {
                 var jar = CorridorEntranceModels.Group(details, "Weathered exterior offering jar", Vector3.zero);
@@ -95,12 +118,28 @@ namespace HappyToy.V2
             prepared = true;
         }
 
+        static void AddRopeSegment(GraphicsSurfaceLibrary.Geometry geometry, Vector3 a, Vector3 b)
+        {
+            Vector3 direction = (b - a).normalized;
+            Vector3 across = Vector3.Cross(direction, Vector3.up).normalized;
+            if (across.sqrMagnitude < .01f) across = Vector3.right;
+            Vector3 other = Vector3.Cross(direction, across).normalized;
+            for (int n = 0; n < 6; n++)
+            {
+                float u = n * Mathf.PI / 3, v = (n + 1) * Mathf.PI / 3;
+                Vector3 p = (across * Mathf.Cos(u) + other * Mathf.Sin(u)) * .022f;
+                Vector3 q = (across * Mathf.Cos(v) + other * Mathf.Sin(v)) * .022f;
+                geometry.Quad(a + p, b + p, b + q, a + q);
+            }
+        }
+
         void OnDestroy()
         {
             foreach (var item in originals) if (item.renderer) item.renderer.sharedMaterials = item.materials;
             originals.Clear();
             if (details) Destroy(details.gameObject);
             if (lanternMaterial) Destroy(lanternMaterial);
+            if (ritualCord) Destroy(ritualCord);
             surfaces.Dispose();
         }
     }

@@ -33,14 +33,14 @@ namespace HappyToy.V2
 
             // Use the source color texture and actual generated stone geometry.
             // Damp stone is dielectric and still has a broad, restrained direct
-            // highlight. The cold sky probe otherwise turns the entire path into
+            // highlight, strengthened to suggest damp stone. The cold sky probe otherwise turns the entire path into
             // a bright blue mirror, so omit that environment reflection while
             // retaining moon/lantern specular response and the authored albedo.
             wetStone = new Material(source) { name = "Temple forest wet stone", enableInstancing = true };
             if (wetStone.HasProperty("_MetallicGlossMap")) wetStone.SetTexture("_MetallicGlossMap", null);
             wetStone.DisableKeyword("_METALLICSPECGLOSSMAP");
             if (wetStone.HasProperty("_Metallic")) wetStone.SetFloat("_Metallic", 0);
-            if (wetStone.HasProperty("_Smoothness")) wetStone.SetFloat("_Smoothness", .31f);
+            if (wetStone.HasProperty("_Smoothness")) wetStone.SetFloat("_Smoothness", .42f);
             if (wetStone.HasProperty("_BaseColor")) wetStone.SetColor("_BaseColor", new Color(.77f, .75f, .71f, 1));
             if (wetStone.HasProperty("_EnvironmentReflections")) wetStone.SetFloat("_EnvironmentReflections", 0);
             wetStone.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
@@ -50,7 +50,7 @@ namespace HappyToy.V2
             // or adding physics to the old route.
             bedStone = new Material(wetStone) { name = "Temple forest recessed stone bed", enableInstancing = true };
             if (bedStone.HasProperty("_BaseColor")) bedStone.SetColor("_BaseColor", new Color(.68f, .66f, .62f, 1));
-            if (bedStone.HasProperty("_Smoothness")) bedStone.SetFloat("_Smoothness", .24f);
+            if (bedStone.HasProperty("_Smoothness")) bedStone.SetFloat("_Smoothness", .32f);
             // The bed uses only the original's upward-facing base surface.
             // Drawing the whole model double-sided after compressing it to
             // two millimetres makes its front/back layers fight for depth.

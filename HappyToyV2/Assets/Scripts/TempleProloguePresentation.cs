@@ -96,7 +96,7 @@ namespace HappyToy.V2
             // The preserved model is an exterior; keep the accessible prayer space in front.
             Box("Temple front physical wall", new Vector3(0, 2, 13.8f), new Vector3(9, 4, .3f), wood, true, false);
             Box("Prayer table top", new Vector3(0, .77f, 7.35f), new Vector3(1.8f, .15f, .75f), wood, true, false);
-            gameObject.AddComponent<TemplePrayerDressing>().Prepare();
+            gameObject.AddComponent<TemplePrayerDressing>().Prepare(camera);
             for (int i = 0; i < 16; i++)
             {
                 float side = i % 2 == 0 ? -1 : 1;

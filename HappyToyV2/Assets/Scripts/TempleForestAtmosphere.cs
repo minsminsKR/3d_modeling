@@ -45,11 +45,11 @@ namespace HappyToy.V2
                 if (!lanternLights[i] || !lanternVisuals[i]) throw new ArgumentException("Temple lantern is missing");
 
             RenderSettings.fog = true; RenderSettings.fogMode = FogMode.ExponentialSquared;
-            RenderSettings.fogColor = new Color(.035f, .048f, .065f);
-            RenderSettings.fogDensity = .026f;
+            RenderSettings.fogColor = new Color(.030f, .042f, .060f);
+            RenderSettings.fogDensity = .028f;
             RenderSettings.ambientLight = new Color(.105f, .125f, .155f);
             eye.backgroundColor = new Color(.035f, .048f, .065f);
-            moon.color = new Color(.54f, .65f, .81f); moon.intensity = .85f;
+            moon.color = new Color(.50f, .62f, .82f); moon.intensity = .85f;
             // The visible moon and the directional light share one world-space
             // direction; no sky image or camera-attached object is involved.
             moon.transform.rotation = Quaternion.LookRotation(-MoonDirection, Vector3.up);
@@ -59,7 +59,7 @@ namespace HappyToy.V2
             // The old exterior shell is opaque. Light its actual front face
             // from outside instead of relying on the hidden interior point.
             facade.transform.localPosition = new Vector3(0, 2.8f, 12.2f);
-            facade.color = new Color(1f, .30f, .18f); facade.intensity = 4f;
+            facade.color = new Color(1f, .24f, .14f); facade.intensity = 4f;
             facade.range = 8.5f;
             for (int i = 0; i < lanternLights.Count; i++)
             {
@@ -100,11 +100,11 @@ namespace HappyToy.V2
             volumeMesh = MakeVolumeMesh();
             AddVolume("Forest mist near trail entrance", new Vector3(0, .43f, -19), new Vector3(23, 1.45f, 14));
             AddVolume("Forest mist along trail", new Vector3(0, .43f, -5), new Vector3(23, 1.45f, 14));
-            AddVolume("Forest mist near prayer space", new Vector3(0, .43f, 9), new Vector3(19, 1.45f, 14));
-            AddVolume("Denser mist around the temple", new Vector3(0, .50f, 16), new Vector3(14, 1.6f, 8));
+            AddVolume("Forest mist near prayer space", new Vector3(0, .43f, 9), new Vector3(19, 1.45f, 14), .10f);
+            AddVolume("Denser mist around the temple", new Vector3(0, .50f, 16), new Vector3(14, 1.6f, 8), .115f);
             // A low-density 3D layer behind the existing forest softens the
             // rectangular ground's far boundary from moving camera positions.
-            AddVolume("Distant forest horizon mist", new Vector3(0, 1.05f, 27), new Vector3(54, 2.1f, 14), .035f);
+            AddVolume("Distant forest horizon mist", new Vector3(0, 1.05f, 27), new Vector3(54, 2.1f, 14), .045f);
             UpdateLampData(); ready = true;
         }
 
@@ -112,7 +112,7 @@ namespace HappyToy.V2
         public void BeginSecondDay()
         {
             if (!ready) throw new InvalidOperationException("Temple atmosphere is not ready");
-            RenderSettings.fogDensity = .031f;
+            RenderSettings.fogDensity = .033f;
             RenderSettings.ambientLight = new Color(.075f, .088f, .115f);
         }
 

@@ -230,7 +230,7 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
             Call(presentation, "PlaceIncense"); yield return null; yield return null;
-            var trail = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
+            var trail = world.transform.Find("Placed incense smoke")?.GetComponent(RequireType("IncenseSmokeTrail"));
             AssertTempleSmokeAtVisibleTip(world, trail);
         }
         static void AssertTempleSmokeAtVisibleTip(Component world, Component trail)
@@ -720,16 +720,31 @@ namespace HappyToy.V2.CloudTests
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var world = Get<Component>(session, "Prologue");
+            var vaporObject = world.transform.Find("Altar spectral vapor");
+            Assert.That(vaporObject, Is.Not.Null);
+            var vapor = vaporObject.GetComponent(RequireType("IncenseSmokeTrail"));
+            Assert.That(vapor, Is.Not.Null);
+            // The production effect intentionally sleeps beyond 20 metres.
+            // Approach before checking its active simulation and pause behavior.
+            PlacePlayer(new Vector3(500, .04f, 505.2f));
+            yield return null;
+            yield return Wait(() => Get<int>(vapor, "SampleCount") > 2, 5, "Nearby spectral altar vapor did not advance");
+            var vaporMesh = vaporObject.GetComponent<MeshFilter>().sharedMesh;
+            var vaporMaterial = vaporObject.GetComponent<MeshRenderer>().sharedMaterial;
+            Call(shell, "Pause"); float vaporTime = Get<float>(vapor, "SimulationTime");
+            yield return Delay(.2f);
+            Assert.That(Get<float>(vapor, "SimulationTime"), Is.EqualTo(vaporTime), "Pause must hold altar vapor");
+            Call(shell, "Resume"); yield return null;
             var binding = world.transform.Find("Intruding altar binding");
             Assert.That(binding, Is.Not.Null);
             Assert.That(binding.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(binding.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
             var seals = binding.Cast<Transform>().Where(x => x.name == "Inked altar paper seal").ToArray();
-            Assert.That(seals.Length, Is.EqualTo(5));
-            Assert.That(binding.GetComponentsInChildren<Transform>(true).Count(x => x.name == "Brush marks on altar paper"), Is.EqualTo(3));
+            Assert.That(seals.Length, Is.EqualTo(7));
+            Assert.That(binding.GetComponentsInChildren<Transform>(true).Count(x => x.name == "Brush marks on altar paper"), Is.EqualTo(4));
             var foldedFilters = binding.GetComponentsInChildren<MeshFilter>(true)
                 .Where(x => x.sharedMesh && x.sharedMesh.name == "Owned folded ritual paper").ToArray();
-            Assert.That(foldedFilters.Length, Is.EqualTo(2));
+            Assert.That(foldedFilters.Length, Is.EqualTo(3));
             var folded = foldedFilters.Select(x => x.sharedMesh).ToArray();
             Assert.That(folded.All(x => x.vertexCount > 0 && x.uv.Length == x.vertexCount && x.normals.Length == x.vertexCount), Is.True);
             foreach (var filter in foldedFilters)
@@ -747,6 +762,8 @@ namespace HappyToy.V2.CloudTests
             }
             var cord = binding.Find("Weathered braided altar cord").GetComponent<MeshFilter>().sharedMesh;
             Assert.That(cord.vertexCount, Is.GreaterThan(0));
+            Assert.That(cord.bounds.size.x, Is.GreaterThan(1.6f), "Cord must span the altar front");
+            Assert.That(cord.bounds.size.y, Is.GreaterThan(.1f), "Cord should visibly sag across the altar");
             Assert.That(binding.GetComponentsInChildren<MeshRenderer>(true).Count(x => x.enabled), Is.InRange(1, 3));
             Assert.That(world.transform.Find("Prayer table top").GetComponent<BoxCollider>().enabled, Is.True);
             PlacePlayer(new Vector3(500, .04f, 505.2f));
@@ -756,6 +773,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "RetirePrologue"); yield return null; yield return null;
             Assert.That(folded.All(x => !x), Is.True, "Folded copies must be released with the prologue");
             Assert.That(!cord, Is.True, "Generated cord must be released with the prologue");
+            Assert.That(!vaporMesh && !vaporMaterial, Is.True, "Vapor mesh and material must be released with the prologue");
         }
         [UnityTest, Timeout(90000)]
         public IEnumerator TemplePrayerFurnishingsPreserveInteractionAndPhysics()
@@ -1218,10 +1236,10 @@ namespace HappyToy.V2.CloudTests
             var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
             Assert.That(Get<bool>(presentation, "IncensePending"), Is.True);
             Assert.That(Get<float>(director, "PrayerElapsed"), Is.Zero, "Prayer started before the hand placed the incense");
-            yield return Wait(() => world.GetComponentInChildren(RequireType("IncenseSmokeTrail")) != null, 3, "Incense did not appear after the authored release");
+            yield return Wait(() => world.transform.Find("Placed incense smoke")?.GetComponent(RequireType("IncenseSmokeTrail")) != null, 3, "Incense did not appear after the authored release");
             Assert.That(Get<bool>(presentation, "IncensePlaced"), Is.True);
             Assert.That(Get<object>(Get<Component>(player, "Hands"), "PresentedItem").ToString(), Is.EqualTo("Incense"));
-            var firstSmoke = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
+            var firstSmoke = world.transform.Find("Placed incense smoke")?.GetComponent(RequireType("IncenseSmokeTrail"));
             AssertTempleSmokeAtVisibleTip(world, firstSmoke);
             yield return Delay(1.1f);
             var positions = firstSmoke.GetType().GetField("positions", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -1244,10 +1262,10 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
             yield return RecoveryPulse(Key.E);
             yield return Wait(() => (bool)(Transform)held.GetValue(hand), 3, "Second incense was not held before placement");
-            yield return Wait(() => world.GetComponentInChildren(RequireType("IncenseSmokeTrail")) != null, 3, "Second incense did not appear");
+            yield return Wait(() => world.transform.Find("Placed incense smoke")?.GetComponent(RequireType("IncenseSmokeTrail")) != null, 3, "Second incense did not appear");
             yield return null;
             Assert.That((bool)(Transform)held.GetValue(hand), Is.False, "Second placed incense remained in the hand");
-            var secondSmoke = world.GetComponentInChildren(RequireType("IncenseSmokeTrail"));
+            var secondSmoke = world.transform.Find("Placed incense smoke")?.GetComponent(RequireType("IncenseSmokeTrail"));
             AssertTempleSmokeAtVisibleTip(world, secondSmoke);
             yield return Delay(1.1f);
             var secondPoints = (Vector3[])positions.GetValue(secondSmoke);

@@ -13,11 +13,22 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
         bool prepared;
+        Camera eye;
+        TemplePrologueWorld world;
+        IncenseSmokeTrail altarVapor;
 
-        public void Prepare()
+        public void Prepare(Camera camera)
         {
             if (prepared) throw new InvalidOperationException("Prayer dressing already prepared");
+            if (!camera) throw new ArgumentNullException(nameof(camera));
             prepared = true;
+            eye = camera;
+            world = GetComponent<TemplePrologueWorld>();
+            var vaporObject = new GameObject("Altar spectral vapor");
+            vaporObject.transform.SetParent(transform, false);
+            altarVapor = vaporObject.AddComponent<IncenseSmokeTrail>();
+            altarVapor.Prepare(eye);
+            altarVapor.SetAppearance(new Color(.27f, .075f, .065f), 2.1f, 1.35f);
             var source = Resources.Load<GameObject>("CorridorAltarChamber/offering-table");
             var pottery = Resources.Load<GameObject>("KoreanCorridorProps/onggi");
             var incenseVessel = Resources.Load<GameObject>("TempleForest/incense-vessel-visual");
@@ -86,15 +97,15 @@ namespace HappyToy.V2
             var geometry = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, .15f);
             Vector3 Strand(float t, int strand)
             {
-                float phase = 20 * Mathf.PI * t + strand * Mathf.PI * 2 / 3;
+                float phase = 28 * Mathf.PI * t + strand * Mathf.PI * 2 / 3;
                 return new Vector3(Mathf.Lerp(-.83f, .83f, t),
-                    .785f - .035f * 4 * t * (1 - t) + .004f * Mathf.Cos(phase),
-                    6.946f + .004f * Mathf.Sin(phase));
+                    .785f - .11f * 4 * t * (1 - t) + .008f * Mathf.Cos(phase),
+                    6.936f + .008f * Mathf.Sin(phase));
             }
             const int steps = 64;
             for (int strand = 0; strand < 3; strand++)
                 for (int i = 0; i < steps; i++)
-                    CordSegment(geometry, Strand(i / (float)steps, strand), Strand((i + 1f) / steps, strand), .0045f);
+                    CordSegment(geometry, Strand(i / (float)steps, strand), Strand((i + 1f) / steps, strand), .008f);
             var mesh = geometry.Mesh("Owned braided altar cord"); owned.Add(mesh);
             var rope = new GameObject("Weathered braided altar cord"); rope.layer = 8;
             rope.transform.SetParent(binding, false);
@@ -102,15 +113,15 @@ namespace HappyToy.V2
             rope.AddComponent<MeshRenderer>().sharedMaterial = cord;
 
             Mesh brushMarks = null;
-            var xPositions = new[] { -.66f, -.34f, -.02f, .30f, .64f };
+            var xPositions = new[] { -.72f, -.48f, -.24f, 0f, .24f, .48f, .72f };
             for (int i = 0; i < xPositions.Length; i++)
             {
                 float t = (xPositions[i] + .83f) / 1.66f;
                 var holder = new GameObject("Inked altar paper seal").transform;
                 holder.gameObject.layer = 8; holder.SetParent(binding, false);
-                holder.localPosition = new Vector3(xPositions[i], .785f - .035f * 4 * t * (1 - t), 6.938f);
+                holder.localPosition = new Vector3(xPositions[i], .785f - .11f * 4 * t * (1 - t), 6.926f);
                 holder.localRotation = Quaternion.Euler(0, (i % 3 - 1) * 5, (i % 2 == 0 ? -1 : 1) * (2 + i));
-                holder.localScale = new Vector3(.115f + .008f * (i % 2), .24f + .035f * (i % 3), 1);
+                holder.localScale = new Vector3(.13f + .01f * (i % 2), .30f + .035f * (i % 3), 1);
                 var foldedPaper = CorridorDetailLibrary.Attach("hanging-seal", holder,
                     slot => slot == "CD_paper" ? paper : slot == "CD_ink" ? ink : cord, 0);
                 if (i % 2 == 1)
@@ -219,6 +230,16 @@ namespace HappyToy.V2
                 var renderer = part.AddComponent<MeshRenderer>(); renderer.sharedMaterial = group.Key;
                 renderer.receiveShadows = true; renderer.shadowCastingMode = ShadowCastingMode.Off;
             }
+        }
+        void Update()
+        {
+            if (!world || !world.Ready || world.TransitionRequested || !GameSession.Current ||
+                !GameSession.Current.InputAllowed || !eye || !altarVapor) return;
+            Vector3 source = transform.TransformPoint(new Vector3(0, 1.07f, 7.2f));
+            // Suppress updates at distance; the retained ribbon restarts safely
+            // when the player approaches without changing the offering itself.
+            if ((eye.transform.position - source).sqrMagnitude > 400f) return;
+            altarVapor.Advance(source, transform.right, Time.deltaTime, 1, .75f);
         }
         void OnDestroy()
         {
