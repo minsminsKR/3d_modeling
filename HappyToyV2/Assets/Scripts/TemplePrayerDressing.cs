@@ -13,22 +13,18 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
         bool prepared;
-        Camera eye;
-        TemplePrologueWorld world;
-        IncenseSmokeTrail altarVapor;
 
         public void Prepare(Camera camera)
         {
             if (prepared) throw new InvalidOperationException("Prayer dressing already prepared");
             if (!camera) throw new ArgumentNullException(nameof(camera));
             prepared = true;
-            eye = camera;
-            world = GetComponent<TemplePrologueWorld>();
+            var world = GetComponent<TemplePrologueWorld>();
+            if (!world) throw new InvalidOperationException("Prayer dressing requires the prologue world");
             var vaporObject = new GameObject("Altar spectral vapor");
+            vaporObject.layer = 8;
             vaporObject.transform.SetParent(transform, false);
-            altarVapor = vaporObject.AddComponent<IncenseSmokeTrail>();
-            altarVapor.Prepare(eye);
-            altarVapor.SetAppearance(new Color(.27f, .075f, .065f), 2.1f, 1.35f);
+            vaporObject.AddComponent<TempleAltarVapor>().Prepare(camera, world);
             var source = Resources.Load<GameObject>("CorridorAltarChamber/offering-table");
             var pottery = Resources.Load<GameObject>("KoreanCorridorProps/onggi");
             var incenseVessel = Resources.Load<GameObject>("TempleForest/incense-vessel-visual");
@@ -230,16 +226,6 @@ namespace HappyToy.V2
                 var renderer = part.AddComponent<MeshRenderer>(); renderer.sharedMaterial = group.Key;
                 renderer.receiveShadows = true; renderer.shadowCastingMode = ShadowCastingMode.Off;
             }
-        }
-        void Update()
-        {
-            if (!world || !world.Ready || world.TransitionRequested || !GameSession.Current ||
-                !GameSession.Current.InputAllowed || !eye || !altarVapor) return;
-            Vector3 source = transform.TransformPoint(new Vector3(0, 1.07f, 7.2f));
-            // Suppress updates at distance; the retained ribbon restarts safely
-            // when the player approaches without changing the offering itself.
-            if ((eye.transform.position - source).sqrMagnitude > 400f) return;
-            altarVapor.Advance(source, transform.right, Time.deltaTime, 1, .75f);
         }
         void OnDestroy()
         {

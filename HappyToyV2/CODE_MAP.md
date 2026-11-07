@@ -13,7 +13,7 @@
 `PlayerMotor`는 향을 놓는 짧은 구간에만 수평 이동을 멈추며, 시선·중력과 이후 이동은 유지한다.
 `PlayerItemWheel`은 사찰에서 휠 요청을 미리 차단해 커서를 옮기지 않고, 누른 입력은 놓을 때까지 재사용하지 않는다.
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡고,
-`TemplePrayerDressing`은 기존 제작 제단·도자기·촛불과 청동 향로, 기존 종이 메시를 접어 만든 시데풍 장식·먹 봉인·세 가닥 금줄의 시각 자산을 맡고, 기존 향 배치 좌표와 물리 경계는 유지한다. 기존 향 연기를 재사용한 독립 검붉은 기운은 가까운 플레이 중에만 진행하며 일시정지·해제를 따른다. 종이 UV·앞뒷면을 재사용하고 원본과 분리한 런타임 메시를 해제한다. `temple-prologue-flow`에서 장식·물리·향로 조준·메시 해제를 검사한다.
+`TemplePrayerDressing`은 기존 제작 제단·도자기·촛불과 청동 향로, 기존 종이 메시를 접어 만든 시데풍 장식·먹 봉인·세 가닥 금줄의 시각 자산을 맡고, 기존 향 배치 좌표와 물리 경계는 유지한다. `TempleAltarVapor`의 세 궤적·단일 메시 검붉은 기운은 가까운 플레이 중에만 진행하며 일시정지·움직임 감소·해제를 따르고 일반 향 연기와 독립적이다. 종이 UV·앞뒷면을 재사용하고 원본과 분리한 런타임 메시를 해제한다. `temple-prologue-flow`에서 장식·물리·향로 조준·메시 해제를 검사한다.
 `TempleHallPresentation`은 기존 법당의 렌더러만 감추고 새 법당의 LOD와 야간 재질을 소유한다. 비활성화·파괴 시 기존 렌더러 상태를 복원하며 물리 벽·향로·대문 좌표에는 관여하지 않는다.
 숲의 시각 구성은 `TempleForestTrees`(기존 충돌체를 유지하는 고목·소나무 LOD), `TempleForestPath`(기존 발소리 범위를 유지하는 돌길), `TempleForestPuddles`, `TempleForestFerns`, `TempleForestUndergrowth`, `TempleForestFoliageFinish`, `TempleForestBanks`, `TempleForestDressing`에 나뉜다. 소나무는 가지를 보존한 근·중거리와 기존 저비용 초원거리의 세 LOD를 사용하며 충돌체는 유지한다. `TempleForestBackgroundTrees`는 외곽 나무와 이전 저장 위치에 겹친 충돌체의 안전한 활성화를 소유한다. `TempleForestAtmosphere`는 사찰의 절차적 하늘·달빛·안개·등불을, `TempleForestPresence`는 한 번만 나타나는 먼 형체를 소유한다. `TempleShrineDressing`과 `TempleStoneLanterns`는 실물 사찰 장식을 소유하며 기존 충돌과 상호작용을 바꾸지 않는다. `TempleStonePathCandidate`, `TempleForestDepthCandidate`, 원래 소나무와 넓은 고목은 명시적 진단 플래그에서만 설치한다. 원본·편집 자산과 재현법은 `SourceArt/TempleForest/README.md`를 참고한다.
 놓인 향의 연기는 고정 높이가 아닌 실제 향 렌더러 경계의 맨 위에서 시작한다.

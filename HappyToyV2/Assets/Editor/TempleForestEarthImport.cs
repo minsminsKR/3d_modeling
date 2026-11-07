@@ -9,9 +9,11 @@ namespace HappyToy.V2.Editor
     public sealed class TempleForestEarthImport : AssetPostprocessor
     {
         const string Prefix = "Assets/Resources/TempleForest/forest-earth/forest-earth-";
+        const string CandidatePrefix = "Assets/Resources/TempleForest/forest-earth-candidate/forest-earth-candidate-";
         void OnPreprocessTexture()
         {
-            if (assetPath != Prefix + "albedo.png" && assetPath != Prefix + "height.png") return;
+            bool candidate = assetPath == CandidatePrefix + "albedo.png" || assetPath == CandidatePrefix + "height.png";
+            if (!candidate && assetPath != Prefix + "albedo.png" && assetPath != Prefix + "height.png") return;
             var importer = (TextureImporter)assetImporter;
             bool normal = assetPath.EndsWith("height.png", StringComparison.Ordinal);
             importer.textureType = normal ? TextureImporterType.NormalMap : TextureImporterType.Default;
@@ -21,11 +23,28 @@ namespace HappyToy.V2.Editor
             importer.mipmapEnabled = true;
             // CPU seam checks use the real imported albedo; the normal remains GPU-only.
             importer.isReadable = !normal;
-            importer.wrapMode = TextureWrapMode.Mirror;
+            importer.wrapMode = candidate ? TextureWrapMode.Repeat : TextureWrapMode.Mirror;
             importer.filterMode = FilterMode.Trilinear;
             importer.anisoLevel = 8;
-            importer.maxTextureSize = 1024;
+            importer.maxTextureSize = candidate ? 2048 : 1024;
             importer.textureCompression = TextureImporterCompression.CompressedHQ;
+        }
+
+        public static void VerifyCandidateImports()
+        {
+            foreach (string name in new[] { "albedo", "height" })
+            {
+                string path = CandidatePrefix + name + ".png";
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                bool normal = name == "height";
+                if (!importer || !texture || texture.width != 2048 || texture.height != 2048 ||
+                    importer.maxTextureSize != 2048 || importer.textureType != (normal ? TextureImporterType.NormalMap : TextureImporterType.Default) ||
+                    importer.convertToNormalmap != normal || importer.wrapMode != TextureWrapMode.Repeat || !importer.mipmapEnabled)
+                    throw new InvalidOperationException("Forest earth candidate texture import failed: " + path);
+            }
+            Debug.Log("TEMPLE_FOREST_EARTH_CANDIDATE_IMPORT_PASS");
         }
 
         public static void VerifyImports()

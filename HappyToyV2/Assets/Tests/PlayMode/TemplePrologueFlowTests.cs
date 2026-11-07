@@ -366,7 +366,8 @@ namespace HappyToy.V2.CloudTests
             var renderer = world.transform.Find("Forest ground").GetComponent<Renderer>();
             var texture = renderer.sharedMaterial.GetTexture("_BaseMap") as Texture2D;
             Assert.That(texture, Is.Not.Null);
-            Assert.That(texture.wrapMode, Is.EqualTo(TextureWrapMode.Mirror));
+            bool original = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-v2-forest-earth-original") >= 0;
+            Assert.That(texture.wrapMode, Is.EqualTo(original ? TextureWrapMode.Mirror : TextureWrapMode.Repeat));
             Assert.That(renderer.sharedMaterial.GetTexture("_BumpMap"), Is.Not.Null);
             Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
             var pixels = texture.GetPixels32();
@@ -374,11 +375,49 @@ namespace HappyToy.V2.CloudTests
             double mean = pixels.Average(pixel => (double)pixel.r);
             Assert.That(maximum - minimum, Is.GreaterThanOrEqualTo(5), "Forest soil lost its texture variation");
             Assert.That(mean, Is.InRange(30, 90), "Forest soil changed its overall brightness");
-            // Unity's GPU mirror sampler joins each edge to itself. CPU
-            // GetPixelBilinear wrapping does not faithfully model that sampler;
-            // validate the real sampler setting here and inspect the native view.
+            // Repeat crosses opposite imported edges. Compare that actual
+            // neighbour gradient against ordinary first/last interior steps;
+            // forcing the opposite pixels equal would be the wrong criterion.
+            // The normal map remains GPU-only and is reviewed separately.
+            if (!original)
+            {
+                AssertImportedSoilRepeatEdge(pixels, texture.width, texture.height, true);
+                AssertImportedSoilRepeatEdge(pixels, texture.width, texture.height, false);
+            }
             Assert.That(texture.mipmapCount, Is.GreaterThan(1));
             Assert.That(texture.filterMode, Is.EqualTo(FilterMode.Trilinear));
+        }
+        static void AssertImportedSoilRepeatEdge(Color32[] pixels, int width, int height, bool vertical)
+        {
+            var edge = new int[256]; var inner = new int[256];
+            int count = vertical ? height : width;
+            double edgeSum = 0, innerSum = 0;
+            void Add(Color32 a, Color32 b, int[] histogram, ref double sum)
+            {
+                int r = Mathf.Abs(a.r-b.r), g = Mathf.Abs(a.g-b.g), blue = Mathf.Abs(a.b-b.b);
+                histogram[r]++; histogram[g]++; histogram[blue]++; sum += r+g+blue;
+            }
+            for (int i=0; i<count; i++)
+            {
+                int first = vertical ? i*width : i;
+                int last = vertical ? first+width-1 : (height-1)*width+i;
+                int next = vertical ? first+1 : first+width;
+                int previous = vertical ? last-1 : last-width;
+                Add(pixels[first], pixels[last], edge, ref edgeSum);
+                Add(pixels[first], pixels[next], inner, ref innerSum);
+                Add(pixels[last], pixels[previous], inner, ref innerSum);
+            }
+            float edgeMean=(float)(edgeSum/(count*3)), innerMean=(float)(innerSum/(count*6));
+            int Percentile(int[] histogram, int total)
+            {
+                int target=Mathf.CeilToInt(total*.95f), seen=0;
+                for (int n=0; n<histogram.Length; n++) { seen+=histogram[n]; if (seen>=target) return n; }
+                return 255;
+            }
+            int edgeP95=Percentile(edge,count*3), innerP95=Percentile(inner,count*6);
+            TestContext.Out.WriteLine($"Imported Repeat {(vertical ? "U" : "V")} edge mean {edgeMean:F2} vs {innerMean:F2}; p95 {edgeP95} vs {innerP95}");
+            Assert.That(edgeMean, Is.LessThanOrEqualTo(Mathf.Max(innerMean*1.5f, innerMean+3f)), "Repeat edge average gradient exceeds neighbouring imported pixels");
+            Assert.That(edgeP95, Is.LessThanOrEqualTo(Mathf.Max(innerP95*1.5f, innerP95+8f)), "Repeat edge high gradient exceeds neighbouring imported pixels");
         }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleGateAudioRestoresDuringSecondHingeCue()
@@ -722,19 +761,36 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             var vaporObject = world.transform.Find("Altar spectral vapor");
             Assert.That(vaporObject, Is.Not.Null);
-            var vapor = vaporObject.GetComponent(RequireType("IncenseSmokeTrail"));
+            var vapor = vaporObject.GetComponent(RequireType("TempleAltarVapor"));
             Assert.That(vapor, Is.Not.Null);
+            if (Get<bool>(shell, "ReducedMotion")) Call(shell, "ToggleReducedMotion");
             // The production effect intentionally sleeps beyond 20 metres.
             // Approach before checking its active simulation and pause behavior.
             PlacePlayer(new Vector3(500, .04f, 505.2f));
             yield return null;
             yield return Wait(() => Get<int>(vapor, "SampleCount") > 2, 5, "Nearby spectral altar vapor did not advance");
             var vaporMesh = vaporObject.GetComponent<MeshFilter>().sharedMesh;
-            var vaporMaterial = vaporObject.GetComponent<MeshRenderer>().sharedMaterial;
+            var vaporRenderer = vaporObject.GetComponent<MeshRenderer>();
+            var vaporMaterial = vaporRenderer.sharedMaterial;
+            Assert.That(vaporRenderer.enabled, Is.True);
+            int nearSamples = Get<int>(vapor, "SampleCount");
+            PlacePlayer(new Vector3(500, .04f, 480)); yield return null; yield return null;
+            Assert.That(vaporRenderer.enabled, Is.False, "Distant altar vapor should not render");
+            float distantTime = Get<float>(vapor, "SimulationTime"); yield return Delay(.2f);
+            Assert.That(Get<float>(vapor, "SimulationTime"), Is.EqualTo(distantTime), "Distant vapor simulation must hold");
+            Assert.That(Get<int>(vapor, "SampleCount"), Is.EqualTo(nearSamples), "Distant vapor history must not reset");
+            PlacePlayer(new Vector3(500, .04f, 505.2f)); yield return null; yield return null;
+            Assert.That(vaporRenderer.enabled, Is.True, "Returning to the altar must show the same effect");
+            yield return Wait(() => Get<float>(vapor, "SimulationTime") > distantTime, 5, "Vapor must resume when approached");
+            Assert.That(vaporObject.GetComponent<MeshFilter>().sharedMesh, Is.SameAs(vaporMesh), "Re-entry must reuse the existing mesh");
             Call(shell, "Pause"); float vaporTime = Get<float>(vapor, "SimulationTime");
             yield return Delay(.2f);
             Assert.That(Get<float>(vapor, "SimulationTime"), Is.EqualTo(vaporTime), "Pause must hold altar vapor");
             Call(shell, "Resume"); yield return null;
+            Call(shell, "ToggleReducedMotion"); yield return null;
+            float comfortTime = Get<float>(vapor, "SimulationTime"); yield return Delay(.2f);
+            Assert.That(Get<float>(vapor, "SimulationTime"), Is.EqualTo(comfortTime), "Reduced motion must hold altar vapor");
+            Call(shell, "ToggleReducedMotion"); yield return null;
             var binding = world.transform.Find("Intruding altar binding");
             Assert.That(binding, Is.Not.Null);
             Assert.That(binding.GetComponentsInChildren<Collider>(true), Is.Empty);
@@ -764,6 +820,16 @@ namespace HappyToy.V2.CloudTests
             player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
             yield return null; yield return null;
             Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
+            // A restored placed incense keeps its ordinary white trail even
+            // while the unrelated ambient altar effect is present.
+            var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            Call(presentation, "RestoreIncense", true, player); yield return null;
+            var incenseObject = world.transform.Find("Placed incense smoke");
+            Assert.That(incenseObject, Is.Not.Null);
+            var incense = incenseObject.GetComponent(RequireType("IncenseSmokeTrail"));
+            Assert.That(incense, Is.Not.Null); Assert.That(incense, Is.Not.SameAs(vapor));
+            yield return Wait(() => Get<int>(incense, "SampleCount") > 2, 5, "Placed incense did not advance independently");
+            Assert.That(incenseObject.GetComponent<MeshRenderer>().sharedMaterial, Is.Not.SameAs(vaporMaterial));
             Call(session, "RetirePrologue"); yield return null; yield return null;
             Assert.That(folded.All(x => !x), Is.True, "Folded copies must be released with the prologue");
             Assert.That(!cord, Is.True, "Generated cord must be released with the prologue");

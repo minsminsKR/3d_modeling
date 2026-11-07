@@ -180,14 +180,21 @@ namespace HappyToy.V2
         }
         Material ForestEarth()
         {
-            var albedo = Resources.Load<Texture2D>("TempleForest/forest-earth/forest-earth-albedo");
-            var normal = Resources.Load<Texture2D>("TempleForest/forest-earth/forest-earth-height");
+            // The source-derived repeat texture doubles the old tile's
+            // footprint; halved tiling preserves physical leaf/normal scale.
+            // The previous original remains available for diagnostic comparison.
+            bool candidate = Array.IndexOf(Environment.GetCommandLineArgs(), "-v2-forest-earth-original") < 0;
+            string prefix = candidate ? "TempleForest/forest-earth-candidate/forest-earth-candidate-" :
+                "TempleForest/forest-earth/forest-earth-";
+            var albedo = Resources.Load<Texture2D>(prefix + "albedo");
+            var normal = Resources.Load<Texture2D>(prefix + "height");
             if (!albedo || !normal) throw new InvalidOperationException("Forest earth PBR textures are required");
             var soil = Material("Weathered forest soil", new Color(.78f, .82f, .84f));
             soil.SetTexture("_BaseMap", albedo); soil.SetTexture("_BumpMap", normal);
             soil.EnableKeyword("_NORMALMAP"); soil.SetFloat("_BumpScale", .38f);
-            soil.SetTextureScale("_BaseMap", new Vector2(14, 18));
-            soil.SetTextureScale("_BumpMap", new Vector2(14, 18));
+            var tiling = candidate ? new Vector2(7, 9) : new Vector2(14, 18);
+            soil.SetTextureScale("_BaseMap", tiling);
+            soil.SetTextureScale("_BumpMap", tiling);
             soil.SetFloat("_Metallic", 0); soil.SetFloat("_Smoothness", .22f);
             return soil;
         }

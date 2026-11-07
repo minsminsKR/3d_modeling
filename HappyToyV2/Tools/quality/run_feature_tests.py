@@ -57,8 +57,25 @@ PROFILES = {
         ("PlayMode", (PLAY + "BaeksugwiTitleHeadAndBodyTrembleAtZeroTimeScaleWithSupportsPlanted",))]),
     "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
         ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
+    "temple-soil-logic": ("Production Repeat soil and imported edge checks; CPU only", [
+        ("PlayMode", (PLAY + "TempleForestEarthCandidateKeepsScaleAndNormalAligned", PLAY + "TempleForestSoilRepeatsWithoutHardSeams"))]),
+    "temple-soil-original-logic": ("Diagnostic original Mirror soil settings; CPU only", [
+        ("PlayMode", (PLAY + "TempleForestEarthCandidateKeepsScaleAndNormalAligned", PLAY + "TempleForestSoilRepeatsWithoutHardSeams"))]),
+    # Retained profile name for existing workflows; the formerly opt-in Repeat soil is now production.
+    "temple-soil-candidate-presentation": ("Production Repeat soil material and camera seam review; no desktop input or native FPS claim", [
+        ("PlayMode", (PLAY + "TempleForestEarthCandidateKeepsScaleAndNormalAligned", PLAY + "TempleForestSoilMaterialOffscreenReview", PLAY + "TempleForestRepeatSeamOffscreenReview"))]),
+    "temple-soil-original-presentation": ("Diagnostic original Mirror soil material comparison; no desktop input or native FPS claim", [
+        ("PlayMode", (PLAY + "TempleForestEarthCandidateKeepsScaleAndNormalAligned", PLAY + "TempleForestSoilMaterialOffscreenReview"))]),
+    "temple-soil-presentation": ("Opt-in offscreen actual production soil material comparison; no desktop input or native FPS claim", [
+        ("PlayMode", (PLAY + "TempleForestSoilMaterialOffscreenReview",))]),
+    "temple-altar-soil-cost-presentation": ("Opt-in offscreen ABBA altar vapor and soil cost; not displayed FPS", [
+        ("PlayMode", (PLAY + "TempleAltarSoilCostOffscreenAbbaReview",))]),
+    "temple-candle-presentation": ("Opt-in candle light and existing-light contribution comparison; no desktop input or displayed FPS claim", [
+        ("PlayMode", (PLAY + "TempleCandleLightOffscreenReview",))]),
+    "temple-altar-vapor-presentation": ("Opt-in offscreen altar vapor on/off and pause baseline; no desktop input or native FPS claim", [
+        ("PlayMode", (PLAY + "TempleAltarVaporProductionCameraBaseline",))]),
     "temple-story-ui-presentation": ("Opt-in offscreen actual temple camera and evidence reading HUD, normal/large text at 16:9, 4:3 and 21:9; no desktop input or native FPS claim", [
-        ("PlayMode", (PLAY + "TempleStoryEvidenceUiOffscreenAspectReview", PLAY + "TemplePhysicalFocusHudOffscreenReview"))]),
+        ("PlayMode", (PLAY + "TempleStoryEvidenceUiOffscreenAspectReview", PLAY + "TemplePhysicalFocusHudOffscreenReview", PLAY + "TempleForestSoilMaterialOffscreenReview"))]),
     "temple-horizon-logic": ("Visual terrain continuity, backdrop tree placement and safe cleanup; CPU only", [
         ("PlayMode", (PLAY + "TempleForestHorizonExtendsAllFourSidesWithoutCollision",))]),
     "corridor-story-logic": ("First memory story, real temple-to-corridor entry, journal and old/new checkpoint restoration; CPU only", [
@@ -534,12 +551,20 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("hud-interaction-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
-        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation"):
+        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]
-        if profile == "temple-story-ui-presentation":
+        if profile in ("temple-story-ui-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-v2-story-ui-review-output", str(output / "story-ui")]
+        if profile in ("temple-soil-original-logic", "temple-soil-original-presentation"):
+            editor_args += ["-v2-forest-earth-original"]
+        if profile == "temple-altar-soil-cost-presentation":
+            editor_args += ["-v2-temple-cost-output", str(output / "temple-cost")]
+        if profile == "temple-candle-presentation":
+            editor_args += ["-v2-altar-light-review-output", str(output / "altar-light")]
+        if profile == "temple-altar-vapor-presentation":
+            editor_args += ["-v2-altar-vapor-output", str(output / "altar-vapor")]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]
         if no_desktop_interaction:
