@@ -10,7 +10,8 @@
 
 Python 3.10 이상과 외부 Python 의존성 `requests`가 필요합니다. 클라이언트를
 다른 컴퓨터로 옮길 때 `modeling_cli.py`, `modeling_contract.py`,
-`modeling_collection.py`, `modeling_state.py`, `modeling_download.py` 다섯 파일을
+`modeling_collection.py`, `modeling_state.py`, `modeling_download.py`,
+`modeling_review_download.py` 여섯 파일을
 모두 같은 디렉터리에 보존합니다.
 CUDA, PyTorch, 모델 가중치나 서버의 웹앱 패키지는 클라이언트에 설치하지 않습니다.
 
@@ -117,6 +118,23 @@ GLB·OBJ·MTL·PBR 텍스처와 리깅·Blender 등 결과 폴더의 추가 auth
 게임에 사용한 원본 패키지는 프로젝트의 추적되는 authoring 폴더에도
 보관해야 합니다. 클라이언트 개인 기록 폴더는 Git에 넣지 않습니다.
 
+## 검토 필요 원본 수집
+
+서버가 `review_required`로 표시한 실험 결과는 완료나 품질 승인으로 바꾸지 않습니다.
+정식 provenance ZIP이 서버에서 아직 제공되지 않으면 다음 명령으로 같은 작업의
+원본 GLB를 별도 파일로 보존할 수 있습니다. 새 작업을 제출하거나 서버 상태를
+변경하지 않습니다.
+
+```bash
+python3 modeling_cli.py download-review JOB_ID --output ./review
+```
+
+`JOB_ID.review.glb`와 `JOB_ID.review.json`은 일반 `JOB_ID.zip` 및 영수증과
+별개입니다. 전송은 강한 ETag·전체 길이·검증된 부분 해시를 확인하며 중단 시 같은
+명령으로 이어받습니다. 저장 전에 GLB 구조와 다운로드 전후 서버 버전을 비교하고
+로컬 SHA-256을 기록하지만, 서버가 원본 SHA-256을 제공하지 않으면 이 값은 독립
+서버 해시 검증이 아닙니다. 기존 결과는 덮어쓰지 않으며 품질·이음새 검토는 별도입니다.
+
 ## 서버 기본값과 선택 옵션
 
 CLI는 지정하지 않은 생성 옵션을 서버로 보내지 않습니다. 따라서 웹앱의 현재
@@ -144,11 +162,19 @@ python3 modeling_cli.py generate ./reference.png \
 | `trellis_pipeline` | `512`, `1024_cascade`, `1536_cascade` |
 | `trellis_steps` | 1–50 |
 | `trellis_texture_size` | `4096`, `8192` |
+| `trellis_dual_postprocess` | `on`, `off` (지원 서버의 TRELLIS.2에서만 명시 가능) |
 | `num_inference_steps` | 1–100 |
 | `guidance_scale` | 0.1–20 |
 | `octree_resolution` | 64–512 |
 | `num_chunks` | 1000–300000 |
 | `texture_profile` | `standard`, `detail`, `ultra` |
+
+`trellis_dual_postprocess=on`은 지원 서버에서만 두 GPU 후처리를 요청하는 선택
+옵션입니다. 생략하면 서버 기본값을 그대로 사용하며 자동으로 켜지지 않습니다.
+명시한 경우 CLI는 전송 직전에 선택 모델의 capabilities를 확인해 지원하지 않는
+서버에 제출하지 않습니다. 이 확인은 불확실한 요청의 `resume` 재전송에도 적용됩니다.
+실제 GPU 사용, 메모리와 생성 결과 품질은 완료 기록과 별도 검수로 확인해야 합니다.
+예: `--model trellis2 --gpu split --option trellis_dual_postprocess=on`.
 
 모델 사용 승인, 설치된 모델, 가능한 GPU 조합과 텍스처 제약은 웹과 동일하게 서버가
 최종 검사합니다. 클라이언트에 새 모델 실행기나 별도 설정 기본값은 없습니다.

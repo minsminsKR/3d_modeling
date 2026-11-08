@@ -2,7 +2,8 @@
 """Thin, resumable client for the existing Hunyuan3D web application's job API.
 
 Python >= 3.10, requests >= 2.31, and the bundled modeling_contract.py,
-modeling_collection.py, modeling_state.py and modeling_download.py modules are
+modeling_collection.py, modeling_state.py, modeling_download.py and
+modeling_review_download.py modules are
 the client dependencies. This file does not
 import the server, torch, or any model runtime.
 """
@@ -30,6 +31,7 @@ import zipfile
 from modeling_contract import ModelingError, error_payload, http_error
 from modeling_state import State, now, private_directory, atomic_json, read_json, cookie_signature, save_cookie_jar
 from modeling_download import download_lock, safe_download_paths, transfer_archive
+from modeling_review_download import transfer_review
 
 try:
     import requests
@@ -41,7 +43,7 @@ SCHEMA_VERSION = 1
 MODELS = {"hunyuan3d-2.1", "hunyuan3d-omni", "trellis2"}
 OPTION_NAMES = {
     "model", "gpu_id", "seed", "remove_background", "texture",
-    "trellis_pipeline", "trellis_steps", "trellis_texture_size",
+    "trellis_pipeline", "trellis_steps", "trellis_texture_size", "trellis_dual_postprocess",
     "num_inference_steps", "guidance_scale", "octree_resolution",
     "num_chunks", "texture_profile",
 }
@@ -207,7 +209,7 @@ def generation_options(args):
             if key == "trellis_texture_size" and integer not in {4096, 8192}:
                 raise ClientError("trellis_texture_size must be 4096 or 8192.")
             options[key] = str(integer)
-        elif key in {"remove_background", "texture"}:
+        elif key in {"remove_background", "texture", "trellis_dual_postprocess"}:
             if value not in {"on", "off"}:
                 raise ClientError(f"{key} must be on or off.")
         elif key == "model" and value not in MODELS:
@@ -511,6 +513,27 @@ class Client:
                               interval=interval, refresh=refresh)
 
     def generate(self, manifest):
+        options = manifest["submitted_options"]
+        if "trellis_dual_postprocess" in options:
+            # Older servers may ignore unknown multipart fields. Check the
+            # selected model before every POST, including uncertain replays,
+            # so an explicit opt-in cannot silently become ordinary inference.
+            value = options["trellis_dual_postprocess"]
+            if value not in {"on", "off"}:
+                raise ClientError("trellis_dual_postprocess must be on or off.")
+            capability = self.capabilities()
+            defaults = capability.get("defaults")
+            default_model = defaults.get("model") if isinstance(defaults, dict) else None
+            selected_model = options.get("model", default_model)
+            models = capability.get("models", {})
+            model = models.get(selected_model) if isinstance(models, dict) and isinstance(selected_model, str) else None
+            parameters = model.get("parameters") if isinstance(model, dict) else None
+            field = parameters.get("trellis_dual_postprocess") if isinstance(parameters, dict) else None
+            allowed = field.get("enum") if isinstance(field, dict) else None
+            if not isinstance(allowed, list) or value not in allowed:
+                raise ClientError("The selected server/model does not advertise trellis_dual_postprocess=" + value +
+                                  "; no generation was submitted. Check capabilities or update the server.",
+                                  code="UNSUPPORTED_API")
         path = self.state.manifest_path(manifest["request_id"]).parent
         manifest["state"] = "submitting"
         self.state.write_manifest(manifest)
@@ -650,14 +673,14 @@ def parser():
     login = commands.add_parser("login", parents=[common], help="log in through the existing private gateway")
     login.add_argument("--password-file", help="read password from a private UTF-8 file; default: hidden terminal prompt")
     login.add_argument("--remember", action="store_true", help="save password to Windows Credential Manager for automatic re-login")
-    for command in ("status", "wait", "download"):
+    for command in ("status", "wait", "download", "download-review"):
         child = commands.add_parser(command, parents=[common], help=f"{command} an existing server job")
         child.add_argument("job", help="preserved server job ID")
         if command == "wait":
             child.add_argument("--timeout", type=positive, default=86400, help="total wait budget in seconds (default: 86400)")
             child.add_argument("--poll-interval", type=poll_interval, default=5, help="seconds, at least 1 (default: 5)")
-        if command == "download":
-            child.add_argument("--output", required=True, help="directory for provenance ZIP and download receipt")
+        if command in {"download", "download-review"}:
+            child.add_argument("--output", required=True, help="directory for the requested result and receipt")
     for command in ("collect", "resume"):
         child = commands.add_parser(command, parents=[common], help="recover every job in an existing request and collect completed archives")
         child.add_argument("request", help="preserved request UUID; works on another client using the same server")
@@ -708,6 +731,12 @@ def render(result, json_output):
             print(f"  {name}: {'available' if available else 'unavailable'}")
     if "archive" in result:
         print(f"Archive: {result['archive']}\nSHA-256: {result['archive_sha256']}\nReceipt: {result['receipt']}")
+    if result.get("quality_status") == "review_required" and "path" in result:
+        print(f"Unapproved review GLB: {result['path']}\nLocal SHA-256: {result['sha256']}\nReceipt: {result['receipt']}")
+        if not result.get("server_sha256_available"):
+            print("The server supplied no independent artifact SHA-256; visual review remains required.")
+        else:
+            print("Server artifact SHA-256 matched; visual review remains required.")
     if "request_id" in result:
         print(f"Request: {result['request_id']}")
     if "authenticated" in result:
@@ -785,6 +814,15 @@ def main(argv=None):
                 result.update(error_payload("JOB_FAILED"))
         elif args.command == "download":
             result, code = client.download(validate_job_id(args.job), args.output)
+        elif args.command == "download-review":
+            job_id = validate_job_id(args.job)
+            job = client.status(job_id)
+            if job.get("status") != "review_required":
+                raise ClientError("download-review only accepts review_required jobs.", code="JOB_NOT_READY")
+            record = client.json("GET", job.get("record_url") or f"/api/jobs/{job_id}/record")
+            result = transfer_review(client, job_id, args.output, record, atomic_json=atomic_json, error=ClientError)
+            result["job"] = job
+            code = 0
         elif args.command in {"collect", "resume"}:
             request_id = validate_request_id(args.request)
             if args.command == "resume":
