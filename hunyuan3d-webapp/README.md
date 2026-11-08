@@ -1,4 +1,21 @@
-> **A100 서버 최신 소스 (2026.10.11.11)**: TRELLIS.2 1536/8K, 2GPU 분할, SkinTokens AI 리깅, 동작 미리보기와 관절 편집기를 포함합니다. 새 설치·의존성·원본 빌드는 [INSTALL-A100.md](INSTALL-A100.md)를 먼저 읽으세요. 아래는 기존 Windows/Hunyuan 사용 안내입니다.
+> **A100 서버 최신 소스 (2026.11.08)**: TRELLIS.2 1536/8K, 선택형 두 GPU 후처리, SkinTokens AI 리깅, 동작 미리보기와 관절 편집기를 포함합니다. 새 설치·의존성·원본 빌드는 [INSTALL-A100.md](INSTALL-A100.md)를 먼저 읽으세요. 아래는 기존 Windows/Hunyuan 사용 안내입니다.
+
+## TRELLIS.2 1536/8K 두 GPU 후처리 (A100, 선택형)
+
+웹앱에서 `TRELLIS.2`, `split`, 단일 이미지, `1536_cascade`, `8192`를 선택하면 **두 GPU 후처리 실험** 체크박스를 켤 수 있습니다. 기본값은 꺼짐입니다. CLI/API에서는 `trellis_dual_postprocess=on`을 사용합니다. 이 경로는 실제 1536 형상과 8K PBR을 유지하고, 원본 형상·재질을 `raw_postprocess.pt`에 저장한 뒤 CuMesh 분할 단순화와 8K 타일 베이킹을 실행합니다. 실패 시 원본 체크포인트가 남아 후처리만 재시도할 수 있습니다.
+
+CuMesh 패치는 [cumesh-boundary.patch](cumesh-boundary.patch)에 있습니다. TRELLIS.2 `75fbf0183001ed9876c8dbb35de6b68552ee08bd`, CuMesh `12289e1062f0603f2f0d0771b02e1395d247f26f`에서 검증했습니다. **기본 CuMesh 설치를 덮어쓰지 말고**, 별도 CuMesh checkout에서 다음처럼 빌드하세요.
+
+```bash
+cd <isolated-cumesh-checkout>
+git checkout 12289e1062f0603f2f0d0771b02e1395d247f26f
+git apply /path/to/3d_modeling/hunyuan3d-webapp/cumesh-boundary.patch
+/path/to/hunyuan3d-webapp/.venv-trellis/bin/python setup.py build_ext --inplace
+```
+
+웹앱 `.env`에 `TRELLIS_CUMESH_PATCH_ROOT=<isolated-cumesh-checkout>`을 설정합니다. 이 checkout의 `cumesh/`에 컴파일된 확장이 있어야 합니다. 두 GPU의 가용 VRAM이 각각 최소 36,000/38,000 MiB이고 출력 디스크에 최소 30 GiB가 있어야 선택형 작업을 시작합니다. GPU 간 P2P 복사를 가정하지 않으며 CPU staging을 사용합니다. GPU별 처리량·피크 VRAM, host RSS, 메모리 한도와 단계별 재시도 상태는 작업의 `dual_postprocess_manifest.json`과 `metadata.json`에 기록됩니다.
+
+산출물은 `review_required` 상태로 표시하고 GLB 미리보기·다운로드를 제공합니다. 원본 형상의 결함이나 다른 입력의 OOM이 해결됐다는 의미는 아닙니다. 메시 경계·UV ID·PBR 채널·시각 품질을 확인한 뒤 사용하세요. 현재 옵션은 TRELLIS.2 단일 이미지 1536/8192 split 작업만 지원합니다.
 
 # Hunyuan3D Flask Web App
 

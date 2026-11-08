@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>A100 3D Studio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=20261108-1">
     <link rel="stylesheet" href="{{ url_for('static', filename='generator.css') }}?v=20261011-3">
     <script type="module" src="{{ url_for('static', filename='vendor/model-viewer-4.4.0.min.js') }}"></script>
   </head>
@@ -66,6 +66,7 @@
           <div class="processing-options">
             <label class="option-row" for="remove-background"><span><strong>배경 제거</strong><span>이미지에서 대상만 추출합니다.</span></span><input name="remove_background" type="hidden" value="off"><input id="remove-background" name="remove_background" type="checkbox" {% if generation_defaults.remove_background %}checked{% endif %}></label>
             <label class="option-row" for="texture"><span><strong>PBR 텍스처 생성</strong><span id="texture-help">색상과 재질을 모델에 입힙니다.</span></span><input id="texture" name="texture" type="checkbox" checked {% if not texture_ready %}disabled{% endif %} aria-describedby="texture-help"></label>
+            <label id="trellis-dual-postprocess" class="option-row hidden" for="trellis-dual-postprocess-input"><span><strong>두 GPU 후처리 실험</strong><span>1536 형상과 8K PBR을 분산 처리합니다. 결과는 시각 품질 검토 필요로 표시됩니다.</span></span><input id="trellis-dual-postprocess-input" name="trellis_dual_postprocess" type="checkbox" value="on"></label>
           </div>
 
           <details class="advanced-settings"><summary><span>고급 설정 <span class="advanced-preview" id="advanced-preview">Steps · Seed · GPU</span></span><span class="disclosure-icon" aria-hidden="true">+</span></summary>
@@ -142,7 +143,7 @@
         </section>
       {% endif %}
     </main>
-    <script src="{{ url_for('static', filename='generator.js') }}?v=20261011-9"></script>
-    <script src="{{ url_for('static', filename='app.js') }}?v=20261011-3"></script>
+    <script src="{{ url_for('static', filename='generator.js') }}?v=20261108-1"></script>
+    <script src="{{ url_for('static', filename='app.js') }}?v=20261108-1"></script>
   </body>
 </html>

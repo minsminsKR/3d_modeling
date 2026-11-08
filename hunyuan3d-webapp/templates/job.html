@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Job {{ job.id[:8] }} - Hunyuan3D Studio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=20261108-1">
     <link rel="stylesheet" href="{{ url_for('static', filename='rigging.css') }}?v=20261011-5">
     <script type="module" src="{{ url_for('static', filename='vendor/model-viewer-4.4.0.min.js') }}"></script>
   </head>
@@ -49,14 +49,14 @@
         </div>
       </section>
 
-      <section id="result-panel" class="panel result-panel {% if job.status != 'completed' %}hidden{% endif %}">
+      <section id="result-panel" class="panel result-panel {% if job.status not in ['completed', 'review_required'] %}hidden{% endif %}">
         <div class="section-head">
-          <h2>생성 결과</h2>
+          <h2 id="result-heading">{{ "검토 필요 결과" if job.status == "review_required" else "생성 결과" }}</h2>
           <div class="result-actions">
             <button
               id="save-job-btn"
               type="button"
-              class="save-job-btn {% if job.saved %}is-saved{% endif %}"
+              class="save-job-btn {% if job.saved %}is-saved{% endif %} {% if job.status == 'review_required' %}hidden{% endif %}"
               data-job-id="{{ job.id }}"
               data-saved="{{ 'true' if job.saved else 'false' }}"
               aria-pressed="{{ 'true' if job.saved else 'false' }}">
@@ -178,7 +178,7 @@
         <p class="muted">대부분은 HUNYUAN3D_REPO 미설정, CUDA/torch 버전, texture renderer 빌드 문제에서 발생합니다.</p>
       </section>
     </main>
-    <script src="{{ url_for('static', filename='app.js') }}?v=20261011-4"></script>
+    <script src="{{ url_for('static', filename='app.js') }}?v=20261108-1"></script>
     <script src="{{ url_for('static', filename='rigging.js') }}?v=20261011-5"></script>
   </body>
 </html>

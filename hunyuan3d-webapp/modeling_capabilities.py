@@ -15,6 +15,7 @@ PARAMETERS = {
     "trellis_pipeline": {"type": "string", "enum": ["512", "1024_cascade", "1536_cascade"]},
     "trellis_steps": {"type": "integer", "minimum": 1, "maximum": 50},
     "trellis_texture_size": {"type": "integer", "enum": [4096, 8192], "minimum": 4096, "maximum": 8192},
+    "trellis_dual_postprocess": {"type": "string", "enum": ["on", "off"], "description": "Opt-in 1536/8K GPU-sharded postprocess; output requires visual review."},
     "num_inference_steps": {"type": "integer", "minimum": 1, "maximum": 100},
     "guidance_scale": {"type": "number", "minimum": 0.1, "maximum": 20},
     "octree_resolution": {"type": "integer", "minimum": 64, "maximum": 512},
@@ -65,7 +66,8 @@ def build_capabilities(facts):
                      "texture": "on" if name == "trellis2" else "off"}
         if name == "trellis2":
             submitted.update({key: value for key, value in facts["trellis_defaults"].items() if key != "trellis_max_tokens"})
-        fields = set(PARAMETERS) - ({"trellis_pipeline", "trellis_steps", "trellis_texture_size"}
+            submitted["trellis_dual_postprocess"] = "off"
+        fields = set(PARAMETERS) - ({"trellis_pipeline", "trellis_steps", "trellis_texture_size", "trellis_dual_postprocess"}
                                   if name != "trellis2" else
                                   {"num_inference_steps", "guidance_scale", "octree_resolution", "num_chunks", "texture_profile"})
         model_parameters = {key: deepcopy(parameters[key]) for key in sorted(fields)}

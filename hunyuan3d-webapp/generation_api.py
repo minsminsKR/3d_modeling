@@ -14,7 +14,7 @@ from modeling_capabilities import validate_submission_fields
 from modeling_archives import Source, reject_links, snapshot_for_job
 
 GENERATION_FIELDS = {"model", "gpu_id", "seed", "remove_background", "texture", "trellis_pipeline",
-                     "trellis_steps", "trellis_texture_size", "num_inference_steps", "guidance_scale",
+                     "trellis_steps", "trellis_texture_size", "trellis_dual_postprocess", "num_inference_steps", "guidance_scale",
                      "octree_resolution", "num_chunks", "texture_profile"}
 SOURCE_SUFFIXES = {".glb", ".gltf", ".bin", ".obj", ".mtl", ".ply", ".stl", ".fbx", ".dae",
                    ".blend", ".bvh", ".abc", ".usd", ".usda", ".usdc", ".usdz", ".npz", ".npy",

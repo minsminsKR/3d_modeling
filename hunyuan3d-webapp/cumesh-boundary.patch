@@ -1,0 +1,250 @@
+diff --git a/src/simplify.cu b/src/simplify.cu
+index b5bbcbb..07f69e2 100644
+--- a/src/simplify.cu
++++ b/src/simplify.cu
+@@ -162,6 +162,7 @@ static __global__ void get_edge_collapse_cost_kernel(
+     const int* vert2face_offset,
+     const uint64_t* edges,
+     const uint8_t * vert_is_boundary,
++    const uint8_t * vert_is_protected,
+     const QEM* qems,
+     const int V,
+     const int F,
+@@ -177,12 +178,23 @@ static __global__ void get_edge_collapse_cost_kernel(
+     uint64_t e = edges[tid];
+     int e0 = int(e >> 32);
+     int e1 = int(e & 0xFFFFFFFF);
++    if (vert_is_protected && (vert_is_protected[e0] || vert_is_protected[e1])) {
++        edge_collapse_costs[tid] = INFINITY;
++        return;
++    }
+ 
+     // get edge vertices
+     Vec3f v0(vertices[e0]);
+     Vec3f v1(vertices[e1]);
+     uint8_t v0_is_bound = vert_is_boundary[e0];
+     uint8_t v1_is_bound = vert_is_boundary[e1];
++    // Partition seams must remain bitwise identical after simplification.
++    // CuMesh normally permits collapsing an edge whose endpoints are both
++    // boundary vertices, which would tear a separately processed neighbour.
++    if (v0_is_bound && v1_is_bound) {
++        edge_collapse_costs[tid] = INFINITY;
++        return;
++    }
+     float w0 = 0.5;
+     if (v0_is_bound && !v1_is_bound) w0 = 1.0;
+     else if (!v0_is_bound &&  v1_is_bound) w0 = 0.0;
+@@ -245,6 +257,7 @@ void get_edge_collapse_cost(
+         ctx.vert2face_offset.ptr,
+         ctx.edges.ptr,
+         ctx.vert_is_boundary.ptr,
++        ctx.vert_is_protected.ptr,
+         reinterpret_cast<const QEM*>(ctx.temp_storage.ptr),
+         V, F, E,
+         lambda_edge_length, lambda_skinny,
+@@ -423,6 +436,32 @@ static __global__ void compress_vertices_kernel(
+     }
+ }
+ 
++static __global__ void compress_protected_kernel(
++    const int* vertices_map,
++    const uint8_t* old_mask,
++    const int V,
++    uint8_t* new_mask
++) {
++    const int tid = blockIdx.x * blockDim.x + threadIdx.x;
++    if (tid >= V) return;
++    int new_id = vertices_map[tid];
++    int is_kept = vertices_map[tid + 1] == new_id + 1;
++    if (is_kept) new_mask[new_id] = old_mask[tid];
++}
++
++static __global__ void compress_seam_ids_kernel(
++    const int* vertices_map,
++    const int* old_ids,
++    const int V,
++    int* new_ids
++) {
++    const int tid = blockIdx.x * blockDim.x + threadIdx.x;
++    if (tid >= V) return;
++    int new_id = vertices_map[tid];
++    int is_kept = vertices_map[tid + 1] == new_id + 1;
++    if (is_kept) new_ids[new_id] = old_ids[tid];
++}
++
+ 
+ static __global__ void compress_faces_kernel(
+     const int* faces_map,
+@@ -499,6 +538,26 @@ void collapse_edges(
+     );
+     CUDA_CHECK(cudaGetLastError());
+     swap_buffers(ctx.temp_storage, ctx.vertices);
++    if (ctx.vert_is_protected.size) {
++        Buffer<uint8_t> compressed_protected;
++        compressed_protected.resize(new_num_vertices);
++        compress_protected_kernel<<<(V+BLOCK_SIZE-1)/BLOCK_SIZE, BLOCK_SIZE, 0, stream>>>(
++            ctx.vertices_map.ptr, ctx.vert_is_protected.ptr, V, compressed_protected.ptr
++        );
++        CUDA_CHECK(cudaGetLastError());
++        swap_buffers(compressed_protected, ctx.vert_is_protected);
++        compressed_protected.free();
++    }
++    if (ctx.vert_seam_ids.size) {
++        Buffer<int> compressed_ids;
++        compressed_ids.resize(new_num_vertices);
++        compress_seam_ids_kernel<<<(V+BLOCK_SIZE-1)/BLOCK_SIZE, BLOCK_SIZE, 0, stream>>>(
++            ctx.vertices_map.ptr, ctx.vert_seam_ids.ptr, V, compressed_ids.ptr
++        );
++        CUDA_CHECK(cudaGetLastError());
++        swap_buffers(compressed_ids, ctx.vert_seam_ids);
++        compressed_ids.free();
++    }
+ 
+     // update faces buffer
+     // get faces map
+diff --git a/src/cumesh.cu b/src/cumesh.cu
+index 5fd276d..b20faff 100644
+--- a/src/cumesh.cu
++++ b/src/cumesh.cu
+@@ -14,6 +14,8 @@ CuMesh::~CuMesh() {
+     edges.free();
+     boundaries.free();
+     vert_is_boundary.free();
++    vert_is_protected.free();
++    vert_seam_ids.free();
+     vert_is_manifold.free();
+     vert2edge.free();
+     vert2edge_cnt.free();
+diff --git a/src/cumesh.h b/src/cumesh.h
+index 01a073b..c1905d3 100644
+--- a/src/cumesh.h
++++ b/src/cumesh.h
+@@ -26,6 +26,8 @@ public:
+     Buffer<uint64_t> edges;
+     Buffer<int> boundaries;
+     Buffer<uint8_t> vert_is_boundary;
++    Buffer<uint8_t> vert_is_protected;
++    Buffer<int> vert_seam_ids;
+     Buffer<uint8_t> vert_is_manifold;
+     Buffer<int> vert2edge;
+     Buffer<int> vert2edge_cnt;
+@@ -107,6 +109,9 @@ public:
+      * @param faces The triangle faces as an [F, 3] tensor.
+      */
+     void init(const torch::Tensor& vertices, const torch::Tensor& faces);
++    void set_protected_vertices(const torch::Tensor& protected_mask);
++    void set_seam_vertex_ids(const torch::Tensor& seam_ids);
++    torch::Tensor read_seam_vertex_ids();
+ 
+     /**
+      * Get the mesh.
+diff --git a/src/ext.cpp b/src/ext.cpp
+index 6ff1eaa..60be2ac 100644
+--- a/src/ext.cpp
++++ b/src/ext.cpp
+@@ -24,6 +24,9 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+         .def("num_boundary_loops", &cumesh::CuMesh::num_boundary_loops)
+         .def("clear_cache", &cumesh::CuMesh::clear_cache)
+         .def("init", &cumesh::CuMesh::init)
++        .def("set_protected_vertices", &cumesh::CuMesh::set_protected_vertices)
++        .def("set_seam_vertex_ids", &cumesh::CuMesh::set_seam_vertex_ids)
++        .def("read_seam_vertex_ids", &cumesh::CuMesh::read_seam_vertex_ids)
+         .def("read", &cumesh::CuMesh::read)
+         .def("read_face_normals", &cumesh::CuMesh::read_face_normals)
+         .def("read_vertex_normals", &cumesh::CuMesh::read_vertex_normals)
+@@ -65,4 +68,4 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+     // Remeshing functions
+     m.def("get_sparse_voxel_grid_active_vertices", &cumesh::get_sparse_voxel_grid_active_vertices);
+     m.def("simple_dual_contour", &cumesh::simple_dual_contour);
+-}
+\ No newline at end of file
++}
+diff --git a/src/io.cu b/src/io.cu
+index 579cf16..5648eaf 100644
+--- a/src/io.cu
++++ b/src/io.cu
+@@ -108,6 +108,8 @@ static torch::Tensor buffer_to_tensor(const Buffer<T> buffer) {
+ 
+ 
+ void CuMesh::init(const torch::Tensor& vertices, const torch::Tensor& faces) {
++    this->vert_is_protected.free();
++    this->vert_seam_ids.free();
+     size_t num_vertices = vertices.size(0);
+     size_t num_faces = faces.size(0);
+     this->vertices.resize(num_vertices);
+@@ -132,6 +134,42 @@ void CuMesh::init(const torch::Tensor& vertices, const torch::Tensor& faces) {
+     ));
+ }
+ 
++void CuMesh::set_protected_vertices(const torch::Tensor& protected_mask) {
++    TORCH_CHECK(protected_mask.is_cuda(), "protected mask must be CUDA");
++    TORCH_CHECK(protected_mask.scalar_type() == torch::kUInt8,
++                "protected mask must be uint8");
++    TORCH_CHECK(protected_mask.is_contiguous(), "protected mask must be contiguous");
++    TORCH_CHECK(protected_mask.dim() == 1 &&
++                protected_mask.size(0) == static_cast<int64_t>(this->vertices.size),
++                "protected mask size must match mesh vertices");
++    this->vert_is_protected.resize(this->vertices.size);
++    CUDA_CHECK(cudaMemcpy(this->vert_is_protected.ptr,
++                          protected_mask.data_ptr<uint8_t>(),
++                          this->vertices.size * sizeof(uint8_t),
++                          cudaMemcpyDeviceToDevice));
++}
++
++void CuMesh::set_seam_vertex_ids(const torch::Tensor& seam_ids) {
++    TORCH_CHECK(seam_ids.is_cuda(), "seam IDs must be CUDA");
++    TORCH_CHECK(seam_ids.scalar_type() == torch::kInt32,
++                "seam IDs must be int32");
++    TORCH_CHECK(seam_ids.is_contiguous(), "seam IDs must be contiguous");
++    TORCH_CHECK(seam_ids.dim() == 1 &&
++                seam_ids.size(0) == static_cast<int64_t>(this->vertices.size),
++                "seam IDs size must match mesh vertices");
++    this->vert_seam_ids.resize(this->vertices.size);
++    CUDA_CHECK(cudaMemcpy(this->vert_seam_ids.ptr,
++                          seam_ids.data_ptr<int>(),
++                          this->vertices.size * sizeof(int),
++                          cudaMemcpyDeviceToDevice));
++}
++
++torch::Tensor CuMesh::read_seam_vertex_ids() {
++    TORCH_CHECK(this->vert_seam_ids.size == this->vertices.size,
++                "seam IDs were not initialized or were not compacted");
++    return buffer_to_tensor(this->vert_seam_ids);
++}
++
+ 
+ std::tuple<torch::Tensor, torch::Tensor> CuMesh::read() {
+     auto vertices = buffer_to_tensor(this->vertices);
+diff --git a/cumesh/remeshing.py b/cumesh/remeshing.py
+index 272a6c1..7ed1cf1 100644
+--- a/cumesh/remeshing.py
++++ b/cumesh/remeshing.py
+@@ -183,6 +183,9 @@ def remesh_narrow_band_dc(
+     dual_verts, intersected = _C.simple_dual_contour(
+         *hashmap_vert, coords, distances_vert, resolution + 1, resolution + 1, resolution + 1
+     )
++    del hashmap_vert, grid_verts, pts_vert, distances_vert
++    if project_back <= 0:
++        del bvh
+     
+     # -------------------------------------------------------------------------
+     # 6. Topology Generation (Connectivity)
+@@ -197,9 +200,11 @@ def remesh_narrow_band_dc(
+         connected_voxel.reshape(-1, 3)
+     ], dim=1)
+     connected_voxel_indices = _C.hashmap_lookup_3d_cuda(*hashmap_vox, connected_voxel_hash_key, resolution, resolution, resolution).reshape(M, 4).int()
++    del hashmap_vox, coords, edge_neighbor_voxel, connected_voxel, connected_voxel_hash_key
+     connected_voxel_valid = (connected_voxel_indices != 0xffffffff).all(dim=1)
+     quad_indices = connected_voxel_indices[connected_voxel_valid].int()                             # (L, 4)
+     intersected_dir = intersected[connected_voxel_valid].int()
++    del connected_voxel_indices, connected_voxel_valid, intersected
+     L = quad_indices.shape[0]
+     
+     # Remove unreferenced vertices
+@@ -249,4 +254,4 @@ def remesh_narrow_band_dc(
+         projected_verts = (orig_tri_verts * uvw.unsqueeze(-1)).sum(dim=1)
+         mesh_vertices -= project_back * (mesh_vertices - projected_verts)
+ 
+-    return mesh_vertices, mesh_triangles.int()
+\ No newline at end of file
++    return mesh_vertices, mesh_triangles.int()

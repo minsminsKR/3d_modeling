@@ -31,7 +31,7 @@
   const sync = () => {
     const native = model.value === 'trellis2';
     for (const [ids, visible] of [
-      [['trellis-controls', 'trellis-advanced-controls'], native],
+      [['trellis-controls', 'trellis-advanced-controls', 'trellis-dual-postprocess'], native],
       [['hunyuan-texture-controls', 'hunyuan-shape-controls', 'hunyuan-chunks-controls'], !native],
     ]) for (const id of ids) {
       const container = document.getElementById(id);
@@ -41,6 +41,9 @@
     texture.disabled = native || textureUnavailable;
     if (native) texture.checked = true;
     const highNative = native && pipeline.value !== '512';
+    const dual = field('trellis_dual_postprocess');
+    dual.disabled = !(native && pipeline.value === '1536_cascade' && field('trellis_texture_size').value === '8192' && gpu.value === 'split');
+    if (dual.disabled) dual.checked = false;
     const gpu0 = gpu.querySelector('option[value="0"]');
     const highHunyuanTexture = !native && texture.checked && !textureUnavailable && field('texture_profile').value !== 'standard';
     if (gpu0) { gpu0.disabled = highNative || highHunyuanTexture; if (gpu0.disabled && gpu.value === '0') gpu.value = '1'; }
@@ -93,7 +96,7 @@
     Object.entries(defaults).forEach(([name, value]) => { if (name !== 'model') field(name).value = value; });
     model.value = currentModel;
     document.querySelector('#remove-background').checked = backgroundDefault;
-    hunyuanTexture = true; texture.checked = true;
+    hunyuanTexture = true; texture.checked = true; field('trellis_dual_postprocess').checked = false;
     sync(); defaultGpu(); sync();
   });
   // Keep the selected section open if native form validation finds an invalid advanced value.
