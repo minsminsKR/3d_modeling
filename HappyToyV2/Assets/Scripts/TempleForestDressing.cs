@@ -13,9 +13,9 @@ namespace HappyToy.V2
         Mesh cordMesh;
         bool prepared;
 
-        public void Prepare()
+        public void Prepare(TemplePrologueWorld world, Camera eyes)
         {
-            if (prepared) throw new InvalidOperationException("Forest dressing already prepared");
+            if (prepared || !world || !eyes) throw new InvalidOperationException("Fresh forest dressing, world and camera are required");
             prepared = true;
             var stones = Resources.Load<GameObject>("SchoolRenewal/loose-stones/loose-stones-visual");
             if (!stones || !stones.GetComponent<LODGroup>() || stones.GetComponentInChildren<Collider>(true) ||
@@ -25,8 +25,11 @@ namespace HappyToy.V2
             foreach (float side in new[] { -1f, 1f })
             {
                 var guardian = CorridorEntranceModels.Attach("guardian-statue", root, "Weathered forest guardian", Vector3.zero);
-                CorridorEntranceModels.GroundAtHeight(guardian, new Vector3(side * 4.65f, 0, 5.8f), 1.05f,
-                    Quaternion.Euler(0, 180 - side * 18, side * 3));
+                CorridorEntranceModels.GroundAtHeight(guardian, new Vector3(side * 4.65f, -.05f, 11.2f), 3.5f,
+                    Quaternion.Euler(0, 180, 0));
+                guardian.gameObject.AddComponent<TempleGuardianGaze>().Prepare(guardian, eyes.transform,
+                    () => world.SecondIncensePlaced,
+                    () => world.Ready && !world.TransitionRequested && GameSession.Current && GameSession.Current.InputAllowed);
                 for (int i = 0; i < 4; i++)
                 {
                     var holder = CorridorEntranceModels.Group(root, "Loose forest stones", Vector3.zero);

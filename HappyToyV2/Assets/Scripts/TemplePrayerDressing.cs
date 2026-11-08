@@ -68,16 +68,30 @@ namespace HappyToy.V2
 
             foreach (float side in new[] { -1f, 1f })
             {
-                var holder = Group("Prayer offering candle");
-                // The source table has an old ledger on its right rear corner.
-                holder.localPosition = new Vector3(side * .68f, .80f, 7.05f);
-                var candle = GraphicsPropLibrary.Attach("candle-waymark", holder, surfaces.Resolve);
-                GraphicsPropLibrary.Fit(candle, new Bounds(new Vector3(0, .09f, 0), new Vector3(.075f, .18f, .075f)));
-                var flame = GraphicsPropLibrary.CreateFlame(holder, owned);
-                GraphicsPropLibrary.Fit(flame, new Bounds(new Vector3(0, .22f, 0), new Vector3(.035f, .09f, .035f)));
+                // Use the corridor's same beeswax model and tapered flame in
+                // compact varied-height offerings that fit the existing table.
+                var cluster = Group("Prayer offering candle cluster");
+                cluster.localPosition = new Vector3(side * .68f, .845f, 7.05f);
+                for (int i = 0; i < 3; i++)
+                {
+                    float height = .12f + i * .065f;
+                    var holder = new GameObject("Gathered worn ritual candle").transform;
+                    holder.gameObject.layer = 8; holder.SetParent(cluster, false);
+                    holder.localPosition = new Vector3((i - 1) * .09f, 0, i == 1 ? .11f : 0);
+                    var candle = GraphicsPropLibrary.Attach("candle-waymark", holder, surfaces.Resolve);
+                    GraphicsPropLibrary.Fit(candle, new Bounds(new Vector3(0, height * .5f, 0), new Vector3(.085f, height, .085f)));
+                    var flame = GraphicsPropLibrary.CreateFlame(holder, owned);
+                    GraphicsPropLibrary.Fit(flame, new Bounds(new Vector3(0, height + .043f, 0), new Vector3(.032f, .105f, .032f)));
+                }
+                var light = new GameObject("Prayer candle firelight").AddComponent<Light>();
+                light.gameObject.layer = 8; light.transform.SetParent(cluster, false);
+                light.transform.localPosition = new Vector3(0, .25f, .04f);
+                light.type = LightType.Point; light.color = new Color(1f, .43f, .13f);
+                light.intensity = .5f; light.range = 2.6f; light.shadows = LightShadows.None;
+                light.cullingMask = 1 << 8;
+                light.gameObject.AddComponent<EntranceFirelight>().Configure(light, cluster, 29.3f + side * 4.7f);
             }
         }
-
         // A restrained cord of inked paper has been tied across the original
         // Korean prayer table, as if a foreign presence had claimed it. Reuse
         // the authored folded paper and its conforming ink from the corridor;

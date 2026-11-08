@@ -21,6 +21,16 @@ namespace HappyToy.V2.CloudTests
             Assert.That(dressing.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
             var children = dressing.Cast<Transform>().ToArray();
             Assert.That(children.Count(x => x.name == "Weathered forest guardian"), Is.EqualTo(2));
+            var guardians = children.Where(x => x.name == "Weathered forest guardian").ToArray();
+            var guardianSource = Resources.Load<GameObject>("CorridorEntrance/guardian-statue-visual");
+            Assert.That(guardianSource, Is.Not.Null);
+            var sourceMeshes = guardianSource.GetComponentsInChildren<MeshFilter>(true).Select(f => f.sharedMesh).ToArray();
+            foreach (var guardian in guardians)
+            {
+                Assert.That(Mathf.Abs(guardian.localPosition.x), Is.GreaterThan(3f));
+                Assert.That(((Bounds)RequireType("GraphicsPropLibrary").GetMethod("LocalBounds").Invoke(null, new object[] { guardian })).size.y * guardian.localScale.y, Is.EqualTo(3.5f).Within(.01f));
+                Assert.That(guardian.GetComponentsInChildren<MeshFilter>(true).Select(f => f.sharedMesh), Is.EqualTo(sourceMeshes));
+            }
             Assert.That(children.Count(x => x.name == "Loose forest stones"), Is.EqualTo(8));
             Assert.That(children.Count(x => x.name == "Faded forest talisman"), Is.EqualTo(10));
             Assert.That(dressing.Find("Weathered forest ritual cords").GetComponent<MeshFilter>().sharedMesh.vertexCount, Is.GreaterThan(0));

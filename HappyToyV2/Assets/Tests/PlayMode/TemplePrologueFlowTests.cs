@@ -850,6 +850,20 @@ namespace HappyToy.V2.CloudTests
             Assert.That(vessel.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(table.GetComponentsInChildren<MeshRenderer>(true).Count(r => r.enabled), Is.GreaterThan(0).And.LessThanOrEqualTo(7));
             Assert.That(jar.GetComponentsInChildren<MeshRenderer>(true).Any(r => r.enabled), Is.True);
+            var candleClusters = world.transform.Cast<Transform>().Where(t => t.name == "Prayer offering candle cluster").ToArray();
+            Assert.That(candleClusters.Length, Is.EqualTo(2));
+            foreach (var cluster in candleClusters)
+            {
+                Assert.That(cluster.GetComponentsInChildren<Collider>(true), Is.Empty);
+                Assert.That(cluster.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
+                var candles = cluster.Cast<Transform>().Where(t => t.name == "Gathered worn ritual candle").ToArray();
+                Assert.That(candles.Length, Is.EqualTo(3));
+                Assert.That(candles.All(c => c.Find("Authored realistic prop — candle-waymark") && c.Find("Visible tapered flame")), Is.True);
+                var heights = candles.Select(c => ((Bounds)RequireType("GraphicsPropLibrary").GetMethod("LocalBounds").Invoke(null, new object[] { c.Find("Authored realistic prop — candle-waymark") })).size.y * c.Find("Authored realistic prop — candle-waymark").localScale.y).ToArray();
+                Assert.That(heights.Distinct().Count(), Is.EqualTo(3));
+                var light = cluster.GetComponentInChildren<Light>();
+                Assert.That(light && light.shadows == UnityEngine.LightShadows.None && light.GetComponent(RequireType("EntranceFirelight")), Is.True);
+            }
             Assert.That(world.transform.Find("Prayer table top").GetComponent<BoxCollider>(), Is.Not.Null);
             Assert.That(world.transform.Find("Prayer table top").GetComponent<Renderer>().enabled, Is.False);
             PlacePlayer(new Vector3(500, .04f, 505.2f));

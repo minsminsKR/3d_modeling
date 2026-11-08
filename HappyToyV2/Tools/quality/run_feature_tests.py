@@ -52,6 +52,8 @@ PROFILES = {
         ("EditMode", ("HappyToy.V2.CoreTests.TempleStoneLayoutRulesTests",))]),
     "temple-concept-environment-logic": ("Temple path, shrine bindings and mist lifecycle; CPU only", [
         ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleShrineDressingTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestBanksTests.cs"))]),
+    "temple-offerings-logic": ("Corridor-style altar candles, guardian size and existing interaction; CPU only", [
+        ("PlayMode", (PLAY + "TemplePrayerFurnishingsPreserveInteractionAndPhysics", PLAY + "TempleForestOfferingsUseAuthoredVisualsWithoutBlockingThePath"))]),
     "temple-altar-logic": ("Altar binding, existing prayer interaction and resource cleanup; CPU only", [
         ("PlayMode", (PLAY + "TempleAltarBindingReusesPaperWithoutChangingInteractionOrLeavingResources",
                       PLAY + "TemplePrayerFurnishingsPreserveInteractionAndPhysics"))]),
@@ -640,6 +642,13 @@ PROFILES["temple-gap-horizon-review"] = (
     [("PlayMode", (PLAY + "TempleGapFillOffscreenReview", PLAY + "TempleHorizonOrganicOffscreenReview"))])
 
 
+PROFILES["temple-guardian-gaze-logic"] = (
+    "Two-day guardian head tracking, pause and checkpoint restore; CPU only",
+    [("PlayMode", (PLAY + "TempleGuardianHeadsWatchOnlyAfterSecondIncenseAndRestore",))])
+
+PROFILES["temple-guardian-gaze-review"] = (
+    "Actual guardian neutral and tracking camera frames",
+    [("PlayMode", (PLAY + "TempleGuardianHeadsWatchOnlyAfterSecondIncenseAndRestore",))])
 PROFILES["temple-forest-depth-fill-review"] = (
     "Opt-in actual source tree background-density comparison",
     [("PlayMode", (PLAY + "TempleForestDepthFillOffscreenReview",))])
@@ -674,7 +683,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
         if profile == "full":
             editor_args += ["-noaudio"]
-        if profile in ("temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-facade-color-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]
@@ -705,6 +714,8 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             editor_args += ["-noaudio", "-v2-altar-paper-review-output", str(output / "altar-paper-shape")]
         if profile == "temple-altar-cord-review":
             editor_args += ["-noaudio", "-v2-altar-cord-review-output", str(output / "altar-cord")]
+        if profile == "temple-guardian-gaze-review":
+            editor_args += ["-noaudio", "-v2-guardian-gaze-output", str(output / "guardian-gaze")]
         if profile == "temple-gap-horizon-review":
             editor_args += ["-noaudio", "-v2-gap-fill-review-output", str(output / "gap-fill"),
                             "-v2-horizon-organic-review-output", str(output / "horizon-organic")]

@@ -137,7 +137,7 @@ namespace HappyToy.V2
                     CorridorEntranceModels.GroundAtHeight(rock, new Vector3(side * (4.5f + i), 0, -16 + i * 11),
                         .8f + .25f * i, Quaternion.Euler(0, i * 71, 0));
                 }
-            gameObject.AddComponent<TempleForestDressing>().Prepare();
+            gameObject.AddComponent<TempleForestDressing>().Prepare(world, camera);
             gameObject.AddComponent<TempleForestBanks>().Prepare();
             gameObject.AddComponent<TempleForestFerns>().Prepare();
             gameObject.AddComponent<TempleForestUndergrowth>().Prepare();
