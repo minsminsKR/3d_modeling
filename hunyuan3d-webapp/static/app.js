@@ -286,11 +286,13 @@ if (jobId) {
     }
     renderElapsed();
 
-    if (job.status === "completed") {
+    if (["completed", "review_required"].includes(job.status)) {
       resultPanel.classList.remove("hidden");
-      mixamoPanel?.classList.remove("hidden");
-      document.querySelector("#rigging-panel")?.classList.remove("hidden");
-      document.dispatchEvent(new CustomEvent("generation-job-completed"));
+      const resultHeading = document.querySelector("#result-heading");
+      if (resultHeading) resultHeading.textContent = job.status === "review_required" ? "검토 필요 결과" : "생성 결과";
+      mixamoPanel?.classList.toggle("hidden", job.status !== "completed");
+      document.querySelector("#rigging-panel")?.classList.toggle("hidden", job.status !== "completed");
+      if (job.status === "completed") document.dispatchEvent(new CustomEvent("generation-job-completed"));
       failedPanel.classList.add("hidden");
       downloadLink.href = job.download_url;
       if (mixamoOpenLink && job.mixamo_url) {
@@ -310,6 +312,7 @@ if (jobId) {
       const saveButton = document.querySelector("#save-job-btn");
       if (saveButton) {
         updateSaveButton(saveButton, Boolean(job.saved));
+        saveButton.classList.toggle("hidden", job.status !== "completed");
       }
       return;
     }
@@ -325,7 +328,7 @@ if (jobId) {
     window.setTimeout(updateStatus, 3000);
   };
 
-  if (!["completed", "failed"].includes(statusPill.textContent.trim())) {
+  if (!["completed", "failed", "review_required"].includes(statusPill.textContent.trim())) {
     window.setTimeout(updateStatus, 1000);
   }
   window.setInterval(renderElapsed, 1000);

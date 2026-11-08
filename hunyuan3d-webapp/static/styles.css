@@ -574,6 +574,10 @@ select {
   background: var(--danger);
 }
 
+.pill.review_required {
+  background: var(--clay);
+}
+
 .pill.running,
 .pill.queued {
   background: var(--clay);
@@ -599,6 +603,12 @@ select {
   width: 100%;
   animation: none;
   background: var(--fern);
+}
+
+.progress-bar.review_required {
+  width: 100%;
+  animation: none;
+  background: var(--clay);
 }
 
 .progress-bar.failed {

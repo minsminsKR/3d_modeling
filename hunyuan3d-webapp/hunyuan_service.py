@@ -34,6 +34,7 @@ class GenerationOptions:
     trellis_steps: int = 12
     trellis_texture_size: int = 4096
     trellis_max_tokens: int = 49152
+    trellis_dual_postprocess: bool = False
     texture: bool = False
     remove_background: bool = True
     seed: int = 1234
@@ -50,6 +51,7 @@ class GeneratedAsset:
     metadata_path: Path
     used_texture: bool
     warnings: tuple[str, ...] = ()
+    review_required: bool = False
 
 
 def is_windows_absolute_path(value: str) -> bool:

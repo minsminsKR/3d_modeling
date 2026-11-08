@@ -66,7 +66,10 @@ def run_isolated_generation(image_paths, output_dir: Path, options, progress):
 
     output_dir.mkdir(parents=True, exist_ok=True)
     request_path = output_dir / "generation_request.json"
-    request_path.write_text(json.dumps({"image_paths": image_paths, "output_dir": str(output_dir), "options": asdict(options)}, indent=2), encoding="utf-8")
+    worker_options = asdict(options)
+    if options.trellis_dual_postprocess:
+        worker_options.update(postprocess_checkpoint=True, checkpoint_only=True, strict_resolution=True)
+    request_path.write_text(json.dumps({"image_paths": image_paths, "output_dir": str(output_dir), "options": worker_options}, indent=2), encoding="utf-8")
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
     env["OMP_NUM_THREADS"] = "8"
@@ -78,6 +81,12 @@ def run_isolated_generation(image_paths, output_dir: Path, options, progress):
         gpu_devices.append(options.texture_gpu_id)
     if trellis:
         env["CUDA_VISIBLE_DEVICES"] = ",".join(str(gpu) for gpu in gpu_devices)
+    if options.trellis_dual_postprocess:
+        stats = {row["id"]: row for row in gpu_stats()}
+        if stats.get(0, {}).get("free_mib", 0) < 36000 or stats.get(1, {}).get("free_mib", 0) < 38000:
+            raise Hunyuan3DError("두 GPU 고해상도 추론에 필요한 여유 VRAM이 부족합니다. 다른 작업이 끝난 뒤 재시도하세요.")
+        if not env.get("TRELLIS_CUMESH_PATCH_ROOT"):
+            raise Hunyuan3DError("선택형 CuMesh 확장 경로가 설정되지 않았습니다.")
     stage = contextlib.ExitStack() if trellis else contextlib.nullcontext()
     log_path = output_dir / "generation_worker.log"
     with stage, log_path.open("w", encoding="utf-8") as log:
@@ -98,7 +107,22 @@ def run_isolated_generation(image_paths, output_dir: Path, options, progress):
                 event = json.loads(line[len("A100_EVENT "):])
                 progress(event["message"])
         code = process.wait()
+        if code == 0 and options.trellis_dual_postprocess:
+            progress("원본 형상·재질 저장 완료; 두 GPU 후처리 시작")
+            coordinator = BASE_DIR / "scripts" / "run_dual_postprocess.py"
+            process = subprocess.Popen(
+                [python, str(coordinator), str(output_dir)], cwd=str(BASE_DIR), env=env,
+                stdout=subprocess.PIPE, stderr=log, text=True, bufsize=1)
+            assert process.stdout is not None
+            for line in process.stdout:
+                log.write(line)
+                log.flush()
+                if line.startswith("A100_EVENT "):
+                    event = json.loads(line[len("A100_EVENT "):])
+                    progress(event["message"])
+            code = process.wait()
     if code:
         raise Hunyuan3DError(f"생성 작업 실패. 로그: {log_path.name}\n{log_path.read_text(encoding='utf-8')[-3000:]}")
     result = json.loads((output_dir / "generation_result.json").read_text(encoding="utf-8"))
-    return GeneratedAsset(Path(result["model_path"]), Path(result["metadata_path"]), result["used_texture"], tuple(result["warnings"]))
+    return GeneratedAsset(Path(result["model_path"]), Path(result["metadata_path"]), result["used_texture"],
+                          tuple(result["warnings"]), result.get("quality_status") == "review_required")

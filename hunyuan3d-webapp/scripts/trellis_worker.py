@@ -37,16 +37,20 @@ def main():
     split = requested_split and torch.cuda.device_count() >= 2
     warnings = []
     auxiliary_budget = None
+    auxiliary_free_mib = None
+    auxiliary_reserve_mib = None
     torch.cuda.set_device(0)
     if split:
         free, total = torch.cuda.mem_get_info(1)
-        # GPU 0 also hosts RTSP. Keep at least 4GiB of current free VRAM
-        # outside this worker's caching allocator and cap its use at 70%.
+        auxiliary_free_mib = round(free / 1048576)
+        # Keep a measured reserve for other processes without imposing a fixed
+        # 70% ceiling when the auxiliary GPU is otherwise idle.
+        auxiliary_reserve_mib = 4096
         if free < 18 * 1024**3:
             split = False
             warnings.append('보조 GPU의 여유 메모리가 부족해 GPU 1에서 캐시 절약 모드로 생성했습니다.')
         else:
-            auxiliary_budget = min(0.70, (free - 4 * 1024**3) / total)
+            auxiliary_budget = min(0.95, (free - auxiliary_reserve_mib * 1048576) / total)
             torch.cuda.set_per_process_memory_fraction(auxiliary_budget, 1)
     for gpu in range(torch.cuda.device_count()):
         torch.cuda.reset_peak_memory_stats(gpu)
@@ -82,6 +86,8 @@ def main():
     requested_resolution = int(pipeline_type.split('_', 1)[0])
     if actual_resolution < requested_resolution:
         warnings.append(f'토큰 제한에 따라 실제 형상 해상도를 {actual_resolution}로 조정했습니다.')
+        if options.get('strict_resolution', options.get('postprocess_checkpoint', False)):
+            raise RuntimeError(f'Requested shape resolution {requested_resolution}, actual {actual_resolution}; refusing downgraded output')
     # The final mesh/voxel buffers are independent of the inference modules.
     # Release module references before native mesh and PBR allocations.
     timings = dict(pipeline.stage_timings)
@@ -94,6 +100,47 @@ def main():
     for gpu in range(torch.cuda.device_count()):
         with torch.cuda.device(gpu):
             torch.cuda.empty_cache()
+    if options.get('postprocess_checkpoint', False):
+        checkpoint = output / 'raw_postprocess.pt'
+        temporary = output / 'raw_postprocess.pt.partial'
+        torch.save({
+            'vertices': mesh.vertices.detach().cpu(),
+            'faces': mesh.faces.detach().cpu(),
+            'attrs': mesh.attrs.detach().cpu(),
+            'coords': mesh.coords.detach().cpu(),
+            'layout': mesh.layout,
+            'voxel_size': mesh.voxel_size,
+            'options': options,
+            'source_images': payload['image_paths'],
+            'actual_resolution': actual_resolution,
+            'effective_max_tokens': max_tokens,
+            'actual_gpu_mode': 'split' if split else 'single_memory_safe',
+            'auxiliary_memory_fraction': auxiliary_budget,
+            'auxiliary_free_mib_at_start': auxiliary_free_mib,
+            'auxiliary_reserved_mib': auxiliary_reserve_mib,
+            'material_decode_fallback': material_decode_fallback,
+            'stage_timings': timings,
+            'memory_snapshots': snapshots,
+            'warnings': warnings,
+            'torch_peak_memory_mib': [
+                {'physical_gpu': int(os.environ.get('CUDA_VISIBLE_DEVICES', '0').split(',')[gpu]),
+                 'allocated': round(torch.cuda.max_memory_allocated(gpu) / 1048576, 1),
+                 'reserved': round(torch.cuda.max_memory_reserved(gpu) / 1048576, 1)}
+                for gpu in range(torch.cuda.device_count())],
+        }, temporary)
+        os.replace(temporary, checkpoint)
+        progress(f'TRELLIS.2 후처리 재시도용 원본 저장 완료: {checkpoint.name}')
+    if options.get('checkpoint_only', False):
+        if not options.get('postprocess_checkpoint', False):
+            raise RuntimeError('checkpoint_only requires postprocess_checkpoint')
+        result = {'postprocess_checkpoint': str(checkpoint),
+                  'actual_resolution': actual_resolution,
+                  'effective_max_tokens': max_tokens,
+                  'gpu_mode': 'split' if split else 'single_memory_safe',
+                  'warnings': warnings}
+        (output / 'generation_result.json').write_text(json.dumps(result, indent=2))
+        progress('TRELLIS.2 원본 형상·재질 저장 완료; 선택형 후처리 대기')
+        return
     if mesh.faces.shape[0] > 16777216:
         mesh.simplify(16777216)
     progress('TRELLIS.2 PBR 텍스처 베이킹 및 GLB 저장 중...')
@@ -116,6 +163,9 @@ def main():
                                     'gpu_devices_used': [options['gpu_id'], options['texture_gpu_id']] if split else [options['gpu_id']],
                                     'gpu_stage_timings': timings, 'gpu_memory_snapshots': snapshots,
                                     'auxiliary_memory_fraction': auxiliary_budget,
+                                    'auxiliary_free_mib_at_start': auxiliary_free_mib,
+                                    'auxiliary_reserved_mib': auxiliary_reserve_mib,
+                                    'postprocess_checkpoint': str(checkpoint) if options.get('postprocess_checkpoint', False) else None,
                                     'material_decode_fallback': material_decode_fallback,
                                     'torch_peak_memory_mib': [{'physical_gpu': int(os.environ.get('CUDA_VISIBLE_DEVICES','0').split(',')[gpu]),
                                                              'allocated': round(torch.cuda.max_memory_allocated(gpu)/1048576,1),

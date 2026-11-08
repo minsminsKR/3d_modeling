@@ -232,8 +232,8 @@ def create_app() -> Flask:
                 message = "Model is ready, but texture generation failed. Showing untextured shape."
             set_job(
                 job_id,
-                status="completed",
-                message=message,
+                status="review_required" if asset.review_required else "completed",
+                message="두 GPU 후처리 결과의 시각 품질 검토가 필요합니다." if asset.review_required else message,
                 finished_at=time.time(),
                 model_path=str(asset.model_path),
                 metadata_path=str(asset.metadata_path),
@@ -372,6 +372,14 @@ def create_app() -> Flask:
                 texture_gpu = None
             if trellis_pipeline != "512" and gpu_mode == "manual" and shape_gpu != env_int("HUNYUAN_TEXTURE_GPU", 1):
                 abort(400, "TRELLIS.2 1024·1536 모드는 GPU 1을 사용하세요.")
+        dual_value = request.form.get("trellis_dual_postprocess", "off")
+        if dual_value not in {"on", "off"}:
+            abort(400, "두 GPU 후처리 설정이 올바르지 않습니다.")
+        dual_postprocess = dual_value == "on"
+        if dual_postprocess and (model != "trellis2" or gpu_mode != "split" or
+                                 trellis_pipeline != "1536_cascade" or trellis_texture_size != 8192 or
+                                 len(uploaded_files) != 1):
+            abort(400, "선택형 두 GPU 후처리는 TRELLIS.2 분담 모드의 단일 이미지 1536/8K만 지원합니다.")
         options = GenerationOptions(
             model=model,
             gpu_id=shape_gpu,
@@ -382,7 +390,8 @@ def create_app() -> Flask:
             trellis_pipeline=trellis_pipeline,
             trellis_steps=form_int("trellis_steps", defaults["trellis_steps"], 1, 50),
             trellis_texture_size=trellis_texture_size,
-            trellis_max_tokens=trellis_generation_defaults(gpu_mode)["trellis_max_tokens"],
+            trellis_max_tokens=131072 if dual_postprocess else trellis_generation_defaults(gpu_mode)["trellis_max_tokens"],
+            trellis_dual_postprocess=dual_postprocess,
             texture=True if model == "trellis2" else texture_requested and texture_dependencies_ready(),
             remove_background=("on" in request.form.getlist("remove_background")) if "remove_background" in request.form else defaults["remove_background"],
             seed=form_int("seed", defaults["seed"], 0, 2**32 - 1),
@@ -566,7 +575,7 @@ def create_app() -> Flask:
     @app.get("/jobs/<job_id>/download")
     def download_model(job_id: str):
         job = jobs.get(job_id)
-        if job is None or job.get("status") != "completed":
+        if job is None or job.get("status") not in {"completed", "review_required"}:
             abort(404)
         model_path = Path(job["model_path"])
         if not model_path.exists():
@@ -604,7 +613,7 @@ def create_app() -> Flask:
     @app.get("/jobs/<job_id>/model")
     def view_model(job_id: str):
         job = jobs.get(job_id)
-        if job is None or job.get("status") != "completed":
+        if job is None or job.get("status") not in {"completed", "review_required"}:
             abort(404)
         model_path = Path(job["model_path"])
         if not model_path.exists():
@@ -990,6 +999,9 @@ def create_app() -> Flask:
         result["display_name"] = display_name_for_job(job)
         if result["warnings"] and job.get("options", {}).get("texture") and not job.get("used_texture"):
             result["message"] = "Model is ready, but texture generation failed. Showing untextured shape."
+        if job.get("status") == "review_required":
+            result["download_url"] = url_for("download_model", job_id=job["id"])
+            result["model_url"] = url_for("view_model", job_id=job["id"])
         if job.get("status") == "completed":
             result["download_url"] = url_for("download_model", job_id=job["id"])
             result["model_url"] = url_for("view_model", job_id=job["id"])
@@ -1306,7 +1318,7 @@ def elapsed_seconds(job: dict) -> int:
     if not start:
         return 0
     end = job.get("finished_at")
-    if end is None and job.get("status") in {"completed", "failed"}:
+    if end is None and job.get("status") in {"completed", "failed", "review_required"}:
         end = job.get("updated_at")
     if end is None:
         end = time.time()

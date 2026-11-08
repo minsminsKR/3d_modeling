@@ -41,7 +41,7 @@ SCHEMA_VERSION = 1
 MODELS = {"hunyuan3d-2.1", "hunyuan3d-omni", "trellis2"}
 OPTION_NAMES = {
     "model", "gpu_id", "seed", "remove_background", "texture",
-    "trellis_pipeline", "trellis_steps", "trellis_texture_size",
+    "trellis_pipeline", "trellis_steps", "trellis_texture_size", "trellis_dual_postprocess",
     "num_inference_steps", "guidance_scale", "octree_resolution",
     "num_chunks", "texture_profile",
 }
@@ -207,7 +207,7 @@ def generation_options(args):
             if key == "trellis_texture_size" and integer not in {4096, 8192}:
                 raise ClientError("trellis_texture_size must be 4096 or 8192.")
             options[key] = str(integer)
-        elif key in {"remove_background", "texture"}:
+        elif key in {"remove_background", "texture", "trellis_dual_postprocess"}:
             if value not in {"on", "off"}:
                 raise ClientError(f"{key} must be on or off.")
         elif key == "model" and value not in MODELS:
