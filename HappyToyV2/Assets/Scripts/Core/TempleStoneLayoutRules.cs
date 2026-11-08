@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HappyToy.V2
 {
-    // Review-only placement math. A footprint is a conservative rectangle
+    // Deterministic placement math. A footprint is a conservative rectangle
     // enclosing one model's actual horizontal silhouette at scale 1. The caller
     // owns extraction of those bounds, model pivot alignment and terrain contact.
     // No Unity API, gameplay RNG, collision or scene state is used here.
@@ -94,9 +94,47 @@ namespace HappyToy.V2
         public static Result Generate(Rectangle path, Footprint[] footprints, Rectangle[] exclusions,
             uint seed, double border, double gap, double edgeFade, int maxStones, int maxAttempts)
         {
+            return GenerateWithOccupied(path, footprints, exclusions, null, null, seed, border, gap,
+                edgeFade, maxStones, maxAttempts);
+        }
+
+        // Fill the gaps around an already-approved layout without moving its
+        // stones. Existing and new footprints may use different scale ranges,
+        // but retain the same mesh index mapping. The same conservative box
+        // separation applies to existing/new and new/new pairs.
+        public static Result FillGaps(Rectangle path, Footprint[] primaryFootprints, Result primary,
+            Footprint[] fillFootprints, uint seed, double border, double gap, double edgeFade,
+            int maxStones, int maxAttempts)
+        {
+            if (primary == null) throw new ArgumentNullException(nameof(primary));
+            if (primaryFootprints == null || fillFootprints == null || primaryFootprints.Length != fillFootprints.Length)
+                throw new ArgumentException("Primary and fill footprints must use the same model indices");
+            Validate(path, primaryFootprints, null, border, gap, edgeFade, maxStones, maxAttempts);
+            if ((long)(primary.Count + maxStones) * maxAttempts > 20000000)
+                throw new ArgumentOutOfRangeException(nameof(maxAttempts), "Combined packing work exceeds the budget");
+            return GenerateWithOccupied(path, fillFootprints, null, primary, primaryFootprints, seed,
+                border, gap, edgeFade, maxStones, maxAttempts);
+        }
+
+        static Result GenerateWithOccupied(Rectangle path, Footprint[] footprints, Rectangle[] exclusions,
+            Result primary, Footprint[] primaryFootprints, uint seed, double border, double gap,
+            double edgeFade, int maxStones, int maxAttempts)
+        {
             Validate(path, footprints, exclusions, border, gap, edgeFade, maxStones, maxAttempts);
             var stones = new List<Stone>(maxStones);
-            var occupied = new List<Box>(maxStones);
+            var occupied = new List<Box>(maxStones + (primary == null ? 0 : primary.Count));
+            if (primary != null)
+                for (int i = 0; i < primary.Count; i++)
+                {
+                    Stone stone = primary[i];
+                    if (stone.FootprintIndex < 0 || stone.FootprintIndex >= primaryFootprints.Length ||
+                        stone.HeadingStep < 0 || stone.HeadingStep >= Cos.Length || !Finite(stone.CenterX) ||
+                        !Finite(stone.CenterZ) || !Finite(stone.Scale) || stone.Scale <= 0)
+                        throw new ArgumentException("Invalid primary stone layout", nameof(primary));
+                    Footprint shape = primaryFootprints[stone.FootprintIndex];
+                    occupied.Add(new Box(stone.CenterX, stone.CenterZ, shape.HalfWidth * stone.Scale,
+                        shape.HalfLength * stone.Scale, Cos[stone.HeadingStep], Sin[stone.HeadingStep]));
+                }
             var obstacles = new Box[exclusions == null ? 0 : exclusions.Length];
             for (int i = 0; i < obstacles.Length; i++)
             {

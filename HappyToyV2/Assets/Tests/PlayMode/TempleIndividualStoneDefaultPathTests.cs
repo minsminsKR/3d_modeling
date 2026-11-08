@@ -61,6 +61,18 @@ namespace HappyToy.V2.CloudTests
                 .Select(r => r.GetComponent<MeshFilter>().sharedMesh).ToArray();
             var materials=models.SelectMany(p => p.GetComponent<LODGroup>().GetLODs()).SelectMany(l => l.renderers)
                 .Select(r => r.sharedMaterial).ToArray();
+            var fillRoot=world.transform.Find("Small forest gap stones");
+            Assert.That(fillRoot && fillRoot.gameObject.activeSelf, Is.True);
+            Assert.That(Get<int>(component,"GapStoneCount"), Is.InRange(100,250));
+            Assert.That(fillRoot.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(fillRoot.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
+            var gapGroups=fillRoot.GetComponentsInChildren<LODGroup>(true);
+            Assert.That(gapGroups.Length, Is.GreaterThan(0).And.LessThan(Get<int>(component,"GapStoneCount")));
+            Assert.That(gapGroups.All(g => g.lodCount == 2), Is.True);
+            var gapRenderers=gapGroups.SelectMany(g=>g.GetLODs()).SelectMany(l=>l.renderers).ToArray();
+            var gapMeshes=gapRenderers.Select(r=>r.GetComponent<MeshFilter>().sharedMesh).ToArray();
+            Assert.That(gapMeshes.All(m=>m && m.vertexCount <= 65535), Is.True);
+            Assert.That(gapRenderers.All(r=>materials.Contains(r.sharedMaterial)), Is.True);
             var installed=world.transform.Find("Individual forest stone approach");
             Assert.That(installed && installed.gameObject.activeSelf, Is.True);
             Assert.That(installed.childCount, Is.EqualTo(Get<int>(originalResult,"Actual")));
@@ -85,6 +97,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<bool>(component, "IsPrepared"), Is.False);
                 Assert.That(originals.All(r => !r.forceRenderingOff), Is.True, "Original default renderer state was not restored");
                 Assert.That(!installed.gameObject.activeSelf, Is.True, "Retired candidate remains visible before deferred destruction");
+                Assert.That(!fillRoot.gameObject.activeSelf, Is.True, "Retired gap dressing remains visible");
                 Assert.That(meshes.All(m => m) && materials.All(m => m), Is.True);
                 Assert.That(reference.enabled && reference.forceRenderingOff, Is.True);
                 Assert.That(Vector3.Distance(reference.bounds.center, initialBounds.center), Is.LessThan(.0001f));
@@ -127,6 +140,8 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<bool>(again,"Installed"), Is.True, Get<string>(again,"Reason"));
                 Object.Destroy(component); yield return null; yield return null;
                 Assert.That(world.transform.Find("Individual forest stone approach"), Is.Null);
+                Assert.That(world.transform.Find("Small forest gap stones"), Is.Null);
+                Assert.That(gapMeshes.All(m => !m), Is.True, "Owned combined meshes must be destroyed on release");
                 CollectionAssert.AreEqual(prior, originals.Select(r => r.forceRenderingOff).ToArray());
                 Assert.That(meshes.All(m => m) && materials.All(m => m), Is.True);
             }

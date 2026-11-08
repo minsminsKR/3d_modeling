@@ -37,7 +37,11 @@ namespace HappyToy.V2
         }
         struct RenderLease { public Renderer renderer; public bool prior; }
         GameObject ownedRoot;
+        TempleStoneGapFill gapFill;
         RenderLease[] leases;
+        public int GapStoneCount => gapFill == null ? 0 : gapFill.Count;
+        public bool GapUnderfilled => gapFill != null && gapFill.Underfilled;
+        public string GapFailure { get; private set; }
         bool preparing;
         public bool IsPrepared => ownedRoot;
         public Result LastResult { get; private set; }
@@ -58,6 +62,7 @@ namespace HappyToy.V2
             if (!isActiveAndEnabled) throw new InvalidOperationException("Individual path component must be enabled");
             preparing = true;
             GameObject candidate = null;
+            TempleStoneGapFill candidateFill = null;
             int actual = 0, attempts = 0;
             try
             {
@@ -114,19 +119,37 @@ namespace HappyToy.V2
                 if (candidate.GetComponentsInChildren<Collider>(true).Length != 0 ||
                     candidate.GetComponentsInChildren<Rigidbody>(true).Length != 0)
                     throw new InvalidOperationException("Candidate path unexpectedly owns physics");
+                // Fill remaining spaces with smaller copies of the same authored
+                // stone models, combined into short visual-only LOD segments.
+                GapFailure = null;
+                try
+                {
+                    candidateFill = TempleStoneGapFill.Create(transform, path, footprints, layout, prefabs,
+                        bounds, soil, Mathf.Min(settings.TopAboveSoil, .017f), pathLayer);
+                    if (candidateFill.Count < 100)
+                        throw new InvalidOperationException("Too few small gap stones: " + candidateFill.Count);
+                }
+                catch (Exception error)
+                {
+                    if (candidateFill != null) { candidateFill.Dispose(); candidateFill = null; }
+                    GapFailure = error.Message;
+                    Debug.LogWarning("Small stone dressing unavailable; keeping the original individual stones: " + GapFailure, this);
+                }
                 var captured=new List<RenderLease>(oldRelief.Length + oldBed.Length);
                 foreach (var r in oldRelief) { if (!r) throw new InvalidOperationException("Missing old path renderer"); captured.Add(new RenderLease { renderer=r, prior=r.forceRenderingOff }); }
                 foreach (var r in oldBed) { if (!r) throw new InvalidOperationException("Missing old bed renderer"); captured.Add(new RenderLease { renderer=r, prior=r.forceRenderingOff }); }
                 leases=captured.ToArray();
                 foreach (var entry in leases) entry.renderer.forceRenderingOff=true;
                 ownedRoot=candidate; candidate=null;
-                ownedRoot.SetActive(true);
+                gapFill=candidateFill; candidateFill=null;
+                ownedRoot.SetActive(true); if (gapFill != null) gapFill.SetActive(true);
                 LastResult=new Result(true, settings.Requested, actual, attempts, "");
                 return LastResult;
             }
             catch (Exception error)
             {
                 if (candidate) { candidate.SetActive(false); candidate.name="Retired individual forest stones"; Destroy(candidate); }
+                if (candidateFill != null) candidateFill.Dispose();
                 Release();
                 LastResult=new Result(false, settings.Requested, actual, attempts, error.Message);
                 return LastResult;
@@ -191,6 +214,7 @@ namespace HappyToy.V2
         // Idempotent and safe during disabled/destroyed hierarchy teardown.
         public void Release()
         {
+            if (gapFill != null) { gapFill.Dispose(); gapFill=null; }
             if (ownedRoot) { ownedRoot.SetActive(false); ownedRoot.name="Retired individual forest stones"; Destroy(ownedRoot); ownedRoot=null; }
             if (leases != null)
             {

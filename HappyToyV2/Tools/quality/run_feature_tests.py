@@ -624,6 +624,26 @@ PROFILES["temple-default-stone-camera-review"] = (
     "Opt-in camera review of the actual default individual-stone path",
     [("PlayMode", (CLOUD + "TempleDefaultStoneCameraReviewTests.DefaultStonePathActualCameraReview",))])
 
+
+PROFILES["temple-horizon-organic-review"] = (
+    "Opt-in irregular terrain and sky horizon comparisons; not displayed FPS",
+    [("PlayMode", (PLAY + "TempleHorizonOrganicOffscreenReview",))])
+
+
+PROFILES["temple-gap-fill-review"] = (
+    "Opt-in actual gap-stone A/B camera and render-cost review",
+    [("PlayMode", (PLAY + "TempleGapFillOffscreenReview",))])
+
+
+PROFILES["temple-gap-horizon-review"] = (
+    "Opt-in gap fill and irregular horizon A/B cameras and render-cost review",
+    [("PlayMode", (PLAY + "TempleGapFillOffscreenReview", PLAY + "TempleHorizonOrganicOffscreenReview"))])
+
+
+PROFILES["temple-forest-depth-fill-review"] = (
+    "Opt-in actual source tree background-density comparison",
+    [("PlayMode", (PLAY + "TempleForestDepthFillOffscreenReview",))])
+
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])
     if profile != "full":
@@ -685,6 +705,15 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             editor_args += ["-noaudio", "-v2-altar-paper-review-output", str(output / "altar-paper-shape")]
         if profile == "temple-altar-cord-review":
             editor_args += ["-noaudio", "-v2-altar-cord-review-output", str(output / "altar-cord")]
+        if profile == "temple-gap-horizon-review":
+            editor_args += ["-noaudio", "-v2-gap-fill-review-output", str(output / "gap-fill"),
+                            "-v2-horizon-organic-review-output", str(output / "horizon-organic")]
+        if profile == "temple-forest-depth-fill-review":
+            editor_args += ["-noaudio", "-v2-forest-depth-fill-output", str(output / "depth-fill")]
+        if profile == "temple-gap-fill-review":
+            editor_args += ["-noaudio", "-v2-gap-fill-review-output", str(output / "gap-fill")]
+        if profile == "temple-horizon-organic-review":
+            editor_args += ["-noaudio", "-v2-horizon-organic-review-output", str(output / "horizon-organic")]
         if profile == "temple-horizon-slope-review":
             editor_args += ["-noaudio", "-v2-horizon-slope-review-output", str(output / "horizon-slope")]
         if profile == "temple-horizon-band-review":

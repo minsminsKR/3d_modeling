@@ -47,6 +47,22 @@ namespace HappyToy.V2.CloudTests
             Assert.That(edge.childCount, Is.EqualTo(32));
             Assert.That(edge.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(ground.GetComponent<Renderer>().forceRenderingOff, Is.True);
+            var depth = world.transform.Find("Natural distant forest depth");
+            Assert.That(depth && depth.childCount == 64, Is.True);
+            Assert.That(depth.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(depth.GetComponentsInChildren<Rigidbody>(true), Is.Empty);
+            var depthMesh = horizon.GetComponent<MeshFilter>().sharedMesh;
+            foreach (Transform tree in depth)
+            {
+                var position = tree.localPosition; var centre = ground.localPosition; var size = ground.localScale;
+                float x = (position.x - centre.x) / (size.x * .5f), z = (position.z - centre.z) / (size.z * .5f);
+                Assert.That(Mathf.Max(Mathf.Abs(x), Mathf.Abs(z)), Is.GreaterThan(1f));
+                Assert.That(position.y, Is.EqualTo(TempleHorizonTriangleHeight(depthMesh, position) - .07f).Within(.01f));
+                var lod = tree.GetComponent<LODGroup>().GetLODs();
+                Assert.That(lod.Length, Is.EqualTo(2));
+                Assert.That(lod[0].screenRelativeTransitionHeight, Is.EqualTo(.46f).Within(.001f));
+                Assert.That(tree.GetComponentsInChildren<Renderer>(true).All(r => r.shadowCastingMode == ShadowCastingMode.Off), Is.True);
+            }
             var renderer = horizon.GetComponent<MeshRenderer>();
             Assert.That(renderer.sharedMaterial, Is.SameAs(ground.GetComponent<Renderer>().sharedMaterial));
             var haze = horizon.Find("Far forest terrain haze");

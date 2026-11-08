@@ -111,6 +111,47 @@ namespace HappyToy.V2.CoreTests
             Assert.Throws<ArgumentOutOfRangeException>(() => R.Generate(Path, Models, null, 1, 0, 0, 0, 1000, 50000));
         }
 
+        [Test]
+        public void GapFillIsDeterministicAndKeepsAllFootprintsSeparate()
+        {
+            var area = new R.Rectangle(-1.7, -5, 1.7, 5);
+            var large = new[] { new R.Footprint(.5, .49, .52, .65), new R.Footprint(.29, .5, .50, .72) };
+            var small = new[] { new R.Footprint(.5, .49, .21, .34), new R.Footprint(.29, .5, .23, .36) };
+            var primary = R.Generate(area, large, null, 43093, .025, .012, .18, 50, 10000);
+            Assert.That(primary.Count, Is.EqualTo(50));
+            var first = R.FillGaps(area, large, primary, small, 231971, .025, .012, .12, 75, 15000);
+            var again = R.FillGaps(area, large, primary, small, 231971, .025, .012, .12, 75, 15000);
+            Assert.That(first.Count, Is.GreaterThan(30)); Assert.That(first.Count, Is.EqualTo(again.Count));
+            Assert.That(first.Attempts, Is.LessThanOrEqualTo(15000));
+            for (int i = 0; i < first.Count; i++)
+            {
+                var stone = first[i]; var shape = small[stone.FootprintIndex];
+                Assert.That(stone.Scale, Is.InRange(shape.MinScale, shape.MaxScale));
+                Assert.That(stone.CenterX, Is.EqualTo(again[i].CenterX));
+                Assert.That(stone.CenterZ, Is.EqualTo(again[i].CenterZ));
+                Assert.That(stone.HeadingStep, Is.EqualTo(again[i].HeadingStep));
+                var corners = Corners(stone, shape);
+                foreach (var point in corners)
+                {
+                    Assert.That(point.X, Is.InRange(area.MinX + .025 - 1e-9, area.MaxX - .025 + 1e-9));
+                    Assert.That(point.Z, Is.InRange(area.MinZ + .025 - 1e-9, area.MaxZ - .025 + 1e-9));
+                }
+                for (int j = 0; j < primary.Count; j++)
+                    Assert.That(Distance(corners, Corners(primary[j], large[primary[j].FootprintIndex])), Is.GreaterThanOrEqualTo(.012 - 1e-9));
+                for (int j = 0; j < i; j++)
+                    Assert.That(Distance(corners, Corners(first[j], small[first[j].FootprintIndex])), Is.GreaterThanOrEqualTo(.012 - 1e-9));
+            }
+        }
+
+        [Test]
+        public void GapFillRejectsMismatchedModelsAndCombinedUnboundedWork()
+        {
+            var primary = R.Generate(Path, Models, null, 1, 0, 0, 0, 5, 100);
+            Assert.Throws<ArgumentNullException>(() => R.FillGaps(Path, Models, null, Models, 1, 0, 0, 0, 1, 1));
+            Assert.Throws<ArgumentException>(() => R.FillGaps(Path, Models, primary, new[] { Models[0] }, 1, 0, 0, 0, 1, 1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => R.FillGaps(Path, Models, primary, Models, 1, 0, 0, 0, 400, 50000));
+        }
+
         readonly struct P
         {
             public readonly double X, Z;

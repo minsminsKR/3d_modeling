@@ -68,6 +68,7 @@ namespace HappyToy.V2
             var wood = Material("Prayer table", new Color(.16f, .095f, .055f));
             var forestGround = Box("Forest ground", new Vector3(0, -.16f, -2), new Vector3(48, .3f, 64), earth, true).GetComponent<Renderer>();
             gameObject.AddComponent<TempleForestHorizon>().Prepare(forestGround);
+            gameObject.AddComponent<TempleForestDepthFill>().Prepare(forestGround);
             stoneApproach = Box("Stone approach", new Vector3(0, .005f, -5), new Vector3(3.4f, .025f, 31), path, false).GetComponent<Renderer>();
             gameObject.AddComponent<TempleForestPath>().Prepare(stoneApproach);
             // Keep the original physical/footstep reference and fall back to its
