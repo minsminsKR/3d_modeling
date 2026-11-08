@@ -1,0 +1,100 @@
+{
+  "reference_generator": "OpenAI built-in image generation tool",
+  "reference_prompt": "reference-prompt.txt",
+  "reference_sha256": "02970ad3e04ca55baf9df9a63d7d59941aa784927d556e32035d6b76f2ee1614",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "request_id": "29f727da-ea17-4ceb-8d7a-785f844d4e7f",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu": "1",
+    "seed": 1234,
+    "remove_background": "on",
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096
+  },
+  "status": "web-viewed; Blender review candidates built and numerically checked; Unity integration and game-context review pending",
+  "job_id": "77552248-8e14-46e4-8848-4a70a60b1efe",
+  "archive_sha256": "b98ac165b58798f298a4a3ef8e6db0306f7d8a43eb6212c80be1a757238cefb7",
+  "preserved_files": {
+    "original.glb": {
+      "archive_entry": "model.glb",
+      "size_bytes": 66027832,
+      "sha256": "12bef62ea9f22adeca4047b146c494a729d47746f33c0ed83b0a37678eb3dd73"
+    },
+    "service/metadata.json": {
+      "archive_entry": "metadata.json",
+      "size_bytes": 2450,
+      "sha256": "2f495f9f7d7ada4f7ea94c615a1c4b6298376dd3f1bcbd0e008291e112f1a4af"
+    },
+    "service/outputs/generation_request.json": {
+      "archive_entry": "outputs/generation_request.json",
+      "size_bytes": 856,
+      "sha256": "09bc5084fd37cd7eb904fe710c0cc03850876bb7518fe86ae32706a2e1d27dee"
+    },
+    "service/outputs/generation_result.json": {
+      "archive_entry": "outputs/generation_result.json",
+      "size_bytes": 333,
+      "sha256": "892b542bb0e686ef9eed150f284f70e52e35a3be1269a60a90806431b4586205"
+    },
+    "service/processed_inputs/01.png": {
+      "archive_entry": "processed_inputs/01.png",
+      "size_bytes": 692724,
+      "sha256": "2283efb0189a73fed3f088b5eb358f98da32d0d8fe8d030507e343bfbaaefb00"
+    },
+    "service/generation-record.json": {
+      "archive_entry": "generation-record.json",
+      "size_bytes": 3524,
+      "sha256": "c655b452ac046eb870498099a90d25af7fb1dd92cb00bfb0c4f8f3d70ab6f0c6"
+    }
+  },
+  "web_review": {
+    "date": "2026-11-08",
+    "job_id": "77552248-8e14-46e4-8848-4a70a60b1efe",
+    "method": "existing in-app web viewer; interactive front, side, top and underside views",
+    "observation": "Single elongated flat stone with irregular outline and textured sides, distinct in aspect ratio from the first stone. Game lighting, texture seams, repeated layout and performance are not certified.",
+    "visual_approval": "pending Blender finishing and game-context review"
+  },
+  "cpu_inspection": {
+    "date": "2026-11-08",
+    "source_sha256_verified": true,
+    "glb_meshes": 1,
+    "vertices": 664609,
+    "triangles": 989862,
+    "dimensions_gltf_y_up": [
+      0.58534,
+      0.1217,
+      1.00179
+    ],
+    "embedded_pbr_textures": [
+      "4096 baseColor",
+      "4096 metallicRoughness"
+    ],
+    "normal_texture": "absent",
+    "note": "Numerical source inspection only. Blender/Unity axes and game suitability remain unverified."
+  },
+  "blender_review": {
+    "tool": "Blender 4.0.2 background CPU",
+    "editable_blend": "temple-stepping-stone-long-20261108.blend",
+    "editable_sha256": "9bcea897a80e4a6092ba10c605f931962069b2b990b066061237c4d4f24e1a2e",
+    "candidate_report": "export.json",
+    "verification_report": "candidate-verification.json",
+    "lod_triangles": [
+      5999,
+      1999,
+      599
+    ],
+    "source_to_lod_p95_m": [
+      0.0003392225553398019,
+      0.0009990905120503151,
+      0.002604217350017279
+    ],
+    "lod_to_source_p95_m": [
+      0.00031742799474159233,
+      0.0009362338110804558,
+      0.003217695746570825
+    ],
+    "fbx_reimport": "geometry, UV and bounds checked; three material image paths unresolved in Blender; Unity must explicitly bind the exported PNG maps",
+    "game_quality": "pending Unity game-camera, contact, LOD and performance checks"
+  }
+}

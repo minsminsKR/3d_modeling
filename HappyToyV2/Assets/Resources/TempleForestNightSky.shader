@@ -4,6 +4,10 @@ Shader "HappyToy/TempleForestNightSky"
     {
         _MoonDirection("Direction to moon", Vector) = (-0.10, 0.43, 0.90, 0)
         _SkyTime("Cloud simulation time", Float) = 0
+        _CloudBrightness("Cloud brightness", Float) = 1
+        _MoonHaloStrength("Moon halo strength", Float) = 1
+        _CloudScale("Cloud spatial frequency", Float) = 1
+        _CloudDetail("Cloud high-frequency detail", Float) = 0
     }
     SubShader
     {
@@ -20,6 +24,10 @@ Shader "HappyToy/TempleForestNightSky"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MoonDirection;
                 float _SkyTime;
+                float _CloudBrightness;
+                float _MoonHaloStrength;
+                float _CloudScale;
+                float _CloudDetail;
             CBUFFER_END
 
             struct Attributes { float4 positionOS : POSITION; };
@@ -61,14 +69,18 @@ Shader "HappyToy/TempleForestNightSky"
                 // A procedural sky is sampled by world direction; it is not a
                 // camera-facing image or a plane inside the playable forest.
                 float2 drift = float2(_SkyTime * .0007, -_SkyTime * .00045);
-                float2 coordinate = ray.xz / max(ray.y + .38, .20) * 2.6 + drift;
-                float cloud = .57 * Noise(coordinate) + .28 * Noise(coordinate * 2.1 + 7.1)
-                    + .15 * Noise(coordinate * 4.2 - 3.4);
+                float2 coordinate = ray.xz / max(ray.y + .38, .20) * 2.6 * _CloudScale + drift;
+                float cloudDetail = saturate(_CloudDetail);
+                // Redistribute the existing three octaves only; the default
+                // exactly retains their original weights and frequencies.
+                float cloud = (.57 - .17 * cloudDetail) * Noise(coordinate)
+                    + (.28 + .05 * cloudDetail) * Noise(coordinate * 2.1 + 7.1)
+                    + (.15 + .12 * cloudDetail) * Noise(coordinate * (4.2 + 2.1 * cloudDetail) - 3.4);
                 float cover = smoothstep(.46, .72, cloud) * smoothstep(-.06, .12, ray.y);
                 float moonDot = saturate(dot(ray, normalize(_MoonDirection.xyz)));
                 float halo = pow(moonDot, 150);
-                sky += cover * (float3(.003, .0055, .0085) + halo * float3(.008, .011, .016));
-                sky += halo * float3(.009, .013, .021);
+                sky += cover * (float3(.003, .0055, .0085) + halo * float3(.008, .011, .016) * _MoonHaloStrength) * _CloudBrightness;
+                sky += halo * float3(.009, .013, .021) * _MoonHaloStrength;
                 // A small world-direction lunar disc. The local coordinates
                 // describe the visible sphere, not a plane in front of the
                 // player. Layered wisps veil the outline unevenly rather than

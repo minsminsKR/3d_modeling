@@ -1,0 +1,103 @@
+{
+  "key": "temple-stepping-stone-long-20261108",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "12bef62ea9f22adeca4047b146c494a729d47746f33c0ed83b0a37678eb3dd73",
+  "editable": "temple-stepping-stone-long-20261108/temple-stepping-stone-long-20261108.blend",
+  "widthMetres": 0.5850602686405182,
+  "heightMetres": 0.1216589346913679,
+  "depthMetres": 0.9998584091663361,
+  "normalizedAxis": "depth",
+  "normalizedMetres": 1.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 1,
+    "metres": 1.0,
+    "texture": 2048,
+    "budgets": [
+      6000,
+      2000,
+      600
+    ]
+  },
+  "front": "No intrinsic front; long axis Blender Y, vertical Blender Z; verify in Unity",
+  "textureMaxSize": 2048,
+  "originalFaces": 989861,
+  "originalTriangles": 989861,
+  "lods": [
+    {
+      "file": "temple-stepping-stone-long-20261108-lod0.fbx",
+      "targetTriangles": 6000,
+      "triangles": 5999,
+      "vertices": 2999,
+      "boundsMin": [
+        -0.2925686538219452,
+        -0.49987009167671204,
+        -3.4107306419173256e-05
+      ],
+      "boundsMax": [
+        0.292491614818573,
+        0.499988317489624,
+        0.12162482738494873
+      ],
+      "sha256": "a4c42605cb063e136b78fc684325b655af4a5fb7e680e659cc41e9c1a11f2b57"
+    },
+    {
+      "file": "temple-stepping-stone-long-20261108-lod1.fbx",
+      "targetTriangles": 2000,
+      "triangles": 1999,
+      "vertices": 999,
+      "boundsMin": [
+        -0.29226231575012207,
+        -0.5002694129943848,
+        -0.0007549276342615485
+      ],
+      "boundsMax": [
+        0.2935395836830139,
+        0.5001382231712341,
+        0.12196698784828186
+      ],
+      "sha256": "dd09c6e44dedc92275733c62fc2f538544b6b19ccadf2d166ecf28bc860b76bd"
+    },
+    {
+      "file": "temple-stepping-stone-long-20261108-lod2.fbx",
+      "targetTriangles": 600,
+      "triangles": 599,
+      "vertices": 299,
+      "boundsMin": [
+        -0.2893422245979309,
+        -0.49986380338668823,
+        0.0005219578160904348
+      ],
+      "boundsMax": [
+        0.29263219237327576,
+        0.5000993013381958,
+        0.12114032357931137
+      ],
+      "sha256": "a0e6eda84642bb29879767263a7aa81157b97b38e1a0ebe816b17e472643ca95"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_temple-stepping-stone-long-20261108_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_temple-stepping-stone-long-20261108_0-baseColor.png",
+      "metallicSmoothness": "CE_temple-stepping-stone-long-20261108_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size",
+  "editableSha256": "9bcea897a80e4a6092ba10c605f931962069b2b990b066061237c4d4f24e1a2e",
+  "recipe": "finish_stepping_stone_candidate.py",
+  "sharedRecipe": "../../CorridorEntrance/finish_entrance_assets.py",
+  "candidatePurpose": "review only; actual quality and performance are not certified",
+  "limitations": "Shared recipe welds coincident vertices at 2e-5 m and recalculates normals. No normal map is invented. FBX reimport, UVs, sampled surface deviations, surface contact, appearance under game lighting, LOD transitions and GPU performance require separate review."
+}

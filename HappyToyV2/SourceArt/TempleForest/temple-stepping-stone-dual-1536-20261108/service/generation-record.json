@@ -1,0 +1,94 @@
+{
+  "archive_url": "/api/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/archive",
+  "artifacts": [],
+  "batch_index": 1,
+  "batch_total": 1,
+  "created_at": 1794075647.7173278,
+  "created_at_label": "2026-11-08 03:20",
+  "display_name": "reference",
+  "download_url": "/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/download",
+  "elapsed_seconds": 12132,
+  "finished_at": 1794087780.0386972,
+  "id": "6a8610a8-6c3b-43ed-9a9e-4f893533062e",
+  "inputs": [
+    {
+      "archive_name": "inputs/01_reference.png",
+      "name": "reference.png",
+      "sha256": "539915f0e120f00896b557d57cfeb777f6ec66db63b06fdca05febbb4ce186fc",
+      "size": 2641100
+    }
+  ],
+  "message": "두 GPU 후처리 결과의 시각 품질 검토가 필요합니다.",
+  "model_url": "/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/model",
+  "options": {
+    "gpu_id": 1,
+    "gpu_mode": "split",
+    "guidance_scale": 7.5,
+    "model": "trellis2",
+    "num_chunks": 50000,
+    "num_inference_steps": 50,
+    "octree_resolution": 512,
+    "omni_use_ema": false,
+    "output_format": "glb",
+    "remove_background": true,
+    "seed": 1234,
+    "texture": true,
+    "texture_gpu_id": 0,
+    "texture_profile": "detail",
+    "trellis_dual_postprocess": true,
+    "trellis_max_tokens": 131072,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192
+  },
+  "processed_input_url": "/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/processed/1",
+  "record_url": "/api/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/record",
+  "request_id": "eb1a783d-c096-4187-a04f-25f6ab196f70",
+  "rigging": {
+    "ready": true,
+    "start_url": "/api/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/rigging",
+    "status": "idle",
+    "status_url": "/api/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e/rigging"
+  },
+  "saved": true,
+  "saved_at": 1794075647.7173278,
+  "saved_at_label": "2026-11-08 03:20",
+  "schema_version": 1,
+  "source": "cli",
+  "source_filename": "reference.png",
+  "started_at": 1794075647.7288692,
+  "status": "review_required",
+  "status_url": "/api/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e",
+  "submitted_options": {
+    "gpu_id": [
+      "split"
+    ],
+    "model": [
+      "trellis2"
+    ],
+    "remove_background": [
+      "on"
+    ],
+    "seed": [
+      "1234"
+    ],
+    "trellis_dual_postprocess": [
+      "on"
+    ],
+    "trellis_pipeline": [
+      "1536_cascade"
+    ],
+    "trellis_steps": [
+      "12"
+    ],
+    "trellis_texture_size": [
+      "8192"
+    ]
+  },
+  "updated_at": 1794087780.0387056,
+  "used_texture": true,
+  "warnings": [
+    "두 GPU 후처리는 실험 경로입니다. 형상·처마·이음새의 시각 품질을 확인하기 전까지 검토 필요 상태입니다."
+  ],
+  "web_url": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/6a8610a8-6c3b-43ed-9a9e-4f893533062e"
+}

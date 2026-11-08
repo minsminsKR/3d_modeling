@@ -1,0 +1,9 @@
+# Elongated temple stepping stone
+
+The input is an original built-in image-generation reference; the exact prompt and actual upload are preserved alongside request, server, options and job ID in provenance.json. The 4K A100 job completed and its original GLB, service records and hashes are preserved. The ZIP CRC and actual input match were checked. The web job was rotated through front, side, upper and underside views; its elongated silhouette differs from the first stone. Blender finishing, Unity integration and game-context quality review remain pending.
+
+TRELLIS.2 backend tool notice: [TRELLIS.2-LICENSE.txt](../../CorridorEntrance/TRELLIS.2-LICENSE.txt). Tool licenses do not by themselves determine rights in generated output.
+
+## Review candidate scripts
+
+`finish_stepping_stone_candidate.py` is a prepared Blender 4.0.2 background recipe for 6k/2k/600-triangle review LODs, an editable packed `.blend` and 2K derived maps. It uses the Blender Y long axis for 1m normalization and preserves the original. `verify_stepping_stone_candidate.py` checks source hashes, FBX round-trip, geometry, UVs, normals and sampled surface distances. Both scripts ran in isolated Blender 4.0.2 background CPU mode on 2026-11-08. The 5,999 / 1,999 / 599 triangle candidates, packed editable blend, 2K maps and reports are present. FBX reimport preserved triangle counts, bounds and finite UVs; its automatic material image paths did not resolve, so the Unity importer must explicitly bind the PNG maps. Sampled source-to-LOD p95 surface distances at the 1 m source scale were approximately 0.34 / 1.00 / 2.60 mm; sampled results do not prove visual quality. Unity import, game-camera appearance, contact, LOD transitions and performance remain unverified. Run only in a disposable background session after considering the user’s active desktop workload.

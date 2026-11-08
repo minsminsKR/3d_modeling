@@ -150,6 +150,8 @@ namespace HappyToy.V2
             }
             if (Array.IndexOf(args, "-v2-temple-stone-candidate") >= 0)
             {
+                var defaultStones = session.Prologue.GetComponent<TempleIndividualStonePath>();
+                if (defaultStones) defaultStones.Release();
                 session.Prologue.gameObject.AddComponent<TempleStonePathCandidate>().Prepare();
                 result.candidateStone = true;
             }

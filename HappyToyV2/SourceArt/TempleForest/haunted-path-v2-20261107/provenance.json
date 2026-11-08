@@ -1,0 +1,105 @@
+{
+  "reference_generator": "OpenAI built-in image generation tool",
+  "reference_role": "Derived from ../../TemplePrologue/haunted-temple-concept-20261107/target-concept.png",
+  "reference_sha256": "671b78f385c6c9273383754cb8694493a32b44ab8fa65c7653dc9e151da8f23f",
+  "reference_prompt": "reference-prompt.txt",
+  "model_service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "model": "trellis2",
+  "request_id": "bb18bc3f-9986-43bf-a70d-865cb59a6d52",
+  "job_id": "6319757c-9f3a-4d9d-a01f-7b3a5dfd5ce5",
+  "submitted_options": {
+    "gpu": "1",
+    "seed": 1234,
+    "remove_background": true,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096
+  },
+  "status": "Original generated and web-viewed; Blender candidates made and rejected in Unity seam review; gameplay integration and performance verification pending",
+  "generation_archive": {
+    "filename": "6319757c-9f3a-4d9d-a01f-7b3a5dfd5ce5.zip",
+    "sha256": "c955511cb232bf3614f327213462b857d651e7439d77f4a6f237c0f0cf3c853c",
+    "size_bytes": 48393313,
+    "stored_under_builds": true,
+    "required_for_authoring": false
+  },
+  "actual_input": {
+    "archive_entry": "inputs/01_reference.png",
+    "stored_as": "reference.png",
+    "sha256": "671b78f385c6c9273383754cb8694493a32b44ab8fa65c7653dc9e151da8f23f",
+    "note": "Byte-identical to the preserved reference; no duplicate copy."
+  },
+  "preserved_files": {
+    "original.glb": {
+      "archive_entry": "model.glb",
+      "size_bytes": 56545144,
+      "sha256": "94662caba88b6e675db660dc09ca514dd7ccd6c5e65c328a4a88a9b9bde45562"
+    },
+    "service/metadata.json": {
+      "archive_entry": "metadata.json",
+      "size_bytes": 2305,
+      "sha256": "4214d344641203b0a3f8922ede210af74a06342b7d1e23bc514a498f5528afb5"
+    },
+    "service/outputs/generation_request.json": {
+      "archive_entry": "outputs/generation_request.json",
+      "size_bytes": 817,
+      "sha256": "a16968b9d41068d6e61a17cce5843380c508c68d1dc4329549acb0b697e78a0f"
+    },
+    "service/outputs/generation_result.json": {
+      "archive_entry": "outputs/generation_result.json",
+      "size_bytes": 333,
+      "sha256": "199aadc723a48667ad484129457fcb2a8172858f78328ec0d0a2cf15f634d91a"
+    },
+    "service/processed_inputs/01.png": {
+      "archive_entry": "processed_inputs/01.png",
+      "size_bytes": 802350,
+      "sha256": "e5153ca3f1e37820915d687c9dada933cdb60a076276c793c075fdd56f2abc72"
+    },
+    "service/generation-record.json": {
+      "archive_entry": "generation-record.json",
+      "size_bytes": 3482,
+      "sha256": "5d3e99a566f747d980e159866cbb875845d9a1884e2f9fd4ed79790ad2e64883"
+    }
+  },
+  "original_model": {
+    "path": "original.glb",
+    "format": "glTF 2.0 binary",
+    "triangles": 929894,
+    "materials": 1,
+    "used_texture": true,
+    "images_embedded": [
+      {
+        "role": "baseColor",
+        "size": [
+          4096,
+          4096
+        ],
+        "sha256": "79909646439f617c89ed325fb12e38d3659868c9a2ef50fa5c4e731eeb4e7011"
+      },
+      {
+        "role": "metallicRoughness",
+        "size": [
+          4096,
+          4096
+        ],
+        "sha256": "874b7c527bcc36007ac8f87f1dea312b9b8126e855f005c7ccd9a4fa88f7f418"
+      }
+    ],
+    "normal_texture": "not present"
+  },
+  "verification": {
+    "archive_crc": "pass",
+    "glb_header_and_length": "pass",
+    "interactive_web_visual_review": "passed: existing web viewer, rotated oblique and raised views; square source perimeter noted",
+    "blender_finishing": "review candidates prepared; not approved",
+    "unity_integration": "offscreen review only; repeated straight seams rejected",
+    "player_visual_and_performance_review": "pending"
+  },
+  "web_review": {
+    "job_id": "6319757c-9f3a-4d9d-a01f-7b3a5dfd5ce5",
+    "method": "existing in-app browser; interactive 3D viewer; rotated views",
+    "observation": "Inspected the completed same-job model interactively in the existing in-app web viewer and rotated it from oblique to raised view. Individual stone and soil surfaces are visible; the piece has a straight rectangular perimeter that may repeat conspicuously. Unity tiling, motion, optimized LODs and performance were not certified.",
+    "date": "2026-11-07",
+    "visual_approval": "pending game context and optimization"
+  }
+}

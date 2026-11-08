@@ -1,0 +1,235 @@
+{
+  "key": "haunted-path-v2-20261107",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "94662caba88b6e675db660dc09ca514dd7ccd6c5e65c328a4a88a9b9bde45562",
+  "editable": "haunted-path-v2-20261107/haunted-path-v2-20261107.blend",
+  "widthMetres": 2.0006768703460693,
+  "heightMetres": 0.11368387777474709,
+  "depthMetres": 2.0004169940948486,
+  "normalizedAxis": "width",
+  "normalizedMetres": 2.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 2.0,
+    "texture": 2048,
+    "budgets": [
+      60000,
+      30000,
+      18000
+    ],
+    "square": true,
+    "max_height": 0.12
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 929892,
+  "originalTriangles": 929892,
+  "lods": [
+    {
+      "file": "haunted-path-v2-20261107-lod0.fbx",
+      "targetTriangles": 60000,
+      "triangles": 59999,
+      "vertices": 28663,
+      "boundsMin": [
+        -0.9998987913131714,
+        -1.0007151365280151,
+        -0.0003118797030765563
+      ],
+      "boundsMax": [
+        1.000778079032898,
+        0.9997018575668335,
+        0.11337199807167053
+      ],
+      "sha256": "a1a615055771f2eb7c18a98a2bf6ec1210a78c2fdf3a203692a2da26f83866b9"
+    },
+    {
+      "file": "haunted-path-v2-20261107-lod1.fbx",
+      "targetTriangles": 30000,
+      "triangles": 29999,
+      "vertices": 13663,
+      "boundsMin": [
+        -0.9998255372047424,
+        -1.0016188621520996,
+        5.173607496544719e-05
+      ],
+      "boundsMax": [
+        0.997899055480957,
+        0.9995220303535461,
+        0.11242406070232391
+      ],
+      "sha256": "1f17f2919aec2d32f0e3a8ba5c869e868526ff387cc089bcc7a01c0ba48aa273"
+    },
+    {
+      "file": "haunted-path-v2-20261107-lod2.fbx",
+      "targetTriangles": 18000,
+      "triangles": 17999,
+      "vertices": 7663,
+      "boundsMin": [
+        -0.9972041845321655,
+        -0.9964177012443542,
+        0.0012067962670698762
+      ],
+      "boundsMax": [
+        0.9968789219856262,
+        0.9995220303535461,
+        0.11117909103631973
+      ],
+      "sha256": "ea0e784393f8532b9a9fe92e561805a92c797cf96290e0781d697df00345dff1"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_haunted-path-v2-20261107_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_haunted-path-v2-20261107_0-baseColor.png",
+      "metallicSmoothness": "CE_haunted-path-v2-20261107_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size",
+  "edgeReviewVariants": [
+    {
+      "variant": "a",
+      "level": 0,
+      "file": "haunted-path-v2-20261107-edge-a-lod0.fbx",
+      "triangles": 59999,
+      "vertices": 28663,
+      "boundsMin": [
+        -0.9922683835029602,
+        -0.9916679263114929,
+        -0.008174645714461803
+      ],
+      "boundsMax": [
+        0.9953919053077698,
+        0.9946157336235046,
+        0.11141651123762131
+      ],
+      "sha256": "73ba90265ece4c8e840d80010bad8cd3a9a5613eaf4757627c64b89ccd825e45",
+      "phaseRadians": 0.37
+    },
+    {
+      "variant": "a",
+      "level": 1,
+      "file": "haunted-path-v2-20261107-edge-a-lod1.fbx",
+      "triangles": 29999,
+      "vertices": 13663,
+      "boundsMin": [
+        -0.9927940964698792,
+        -0.9916679263114929,
+        -0.007723952643573284
+      ],
+      "boundsMax": [
+        0.9925414323806763,
+        0.9920375943183899,
+        0.11046026647090912
+      ],
+      "sha256": "34e3ca6a5fa77bfee4c08d174144afb5f79a08538cae01daba1b5748a7146151",
+      "phaseRadians": 0.37
+    },
+    {
+      "variant": "a",
+      "level": 2,
+      "file": "haunted-path-v2-20261107-edge-a-lod2.fbx",
+      "triangles": 17999,
+      "vertices": 7663,
+      "boundsMin": [
+        -0.9915928840637207,
+        -0.9910763502120972,
+        -0.007360146380960941
+      ],
+      "boundsMax": [
+        0.9915197491645813,
+        0.9920375943183899,
+        0.10968534648418427
+      ],
+      "sha256": "70dea22ad8552f35507bd833e7d0b82f7e4d00b5e96732f8e55e1ffa45bfbcfc",
+      "phaseRadians": 0.37
+    },
+    {
+      "variant": "b",
+      "level": 0,
+      "file": "haunted-path-v2-20261107-edge-b-lod0.fbx",
+      "triangles": 59999,
+      "vertices": 28663,
+      "boundsMin": [
+        -0.9917612075805664,
+        -0.9931422472000122,
+        -0.007648957893252373
+      ],
+      "boundsMax": [
+        0.9928812384605408,
+        0.9891481399536133,
+        0.11141651123762131
+      ],
+      "sha256": "5b120f11d8323ce6f352b23d41a360ef7a5ebda3973c8e8679d40e934f320d00",
+      "phaseRadians": 2.11
+    },
+    {
+      "variant": "b",
+      "level": 1,
+      "file": "haunted-path-v2-20261107-edge-b-lod1.fbx",
+      "triangles": 29999,
+      "vertices": 13663,
+      "boundsMin": [
+        -0.9910407066345215,
+        -0.9915117621421814,
+        -0.00712665356695652
+      ],
+      "boundsMax": [
+        0.9928812384605408,
+        0.9889006614685059,
+        0.11046026647090912
+      ],
+      "sha256": "de889706fa0b30965543df336ee75c16936f2b363611abc2e92f2594fcffca37",
+      "phaseRadians": 2.11
+    },
+    {
+      "variant": "b",
+      "level": 2,
+      "file": "haunted-path-v2-20261107-edge-b-lod2.fbx",
+      "triangles": 17999,
+      "vertices": 7663,
+      "boundsMin": [
+        -0.9917243719100952,
+        -0.9915117621421814,
+        -0.006431313697248697
+      ],
+      "boundsMax": [
+        0.9913040399551392,
+        0.9889006614685059,
+        0.10968534648418427
+      ],
+      "sha256": "023e160c36a52d079309d133ef6edd401b541f1be23987bc919c95f61c675e52",
+      "phaseRadians": 2.11
+    }
+  ],
+  "edgeReviewRecipe": {
+    "innerUnchangedMaxAbsXY": 0.72,
+    "outerFullWeightAbsXY": 0.98,
+    "insetFractionRange": [
+      0.002,
+      0.01875
+    ],
+    "downwardMetresRange": [
+      0.003,
+      0.012
+    ],
+    "phasesRadians": {
+      "a": 0.37,
+      "b": 2.11
+    },
+    "limitations": "Visual-only review candidates; surface distortion, tiling seams, self-intersection, LOD transitions and performance require explicit inspection.",
+    "strength": 0.25
+  },
+  "editableSha256": "658f179ad216bfc87a719500d357acab321bc7873776b31fe74942bff01c631c"
+}

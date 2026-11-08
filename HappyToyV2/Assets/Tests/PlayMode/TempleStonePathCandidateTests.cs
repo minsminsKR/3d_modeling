@@ -15,6 +15,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
             Call(session, "CreatePrologue"); Begin(); yield return null;
             var world = Get<Component>(session, "Prologue");
+            IsolateLegacyStoneReview(world.transform);
             var old = world.transform.Find("Authored forest stone approach");
             var bed = world.transform.Find("Recessed forest stone bed");
             var approach = world.transform.Find("Stone approach").GetComponent<Renderer>();

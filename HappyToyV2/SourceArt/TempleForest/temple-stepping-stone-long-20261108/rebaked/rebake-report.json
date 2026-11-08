@@ -1,0 +1,127 @@
+{
+  "key": "temple-stepping-stone-long-20261108",
+  "originalSha256": "12bef62ea9f22adeca4047b146c494a729d47746f33c0ed83b0a37678eb3dd73",
+  "editableBlend": "temple-stepping-stone-long-20261108-rebaked.blend",
+  "editableSha256": "4802433dd8ba71488070c6053aeec93db948d24721ee4dfd303b23a00d005c98",
+  "sourceBlendSha256": "9bcea897a80e4a6092ba10c605f931962069b2b990b066061237c4d4f24e1a2e",
+  "quality": "Blender verified; Unity gameplay verification pending",
+  "bake": "Cycles CPU, selected-to-active emission, 1 sample, 16px margin, .015m extrusion, .05m distance; Smart UV 66deg/.012 margin",
+  "packing": "metallic in R, smoothness in A, G/B zero",
+  "coverageMethod": "white emission source to target; UV island raster eroded two pixels; threshold 128/255",
+  "lods": [
+    {
+      "lod": 0,
+      "triangles": 5999,
+      "fbx": {
+        "file": "temple-stepping-stone-long-20261108-rebaked-lod0.fbx",
+        "sha256": "2557915e5cb9f98bc0559ed9acce35cbd17a68af14e698249c27f39a88e184ab"
+      },
+      "textures": {
+        "baseColor": {
+          "file": "CE_temple-stepping-stone-long-20261108_lod0-baseColor.png",
+          "sha256": "ce62182ba9fe537f00a43062fc682d34e723113a2773738e1f015df9a1075c5b",
+          "width": 2048,
+          "height": 2048
+        },
+        "metallicSmoothness": {
+          "file": "CE_temple-stepping-stone-long-20261108_lod0-metallicSmoothness.png",
+          "sha256": "47d8ffa8c403c40500e5c3afa2dc625aef8ce45493c0127e6dee70d461883f77",
+          "width": 2048,
+          "height": 2048
+        }
+      },
+      "coverage": {
+        "lod": 0,
+        "interiorPixels": 2089909,
+        "missedPixels": 0,
+        "missedPercent": 0.0,
+        "minimum": 255.0,
+        "mean": 255.0
+      },
+      "fbxReimport": {
+        "lod": 0,
+        "triangles": 5999,
+        "uvLoops": 17997,
+        "uvMin": 0.005061255767941475,
+        "uvMax": 0.9949386119842529,
+        "minimumNormalLength": 0.9999998807907104
+      }
+    },
+    {
+      "lod": 1,
+      "triangles": 1999,
+      "fbx": {
+        "file": "temple-stepping-stone-long-20261108-rebaked-lod1.fbx",
+        "sha256": "d1ee481d96fb52022379dd59c0fe524d48eaeeb561ec372ecd84991c74648628"
+      },
+      "textures": {
+        "baseColor": {
+          "file": "CE_temple-stepping-stone-long-20261108_lod1-baseColor.png",
+          "sha256": "54223a05c89ac4f7dbdd4d5c63c782578beb938e9959b0a2082698ef7e16cd34",
+          "width": 2048,
+          "height": 2048
+        },
+        "metallicSmoothness": {
+          "file": "CE_temple-stepping-stone-long-20261108_lod1-metallicSmoothness.png",
+          "sha256": "ce22b8b55151bef552a17cd706a35a73729768658b7d534577f40d5da505c19d",
+          "width": 2048,
+          "height": 2048
+        }
+      },
+      "coverage": {
+        "lod": 1,
+        "interiorPixels": 2159647,
+        "missedPixels": 0,
+        "missedPercent": 0.0,
+        "minimum": 255.0,
+        "mean": 255.0
+      },
+      "fbxReimport": {
+        "lod": 1,
+        "triangles": 1999,
+        "uvLoops": 5997,
+        "uvMin": 0.004191489424556494,
+        "uvMax": 0.9958085417747498,
+        "minimumNormalLength": 0.9999998807907104
+      }
+    },
+    {
+      "lod": 2,
+      "triangles": 599,
+      "fbx": {
+        "file": "temple-stepping-stone-long-20261108-rebaked-lod2.fbx",
+        "sha256": "78e7299a73ed014f462c4ac8a91ef42f878906fb4799833f8bacca8a52174a37"
+      },
+      "textures": {
+        "baseColor": {
+          "file": "CE_temple-stepping-stone-long-20261108_lod2-baseColor.png",
+          "sha256": "4a717b7e7a8ba7eec2ca610fcec4a9dffaeebfc938a5ccb9f934fbb5a312aa0d",
+          "width": 2048,
+          "height": 2048
+        },
+        "metallicSmoothness": {
+          "file": "CE_temple-stepping-stone-long-20261108_lod2-metallicSmoothness.png",
+          "sha256": "372611688463b852f469eadad766a8b4dfb7a3e317ce2ca581d18a4c66c9a139",
+          "width": 2048,
+          "height": 2048
+        }
+      },
+      "coverage": {
+        "lod": 2,
+        "interiorPixels": 2178620,
+        "missedPixels": 0,
+        "missedPercent": 0.0,
+        "minimum": 255.0,
+        "mean": 255.0
+      },
+      "fbxReimport": {
+        "lod": 2,
+        "triangles": 599,
+        "uvLoops": 1797,
+        "uvMin": 0.003655665088444948,
+        "uvMax": 0.9963443279266357,
+        "minimumNormalLength": 0.9999998807907104
+      }
+    }
+  ]
+}

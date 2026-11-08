@@ -1,0 +1,334 @@
+{
+  "tool": "Blender 4.0.2",
+  "originalSha256": "12bef62ea9f22adeca4047b146c494a729d47746f33c0ed83b0a37678eb3dd73",
+  "blendSha256": "9bcea897a80e4a6092ba10c605f931962069b2b990b066061237c4d4f24e1a2e",
+  "sourceBoundsBlenderZUp": {
+    "min": [
+      -0.29214875814769314,
+      -0.4999999884138475,
+      -5.06807928957187e-10
+    ],
+    "max": [
+      0.2921487582192839,
+      0.49999998841548887,
+      0.12148330951546482
+    ],
+    "size": [
+      0.584297516366977,
+      0.9999999768293364,
+      0.12148331002227275
+    ]
+  },
+  "sourceTriangles": 989861,
+  "sourceDegenerateTrianglesBelow1e-12Area": 0,
+  "samplesPerDirection": 2048,
+  "seed": 873156,
+  "lods": [
+    {
+      "lod": 0,
+      "triangles": 5999,
+      "vertices": 2999,
+      "boundsBlenderZUp": {
+        "min": [
+          -0.2925686538219452,
+          -0.49987009167671204,
+          -3.4107306419173256e-05
+        ],
+        "max": [
+          0.292491614818573,
+          0.499988317489624,
+          0.12162482738494873
+        ],
+        "size": [
+          0.5850602686405182,
+          0.9998584091663361,
+          0.1216589346913679
+        ]
+      },
+      "uv": {
+        "loops": 17997,
+        "min": [
+          0.0,
+          0.0005120169371366501
+        ],
+        "max": [
+          0.9995748400688171,
+          1.0
+        ]
+      },
+      "normals": {
+        "count": 2999,
+        "minimumLength": 0.9999998621034389,
+        "zeroLengthCount": 0
+      },
+      "surfaceArea": 2.199727301103512,
+      "degenerateTrianglesBelow1e-12Area": 0,
+      "sourceToLod": {
+        "samples": 2048,
+        "mean_m": 9.646989634654046e-05,
+        "p95_m": 0.0003392225553398019,
+        "p99_m": 0.0005726292106555774,
+        "max_m": 0.0011683180928230286
+      },
+      "lodToSource": {
+        "samples": 2048,
+        "mean_m": 9.507422639954723e-05,
+        "p95_m": 0.00031742799474159233,
+        "p99_m": 0.0005735716677736489,
+        "max_m": 0.0009065712802112103
+      },
+      "fbxSha256": "a4c42605cb063e136b78fc684325b655af4a5fb7e680e659cc41e9c1a11f2b57",
+      "fbxReimport": {
+        "triangles": 5999,
+        "vertices": 2999,
+        "triangleLoss": 0,
+        "areaRelativeDifference": 1.453563043617464e-14,
+        "maxBoundsDifferenceM": 7.84829321670566e-08,
+        "normals": {
+          "count": 2999,
+          "minimumLength": 0.9999998685098908,
+          "zeroLengthCount": 0
+        },
+        "boundsBlenderZUp": {
+          "min": [
+            -0.2925686538219452,
+            -0.499870085586564,
+            -3.403058750759723e-05
+          ],
+          "max": [
+            0.292491614818573,
+            0.4999883347095489,
+            0.12162474890201656
+          ],
+          "size": [
+            0.5850602686405182,
+            0.9998584202961129,
+            0.12165877948952417
+          ]
+        },
+        "uv": {
+          "loops": 17997,
+          "min": [
+            0.0,
+            0.0005120169371366501
+          ],
+          "max": [
+            0.9995748400688171,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "lod": 1,
+      "triangles": 1999,
+      "vertices": 999,
+      "boundsBlenderZUp": {
+        "min": [
+          -0.29226231575012207,
+          -0.5002694129943848,
+          -0.0007549276342615485
+        ],
+        "max": [
+          0.2935395836830139,
+          0.5001382231712341,
+          0.12196698784828186
+        ],
+        "size": [
+          0.585801899433136,
+          1.000407636165619,
+          0.12272191548254341
+        ]
+      },
+      "uv": {
+        "loops": 5997,
+        "min": [
+          0.0,
+          0.005522489547729492
+        ],
+        "max": [
+          0.995323121547699,
+          1.0
+        ]
+      },
+      "normals": {
+        "count": 999,
+        "minimumLength": 0.9999998584234298,
+        "zeroLengthCount": 0
+      },
+      "surfaceArea": 2.198440846569939,
+      "degenerateTrianglesBelow1e-12Area": 0,
+      "sourceToLod": {
+        "samples": 2048,
+        "mean_m": 0.00041885434195471083,
+        "p95_m": 0.0009990905120503151,
+        "p99_m": 0.001344804911641404,
+        "max_m": 0.0024628976825624704
+      },
+      "lodToSource": {
+        "samples": 2048,
+        "mean_m": 0.00042115673248614705,
+        "p95_m": 0.0009362338110804558,
+        "p99_m": 0.0012986809911672025,
+        "max_m": 0.0024314322508871555
+      },
+      "fbxSha256": "dd09c6e44dedc92275733c62fc2f538544b6b19ccadf2d166ecf28bc860b76bd",
+      "fbxReimport": {
+        "triangles": 1999,
+        "vertices": 999,
+        "triangleLoss": 0,
+        "areaRelativeDifference": 1.4746138095839476e-14,
+        "maxBoundsDifferenceM": 7.918353446545456e-08,
+        "normals": {
+          "count": 999,
+          "minimumLength": 0.9999998584234298,
+          "zeroLengthCount": 0
+        },
+        "boundsBlenderZUp": {
+          "min": [
+            -0.29226231575012207,
+            -0.5002694059114022,
+            -0.000754850567750859
+          ],
+          "max": [
+            0.2935395836830139,
+            0.5001382315405222,
+            0.1219669086647474
+          ],
+          "size": [
+            0.585801899433136,
+            1.0004076374519244,
+            0.12272175923249826
+          ]
+        },
+        "uv": {
+          "loops": 5997,
+          "min": [
+            0.0,
+            0.005522489547729492
+          ],
+          "max": [
+            0.995323121547699,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "lod": 2,
+      "triangles": 599,
+      "vertices": 299,
+      "boundsBlenderZUp": {
+        "min": [
+          -0.2893422245979309,
+          -0.49986380338668823,
+          0.0005219578160904348
+        ],
+        "max": [
+          0.29263219237327576,
+          0.5000993013381958,
+          0.12114032357931137
+        ],
+        "size": [
+          0.5819744169712067,
+          0.999963104724884,
+          0.12061836576322094
+        ]
+      },
+      "uv": {
+        "loops": 1797,
+        "min": [
+          0.0,
+          0.005970478057861328
+        ],
+        "max": [
+          0.9902210831642151,
+          1.0
+        ]
+      },
+      "normals": {
+        "count": 299,
+        "minimumLength": 0.9999998718368838,
+        "zeroLengthCount": 0
+      },
+      "surfaceArea": 2.1842107863127453,
+      "degenerateTrianglesBelow1e-12Area": 0,
+      "sourceToLod": {
+        "samples": 2048,
+        "mean_m": 0.001080418892508539,
+        "p95_m": 0.002604217350017279,
+        "p99_m": 0.003598953809123484,
+        "max_m": 0.005301016382873058
+      },
+      "lodToSource": {
+        "samples": 2048,
+        "mean_m": 0.0011661092977033882,
+        "p95_m": 0.003217695746570825,
+        "p99_m": 0.004159056134521961,
+        "max_m": 0.005108188837766647
+      },
+      "fbxSha256": "a0e6eda84642bb29879767263a7aa81157b97b38e1a0ebe816b17e472643ca95",
+      "fbxReimport": {
+        "triangles": 599,
+        "vertices": 299,
+        "triangleLoss": 0,
+        "areaRelativeDifference": 1.4638890765291855e-14,
+        "maxBoundsDifferenceM": 7.948614330621773e-08,
+        "normals": {
+          "count": 299,
+          "minimumLength": 0.9999998718368838,
+          "zeroLengthCount": 0
+        },
+        "boundsBlenderZUp": {
+          "min": [
+            -0.2893422245979309,
+            -0.49986379728847957,
+            0.000522035845517188
+          ],
+          "max": [
+            0.29263219237327576,
+            0.5000993203374345,
+            0.12114024409316806
+          ],
+          "size": [
+            0.5819744169712067,
+            0.999963117625914,
+            0.12061820824765088
+          ]
+        },
+        "uv": {
+          "loops": 1797,
+          "min": [
+            0.0,
+            0.005970478057861328
+          ],
+          "max": [
+            0.9902210831642151,
+            1.0
+          ]
+        }
+      }
+    }
+  ],
+  "maps": [
+    {
+      "channel": "baseColor",
+      "file": "CE_temple-stepping-stone-long-20261108_0-baseColor.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "d8dfba9392fbc1c2c46c1d0d9621eee6320896140bb6034c5ba2bbdef007fde6"
+    },
+    {
+      "channel": "metallicSmoothness",
+      "file": "CE_temple-stepping-stone-long-20261108_0-metallicSmoothness.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "5ec1041b9bcfed36c56dfb48ce4f2f64c4a47c4d5b20a6d72bf954be8005baad"
+    }
+  ],
+  "limitations": "Area-weighted random surface samples cannot prove absence of every error. Imported axes and materials require Unity review. No texture appearance, mesh contact, repeated-stone appearance, actual draw counts or FPS is certified."
+}

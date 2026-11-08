@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "job_id": "6a8610a8-6c3b-43ed-9a9e-4f893533062e",
+  "request_id": "eb1a783d-c096-4187-a04f-25f6ab196f70",
+  "quality_status": "review_required",
+  "etag": "\"1794087778.4773362-220707664-727265127\"",
+  "size_bytes": 220707664,
+  "sha256": "43159037aa1265d28c816e7985715ff353dd9ef6adb929f292d78df1c9cdc02b",
+  "server_sha256_available": false,
+  "sha256_scope": "local transfer hash; server did not provide an artifact SHA-256",
+  "transfer_seconds": 14.828
+}

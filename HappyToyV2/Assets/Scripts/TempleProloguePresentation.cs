@@ -70,6 +70,10 @@ namespace HappyToy.V2
             gameObject.AddComponent<TempleForestHorizon>().Prepare(forestGround);
             stoneApproach = Box("Stone approach", new Vector3(0, .005f, -5), new Vector3(3.4f, .025f, 31), path, false).GetComponent<Renderer>();
             gameObject.AddComponent<TempleForestPath>().Prepare(stoneApproach);
+            // Keep the original physical/footstep reference and fall back to its
+            // authored visuals if the individual stones cannot be installed.
+            gameObject.AddComponent<TempleIndividualStonePath>().Prepare(
+                new TempleIndividualStonePath.Settings(180, 150, 40000, .022f, true));
             gameObject.AddComponent<TempleForestPuddles>().Prepare(forestGround, stoneApproach);
             foreach (float side in new[] { -1f, 1f })
                 Box("Forest boundary", new Vector3(side * 22, 3, -2), new Vector3(.3f, 6, 64), earth, true, false);

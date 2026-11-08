@@ -1,0 +1,58 @@
+{
+  "reference_generator": "OpenAI built-in image generation tool",
+  "reference_sha256": "539915f0e120f00896b557d57cfeb777f6ec66db63b06fdca05febbb4ce186fc",
+  "reference_prompt": "reference-prompt.txt",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "request_id": "eb1a783d-c096-4187-a04f-25f6ab196f70",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu": "split",
+    "seed": 1234,
+    "remove_background": "on",
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192,
+    "trellis_dual_postprocess": "on"
+  },
+  "status": "original preserved; web-viewed; service review_required; Blender finishing and game-context review pending",
+  "job_id": "6a8610a8-6c3b-43ed-9a9e-4f893533062e",
+  "web_review": {
+    "date": "2026-11-08",
+    "job_id": "6a8610a8-6c3b-43ed-9a9e-4f893533062e",
+    "server_status": "review_required",
+    "method": "existing in-app web viewer; interactive rotation from front to side, top and underside",
+    "observation": "One broad, low stone with an irregular outline and visibly textured upper and side surfaces; underside was visible. Web view alone does not verify UV seams, fine texture fidelity, game placement, optimization or performance.",
+    "resolution": "8K",
+    "visual_approval": "pending Blender finishing and game-context review"
+  },
+  "preserved_files": {
+    "original.glb": {
+      "size_bytes": 220707664,
+      "sha256": "43159037aa1265d28c816e7985715ff353dd9ef6adb929f292d78df1c9cdc02b"
+    },
+    "service/generation-record.json": {
+      "size_bytes": 2901,
+      "sha256": "7bba940357aff41c0374ee3ca6e2863e0af7c574385870297e4ccb01e0c5c2f6"
+    },
+    "service/review-transfer.json": {
+      "size_bytes": 570,
+      "sha256": "0e5e9952627b33d4ff13bbd540c3008f4e4af3d5e7c0088f45fe1e972e8529b5"
+    }
+  },
+  "server_sha256_available": false,
+  "integrity_scope": "GLB structure, response length and ETag version checked; SHA-256 is a local transfer digest, not independently server-verified",
+  "cpu_inspection": {
+    "triangles": 2794237,
+    "embedded_png_sizes": [
+      [
+        8192,
+        8192
+      ],
+      [
+        8192,
+        8192
+      ]
+    ],
+    "evidence": "GLB structure and embedded PNG headers; does not certify rendering or GPU execution"
+  }
+}

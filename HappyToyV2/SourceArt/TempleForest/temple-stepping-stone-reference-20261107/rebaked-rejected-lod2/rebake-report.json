@@ -1,0 +1,99 @@
+{
+  "key": "temple-stepping-stone-reference-20261107",
+  "originalSha256": "8f1246db1283ba5c5b753bc7d4bf15c69ce4728e781f95cce6aeb3c1f5b136ed",
+  "blender": "4.0.2",
+  "editableBlend": "temple-stepping-stone-reference-20261107-rebaked.blend",
+  "editableSha256": "c8c78604ab687d6868e39c67916f5d9e46c7ef4cb320b4a261861588a9bf6722",
+  "recipe": "rebake_stepping_stone_v2.py",
+  "sourceCandidate": "temple-stepping-stone-reference-20261107.blend",
+  "cageExtrusionMetres": 0.03,
+  "maxRayDistanceMetres": 0.12,
+  "lods": [
+    {
+      "lod": 0,
+      "triangles": 5999,
+      "uvInteriorPixels": 424577,
+      "projectionMissPixels": 0,
+      "fbx": {
+        "file": "temple-stepping-stone-reference-20261107-rebaked-lod0.fbx",
+        "sha256": "743ff18055b52a12a922d76e2bc897fbe7c949b4f932bccbfd8e1d05c291c690"
+      },
+      "textures": {
+        "baseColor": {
+          "file": "CE_temple-stepping-stone-reference-20261107_lod0-baseColor.png",
+          "sha256": "8e2efcc12c4cf78463485b443d74c478f461c8b1fd2560d911b38561b32d2b3c",
+          "width": 2048,
+          "height": 2048
+        },
+        "metallicSmoothness": {
+          "file": "CE_temple-stepping-stone-reference-20261107_lod0-metallicSmoothness.png",
+          "sha256": "d4064a50e1ea84f1fe9662eec6bb1ea700274bd1406ade75d8aa5397769b690a",
+          "width": 2048,
+          "height": 2048
+        }
+      }
+    },
+    {
+      "lod": 1,
+      "triangles": 1999,
+      "uvInteriorPixels": 585353,
+      "projectionMissPixels": 0,
+      "fbx": {
+        "file": "temple-stepping-stone-reference-20261107-rebaked-lod1.fbx",
+        "sha256": "00fbbf0075f64e86147a127dac18e7081cc64b4888b8bed6289bea3be1e62464"
+      },
+      "textures": {
+        "baseColor": {
+          "file": "CE_temple-stepping-stone-reference-20261107_lod1-baseColor.png",
+          "sha256": "0f437dc8d8340335b28e8b4800305efc5abe05e2380527e694789afce4a5299e",
+          "width": 2048,
+          "height": 2048
+        },
+        "metallicSmoothness": {
+          "file": "CE_temple-stepping-stone-reference-20261107_lod1-metallicSmoothness.png",
+          "sha256": "4417b3b4e07ffd09502243ce922a724a565fc59a580d61025bb7eeee7e0366f4",
+          "width": 2048,
+          "height": 2048
+        }
+      }
+    },
+    {
+      "lod": 2,
+      "triangles": 599,
+      "uvInteriorPixels": 456770,
+      "projectionMissPixels": 0,
+      "fbx": {
+        "file": "temple-stepping-stone-reference-20261107-rebaked-lod2.fbx",
+        "sha256": "2b8d5070d26bc37bf1b21b96f0246703d3c0eb67f0997a0dc22778cb28b9d72a"
+      },
+      "textures": {
+        "baseColor": {
+          "file": "CE_temple-stepping-stone-reference-20261107_lod2-baseColor.png",
+          "sha256": "cceae6aa102a3e9fb367bbe31050796cc66de1cd209a0316b3ed7a4622e2dd6c",
+          "width": 2048,
+          "height": 2048
+        },
+        "metallicSmoothness": {
+          "file": "CE_temple-stepping-stone-reference-20261107_lod2-metallicSmoothness.png",
+          "sha256": "f0f654e6624891626c3351912bf41236699fc83b919057d33234f938c69f37ef",
+          "width": 2048,
+          "height": 2048
+        }
+      }
+    }
+  ],
+  "negativeControlMissPixels": 424577,
+  "hashes": {
+    "CE_temple-stepping-stone-reference-20261107_lod0-baseColor.png": "8e2efcc12c4cf78463485b443d74c478f461c8b1fd2560d911b38561b32d2b3c",
+    "CE_temple-stepping-stone-reference-20261107_lod0-metallicSmoothness.png": "d4064a50e1ea84f1fe9662eec6bb1ea700274bd1406ade75d8aa5397769b690a",
+    "CE_temple-stepping-stone-reference-20261107_lod1-baseColor.png": "0f437dc8d8340335b28e8b4800305efc5abe05e2380527e694789afce4a5299e",
+    "CE_temple-stepping-stone-reference-20261107_lod1-metallicSmoothness.png": "4417b3b4e07ffd09502243ce922a724a565fc59a580d61025bb7eeee7e0366f4",
+    "CE_temple-stepping-stone-reference-20261107_lod2-baseColor.png": "cceae6aa102a3e9fb367bbe31050796cc66de1cd209a0316b3ed7a4622e2dd6c",
+    "CE_temple-stepping-stone-reference-20261107_lod2-metallicSmoothness.png": "f0f654e6624891626c3351912bf41236699fc83b919057d33234f938c69f37ef",
+    "temple-stepping-stone-reference-20261107-rebaked-lod0.fbx": "743ff18055b52a12a922d76e2bc897fbe7c949b4f932bccbfd8e1d05c291c690",
+    "temple-stepping-stone-reference-20261107-rebaked-lod1.fbx": "00fbbf0075f64e86147a127dac18e7081cc64b4888b8bed6289bea3be1e62464",
+    "temple-stepping-stone-reference-20261107-rebaked-lod2.fbx": "2b8d5070d26bc37bf1b21b96f0246703d3c0eb67f0997a0dc22778cb28b9d72a",
+    "temple-stepping-stone-reference-20261107-rebaked.blend": "c8c78604ab687d6868e39c67916f5d9e46c7ef4cb320b4a261861588a9bf6722"
+  },
+  "notes": "Each LOD has separate UV and maps. Unity must assign its matching base color and metallic-smoothness texture explicitly. Verify appearance and transitions in game; projection coverage alone does not certify visual quality."
+}

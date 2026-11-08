@@ -1,0 +1,78 @@
+{
+  "reference_generator": "OpenAI built-in image generation tool",
+  "reference_prompt": "reference-prompt.txt",
+  "reference_sha256": "539915f0e120f00896b557d57cfeb777f6ec66db63b06fdca05febbb4ce186fc",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "request_id": "27d783a4-72ec-4b02-b33c-4e6b43cf5405",
+  "job_id": "3cda318a-2f1a-4dfb-b04c-ffd53ac3f20e",
+  "submitted_options": {
+    "model": "trellis2",
+    "gpu": "1",
+    "seed": 1234,
+    "remove_background": "on",
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096
+  },
+  "status": "web-viewed; Blender finishing, gameplay integration and performance review pending",
+  "archive_sha256": "2a674d2d41f5611cb7314645735bfb60588b7512f413f6597babd1dbc63cad20",
+  "preserved_files": {
+    "original.glb": {
+      "archive_entry": "model.glb",
+      "size_bytes": 61763816,
+      "sha256": "8f1246db1283ba5c5b753bc7d4bf15c69ce4728e781f95cce6aeb3c1f5b136ed"
+    },
+    "service/metadata.json": {
+      "archive_entry": "metadata.json",
+      "size_bytes": 2302,
+      "sha256": "bb4a298a99fb882a292942f9f5ccb26f20a82bc4baa52f6d2b241e2f4140fce1"
+    },
+    "service/outputs/generation_request.json": {
+      "archive_entry": "outputs/generation_request.json",
+      "size_bytes": 817,
+      "sha256": "3b5b764d5dfed1135538accdf35d3d129730c3a522b5df10c850007cf47461c1"
+    },
+    "service/outputs/generation_result.json": {
+      "archive_entry": "outputs/generation_result.json",
+      "size_bytes": 333,
+      "sha256": "e5335d04f75df085a97db5e73100ae16220b28c596f9397a2ced9eaf324a3d52"
+    },
+    "service/processed_inputs/01.png": {
+      "archive_entry": "processed_inputs/01.png",
+      "size_bytes": 778246,
+      "sha256": "e5aa6ffce5f30c98707affa66ac0334b76ed21fe049fd35976534db99ce03ad1"
+    },
+    "service/generation-record.json": {
+      "archive_entry": "generation-record.json",
+      "size_bytes": 3484,
+      "sha256": "c91b11b8b0abee760aeec6e283c2b66c0aecc871bc60e5f6e2a4ebffe513c2a9"
+    }
+  },
+  "cpu_inspection": {
+    "date": "2026-11-08",
+    "source_sha256_verified": true,
+    "glb_meshes": 1,
+    "vertices": 667323,
+    "triangles": 973838,
+    "dimensions_gltf_y_up": [
+      1.00103,
+      0.15963,
+      0.97961
+    ],
+    "embedded_pbr_textures": [
+      "4096 baseColor",
+      "4096 metallicRoughness"
+    ],
+    "normal_texture": "absent",
+    "note": "Numeric source inspection only. Interactive visual review and game suitability remain unverified."
+  },
+  "web_review": {
+    "date": "2026-11-08",
+    "job_id": "3cda318a-2f1a-4dfb-b04c-ffd53ac3f20e",
+    "server_status": "completed",
+    "method": "existing in-app web viewer; interactive rotation from front to side, top and underside",
+    "observation": "One broad, low stone with an irregular outline and visibly textured upper and side surfaces; underside was visible. Web view alone does not verify UV seams, fine texture fidelity, game placement, optimization or performance.",
+    "resolution": "4K",
+    "visual_approval": "pending Blender finishing and game-context review"
+  }
+}

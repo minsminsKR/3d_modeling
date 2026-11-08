@@ -1,0 +1,124 @@
+{
+  "reference_generator": "OpenAI built-in image generation tool",
+  "reference_role": "Derived from ../../TemplePrologue/haunted-temple-concept-20261107/target-concept.png",
+  "reference_sha256": "b26bc30f7187f0995f2f039e886e7ce61d0d34d19919f1af18efc632b8ca2d64",
+  "reference_prompt": "reference-prompt.txt",
+  "model_service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "model": "trellis2",
+  "status": "Original generated and web-viewed; Blender finishing, Unity integration and verification pending",
+  "attempts": [
+    {
+      "request_id": "274fb0ca-459a-43e8-8d00-1745bcf80043",
+      "job_id": "c2a4e678-e9d2-40ff-ae21-d139621460a0",
+      "submitted_options": {
+        "gpu": "split",
+        "seed": 1234,
+        "remove_background": true,
+        "trellis_pipeline": "1536_cascade",
+        "trellis_steps": 12,
+        "trellis_texture_size": 8192
+      },
+      "outcome": "failed: GPU out of memory while processing high-resolution mesh",
+      "note": "The CLI console encoding also failed when printing the error log; inspect the saved server record for full details."
+    },
+    {
+      "request_id": "16eaaf8b-40ae-4a74-9fa3-18ac9f90401c",
+      "job_id": "5451fce5-d3b4-4dea-a6c1-e87e679a0206",
+      "submitted_options": {
+        "gpu": "1",
+        "seed": 1234,
+        "remove_background": true,
+        "trellis_pipeline": "1024_cascade",
+        "trellis_steps": 12,
+        "trellis_texture_size": 4096
+      },
+      "outcome": "completed; original preserved and web-viewed; not integrated"
+    }
+  ],
+  "generation_archive": {
+    "filename": "5451fce5-d3b4-4dea-a6c1-e87e679a0206.zip",
+    "sha256": "390b4d9b223d67102d0a7cec52b1990e667b1e2bf42536037cab8fd84f5bface",
+    "size_bytes": 65826267,
+    "stored_under_builds": true,
+    "required_for_authoring": false
+  },
+  "actual_input": {
+    "archive_entry": "inputs/01_reference.png",
+    "stored_as": "reference.png",
+    "sha256": "b26bc30f7187f0995f2f039e886e7ce61d0d34d19919f1af18efc632b8ca2d64",
+    "note": "Byte-identical to preserved reference; no duplicate copy."
+  },
+  "preserved_files": {
+    "original.glb": {
+      "archive_entry": "model.glb",
+      "size_bytes": 79456936,
+      "sha256": "44ce48402eb564dd5d0ac8f3b2b542796916164adfd4161bbf1a26871453bb29"
+    },
+    "service/metadata.json": {
+      "archive_entry": "metadata.json",
+      "size_bytes": 2309,
+      "sha256": "80045249d0c55b8f6246e21fd09d38a3ba8d3d6086b4459ea319101f9286a919"
+    },
+    "service/outputs/generation_request.json": {
+      "archive_entry": "outputs/generation_request.json",
+      "size_bytes": 817,
+      "sha256": "2854f65b1705341be4e5e900a0698dbbdbc0ef34bcb75b1c797ffce27d3f32c2"
+    },
+    "service/outputs/generation_result.json": {
+      "archive_entry": "outputs/generation_result.json",
+      "size_bytes": 333,
+      "sha256": "ca23d52b725b28ce4fe55eb39a041dab57d75688cbac06020a82d842e91d624b"
+    },
+    "service/processed_inputs/01.png": {
+      "archive_entry": "processed_inputs/01.png",
+      "size_bytes": 657962,
+      "sha256": "e7a03ffb25e0e6a956d146ca18a4b8dc5a6ef73df080067ca3c6a7e11a1e7e46"
+    },
+    "service/generation-record.json": {
+      "archive_entry": "generation-record.json",
+      "size_bytes": 3484,
+      "sha256": "7434accd8fb9b77dd528e1f8894c8badea07bcf39ddf812c16971d60ca837b4f"
+    }
+  },
+  "original_model": {
+    "path": "original.glb",
+    "format": "glTF 2.0 binary",
+    "triangles": 993349,
+    "materials": 1,
+    "used_texture": true,
+    "images_embedded": [
+      {
+        "role": "baseColor",
+        "size": [
+          4096,
+          4096
+        ],
+        "sha256": "82766025163a787917bd393283c48044ef28b61cb21673087d742c345419c855"
+      },
+      {
+        "role": "metallicRoughness",
+        "size": [
+          4096,
+          4096
+        ],
+        "sha256": "d5fd059fbcdfe271a957d97916fa49e814e9b6e3d4f8d553e93a3dcb2fdcdce9"
+      }
+    ],
+    "normal_texture": "not present"
+  },
+  "verification": {
+    "archive_crc": "pass",
+    "glb_header_and_length": "pass",
+    "interactive_web_visual_review": "partial: front three-quarter and side inspected in existing web viewer; back and underside pending",
+    "blender_finishing": "pending",
+    "unity_integration": "pending",
+    "player_visual_and_performance_review": "pending"
+  },
+  "web_review": {
+    "job_id": "5451fce5-d3b4-4dea-a6c1-e87e679a0206",
+    "method": "existing in-app browser; interactive 3D viewer; rotated views",
+    "observation": "Inspected the completed same-job model interactively in the existing in-app web viewer; rotated from front three-quarter to side and back. Roof tiles, bracket color, wooden panels and foundation are visible. Back/underside, geometric fidelity, game placement, optimized LODs and performance were not certified.",
+    "date": "2026-11-07",
+    "visual_approval": "pending game context and optimization"
+  }
+}

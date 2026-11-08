@@ -48,6 +48,8 @@ def play_tests(*files: str) -> tuple[str, ...]:
 PROFILES = {
     "hud-interaction-logic": ("Actual keyboard/gamepad prompts, accessible story/evidence layout and pause; CPU only", [
         ("PlayMode", play_tests("CloudHudPresentationTests.cs"))]),
+    "temple-stone-layout-logic": ("Unconnected candidate stone layout deterministic bounds, spacing, exclusions and work limits; CPU only", [
+        ("EditMode", ("HappyToy.V2.CoreTests.TempleStoneLayoutRulesTests",))]),
     "temple-concept-environment-logic": ("Temple path, shrine bindings and mist lifecycle; CPU only", [
         ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleShrineDressingTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestBanksTests.cs"))]),
     "temple-altar-logic": ("Altar binding, existing prayer interaction and resource cleanup; CPU only", [
@@ -70,6 +72,8 @@ PROFILES = {
         ("PlayMode", (PLAY + "TempleForestSoilMaterialOffscreenReview",))]),
     "temple-altar-soil-cost-presentation": ("Opt-in offscreen ABBA altar vapor and soil cost; not displayed FPS", [
         ("PlayMode", (PLAY + "TempleAltarSoilCostOffscreenAbbaReview",))]),
+    "temple-night-sky-presentation": ("Opt-in original/default and cloud/halo sky camera comparison; no desktop input or displayed FPS claim", [
+        ("PlayMode", (PLAY + "TempleNightSkyOffscreenReview",))]),
     "temple-facade-color-presentation": ("Opt-in frozen offscreen facade-color ABBA review; no desktop input or displayed FPS claim", [
         ("PlayMode", (PLAY + "TempleFacadeColorOffscreenAbbaReview",))]),
     "temple-candle-presentation": ("Opt-in candle light and existing-light contribution comparison; no desktop input or displayed FPS claim", [
@@ -83,9 +87,9 @@ PROFILES = {
     "corridor-story-logic": ("First memory story, real temple-to-corridor entry, journal and old/new checkpoint restoration; CPU only", [
         ("PlayMode", play_tests("CloudCorridorStoryTests.cs"))]),
     "temple-prologue-flow": ("Actual title, two prayers, hold, next day, gate and corridor transition; CPU/physics only", [
-        ("PlayMode", play_tests("TemplePrologueFlowTests.cs", "TempleStoryNarrationTests.cs", "TempleClueCollisionTests.cs", "TempleForestPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (CLOUD + "TempleStoryEvidenceTests", PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
+        ("PlayMode", play_tests("TemplePrologueFlowTests.cs", "TempleStoryNarrationTests.cs", "TempleClueCollisionTests.cs", "TempleForestPathTests.cs", "TempleIndividualStoneDefaultPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (CLOUD + "TempleStoryEvidenceTests", PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "temple-forest-environment": ("Forest art, path bounds, background tree collision and older checkpoint clearance; CPU/physics only", [
-        ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (PLAY + "TempleProductionForestKeepsTrunkCapsulesAndReviewedPineLods", PLAY + "TempleForestSoilRepeatsWithoutHardSeams"))]),
+        ("PlayMode", play_tests("TempleForestPathTests.cs", "TempleIndividualStoneDefaultPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (PLAY + "TempleProductionForestKeepsTrunkCapsulesAndReviewedPineLods", PLAY + "TempleForestSoilRepeatsWithoutHardSeams"))]),
     "temple-prologue-regressions": ("Title keyboard entry, replacing a prepared mode and existing school/corridor checkpoint preservation; CPU only", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests")),
         ("PlayMode", (PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
@@ -535,6 +539,91 @@ PROFILES["temple-fern-gap-presentation"] = (
     [("PlayMode", (PLAY + "TempleFernGapOffscreenReview",))])
 
 
+PROFILES["temple-atmosphere-art-review"] = (
+    "Opt-in original sky, cloud and halo comparison, stone relief and foreground tree visibility; not a performance audit",
+    [("PlayMode", (PLAY + "TempleNightSkyOffscreenReview",
+                    PLAY + "TempleStoneReliefOffscreenReview",
+                    PLAY + "TempleForegroundTreeVisibilityOffscreenReview"))])
+
+
+PROFILES["temple-ritual-art-review"] = (
+    "Opt-in cloudy sky, stone layer and front pine binding reviews; not a performance audit",
+    [("PlayMode", (PLAY + "TempleNightSkyOffscreenReview",
+                    PLAY + "TempleStoneLayerOffscreenReview",
+                    PLAY + "TemplePine11RopeOffscreenPrototypeReview"))])
+
+
+PROFILES["temple-pine-wrap-review"] = (
+    "Opt-in visible pine wrapping comparison and surface contact review; not a performance audit",
+    [("PlayMode", (PLAY + "TemplePine11WrappedRopeVariantOffscreenReview",))])
+
+
+PROFILES["temple-haunted-path-review"] = (
+    "Opt-in offscreen candidate path comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleHauntedPathOffscreenReview",))])
+
+
+PROFILES["temple-horizon-band-review"] = (
+    "Opt-in sky and terrain horizon comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleHorizonBandOffscreenReview",))])
+
+
+PROFILES["temple-altar-cord-review"] = (
+    "Opt-in altar cord comparison and attachment probes; not a performance audit",
+    [("PlayMode", (PLAY + "TempleAltarCordOffscreenReview",))])
+
+
+PROFILES["temple-horizon-slope-review"] = (
+    "Opt-in horizon terrain slope comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleHorizonSlopeOffscreenReview",))])
+
+
+PROFILES["temple-altar-cord-occlusion-review"] = (
+    "Opt-in altar cord occlusion and lighting comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleAltarCordOcclusionOffscreenReview",))])
+
+
+PROFILES["temple-altar-ground-haze-v2-review"] = (
+    "Opt-in offscreen altar ground haze second candidate; not a performance audit",
+    [("PlayMode", (PLAY + "TempleAltarGroundHazeOffscreenReview",))])
+
+
+PROFILES["temple-altar-ground-haze-review"] = (
+    "Opt-in offscreen altar ground haze ABBA comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleAltarGroundHazeOffscreenReview",))])
+
+
+PROFILES["temple-shrine-attached-cord-review"] = (
+    "Opt-in true facade attachment and coupled papers comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleShrineAttachedCordOffscreenReview",))])
+
+
+PROFILES["temple-shrine-cord-shape-review"] = (
+    "Opt-in shrine cord and real hall contact comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleShrineCordMaterialAndAnchorsOffscreenReview",))])
+
+
+PROFILES["temple-altar-paper-shape-review"] = (
+    "Opt-in independent irregular altar paper comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleAltarIrregularPaperOffscreenReview",))])
+
+
+PROFILES["temple-individual-stone-review"] = (
+    "Opt-in offscreen individual stone comparison; not a performance audit",
+    [("PlayMode", (PLAY + "TempleIndividualStoneOffscreenReview",))])
+
+
+
+PROFILES["temple-individual-stone-height-cost-review"] = (
+    "Opt-in individual stone heights and offscreen A/B/B/A render cost; not displayed FPS",
+    [("PlayMode", (PLAY + "TempleIndividualStoneHeightOffscreenReview",
+                   PLAY + "TempleIndividualStoneOffscreenCostAbbaReview"))])
+
+
+PROFILES["temple-default-stone-camera-review"] = (
+    "Opt-in camera review of the actual default individual-stone path",
+    [("PlayMode", (CLOUD + "TempleDefaultStoneCameraReviewTests.DefaultStonePathActualCameraReview",))])
+
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])
     if profile != "full":
@@ -563,7 +652,9 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile == "full":
+            editor_args += ["-noaudio"]
+        if profile in ("temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-facade-color-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]
@@ -578,6 +669,45 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             editor_args += ["-v2-forest-earth-original"]
         if profile == "temple-altar-soil-cost-presentation":
             editor_args += ["-v2-temple-cost-output", str(output / "temple-cost")]
+        if profile == "temple-night-sky-presentation":
+            editor_args += ["-noaudio", "-v2-temple-night-sky-output", str(output / "night-sky")]
+        if profile == "temple-altar-cord-occlusion-review":
+            editor_args += ["-noaudio", "-v2-altar-cord-occlusion-output", str(output / "altar-cord-occlusion")]
+        if profile == "temple-altar-ground-haze-v2-review":
+            editor_args += ["-noaudio", "-v2-altar-ground-haze-output", str(output / "altar-ground-haze-v2"), "-v2-altar-haze-variant2"]
+        if profile == "temple-altar-ground-haze-review":
+            editor_args += ["-noaudio", "-v2-altar-ground-haze-output", str(output / "altar-ground-haze")]
+        if profile == "temple-shrine-attached-cord-review":
+            editor_args += ["-noaudio", "-v2-shrine-attached-cord-output", str(output / "shrine-attached-cord")]
+        if profile == "temple-shrine-cord-shape-review":
+            editor_args += ["-noaudio", "-v2-shrine-cord-review-output", str(output / "shrine-cord-shape")]
+        if profile == "temple-altar-paper-shape-review":
+            editor_args += ["-noaudio", "-v2-altar-paper-review-output", str(output / "altar-paper-shape")]
+        if profile == "temple-altar-cord-review":
+            editor_args += ["-noaudio", "-v2-altar-cord-review-output", str(output / "altar-cord")]
+        if profile == "temple-horizon-slope-review":
+            editor_args += ["-noaudio", "-v2-horizon-slope-review-output", str(output / "horizon-slope")]
+        if profile == "temple-horizon-band-review":
+            editor_args += ["-noaudio", "-v2-horizon-band-review-output", str(output / "horizon-band")]
+        if profile == "temple-individual-stone-height-cost-review":
+            editor_args += ["-noaudio", "-v2-individual-stone-height-output", str(output / "individual-stone-heights"),
+                            "-v2-individual-stone-cost-output", str(output / "individual-stone-cost")]
+        if profile == "temple-default-stone-camera-review":
+            editor_args += ["-noaudio", "-v2-default-stone-review-output", str(output / "default-stone-camera")]
+        if profile == "temple-individual-stone-review":
+            editor_args += ["-noaudio", "-v2-individual-stone-review-output", str(output / "individual-stone")]
+        if profile == "temple-haunted-path-review":
+            editor_args += ["-noaudio", "-v2-haunted-path-review-output", str(output / "haunted-path")]
+        if profile == "temple-pine-wrap-review":
+            editor_args += ["-noaudio", "-v2-pine11-wrap-review-output", str(output / "pine-wrap")]
+        if profile == "temple-ritual-art-review":
+            editor_args += ["-noaudio", "-v2-temple-night-sky-output", str(output / "night-sky"),
+                            "-v2-temple-stone-layer-output", str(output / "stone-layer"),
+                            "-v2-pine11-rope-review-output", str(output / "pine11-rope")]
+        if profile == "temple-atmosphere-art-review":
+            editor_args += ["-noaudio", "-v2-temple-night-sky-output", str(output / "night-sky"),
+                            "-v2-temple-stone-relief-output", str(output / "stone-relief"),
+                            "-v2-foreground-tree-review-output", str(output / "foreground-tree")]
         if profile == "temple-facade-color-presentation":
             editor_args += ["-v2-facade-color-review-output", str(output / "facade-color")]
         if profile == "temple-candle-presentation":
