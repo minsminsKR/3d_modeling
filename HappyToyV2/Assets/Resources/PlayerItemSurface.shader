@@ -43,9 +43,9 @@ Shader "HappyToy/PlayerItemSurface"
         float3 PaperWorldPosition(float3 positionOS)
         {
             float3 world=TransformObjectToWorld(positionOS);
-            // Height 1 is the pinched top; only the hanging lower edge moves.
+            // Height 0 is pinched at the bottom; the upper edge is free.
             // Displace in metres after exporter scale/orientation has been applied.
-            float height=saturate(PaperHeight(positionOS)), free=1-height;
+            float height=saturate(PaperHeight(positionOS)), free=height;
             float wave=(sin(_PaperTime*2.1+height*4.7)*.0025+
                 sin(_PaperTime*1.13+height*2.3)*.0008)*free*free*_PaperFlex;
             world+=GetWorldSpaceNormalizeViewDir(world)*wave;

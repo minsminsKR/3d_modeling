@@ -95,6 +95,51 @@
       "curl": 5.55,
       "spread": 0.0,
       "twist": 0.0
+    },
+    "middle_1": {
+      "curl": 32.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "middle_2": {
+      "curl": 30.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "middle_3": {
+      "curl": 20.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "ring_1": {
+      "curl": 40.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "ring_2": {
+      "curl": 35.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "ring_3": {
+      "curl": 22.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "little_1": {
+      "curl": 41.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "little_2": {
+      "curl": 27.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "little_3": {
+      "curl": 19.0,
+      "spread": 0,
+      "twist": 0
     }
   }
 }

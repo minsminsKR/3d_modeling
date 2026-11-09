@@ -166,7 +166,7 @@ namespace HappyToy.V2
         public static float BendOffset(float normalisedHeight, float age)
         {
             if (!Finite(normalisedHeight) || !Finite(age)) return 0;
-            float height = Math.Max(0, Math.Min(1, normalisedHeight)), free = 1 - height;
+            float height = Math.Max(0, Math.Min(1, normalisedHeight)), free = height;
             return (float)((Math.Sin(age * 2.1 + height * 4.7) * .0025 +
                 Math.Sin(age * 1.13 + height * 2.3) * .0008) * free * free);
         }

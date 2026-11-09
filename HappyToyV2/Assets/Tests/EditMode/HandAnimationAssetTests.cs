@@ -35,6 +35,15 @@ namespace HappyToy.V2.CloudTests
         static Transform BoneAt(GameObject root, string name) => root.GetComponentsInChildren<Transform>(true).Single(node => node.name == name);
 
         [Test]
+        public void LowerHeldPaperKeepsItsGripEdgeStillWhileItsUpperEdgeMoves()
+        {
+            var bend = RequireType("HeldPaperEffects").GetMethod("BendOffset");
+            Assert.That(bend, Is.Not.Null);
+            Assert.That((float)bend.Invoke(null, new object[] { 0f, .7f }), Is.EqualTo(0).Within(.000001f));
+            Assert.That(Mathf.Abs((float)bend.Invoke(null, new object[] { 1f, .7f })), Is.GreaterThan(.00001f));
+        }
+
+        [Test]
         public void ImportedHandUsesTheBakedSkinUvInsteadOfTheOldAtlas()
         {
             var prefab = Resources.Load<GameObject>("PlayerItems/hand");

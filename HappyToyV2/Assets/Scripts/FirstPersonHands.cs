@@ -382,13 +382,14 @@ namespace HappyToy.V2
             leftGrip.localPosition = new Vector3(-.260f * sideScale, -.230f, .50f);
             leftGrip.localRotation = Quaternion.Euler(15, 0, 0);
             bool support = item == PlayerItem.Trap;
-            float height = support ? -.305f : item == PlayerItem.Talisman ? -.10f : -.245f;
+            float height = support ? -.305f : -.245f;
             rightGrip.localPosition = new Vector3((support ? .300f : .315f) * sideScale, height, support ? .62f : .50f);
             rightGrip.localRotation = Quaternion.identity;
             left.localPosition = new Vector3(0, -.062f, -.036f);
             left.localRotation = Quaternion.Euler(0, 90, -6);
             right.localPosition = new Vector3(0, -.07f, -.036f);
-            right.localRotation = support ? Quaternion.Euler(-65, 132, -8) : Quaternion.Euler(4, -24, 8);
+            right.localRotation = support ? Quaternion.Euler(-65, 132, -8) :
+                item == PlayerItem.Talisman ? Quaternion.Euler(4, -24, -27) : Quaternion.Euler(4, -24, 8);
             right.gameObject.SetActive(item != PlayerItem.Flashlight && (present || rightClip != null || retiringPaper));
             ApplySocket(leftGrip, leftClip, time, reducedMotion ? default : leftSway);
             ApplySocket(rightGrip, rightClip, rightTime, reducedMotion ? default : rightSway);
@@ -447,9 +448,9 @@ namespace HappyToy.V2
             switch (item)
             {
                 case PlayerItem.Talisman:
-                    // Hang from an upper corner. The upper edge stays pinned
-                    // while the free lower sheet flexes in the paper shader.
-                    held.position = rightRig.Pinch - held.up * (heldBounds.max.y - .008f) + held.right * heldBounds.size.x * .28f; break;
+                    // Pinch the lower corner so the paper rises to the left of
+                    // the hand, as in the user's grip reference.
+                    held.position = rightRig.Pinch - held.up * (heldBounds.min.y + .008f) - held.right * (heldBounds.min.x + .008f); break;
                 case PlayerItem.Incense:
                     held.position = rightRig.Pinch + held.up * (heldBounds.size.y * .5f - .035f); break;
                 case PlayerItem.Snapper: held.position = SnapperGripPosition(); break;
@@ -647,14 +648,3 @@ namespace HappyToy.V2
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-

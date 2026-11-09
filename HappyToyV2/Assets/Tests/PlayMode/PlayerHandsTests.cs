@@ -200,6 +200,18 @@ namespace HappyToy.V2.CloudTests
                     foreach (var tip in new[] { index, pinchThumb })
                         Assert.That(surface.Min(point => Vector3.Distance(point, tip)), Is.LessThan(.025f),
                             item + ": a pinching fingertip misses the actual item surface");
+                    if (item == "Talisman")
+                    {
+                        var lower = surface.Min(point => held.InverseTransformPoint(point).y);
+                        var upper = surface.Max(point => held.InverseTransformPoint(point).y);
+                        var left = surface.Min(point => held.InverseTransformPoint(point).x);
+                        var right = surface.Max(point => held.InverseTransformPoint(point).x);
+                        var pinch = held.InverseTransformPoint((index + pinchThumb) * .5f);
+                        Assert.That((pinch.y - lower) / (upper - lower), Is.InRange(0f, .15f),
+                            "The talisman must be held at its lower edge");
+                        Assert.That((pinch.x - left) / (right - left), Is.InRange(0f, .25f),
+                            "The talisman must be held near its lower corner");
+                    }
                 }
                 else
                 {
