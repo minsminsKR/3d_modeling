@@ -1,0 +1,100 @@
+{
+  "Flashlight": {
+    "middle_2": {
+      "curl": 25.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "ring_2": {
+      "curl": 25.0,
+      "spread": 0.0,
+      "twist": 0.0
+    }
+  },
+  "Snapper": {
+    "thumb_1": {
+      "curl": 20.0,
+      "spread": -0.5,
+      "twist": 0.5
+    },
+    "thumb_2": {
+      "curl": -20.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_1": {
+      "curl": 18.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_2": {
+      "curl": 11.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_3": {
+      "curl": 3.0,
+      "spread": 0.0,
+      "twist": 0.0
+    }
+  },
+  "Incense": {
+    "thumb_1": {
+      "curl": 18.0,
+      "spread": -8.7,
+      "twist": 0.0
+    },
+    "thumb_2": {
+      "curl": 1.8,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_1": {
+      "curl": 20.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_2": {
+      "curl": 40.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_3": {
+      "curl": 6.1,
+      "spread": 0.0,
+      "twist": 0.0
+    }
+  },
+  "Talisman": {
+    "thumb_1": {
+      "curl": 20.0,
+      "spread": 0.0,
+      "twist": 1.5
+    },
+    "thumb_2": {
+      "curl": -4.65,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "thumb_3": {
+      "curl": 20.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_1": {
+      "curl": 20.0,
+      "spread": 3.0,
+      "twist": 0.0
+    },
+    "index_2": {
+      "curl": 20.0,
+      "spread": 0.0,
+      "twist": 0.0
+    },
+    "index_3": {
+      "curl": 5.55,
+      "spread": 0.0,
+      "twist": 0.0
+    }
+  }
+}
