@@ -34,6 +34,33 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(120000)]
+        public IEnumerator SnapperProfileAnchorOffsetMatchesThePredictedReleasePose()
+        {
+            yield return PrepareHandFixture();
+            var asset = Resources.Load<ScriptableObject>("PlayerHandAnimation/GripCatalog");
+            Assert.That(asset, Is.Not.Null);
+            var entries = (Array)asset.GetType().GetField("profiles").GetValue(asset);
+            object profile = entries.Cast<object>().Single(value => value.GetType().GetField("item").GetValue(value).ToString() == "Snapper");
+            var offsetField = profile.GetType().GetField("anchorOffset");
+            var oldOffset = (Vector3)offsetField.GetValue(profile);
+            var hands = Get<Component>(player, "Hands");
+            ((Behaviour)hands).enabled = false;
+            try
+            {
+                offsetField.SetValue(profile, new Vector3(.02f, .01f, -.015f));
+                var camera = (Camera)Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, -1f, 16f / 9);
+                Assert.That(SampleAnimatedLaunch(out var predicted), Is.True);
+                Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, .32f / .85f, 16f / 9);
+                var prop = HandProp(HandStudio.Find("Right item grip"));
+                var eyes = Get<Camera>(player, "eyes");
+                var actual = eyes.ViewportToWorldPoint(camera.WorldToViewportPoint(prop.position));
+                Assert.That(Vector3.Distance(predicted, actual), Is.LessThan(.001f),
+                    "A local profile offset must rotate with the release pose, not the idle pose");
+            }
+            finally { offsetField.SetValue(profile, oldOffset); ((Behaviour)hands).enabled = true; }
+        }
+
+        [UnityTest, Timeout(120000)]
         public IEnumerator ReducedMotionPredictsTheSameSnapperReleaseAsTheVisibleHand()
         {
             yield return PrepareHandFixture();

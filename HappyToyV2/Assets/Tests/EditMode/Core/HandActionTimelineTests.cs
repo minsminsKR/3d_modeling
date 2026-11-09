@@ -121,5 +121,19 @@ namespace HappyToy.V2.CoreTests
             Assert.That(equip.VisibleItem, Is.EqualTo(7));
             Assert.That(equip.Busy, Is.False);
         }
+
+        [Test]
+        public void PerItemDurationStillHidesSwapAndHonoursPause()
+        {
+            var equip = new HandEquipTransition(); equip.Reset(1);
+            Assert.That(equip.TryBegin(1, 2, float.NaN), Is.False);
+            Assert.That(equip.TryBegin(1, 2, .88f), Is.True);
+            Assert.That(equip.Advance(.38f).Visibility, Is.EqualTo(0).Within(.0001f));
+            Assert.That(equip.Advance(10, true).Swapped, Is.False);
+            Assert.That(equip.Advance(.06f).Swapped, Is.True);
+            Assert.That(equip.Visibility, Is.EqualTo(0).Within(.0001f));
+            Assert.That(equip.Advance(.44f).Completed, Is.True);
+            Assert.That(equip.Visibility, Is.EqualTo(1));
+        }
     }
 }

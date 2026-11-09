@@ -53,6 +53,9 @@ namespace HappyToy.V2.Editor
         }
         public static void Ensure()
         {
+            // The hand prefab is not usable without its matching presentation
+            // profiles and sampled finger poses, including in a player build.
+            HandGripCatalog.Load(HandAnimationLibrary.Load());
             foreach (string key in new[]{"hand","incense","talisman","flashlight","fragment_0","fragment_1","fragment_2","fragment_3","fragment_4"})
             {
                 var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Root+key+".prefab");

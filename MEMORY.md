@@ -1,5 +1,11 @@
 # HappyToyV2 프로젝트 메모리
 
+## 아이템 파지 구조와 손전등 표면 — 2026-11-09
+
+- `HandGripCatalog` ScriptableObject가 다섯 아이템의 파지 종류·손·앵커·포즈·위치/회전·전환 시간을 제공하며 기존 아이템/재고/방출 소유권을 유지한다. 부적의 사용자 사진 기준 아래 모서리 파지는 유지한다.
+- Unity 스킨 정점과 손전등 원통 근사로 자세를 최적화했다. 3mm 초과 내부 정점 337→59개, 최대 깊이 12.89→6.38mm이며 실제 모든 삼각형·모든 동작의 무관통 인증은 아니다. 수치·재현은 `SourceArt/AnatomicalHandsPrototype/flashlight-surface-review.json`과 `Assets/Editor/HandGripSurfaceAudit.cs`.
+- `hand-animation-logic` Edit 112/112·Play 12/12, D3D11 `player-hands` Edit 104/104·Play 4/4 통과. 실제 플레이 손 레이어 표본을 확인했으며 전체 장면/네이티브 플레이어/FPS는 미검증이다. 손가락·손톱·피부·다른 아이템 전체 표면 접촉의 고품질 목표는 미완료다.
+
 ## 사진 기준 부적 아래 모서리 파지 — 2026-11-09
 
 - 사용자 사진을 기준으로 부적을 아래쪽 화면 오른쪽 모서리에서 잡고 위·왼쪽으로 펼치며 다른 세 손가락을 굽힌다. 잡은 아래쪽은 고정되고 종이는 위에서 아래로 타며 연기·불꽃 원점을 유지한다. 사진과 제작 내역은 `SourceArt/AnatomicalHandsPrototype/`에 있다.

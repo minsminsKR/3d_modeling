@@ -1,4 +1,4 @@
-"""Transfer approved numeric draft-grip offsets to sampled pose and clip endpoints.
+"""Transfer measured candidate-grip offsets to sampled pose and clip endpoints.
 This maintains the original gameplay release times; it does not certify visual quality.
 """
 import json
@@ -22,6 +22,9 @@ for clip in base['clips']:
   t=frame['time'];duration=clip['duration']
   if clip['name'].startswith('Equip'):weight=t/duration
   elif clip['name'].startswith('Unequip'):weight=1-t/duration
+  # These items remain held through their use marker. Returning to the old
+  # bind's uncorrected grip at that instant made the hand sink back into them.
+  elif clip['item'] in ('Flashlight','Incense','Talisman'):weight=1.
   else:
    release=clip['releaseTime'];weight=(1-t/release) if t<=release else (t-release)/(duration-release)
   adjust(frame['bones'],deltas[clip['item']],max(0.,min(1.,weight)))

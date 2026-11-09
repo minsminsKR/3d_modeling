@@ -6,9 +6,64 @@
       "twist": 0.0
     },
     "ring_2": {
-      "curl": 25.0,
+      "curl": 16.0,
       "spread": 0.0,
       "twist": 0.0
+    },
+    "thumb_2": {
+      "curl": -30.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "thumb_3": {
+      "curl": -3.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "index_1": {
+      "curl": 9.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "index_3": {
+      "curl": 6.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "middle_1": {
+      "curl": -18.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "middle_3": {
+      "curl": 7.5,
+      "spread": 0,
+      "twist": 0
+    },
+    "ring_1": {
+      "curl": -18.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "ring_3": {
+      "curl": 18.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "little_1": {
+      "curl": -22.5,
+      "spread": 0,
+      "twist": 0
+    },
+    "little_2": {
+      "curl": 21.0,
+      "spread": 0,
+      "twist": 0
+    },
+    "little_3": {
+      "curl": -6.0,
+      "spread": 0,
+      "twist": 0
     }
   },
   "Snapper": {

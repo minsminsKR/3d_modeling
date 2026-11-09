@@ -123,6 +123,25 @@ namespace HappyToy.V2.CloudTests
                 float inverse=1/(va+vb+vc);return a+ab*(vb*inverse)+ac*(vc*inverse);
             }
         }
+
+        static int CountDeepShaftVertices(SkinnedMeshRenderer skin, HandShaftSurface shaft)
+        {
+            var mesh = skin.sharedMesh; var vertices = mesh.vertices; var weights = mesh.boneWeights;
+            var bind = mesh.bindposes; var bones = skin.bones; var matrices = new Matrix4x4[bind.Length];
+            for (int i = 0; i < bind.Length; i++) matrices[i] = bones[i].localToWorldMatrix * bind[i];
+            int count = 0;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var b = weights[i]; var point = matrices[b.boneIndex0].MultiplyPoint3x4(vertices[i]) * b.weight0;
+                if (b.weight1 > 0) point += matrices[b.boneIndex1].MultiplyPoint3x4(vertices[i]) * b.weight1;
+                if (b.weight2 > 0) point += matrices[b.boneIndex2].MultiplyPoint3x4(vertices[i]) * b.weight2;
+                if (b.weight3 > 0) point += matrices[b.boneIndex3].MultiplyPoint3x4(vertices[i]) * b.weight3;
+                var local = shaft.Local(point);
+                if (local.y >= shaft.minimum && local.y <= shaft.maximum &&
+                    shaft.Radial(point).magnitude < shaft.radius - .003f) count++;
+            }
+            return count;
+        }
         IEnumerator SelectHandItem(string name)
         {
             Call(Get<Component>(player, "Items"), "Select", Enum.Parse(RequireType("PlayerItem"), name));
@@ -168,6 +187,13 @@ namespace HappyToy.V2.CloudTests
                 // centre. Opposed radial tips distinguish a wrap from a fist
                 // hovering beside the handle.
                 var shaft = new HandShaftSurface(torch,torchVertices);
+                if (item == "Flashlight")
+                {
+                    var skin = leftHand.GetComponentInChildren<SkinnedMeshRenderer>(true);
+                    int deep = CountDeepShaftVertices(skin, shaft);
+                    Assert.That(deep, Is.LessThan(110),
+                        "Too many actual skinned vertices exceed 3mm inside the measured barrel; this does not certify zero intersection");
+                }
                 var contactReport = Get<string>(Get<Component>(player, "Hands"), "ContactDiagnostics");
                 var thumb = HandMarker(leftHand, "thumb_tip").position;
                 var thumbRadial = shaft.Radial(thumb);
@@ -177,7 +203,7 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(shaft.Local(tip).y,Is.InRange(shaft.minimum-.004f,shaft.maximum+.004f),item+": a finger is gripping the flashlight head instead of its barrel");
                     Assert.That(shaft.Radial(tip).magnitude,Is.InRange(shaft.radius-.003f,shaft.radius+.014f),item+": a fingertip is buried inside or detached from the actual barrel "+contactReport);
                     Assert.That(shaft.Distance(tip), Is.LessThan(.0115f),
-                        item + ": a flashlight fingertip is detached from the actual shaft triangles");
+                        item + ": a flashlight fingertip is detached from the actual shaft triangles " + contactReport);
                 }
                 Assert.That(otherTips.Any(tip => Vector3.Dot(thumbRadial.normalized,
                     shaft.Radial(tip).normalized) < -.2f), Is.True,

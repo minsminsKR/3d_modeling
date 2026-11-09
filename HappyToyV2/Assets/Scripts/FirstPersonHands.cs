@@ -16,6 +16,7 @@ namespace HappyToy.V2
         // local Y; the cylindrical grip is about 24mm in radius.
         const float HandleRadius = .024f, HandleCenterY = .035f;
         HandAnimationLibrary library;
+        HandGripCatalog grips;
         HandAnimationRig leftRig, rightRig;
         HandCylinderContact torchContact;
         readonly HandActionTimeline cosmeticAction = new HandActionTimeline();
@@ -65,6 +66,7 @@ namespace HappyToy.V2
         void Prepare()
         {
             library = HandAnimationLibrary.Load();
+            grips = HandGripCatalog.Load(library);
             if (player && player.Feedback)
             { footsteps = player.Feedback; footsteps.Footstep += OnFootstep; }
             studio = new GameObject("First person hand studio").transform;
@@ -344,7 +346,7 @@ namespace HappyToy.V2
             var desired = playing && used != PlayerItem.Flashlight ? used : requested;
             if ((int)displayed < 0) equip.Reset((int)desired);
             if (!playing && !equip.Busy && equip.VisibleItem != (int)desired)
-                equip.TryBegin(equip.VisibleItem, (int)desired);
+                equip.TryBegin(equip.VisibleItem, (int)desired, grips.Get(desired).transitionDuration);
 #if UNITY_EDITOR
             if (!Application.isPlaying) equip.Reset((int)desired);
 #endif
@@ -379,17 +381,19 @@ namespace HappyToy.V2
                 rightTime = paperRetire / .30f * rightClip.duration;
             }
             float sideScale = Mathf.Max(1, viewCamera.aspect / (16f / 9));
-            leftGrip.localPosition = new Vector3(-.260f * sideScale, -.230f, .50f);
+            var torchProfile = grips.Get(PlayerItem.Flashlight);
+            var itemProfile = grips.Get(item);
+            var rightProfile = item == PlayerItem.Flashlight ? grips.Get(PlayerItem.Snapper) : itemProfile;
+            var leftSocket = torchProfile.socketPosition;
+            leftGrip.localPosition = new Vector3(leftSocket.x * sideScale, leftSocket.y, leftSocket.z);
             leftGrip.localRotation = Quaternion.Euler(15, 0, 0);
-            bool support = item == PlayerItem.Trap;
-            float height = support ? -.305f : -.245f;
-            rightGrip.localPosition = new Vector3((support ? .300f : .315f) * sideScale, height, support ? .62f : .50f);
+            var rightSocket = rightProfile.socketPosition;
+            rightGrip.localPosition = new Vector3(rightSocket.x * sideScale, rightSocket.y, rightSocket.z);
             rightGrip.localRotation = Quaternion.identity;
             left.localPosition = new Vector3(0, -.062f, -.036f);
-            left.localRotation = Quaternion.Euler(0, 90, -6);
+            left.localRotation = Quaternion.Euler(torchProfile.wristEuler);
             right.localPosition = new Vector3(0, -.07f, -.036f);
-            right.localRotation = support ? Quaternion.Euler(-65, 132, -8) :
-                item == PlayerItem.Talisman ? Quaternion.Euler(4, -24, -27) : Quaternion.Euler(4, -24, 8);
+            right.localRotation = Quaternion.Euler(rightProfile.wristEuler);
             right.gameObject.SetActive(item != PlayerItem.Flashlight && (present || rightClip != null || retiringPaper));
             ApplySocket(leftGrip, leftClip, time, reducedMotion ? default : leftSway);
             ApplySocket(rightGrip, rightClip, rightTime, reducedMotion ? default : rightSway);
@@ -400,18 +404,19 @@ namespace HappyToy.V2
             if (released)
                 rightGrip.localPosition += Vector3.down * (.28f * Ease(library.GetClip("Use" + used).releaseTime,
                     library.GetClip("Use" + used).duration, time));
-            leftRig.Apply(library.GetPose("Flashlight"), leftClip, time);
-            rightRig.Apply(library.GetPose(present ? item.ToString() : "Relaxed"), rightClip, rightTime);
+            leftRig.Apply(library.GetPose(torchProfile.fingerPose), leftClip, time);
+            rightRig.Apply(library.GetPose(present ? itemProfile.fingerPose : "Relaxed"), rightClip, rightTime);
 #if UNITY_EDITOR
             if (previewFingerDegrees >= 0) { leftRig.PreviewCurl(previewFingerDegrees); rightRig.PreviewCurl(previewFingerDegrees); }
 #endif
             SetPropTransform(item);
-            torch.localRotation = Quaternion.Euler(-90, 0, 0);
+            torch.localRotation = Quaternion.Euler(torchProfile.propEuler);
             torch.rotation = leftRig.PalmRotationDelta * torch.rotation;
             if (held) held.rotation = rightRig.PalmRotationDelta * held.rotation;
             var torchPose = library.GetPose("Flashlight");
             var handleOffset = torchPose.handleOffset == Vector3.zero ? new Vector3(0, .020f, HandleRadius + .001f) : torchPose.handleOffset;
             torch.position = leftRig.Palm + leftRig.PalmRotationDelta * left.TransformVector(handleOffset) - torch.up * HandleCenterY;
+            torch.position += torch.TransformVector(torchProfile.anchorOffset);
             torchContact.Correct(leftRig, skipThumb: leftClip != null, maxDegrees: 6);
             AlignProps(item);
             if (owned && used == PlayerItem.Trap && item == PlayerItem.Trap) MoveTrapToFloor(actionOwner, time);
@@ -433,29 +438,27 @@ namespace HappyToy.V2
         void SetPropTransform(PlayerItem item)
         {
             if (!held) return;
-            held.localScale = item == PlayerItem.Snapper ? Vector3.one * .85f : Vector3.one;
-            switch (item)
-            {
-                case PlayerItem.Talisman: held.localPosition = new Vector3(-.035f, .17f, -.005f); held.localRotation = Quaternion.Euler(0, 165, -8); break;
-                case PlayerItem.Incense: held.localPosition = new Vector3(-.025f, .04f, .025f); held.localRotation = Quaternion.Euler(-5, 0, -8); break;
-                case PlayerItem.Trap: held.localPosition = new Vector3(-.02f, .03f, .045f); held.localRotation = Quaternion.Euler(0, 0, -8); break;
-                default: held.localPosition = Vector3.zero; held.localRotation = Quaternion.Euler(12, 0, -10); break;
-            }
+            var profile = grips.Get(item);
+            held.localScale = Vector3.one * profile.propScale;
+            held.localPosition = Vector3.zero;
+            held.localRotation = Quaternion.Euler(profile.propEuler);
         }
         void AlignProps(PlayerItem item)
         {
             if (!held) return;
-            switch (item)
+            var profile = grips.Get(item);
+            switch (profile.anchor)
             {
-                case PlayerItem.Talisman:
+                case HandGripAnchor.PaperLowerCorner:
                     // Pinch the lower corner so the paper rises to the left of
                     // the hand, as in the user's grip reference.
                     held.position = rightRig.Pinch - held.up * (heldBounds.min.y + .008f) - held.right * (heldBounds.min.x + .008f); break;
-                case PlayerItem.Incense:
+                case HandGripAnchor.SlenderPinch:
                     held.position = rightRig.Pinch + held.up * (heldBounds.size.y * .5f - .035f); break;
-                case PlayerItem.Snapper: held.position = SnapperGripPosition(); break;
-                case PlayerItem.Trap: held.position = rightRig.Palm - held.up * heldBounds.min.y; break;
+                case HandGripAnchor.Pinch: held.position = SnapperGripPosition(); break;
+                case HandGripAnchor.Palm: held.position = rightRig.Palm - held.up * heldBounds.min.y; break;
             }
+            if (profile.anchor != HandGripAnchor.Pinch) held.position += held.TransformVector(profile.anchorOffset);
         }
         void MoveTrapToFloor(PlayerHandActions owner, float time)
         {
@@ -465,7 +468,7 @@ namespace HappyToy.V2
             if (player.eyes.WorldToViewportPoint(floor).z <= .08f) return;
             Vector3 targetPoint = ViewPoint(floor);
             Quaternion targetRotation = viewCamera.transform.rotation * Quaternion.Inverse(player.eyes.transform.rotation) * owner.Placement.rotation;
-            Vector3 source = rightRig.Palm - (rightGrip.rotation * Quaternion.Euler(0, 0, -8) * Vector3.up) * heldBounds.min.y;
+            Vector3 source = rightRig.Palm - (rightGrip.rotation * Quaternion.Euler(grips.Get(PlayerItem.Trap).propEuler) * Vector3.up) * heldBounds.min.y;
             var offset = (targetPoint - source) * blend;
             rightGrip.position += offset;
             if (held)
@@ -476,7 +479,8 @@ namespace HappyToy.V2
                 held.localScale = Vector3.one * Mathf.Lerp(1, lens, blend);
             }
         }
-        Vector3 SnapperGripPosition() => rightRig.Pinch - viewCamera.transform.forward * .01f;
+        Vector3 SnapperGripPosition() => rightRig.Pinch - viewCamera.transform.forward * .01f +
+            held.TransformVector(grips.Get(PlayerItem.Snapper).anchorOffset);
         Vector3 predictedSnapperPoint, predictedSnapperDirection;
         bool predictedSnapper;
         void PredictSnapper(float sideScale, HandMotionSample motion)
@@ -485,10 +489,16 @@ namespace HappyToy.V2
             var socketPosition = rightGrip.localPosition; var socketRotation = rightGrip.localRotation;
             var propPosition = held.position; var propRotation = held.rotation;
             rightRig.SavePose();
-            rightGrip.localPosition = new Vector3(.315f * sideScale, -.245f, .50f);
+            var profile = grips.Get(PlayerItem.Snapper);
+            var socket = profile.socketPosition;
+            rightGrip.localPosition = new Vector3(socket.x * sideScale, socket.y, socket.z);
             rightGrip.localRotation = Quaternion.identity;
             ApplySocket(rightGrip, clip, clip.releaseTime, motion);
-            rightRig.Apply(library.GetPose("Snapper"), clip, clip.releaseTime);
+            rightRig.Apply(library.GetPose(profile.fingerPose), clip, clip.releaseTime);
+            // The predicted release must use the release pose's prop frame as
+            // well as its fingertips when a profile has a local anchor offset.
+            held.localRotation = Quaternion.Euler(profile.propEuler);
+            held.rotation = rightRig.PalmRotationDelta * held.rotation;
             held.position = SnapperGripPosition();
             predictedSnapperPoint = WorldPoint(held.position);
             predictedSnapperDirection = WorldDirection(rightGrip.forward);

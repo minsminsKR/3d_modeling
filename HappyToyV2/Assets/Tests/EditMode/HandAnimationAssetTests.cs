@@ -35,6 +35,54 @@ namespace HappyToy.V2.CloudTests
         static Transform BoneAt(GameObject root, string name) => root.GetComponentsInChildren<Transform>(true).Single(node => node.name == name);
 
         [Test]
+        public void GripCatalogContainsAnEditableDistinctProfileForEveryItem()
+        {
+            var asset = Resources.Load<ScriptableObject>("PlayerHandAnimation/GripCatalog");
+            Assert.That(asset, Is.Not.Null);
+            var profiles = (Array)asset.GetType().GetField("profiles").GetValue(asset);
+            Assert.That(profiles.Length, Is.EqualTo(Items.Length));
+            var items = new System.Collections.Generic.HashSet<string>();
+            var kinds = new System.Collections.Generic.HashSet<string>();
+            foreach (var profile in profiles)
+            {
+                Assert.That(profile, Is.Not.Null);
+                var type = profile.GetType();
+                string item = type.GetField("item").GetValue(profile).ToString();
+                Assert.That(items.Add(item), Is.True, "Duplicate profile: " + item);
+                Assert.That(kinds.Add(type.GetField("gripType").GetValue(profile).ToString()), Is.True,
+                    "Each item needs its own grip type");
+                Assert.That((string)type.GetField("fingerPose").GetValue(profile), Is.EqualTo(item));
+                Assert.That((float)type.GetField("transitionDuration").GetValue(profile), Is.GreaterThan(0));
+                Assert.That(type.GetField("hand").GetValue(profile).ToString(), Is.EqualTo(item == "Flashlight" ? "Left" : "Right"));
+            }
+            Assert.That(items, Is.EquivalentTo(Items));
+        }
+
+        [Test]
+        public void ItemTransitionsMeetTheirIdleGripWithoutAPoseJump()
+        {
+            var data = Read();
+            foreach (string item in Items)
+            {
+                var pose = data.poses.Single(value => value.name == item);
+                foreach (var endpoint in new[] { ("Use" + item, false), ("Use" + item, true),
+                    ("Equip" + item, true), ("Unequip" + item, false) })
+                {
+                    var clip = data.clips.Single(value => value.name == endpoint.Item1);
+                    var frame = endpoint.Item2 ? clip.frames.Last() : clip.frames.First();
+                    Assert.That(frame.bones.Length, Is.EqualTo(pose.bones.Length));
+                    for (int i = 0; i < frame.bones.Length; i++)
+                    {
+                        Assert.That(frame.bones[i].name, Is.EqualTo(pose.bones[i].name));
+                        Assert.That(frame.bones[i].curl, Is.EqualTo(pose.bones[i].curl).Within(.01f), endpoint.Item1);
+                        Assert.That(frame.bones[i].spread, Is.EqualTo(pose.bones[i].spread).Within(.01f), endpoint.Item1);
+                        Assert.That(frame.bones[i].twist, Is.EqualTo(pose.bones[i].twist).Within(.01f), endpoint.Item1);
+                    }
+                }
+            }
+        }
+
+        [Test]
         public void LowerHeldPaperKeepsItsGripEdgeStillWhileItsUpperEdgeMoves()
         {
             var bend = RequireType("HeldPaperEffects").GetMethod("BendOffset");

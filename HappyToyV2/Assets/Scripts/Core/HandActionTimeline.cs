@@ -102,21 +102,24 @@ namespace HappyToy.V2
     /// <summary>Swaps props only in the lowered middle of an unequip/equip transition.</summary>
     public sealed class HandEquipTransition
     {
-        const float Duration = .44f, SwapTime = .22f, LoweredBefore = .19f, LoweredAfter = .25f;
+        const float DefaultDuration = .44f;
+        const float LoweredBeforeFraction = .19f / DefaultDuration, LoweredAfterFraction = .25f / DefaultDuration;
+        float duration = DefaultDuration;
         double elapsed;
         bool swapped;
         public bool Busy { get; private set; }
         public int FromItem { get; private set; }
         public int ToItem { get; private set; }
         public int VisibleItem => swapped ? ToItem : FromItem;
-        public float Progress => Busy ? (float)Math.Min(1, elapsed / Duration) : 1;
-        public float Visibility => !Busy ? 1 : elapsed <= LoweredBefore ?
-            1 - Smooth((float)elapsed / LoweredBefore) : elapsed >= LoweredAfter ?
-            Smooth((float)(elapsed - LoweredAfter) / (Duration - LoweredAfter)) : 0;
+        public float Progress => Busy ? (float)Math.Min(1, elapsed / duration) : 1;
+        public float Visibility => !Busy ? 1 : Progress <= LoweredBeforeFraction ?
+            1 - Smooth(Progress / LoweredBeforeFraction) : Progress >= LoweredAfterFraction ?
+            Smooth((Progress - LoweredAfterFraction) / (1 - LoweredAfterFraction)) : 0;
 
-        public bool TryBegin(int fromItem, int toItem)
+        public bool TryBegin(int fromItem, int toItem, float durationSeconds = DefaultDuration)
         {
-            if (Busy || fromItem == toItem) return false;
+            if (Busy || fromItem == toItem || float.IsNaN(durationSeconds) || float.IsInfinity(durationSeconds) || durationSeconds <= 0) return false;
+            duration = durationSeconds;
             FromItem = fromItem; ToItem = toItem; elapsed = 0; swapped = false; Busy = true;
             return true;
         }
@@ -124,15 +127,15 @@ namespace HappyToy.V2
         {
             if (!Busy || held || float.IsNaN(seconds) || float.IsInfinity(seconds) || seconds <= 0)
                 return new HandEquipStep(false, false, Visibility, Progress, VisibleItem);
-            elapsed = Math.Min(Duration, elapsed + seconds);
-            bool swap = !swapped && elapsed + .00000001 >= SwapTime;
+            elapsed = Math.Min(duration, elapsed + seconds);
+            bool swap = !swapped && elapsed + .00000001 >= duration * .5f;
             if (swap) swapped = true;
-            bool complete = elapsed + .00000001 >= Duration;
-            if (complete) { elapsed = Duration; Busy = false; }
+            bool complete = elapsed + .00000001 >= duration;
+            if (complete) { elapsed = duration; Busy = false; }
             return new HandEquipStep(swap, complete, Visibility, Progress, VisibleItem);
         }
         public void Reset(int visibleItem)
-        { FromItem = ToItem = visibleItem; elapsed = Duration; swapped = true; Busy = false; }
+        { FromItem = ToItem = visibleItem; elapsed = duration; swapped = true; Busy = false; }
         static float Smooth(float value)
         { value = Math.Max(0, Math.Min(1, value)); return value * value * (3 - 2 * value); }
     }

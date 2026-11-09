@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bba8c6425732ac4d96e3864956ae819, type: 3}
+  m_Name: GripCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::HappyToy.V2.HandGripCatalog
+  profiles:
+  - item: 4
+    gripType: 0
+    hand: 0
+    anchor: 0
+    fingerPose: Flashlight
+    socketPosition: {x: -0.26, y: -0.23, z: 0.5}
+    wristEuler: {x: 0, y: 90, z: -6}
+    propEuler: {x: -90, y: 0, z: 0}
+    anchorOffset: {x: 0, y: 0, z: 0}
+    propScale: 1
+    transitionDuration: 0.44
+  - item: 0
+    gripType: 1
+    hand: 1
+    anchor: 1
+    fingerPose: Snapper
+    socketPosition: {x: 0.315, y: -0.245, z: 0.5}
+    wristEuler: {x: 4, y: -24, z: 8}
+    propEuler: {x: 12, y: 0, z: -10}
+    anchorOffset: {x: 0, y: 0, z: 0}
+    propScale: 0.85
+    transitionDuration: 0.44
+  - item: 2
+    gripType: 2
+    hand: 1
+    anchor: 2
+    fingerPose: Incense
+    socketPosition: {x: 0.315, y: -0.245, z: 0.5}
+    wristEuler: {x: 4, y: -24, z: 8}
+    propEuler: {x: -5, y: 0, z: -8}
+    anchorOffset: {x: 0, y: 0, z: 0}
+    propScale: 1
+    transitionDuration: 0.44
+  - item: 3
+    gripType: 3
+    hand: 1
+    anchor: 3
+    fingerPose: Talisman
+    socketPosition: {x: 0.315, y: -0.245, z: 0.5}
+    wristEuler: {x: 4, y: -24, z: -27}
+    propEuler: {x: 0, y: 165, z: -8}
+    anchorOffset: {x: 0, y: 0, z: 0}
+    propScale: 1
+    transitionDuration: 0.44
+  - item: 1
+    gripType: 4
+    hand: 1
+    anchor: 4
+    fingerPose: Trap
+    socketPosition: {x: 0.3, y: -0.305, z: 0.62}
+    wristEuler: {x: -65, y: 132, z: -8}
+    propEuler: {x: 0, y: 0, z: -8}
+    anchorOffset: {x: 0, y: 0, z: 0}
+    propScale: 1
+    transitionDuration: 0.44

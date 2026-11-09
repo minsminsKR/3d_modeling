@@ -1,0 +1,41 @@
+{
+  "status": "PARTIAL_IMPROVEMENT",
+  "scope": "Measured Unity weighted skin vertices inside an idealized flashlight barrel; not full mesh intersection or visual approval.",
+  "baseline": {
+    "scope": "Actual weighted skin vertices against a measured cylindrical barrel approximation; not triangle intersection or full prop surface certification.",
+    "item": "Flashlight",
+    "radius": 0.022590016946196556,
+    "minimum": -0.045627444982528687,
+    "maximum": 0.09116700291633606,
+    "maxPenetrationMetres": 0.012887037359178066,
+    "sumSquaredPenetration": 0.016995199024677277,
+    "sampledVertices": 4185,
+    "shaftVertices": 4083,
+    "penetratingVertices": 497,
+    "deepPenetratingVertices": 337
+  },
+  "final": {
+    "scope": "Actual weighted skin vertices against a measured cylindrical barrel approximation; not triangle intersection or full prop surface certification.",
+    "item": "Flashlight",
+    "radius": 0.022590016946196556,
+    "minimum": -0.045627444982528687,
+    "maximum": 0.09116700291633606,
+    "maxPenetrationMetres": 0.006380703300237656,
+    "sumSquaredPenetration": 0.0015945202903822064,
+    "sampledVertices": 4185,
+    "shaftVertices": 4113,
+    "penetratingVertices": 177,
+    "deepPenetratingVertices": 59
+  },
+  "finalInputs": {
+    "Assets/Resources/PlayerHandAnimation/geometry.fbx": "3e2ce6b5cbfe3d6d0f5a85ecaa74e3028ea8b1dd25f9f0ccfccf8d49ef90a3a4",
+    "Assets/Resources/PlayerHandAnimation/poses.json": "f204c914c1d3b2a8df2aa9fa3e95054b6c6da74ee8cb777f363bf3d826f15211",
+    "Assets/Resources/PlayerHandAnimation/GripCatalog.asset": "d2521f6a6c599c45c6f5735f65ad0873364a5a32d47b5f61aa73dd92155bdf64"
+  },
+  "source": "Assets/Editor/HandGripSurfaceAudit.cs",
+  "limitations": [
+    "3mm-deep intersections remain",
+    "barrel is an approximation and only the static flashlight grip was measured",
+    "all other items and motion frames need surface-level verification"
+  ]
+}
