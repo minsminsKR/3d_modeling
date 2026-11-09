@@ -40,6 +40,8 @@ namespace HappyToy.V2.Editor
                     foreach (var node in hands.GetComponentsInChildren<Transform>(true))
                         if (node.name == "palm_contact" || node.name.EndsWith("_tip") || node.name == "hand" || node.name == "flashlight")
                             report.AppendLine(node.name+" position="+camera.transform.InverseTransformPoint(node.position).ToString("F5")+" forward="+node.forward.ToString("F4")+" up="+node.up.ToString("F4"));
+                    foreach (var renderer in hands.GetComponentsInChildren<Renderer>(true))
+                        report.AppendLine("renderer="+renderer.name+" active="+renderer.gameObject.activeInHierarchy+" enabled="+renderer.enabled+" bounds="+renderer.bounds+" cameraCenter="+camera.transform.InverseTransformPoint(renderer.bounds.center).ToString("F5"));
                     File.WriteAllText(Path.Combine(output,name+"-pose.txt"),report.ToString());
                     RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination = hands.Output });
                     var previous = RenderTexture.active;

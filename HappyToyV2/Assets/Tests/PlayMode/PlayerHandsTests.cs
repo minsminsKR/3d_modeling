@@ -315,6 +315,16 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(left, Is.GreaterThan(100), label + ": flashlight hand is clipped out of view");
                 if (expectRightHand) Assert.That(right, Is.GreaterThan(60), label + ": item hand is clipped out of view");
                 Assert.That((float)centre / centralArea, Is.LessThan(.002f), label + ": rendered hands/items obstruct the central sightline");
+                // Explicit, opt-in evidence from the live gameplay hand camera.
+                // Normal test runs never write these images.
+                string review = Environment.GetEnvironmentVariable("HAPPYTOY_HAND_GPU_REVIEW_DIR");
+                if (!string.IsNullOrEmpty(review) && label.StartsWith("16x9 ") &&
+                    (label.EndsWith(" idle") || label.Contains(" action ")))
+                {
+                    string directory = System.IO.Path.GetFullPath(review);
+                    System.IO.Directory.CreateDirectory(directory);
+                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(directory, label.Replace(' ', '-') + ".png"), frame.EncodeToPNG());
+                }
             }
             catch
             {

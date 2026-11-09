@@ -452,7 +452,7 @@ namespace HappyToy.V2
                     held.position = rightRig.Pinch - held.up * (heldBounds.max.y - .008f) + held.right * heldBounds.size.x * .28f; break;
                 case PlayerItem.Incense:
                     held.position = rightRig.Pinch + held.up * (heldBounds.size.y * .5f - .035f); break;
-                case PlayerItem.Snapper: held.position = rightRig.Pinch; break;
+                case PlayerItem.Snapper: held.position = SnapperGripPosition(); break;
                 case PlayerItem.Trap: held.position = rightRig.Palm - held.up * heldBounds.min.y; break;
             }
         }
@@ -475,6 +475,7 @@ namespace HappyToy.V2
                 held.localScale = Vector3.one * Mathf.Lerp(1, lens, blend);
             }
         }
+        Vector3 SnapperGripPosition() => rightRig.Pinch - viewCamera.transform.forward * .01f;
         Vector3 predictedSnapperPoint, predictedSnapperDirection;
         bool predictedSnapper;
         void PredictSnapper(float sideScale, HandMotionSample motion)
@@ -487,7 +488,7 @@ namespace HappyToy.V2
             rightGrip.localRotation = Quaternion.identity;
             ApplySocket(rightGrip, clip, clip.releaseTime, motion);
             rightRig.Apply(library.GetPose("Snapper"), clip, clip.releaseTime);
-            held.position = rightRig.Pinch;
+            held.position = SnapperGripPosition();
             predictedSnapperPoint = WorldPoint(held.position);
             predictedSnapperDirection = WorldDirection(rightGrip.forward);
             predictedSnapper = true;

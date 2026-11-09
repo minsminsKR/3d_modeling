@@ -10,13 +10,14 @@
   "materialNames": [
     "Draft two-sided skin projection"
   ],
-  "status": "runtime evaluation candidate; skin and game-camera appearance not approved",
+  "status": "GPU-reviewed runtime candidate; remaining grip and realism issues documented",
   "originalSha256": "811f43accbb31a88266d932f8f5563b2d13586fca0ba2693aad1f5fe582b3515",
   "outputSha256": {
-    "geometry": "eb55a1d5799a2fad3ef1226275732181efa46843142905678528724527bff107",
+    "geometry": "3e2ce6b5cbfe3d6d0f5a85ecaa74e3028ea8b1dd25f9f0ccfccf8d49ef90a3a4",
     "packedBlend": "6c5f95deedbd5f78a313a4d58c26b20aa0e0baea72229c6ca193f56158e312c1",
-    "albedo": "4cabb8254b826091786b3001e1133d2a04e875667e1bff222363ab141c172f26",
+    "albedo": "9f7295085cdb46701d993a7359236911b135874cddf7d086618d284abe0b501f",
     "metallicRoughness": "89844c792532125afbf6ec0f15bca74d3d09ed159f2dca7225adf9cbc2547b5a",
     "normal": "5cf6a04873c681f66cecbd3306a2cc4282001d74164c247d7ad3d2025fb6779c"
-  }
+  },
+  "textureSource": "SourceArt/AnatomicalHandsPrototype/hand-rig-prototype-v7.blend"
 }

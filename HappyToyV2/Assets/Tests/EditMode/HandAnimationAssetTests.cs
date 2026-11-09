@@ -35,6 +35,30 @@ namespace HappyToy.V2.CloudTests
         static Transform BoneAt(GameObject root, string name) => root.GetComponentsInChildren<Transform>(true).Single(node => node.name == name);
 
         [Test]
+        public void ImportedHandUsesTheBakedSkinUvInsteadOfTheOldAtlas()
+        {
+            var prefab = Resources.Load<GameObject>("PlayerItems/hand");
+            Assert.That(prefab, Is.Not.Null);
+            var mesh = prefab.GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMesh;
+            var image = new Texture2D(2, 2, TextureFormat.RGB24, false);
+            try
+            {
+                Assert.That(image.LoadImage(File.ReadAllBytes("Assets/Resources/PlayerItems/hand/albedo.png")), Is.True);
+                Assert.That(mesh.uv.Length, Is.EqualTo(mesh.vertexCount));
+                int empty = 0;
+                foreach (var uv in mesh.uv)
+                {
+                    var color = image.GetPixel(Mathf.Clamp(Mathf.RoundToInt(uv.x * (image.width - 1)), 0, image.width - 1),
+                        Mathf.Clamp(Mathf.RoundToInt(uv.y * (image.height - 1)), 0, image.height - 1));
+                    if (Mathf.Max(color.r, color.g, color.b) < .08f) empty++;
+                }
+                Assert.That((float)empty / mesh.uv.Length, Is.LessThan(.05f),
+                    "The hand UV0 samples the black background rather than its baked skin atlas");
+            }
+            finally { Object.DestroyImmediate(image); }
+        }
+
+        [Test]
         public void ImportedHandBindIsNeutralRatherThanBakingAndApplyingTheRelaxedPoseTwice()
         {
             var data = Read();
