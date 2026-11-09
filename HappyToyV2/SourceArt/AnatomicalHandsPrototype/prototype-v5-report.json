@@ -1,0 +1,12 @@
+{
+  "strongDistalVertices": {
+    "little_3": 180,
+    "ring_3": 173,
+    "middle_3": 174,
+    "index_3": 166,
+    "thumb_3": 171
+  },
+  "unweighted": 0,
+  "maxInfluences": 3,
+  "status": "draft anatomical landmarks, new axes; action retargeting and texture not complete"
+}
