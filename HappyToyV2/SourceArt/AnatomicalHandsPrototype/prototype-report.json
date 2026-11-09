@@ -1,0 +1,10 @@
+{
+  "candidate": true,
+  "baseVertices": 3300,
+  "faces": 3298,
+  "unweighted": 0,
+  "maxWeightError": 1.182197593152523e-07,
+  "textureReady": false,
+  "forearmReady": false,
+  "note": "Initial rigid alignment and nearest-surface weight transfer only; no runtime integration or visual quality claim."
+}

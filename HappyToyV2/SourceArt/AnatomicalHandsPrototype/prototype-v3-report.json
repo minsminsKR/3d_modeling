@@ -1,0 +1,20 @@
+{
+  "uvCount": 12928,
+  "uvRange": [
+    0.0,
+    0.9983436465263367,
+    0.0,
+    0.9974253177642822
+  ],
+  "sourceMaterialNames": [
+    "hand_surface_0",
+    "hand_nail"
+  ],
+  "method": "nearest old skin surface UV transfer",
+  "visualQualityVerified": false,
+  "knownLimitations": [
+    "UV mapping may stretch or cross seams",
+    "source texture is generated rather than a photographed scan",
+    "full item grips not validated"
+  ]
+}

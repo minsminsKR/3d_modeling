@@ -1,0 +1,52 @@
+{
+  "mesh": {
+    "boundaryEdges": 44,
+    "nonManifoldEdges": 0,
+    "looseVertices": 0
+  },
+  "tipToSkinMetres": {
+    "Grip_Open": {
+      "thumb": 0.02347,
+      "index": 0.01403,
+      "middle": 0.004,
+      "ring": 0.01361,
+      "little": 0.00832
+    },
+    "Grip_Flashlight": {
+      "thumb": 0.00798,
+      "index": 0.00033,
+      "middle": 0.004,
+      "ring": 0.00974,
+      "little": 0.01089
+    },
+    "Grip_Snapper": {
+      "thumb": 0.00036,
+      "index": 0.00119,
+      "middle": 0.004,
+      "ring": 0.01659,
+      "little": 0.01415
+    },
+    "Grip_Incense": {
+      "thumb": 0.00021,
+      "index": 0.00308,
+      "middle": 0.004,
+      "ring": 0.01659,
+      "little": 0.01415
+    },
+    "Grip_Talisman": {
+      "thumb": 0.01487,
+      "index": 0.01064,
+      "middle": 0.00306,
+      "ring": 0.01493,
+      "little": 0.01415
+    },
+    "Grip_Trap": {
+      "thumb": 0.02347,
+      "index": 0.01003,
+      "middle": 0.004,
+      "ring": 0.01261,
+      "little": 0.01616
+    }
+  },
+  "meaning": "Nearest surface is a coarse correspondence signal; not proof of contact, shape quality, or absence of intersections."
+}

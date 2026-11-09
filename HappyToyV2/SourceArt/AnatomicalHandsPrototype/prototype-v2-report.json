@@ -1,0 +1,16 @@
+{
+  "vertices": 3255,
+  "polygons": 3232,
+  "unweighted": 0,
+  "maxError": 1.182197593152523e-07,
+  "maxInfluences": 3,
+  "littleCounts": {
+    "little_1": 137,
+    "little_2": 194,
+    "little_3": 172
+  },
+  "draft": true,
+  "skinTextureReady": false,
+  "uvExtrusionReady": false,
+  "contactVerified": false
+}

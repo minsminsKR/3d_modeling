@@ -234,3 +234,7 @@ HappyToyV2/SourceArt/TempleForest/**/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TempleForest/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/TempleForest/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/TempleForest/**/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Editable, explicitly incomplete Blender anatomical hand prototype and original.
+HappyToyV2/SourceArt/AnatomicalHandsPrototype/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/AnatomicalHandsPrototype/*.zip filter=lfs diff=lfs merge=lfs -text
