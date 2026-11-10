@@ -34,6 +34,38 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(120000)]
+        public IEnumerator SnapperRestsOnPalmThenMovesToFingersAndFlicksAtRelease()
+        {
+            yield return PrepareHandFixture();
+            var hands = Get<Component>(player, "Hands");
+            ((Behaviour)hands).enabled = false;
+            try
+            {
+                Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, -1f, 16f / 9);
+                var grip = HandStudio.Find("Right item grip");
+                var hand = HandRoot(grip);
+                var prop = HandProp(grip);
+                var palm = HandMarker(hand, "palm_contact");
+                var surface = HandPropVertices(prop);
+                float support = surface.Min(point => Vector3.Dot(point - palm.position, palm.up));
+                Assert.That(support, Is.InRange(-.006f, .012f), "Idle snapper is not resting on the palm");
+                Assert.That(Vector3.ProjectOnPlane(prop.position - palm.position, palm.up).magnitude,
+                    Is.LessThan(.035f), "Idle snapper is outside the supporting palm");
+
+                Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, .22f / .85f, 16f / 9);
+                var pinch = (HandMarker(hand, "thumb_tip").position + HandMarker(hand, "index_tip").position) * .5f;
+                Assert.That(Vector3.Distance(prop.position, pinch), Is.LessThan(.02f), "Snapper did not reach the fingers");
+                var index = HandMarker(hand, "index_2");
+                Quaternion loaded = index.localRotation;
+                Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, .32f / .85f, 16f / 9);
+                Assert.That(Quaternion.Angle(loaded, index.localRotation), Is.GreaterThan(20), "Index finger did not flick open at release");
+                Assert.That(Vector3.Distance(prop.position, HandMarker(hand, "index_tip").position), Is.LessThan(.02f),
+                    "The pellet left the index finger before the release marker");
+            }
+            finally { ((Behaviour)hands).enabled = true; }
+        }
+
+        [UnityTest, Timeout(120000)]
         public IEnumerator SnapperProfileAnchorOffsetMatchesThePredictedReleasePose()
         {
             yield return PrepareHandFixture();

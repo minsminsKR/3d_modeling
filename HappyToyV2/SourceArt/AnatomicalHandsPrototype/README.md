@@ -58,6 +58,28 @@ To reproduce from the repository root, extract the original ZIP alongside these 
 
 Remaining: fit every finger chain to the new surface; correct pose and grip contact across all items; validate continuous forearm shape and UV; author and bake appropriate skin and nail maps; integrate and verify the real Unity prefab, runtime grips and animation, and game-camera appearance under the desktop/GPU restrictions. No visual or gameplay approval is asserted.
 
+## Snapper palm-to-flick action — 2026-11-10
+
+The snapper now rests on a cupped, palm-up right hand. The UseSnapper action
+closes the thumb and index around it, then extends the index at the existing
+0.32-second release marker and returns to the palm pose. The presentation
+interpolates the pellet from the animated palm surface to the pinch and then
+the index pad; the launch predictor evaluates the same release pose and prop
+frame. Existing inventory consumption, cancel, pause and throw ownership remain
+unchanged. The catalog uses its distinct PalmToFlick grip and Palm idle anchor.
+
+`snapper_palm_action.py` authors the bounded finger samples in the retargeting
+pipeline; rerun `retarget_candidate.py` to regenerate the tracked candidate
+JSON and copy it to `Assets/Resources/PlayerHandAnimation/poses.json`. The
+new test exercises support, pickup, finger extension and marker prediction in
+the CPU gameplay fixture. Static palm contact uses the prop bounds and palm
+marker, not a full hand/prop triangle collision solver.
+The final CPU `hand-animation-logic` passed 113/113 EditMode and 13/13 PlayMode.
+Unity D3D11 `player-hands` passed 104/104 EditMode and 4/4 PlayMode after
+the final socket adjustment. A real gameplay fixture produced separate world
+and hand camera layers for the idle pose. The screenshot composite omits HUD;
+standalone player presentation and device performance were not verified.
+
 ## 2026-11-09 v5/v6 exploration
 
 `prototype_v5.py` fits tentative finger chains to manually estimated neutral surface landmarks and replaces digit weights with approximate bounded longitudinal assignments. The five distal groups each have 166–180 vertices above 0.6 weight, with no unweighted vertices and at most three influences. These counts do not demonstrate anatomically correct bending or finger contact. New bone bind frames differ from the game library, so the existing JSON cannot safely be shipped without retargeting and grip correction. `audit_pose_v5.py` forces frame reevaluation; nearest surface measurements alone do not detect penetrations and the identical distances across poses should not be treated as proof of working actions.

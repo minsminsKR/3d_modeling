@@ -56,6 +56,9 @@ namespace HappyToy.V2.Editor
                 }
                 Capture("flashlight",PlayerItem.Flashlight);
                 Capture("snapper",PlayerItem.Snapper);
+                Capture("snapper-palm-pickup",PlayerItem.Snapper,-1,.10f / .85f);
+                Capture("snapper-loaded-fingers",PlayerItem.Snapper,-1,.22f / .85f);
+                Capture("snapper-flick",PlayerItem.Snapper,-1,.30f / .85f);
                 Capture("snapper-release",PlayerItem.Snapper,-1,.28f);
                 Capture("incense",PlayerItem.Incense);
                 Capture("talisman-whole",PlayerItem.Talisman);

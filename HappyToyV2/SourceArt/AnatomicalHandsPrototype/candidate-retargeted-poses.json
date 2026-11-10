@@ -773,97 +773,97 @@
         },
         {
           "name": "palm",
-          "curl": 0.0,
+          "curl": 2.0,
           "spread": 0.0,
           "twist": 0.0
         },
         {
           "name": "thumb_1",
-          "curl": 16.4,
-          "spread": -51.8,
-          "twist": -27.25
+          "curl": 14.0,
+          "spread": -30.0,
+          "twist": -10.0
         },
         {
           "name": "thumb_2",
-          "curl": 30.25,
+          "curl": 25.0,
           "spread": 0.0,
           "twist": 0.0
         },
         {
           "name": "thumb_3",
-          "curl": 0.0,
+          "curl": 17.0,
           "spread": 0.0,
           "twist": 0.0
         },
         {
           "name": "index_1",
-          "curl": 28.25,
-          "spread": -15.0,
+          "curl": 8.0,
+          "spread": -2.0,
           "twist": 0.0
         },
         {
           "name": "index_2",
-          "curl": 62.65,
+          "curl": 31.0,
           "spread": 0.0,
           "twist": 0.0
         },
         {
           "name": "index_3",
-          "curl": 29.75,
+          "curl": 22.0,
           "spread": 0.0,
           "twist": 0.0
         },
         {
           "name": "middle_1",
-          "curl": 20.95,
-          "spread": 15.0,
+          "curl": 10.0,
+          "spread": 0.0,
           "twist": 0.0
         },
         {
           "name": "middle_2",
-          "curl": 61.8,
-          "spread": 0.0,
-          "twist": 0.0
-        },
-        {
-          "name": "middle_3",
-          "curl": 26.35,
-          "spread": 0.0,
-          "twist": 0.0
-        },
-        {
-          "name": "ring_1",
-          "curl": 18.0,
-          "spread": 2.0,
-          "twist": 0.0
-        },
-        {
-          "name": "ring_2",
-          "curl": 30.0,
-          "spread": 0.0,
-          "twist": 0.0
-        },
-        {
-          "name": "ring_3",
-          "curl": 18.0,
-          "spread": 0.0,
-          "twist": 0.0
-        },
-        {
-          "name": "little_1",
-          "curl": 21.0,
-          "spread": 4.0,
-          "twist": 0.0
-        },
-        {
-          "name": "little_2",
           "curl": 33.0,
           "spread": 0.0,
           "twist": 0.0
         },
         {
+          "name": "middle_3",
+          "curl": 24.0,
+          "spread": 0.0,
+          "twist": 0.0
+        },
+        {
+          "name": "ring_1",
+          "curl": 12.0,
+          "spread": 2.0,
+          "twist": 0.0
+        },
+        {
+          "name": "ring_2",
+          "curl": 35.0,
+          "spread": 0.0,
+          "twist": 0.0
+        },
+        {
+          "name": "ring_3",
+          "curl": 26.0,
+          "spread": 0.0,
+          "twist": 0.0
+        },
+        {
+          "name": "little_1",
+          "curl": 14.0,
+          "spread": 4.0,
+          "twist": 0.0
+        },
+        {
+          "name": "little_2",
+          "curl": 37.0,
+          "spread": 0.0,
+          "twist": 0.0
+        },
+        {
           "name": "little_3",
-          "curl": 21.0,
+          "curl": 28.0,
           "spread": 0.0,
           "twist": 0.0
         }
@@ -6566,97 +6566,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.4,
-              "spread": -51.8,
-              "twist": -27.25
+              "curl": 14.0,
+              "spread": -30.0,
+              "twist": -10.0
             },
             {
               "name": "thumb_2",
-              "curl": 30.25,
+              "curl": 25.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 28.25,
-              "spread": -15.0,
+              "curl": 8.0,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 62.65,
+              "curl": 31.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.75,
+              "curl": 22.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "middle_3",
-              "curl": 26.35,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_1",
-              "curl": 18.0,
-              "spread": 2.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_2",
-              "curl": 30.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_3",
-              "curl": 18.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_1",
-              "curl": 21.0,
-              "spread": 4.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_2",
               "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "middle_3",
+              "curl": 24.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_1",
+              "curl": 12.0,
+              "spread": 2.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_2",
+              "curl": 35.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_3",
+              "curl": 26.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_1",
+              "curl": 14.0,
+              "spread": 4.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_2",
+              "curl": 37.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -6677,109 +6677,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -0.4509,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -1.08215,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.87617,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 14.31667,
-              "spread": -51.74792,
-              "twist": -27.30208
+              "curl": 14.14859,
+              "spread": -31.34972,
+              "twist": -11.06801
             },
             {
               "name": "thumb_2",
-              "curl": 32.33333,
+              "curl": 25.32505,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 15.94747,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 26.375,
-              "spread": -15.0,
+              "curl": 9.25375,
+              "spread": -2.80488,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 61.50417,
+              "curl": 32.95957,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.4375,
+              "curl": 22.47983,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 10.67796,
+              "spread": 0.92871,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 34.78312,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 24.1455,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 12.37148,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 34.69043,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 25.50469,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 14.4334,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 36.75234,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 27.5666,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -6800,109 +6800,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -1.54956,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -3.71895,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.56034,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 12.23333,
-              "spread": -51.69583,
-              "twist": -27.35417
+              "curl": 14.52759,
+              "spread": -34.79228,
+              "twist": -13.79206
             },
             {
               "name": "thumb_2",
-              "curl": 34.41667,
+              "curl": 26.1541,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 13.2629,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 24.5,
-              "spread": -15.0,
+              "curl": 12.45154,
+              "spread": -4.85778,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 60.35833,
+              "curl": 37.9576,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.125,
+              "curl": 23.70368,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 12.40713,
+              "spread": 3.29744,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 39.33108,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 24.5166,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 13.31898,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 33.90085,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 24.24137,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 15.53881,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 36.12068,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 26.46119,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -6923,109 +6923,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -2.91495,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -6.99588,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.13599,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 10.15,
-              "spread": -51.64375,
-              "twist": -27.40625
+              "curl": 15.03681,
+              "spread": -39.41773,
+              "twist": -17.4521
             },
             {
               "name": "thumb_2",
-              "curl": 36.5,
+              "curl": 27.26803,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 9.6559,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 22.625,
-              "spread": -15.0,
+              "curl": 16.74812,
+              "spread": -7.61608,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 59.2125,
+              "curl": 44.67299,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.8125,
+              "curl": 25.34805,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 14.73047,
+              "spread": 6.48009,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 45.44177,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 25.01521,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 14.59204,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 32.83997,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 22.54395,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 17.02404,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 35.27198,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 24.97596,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7046,109 +7046,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -4.16603,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -9.99848,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.68659,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 8.06667,
-              "spread": -51.59167,
-              "twist": -27.45833
+              "curl": 15.57609,
+              "spread": -44.31616,
+              "twist": -21.32815
             },
             {
               "name": "thumb_2",
-              "curl": 38.58333,
+              "curl": 28.4477,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 5.83602,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 20.75,
-              "spread": -15.0,
+              "curl": 21.29827,
+              "spread": -10.53716,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 58.06667,
+              "curl": 51.7847,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.5,
+              "curl": 27.08946,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 17.19092,
+              "spread": 9.85057,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 51.91309,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 25.54326,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 15.94023,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 31.71648,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 20.74636,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 18.59693,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 34.37318,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 23.40307,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7169,109 +7169,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -4.92176,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -11.81222,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.29563,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 5.98333,
-              "spread": -51.53958,
-              "twist": -27.51042
+              "curl": 16.04525,
+              "spread": -48.57765,
+              "twist": -24.70021
             },
             {
               "name": "thumb_2",
-              "curl": 40.66667,
+              "curl": 29.47398,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 2.51284,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 18.875,
-              "spread": -15.0,
+              "curl": 25.25677,
+              "spread": -13.07842,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 56.92083,
+              "curl": 57.97168,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.1875,
+              "curl": 28.60444,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 19.33144,
+              "spread": 12.78279,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 57.54295,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 26.00264,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 17.11312,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 30.73907,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 19.18251,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 19.9653,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 33.59126,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 22.0347,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7292,109 +7292,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -5.0,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -12.0,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.04658,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 3.9,
-              "spread": -51.4875,
-              "twist": -27.5625
+              "curl": 16.3441,
+              "spread": -51.29226,
+              "twist": -26.84823
             },
             {
               "name": "thumb_2",
-              "curl": 42.75,
+              "curl": 30.12772,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 0.39594,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 17.0,
-              "spread": -15.0,
+              "curl": 27.77836,
+              "spread": -14.69722,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 55.775,
+              "curl": 61.91285,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 27.875,
+              "curl": 29.5695,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 20.69497,
+              "spread": 14.65064,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 61.12923,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 26.29527,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 17.86026,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 30.11645,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 18.18633,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 20.83696,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 33.09316,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 21.16304,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7415,109 +7415,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -5.0,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "wrist",
-              "curl": -12.0,
+              "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.09718,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 1.81667,
-              "spread": -51.43542,
-              "twist": -27.61458
+              "curl": 16.28338,
+              "spread": -51.32379,
+              "twist": -26.89771
             },
             {
               "name": "thumb_2",
-              "curl": 44.83333,
+              "curl": 29.9463,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 0.82607,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 15.125,
-              "spread": -15.0,
+              "curl": 26.97445,
+              "spread": -14.3683,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 54.62917,
+              "curl": 59.84865,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 27.5625,
+              "curl": 28.45015,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 20.41791,
+              "spread": 14.27111,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 60.40054,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 26.23581,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 17.70845,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 30.24296,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 18.38874,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 20.65985,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 33.19437,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 21.34015,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7538,109 +7538,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -4.72208,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": -11.60765,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 0.90015,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 0.0113,
-              "spread": -50.8245,
-              "twist": -27.09481
+              "curl": 15.31982,
+              "spread": -47.38927,
+              "twist": -23.98696
             },
             {
               "name": "thumb_2",
-              "curl": 45.75124,
+              "curl": 27.43703,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.17373,
+              "curl": 7.65127,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 13.25,
-              "spread": -15.0,
+              "curl": 16.43554,
+              "spread": -9.14903,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 53.48333,
+              "curl": 36.7032,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 27.25,
+              "curl": 17.71051,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 16.02168,
+              "spread": 8.24888,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 48.83785,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 25.29232,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 15.29955,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 32.25037,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 21.6006,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 17.84948,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 34.8003,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 24.15052,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7661,109 +7661,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -2.76484,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": -8.84448,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 1.792,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 1.76993,
-              "spread": -43.04846,
-              "twist": -19.24284
+              "curl": 14.2496,
+              "spread": -43.0192,
+              "twist": -20.754
             },
             {
               "name": "thumb_2",
-              "curl": 31.72632,
+              "curl": 24.65,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 2.57496,
+              "curl": 15.232,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 10.13302,
-              "spread": -12.773,
+              "curl": 4.73,
+              "spread": -3.352,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 44.68861,
+              "curl": 10.9956,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 23.04025,
+              "curl": 5.782,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.67199,
-              "spread": 14.76768,
+              "curl": 11.1388,
+              "spread": 1.56,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 60.95126,
+              "curl": 35.9952,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.00384,
+              "curl": 24.2444,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 12.624,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 34.48,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 25.168,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 14.728,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 36.584,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 27.272,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7784,109 +7784,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": -0.932,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": -6.25695,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 3.46608,
-              "spread": -37.09423,
-              "twist": -13.21301
+              "curl": 14.0,
+              "spread": -42.0,
+              "twist": -20.0
             },
             {
               "name": "thumb_2",
-              "curl": 20.62398,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 4.4163,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 6.91092,
-              "spread": -9.01268,
+              "curl": 2.0,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 31.08587,
+              "curl": 5.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 16.27219,
+              "curl": 3.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 17.4244,
-              "spread": 12.05381,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 51.0366,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "middle_3",
-              "curl": 21.96018,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_1",
-              "curl": 17.95607,
-              "spread": 2.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_2",
-              "curl": 29.93264,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_3",
-              "curl": 17.959,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_1",
-              "curl": 21.0,
-              "spread": 4.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_2",
               "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "middle_3",
+              "curl": 24.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_1",
+              "curl": 12.0,
+              "spread": 2.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_2",
+              "curl": 35.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_3",
+              "curl": 26.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_1",
+              "curl": 14.0,
+              "spread": 4.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_2",
+              "curl": 37.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7907,109 +7907,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 0.46964,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": -4.27815,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 5.53686,
-              "spread": -33.9552,
-              "twist": -9.97533
+              "curl": 14.0,
+              "spread": -41.9776,
+              "twist": -19.98133
             },
             {
               "name": "thumb_2",
-              "curl": 13.54818,
+              "curl": 24.00187,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.39608,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 5.8592,
-              "spread": -6.31487,
+              "curl": 2.0112,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 22.09666,
+              "curl": 5.04854,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 11.6265,
+              "curl": 3.03547,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 13.99077,
-              "spread": 9.18449,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 40.554,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "middle_3",
-              "curl": 17.68489,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_1",
-              "curl": 16.82227,
-              "spread": 2.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_2",
-              "curl": 28.19415,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_3",
-              "curl": 16.90079,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_1",
-              "curl": 21.0,
-              "spread": 4.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_2",
               "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "middle_3",
+              "curl": 24.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_1",
+              "curl": 12.0,
+              "spread": 2.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_2",
+              "curl": 35.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_3",
+              "curl": 26.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_1",
+              "curl": 14.0,
+              "spread": 4.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_2",
+              "curl": 37.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8030,109 +8030,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 4.27178,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 1.08957,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 7.76101,
-              "spread": -32.04403,
-              "twist": -7.95597
+              "curl": 14.0,
+              "spread": -41.73728,
+              "twist": -19.78107
             },
             {
               "name": "thumb_2",
-              "curl": 8.23899,
+              "curl": 24.02189,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 4.61106,
-              "spread": -2.04689,
+              "curl": 2.13136,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 8.12961,
+              "curl": 5.56923,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.34621,
+              "curl": 3.41597,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 5.30901,
-              "spread": 1.92953,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 14.04922,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 6.875,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 9.9872,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 17.7137,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 10.52138,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 17.30926,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 27.66893,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 17.5143,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8153,109 +8153,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 7.932,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 6.25695,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 9.01887,
-              "spread": -32.07547,
-              "twist": -7.92453
+              "curl": 14.0,
+              "spread": -41.26232,
+              "twist": -19.38526
             },
             {
               "name": "thumb_2",
-              "curl": 6.98113,
+              "curl": 24.06147,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 5.71698,
+              "curl": 2.36884,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 8.66038,
+              "curl": 6.59831,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.45283,
+              "curl": 4.168,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 10.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.65754,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 8.00823,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.6137,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 8.26647,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 14.60712,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 8.97389,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8276,109 +8276,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 10.74074,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 10.22222,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 10.27673,
-              "spread": -32.10692,
-              "twist": -7.89308
+              "curl": 14.0,
+              "spread": -40.58853,
+              "twist": -18.82378
             },
             {
               "name": "thumb_2",
-              "curl": 5.72327,
+              "curl": 24.11762,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 6.84906,
+              "curl": 2.70573,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 9.3522,
+              "curl": 8.05818,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.64151,
+              "curl": 5.23482,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 10.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.00265,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.00382,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0025,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8399,109 +8399,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 11.98841,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 11.98364,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 11.53459,
-              "spread": -32.13836,
-              "twist": -7.86164
+              "curl": 14.0,
+              "spread": -39.75175,
+              "twist": -18.12646
             },
             {
               "name": "thumb_2",
-              "curl": 4.46541,
+              "curl": 24.18735,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 7.98113,
+              "curl": 3.12413,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 10.04403,
+              "curl": 9.87121,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.83019,
+              "curl": 6.55973,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 10.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8522,109 +8522,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 11.78743,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 11.78743,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 12.6224,
-              "spread": -32.51169,
-              "twist": -8.18004
+              "curl": 14.0,
+              "spread": -38.78779,
+              "twist": -17.32316
             },
             {
               "name": "thumb_2",
-              "curl": 3.92054,
+              "curl": 24.26768,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.89372,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 9.24164,
-              "spread": -2.23028,
+              "curl": 3.6061,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 11.52678,
+              "curl": 11.95979,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 5.42186,
+              "curl": 8.086,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.31797,
-              "spread": 0.26571,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.97072,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.39591,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.26571,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.40742,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.248,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.31885,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.46056,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.30114,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8645,109 +8645,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 11.11111,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 11.11111,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 13.3392,
-              "spread": -33.63089,
-              "twist": -9.2617
+              "curl": 14.0,
+              "spread": -37.73248,
+              "twist": -16.44374
             },
             {
               "name": "thumb_2",
-              "curl": 4.93117,
+              "curl": 24.35563,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.55556,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 10.78232,
-              "spread": -2.96296,
+              "curl": 4.13376,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 14.73508,
+              "curl": 14.24628,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 6.89273,
+              "curl": 9.7569,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 4.32963,
-              "spread": 1.11111,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 11.05926,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 5.65556,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 4.11111,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 8.7037,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 5.03704,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 4.33333,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 8.92593,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 5.25926,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8768,109 +8768,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 10.06545,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 10.06545,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 13.76054,
-              "spread": -35.34411,
-              "twist": -10.95125
+              "curl": 14.0,
+              "spread": -36.62165,
+              "twist": -15.51804
             },
             {
               "name": "thumb_2",
-              "curl": 7.18064,
+              "curl": 24.4482,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.03272,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 12.54615,
-              "spread": -4.09577,
+              "curl": 4.68918,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 19.31766,
+              "curl": 16.6531,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 9.06382,
+              "curl": 11.51573,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 5.89377,
-              "spread": 2.41819,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 15.83447,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 7.60311,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 5.41819,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 10.7079,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 6.25698,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 5.90183,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 11.19153,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 6.74062,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -8891,109 +8891,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 8.74763,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 8.74763,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 13.96415,
-              "spread": -37.49504,
-              "twist": -13.08871
+              "curl": 14.0,
+              "spread": -35.49111,
+              "twist": -14.57593
             },
             {
               "name": "thumb_2",
-              "curl": 10.34294,
+              "curl": 24.54241,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 4.37382,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 14.4744,
-              "spread": -5.5234,
+              "curl": 5.25444,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 24.91284,
+              "curl": 19.10259,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 11.75086,
+              "curl": 13.30574,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 7.865,
-              "spread": 4.06546,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 21.85248,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 10.05754,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 7.06546,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 13.23371,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 7.79443,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 7.87855,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 14.0468,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 8.60752,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9014,109 +9014,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 7.25486,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 7.25486,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 14.02779,
-              "spread": -39.92736,
-              "twist": -15.5141
+              "curl": 14.0,
+              "spread": -34.37669,
+              "twist": -13.64724
             },
             {
               "name": "thumb_2",
-              "curl": 14.09208,
+              "curl": 24.63528,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 3.62743,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 16.50836,
-              "spread": -7.14056,
+              "curl": 5.81165,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 31.159,
+              "curl": 21.51716,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 14.76957,
+              "curl": 15.07023,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 10.09793,
-              "spread": 5.93142,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 28.66946,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 12.83782,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 8.93142,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 16.09484,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 9.53599,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 10.1177,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 17.28113,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 10.72228,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9137,109 +9137,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 5.68434,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 5.68434,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 14.02923,
-              "spread": -42.48473,
-              "twist": -18.06749
+              "curl": 14.0,
+              "spread": -33.31422,
+              "twist": -12.76185
             },
             {
               "name": "thumb_2",
-              "curl": 18.10201,
+              "curl": 24.72382,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 2.84217,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 18.5893,
-              "spread": -8.84197,
+              "curl": 6.34289,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 37.69449,
+              "curl": 23.81919,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 17.9357,
+              "curl": 16.75249,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 12.44717,
-              "spread": 7.89458,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 35.84152,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 15.76292,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 10.89457,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 19.10501,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 11.36827,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 12.47349,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 20.68393,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 12.94719,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9260,109 +9260,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 4.13326,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 4.13326,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 14.04623,
-              "spread": -45.01083,
-              "twist": -20.58886
+              "curl": 14.0,
+              "spread": -32.33952,
+              "twist": -11.9496
             },
             {
               "name": "thumb_2",
-              "curl": 22.04674,
+              "curl": 24.80504,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 2.06663,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 20.65848,
-              "spread": -10.52231,
+              "curl": 6.83024,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 44.15764,
+              "curl": 25.93105,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 21.06498,
+              "curl": 18.29577,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 14.76734,
-              "spread": 9.83343,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 42.9248,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 18.65181,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 12.83343,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 22.07792,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 13.17787,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 14.80012,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 24.04462,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 15.14455,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9383,109 +9383,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 2.69881,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 2.69881,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 14.15653,
-              "spread": -47.34936,
-              "twist": -22.91828
+              "curl": 14.0,
+              "spread": -31.4884,
+              "twist": -11.24034
             },
             {
               "name": "thumb_2",
-              "curl": 25.60027,
+              "curl": 24.87597,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 1.3494,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 22.6572,
-              "spread": -12.07629,
+              "curl": 7.2558,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 50.18681,
+              "curl": 27.77513,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 23.97313,
+              "curl": 19.64336,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 16.91303,
-              "spread": 11.62649,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 49.47545,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 21.32348,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 14.62649,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 24.82729,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 14.85139,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 16.95179,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 27.15259,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 17.17669,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9506,109 +9506,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 1.47819,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 1.47819,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 14.4379,
-              "spread": -49.34397,
-              "twist": -24.89577
+              "curl": 14.0,
+              "spread": -30.7967,
+              "twist": -10.66392
             },
             {
               "name": "thumb_2",
-              "curl": 28.43656,
+              "curl": 24.93361,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.73909,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 24.52674,
-              "spread": -13.39863,
+              "curl": 7.60165,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 55.42035,
+              "curl": 29.27381,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 26.47591,
+              "curl": 20.73855,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 18.73888,
-              "spread": 13.15227,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 55.04962,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 23.59688,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 16.15226,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 27.16681,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 16.27545,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 18.78272,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 29.79727,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 18.9059,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9629,109 +9629,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 0.5686,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 0.5686,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 14.96809,
-              "spread": -50.83834,
-              "twist": -26.36136
+              "curl": 14.0,
+              "spread": -30.30025,
+              "twist": -10.25021
             },
             {
               "name": "thumb_2",
-              "curl": 30.22961,
+              "curl": 24.97498,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.2843,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 26.20836,
-              "spread": -14.38402,
+              "curl": 7.84988,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 59.49661,
+              "curl": 30.34946,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.38902,
+              "curl": 21.52461,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.09947,
-              "spread": 14.28925,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 59.20342,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 25.29099,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 17.28925,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 28.91019,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 17.33664,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 20.14711,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 31.76804,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 20.19449,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9752,109 +9752,109 @@
           "bones": [
             {
               "name": "forearm",
-              "curl": 0.06723,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "wrist",
-              "curl": 0.06723,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "palm",
               "curl": 0.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "wrist",
+              "curl": 0.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "palm",
+              "curl": 2.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "thumb_1",
-              "curl": 15.82485,
-              "spread": -51.67615,
-              "twist": -27.15507
+              "curl": 14.0,
+              "spread": -30.03485,
+              "twist": -10.02904
             },
             {
               "name": "thumb_2",
-              "curl": 30.65345,
+              "curl": 24.9971,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.03361,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 27.64334,
-              "spread": -14.92717,
+              "curl": 7.98257,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 62.05395,
+              "curl": 30.92448,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.5282,
+              "curl": 21.94482,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.84944,
-              "spread": 14.91597,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.493,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.22479,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 17.91597,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 29.87115,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 17.92157,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 20.89916,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 32.85434,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 20.90476,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -9887,97 +9887,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.4,
-              "spread": -51.8,
-              "twist": -27.25
+              "curl": 14.0,
+              "spread": -30.0,
+              "twist": -10.0
             },
             {
               "name": "thumb_2",
-              "curl": 30.25,
+              "curl": 25.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 28.25,
-              "spread": -15.0,
+              "curl": 8.0,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 62.65,
+              "curl": 31.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.75,
+              "curl": 22.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "middle_3",
-              "curl": 26.35,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_1",
-              "curl": 18.0,
-              "spread": 2.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_2",
-              "curl": 30.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_3",
-              "curl": 18.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_1",
-              "curl": 21.0,
-              "spread": 4.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_2",
               "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "middle_3",
+              "curl": 24.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_1",
+              "curl": 12.0,
+              "spread": 2.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_2",
+              "curl": 35.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_3",
+              "curl": 26.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_1",
+              "curl": 14.0,
+              "spread": 4.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_2",
+              "curl": 37.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10142,97 +10142,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.0327,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 7.51515,
-              "spread": -32.03788,
-              "twist": -7.96212
+              "curl": 6.13078,
+              "spread": -31.9673,
+              "twist": -8.0327
             },
             {
               "name": "thumb_2",
-              "curl": 8.48485,
+              "curl": 10.24522,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 6.17983,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 4.36364,
+              "curl": 3.08174,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 7.83333,
+              "curl": 7.39235,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.22727,
+              "curl": 4.29426,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 3.11444,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 7.42505,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 4.32696,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 3.14713,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 7.45774,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 4.35966,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 3.17983,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 7.49044,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 4.39235,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10265,97 +10265,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.12383,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 9.0303,
-              "spread": -32.07576,
-              "twist": -7.92424
+              "curl": 6.49531,
+              "spread": -31.87617,
+              "twist": -8.12383
             },
             {
               "name": "thumb_2",
-              "curl": 6.9697,
+              "curl": 10.92871,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 6.68105,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 5.72727,
+              "curl": 3.30957,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 8.66667,
+              "curl": 8.48594,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.45455,
+              "curl": 5.11445,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 3.4334,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 8.60976,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 5.23828,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 3.55723,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 8.73359,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 5.36211,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.06493,
+              "curl": 3.68105,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.09378,
+              "curl": 8.85742,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.06132,
+              "curl": 5.48594,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10388,97 +10388,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.26296,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 10.54545,
-              "spread": -32.11364,
-              "twist": -7.88636
+              "curl": 7.05184,
+              "spread": -31.73704,
+              "twist": -8.26296
             },
             {
               "name": "thumb_2",
-              "curl": 5.45455,
+              "curl": 11.9722,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 7.44628,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 7.09091,
+              "curl": 3.6574,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 9.5,
+              "curl": 10.15552,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.68182,
+              "curl": 6.36664,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 3.92036,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 10.41848,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 6.6296,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.37837,
+              "curl": 4.18332,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.58017,
+              "curl": 10.68144,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.35315,
+              "curl": 6.89256,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 5.05744,
+              "curl": 4.44628,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 9.97186,
+              "curl": 10.9444,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 5.94314,
+              "curl": 7.15552,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10511,97 +10511,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.43966,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 12.0606,
-              "spread": -32.15152,
-              "twist": -7.84848
+              "curl": 7.75863,
+              "spread": -31.56034,
+              "twist": -8.43966
             },
             {
               "name": "thumb_2",
-              "curl": 3.9394,
+              "curl": 13.29744,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 8.41812,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 8.50531,
-              "spread": -2.09103,
+              "curl": 4.09915,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 10.64597,
+              "curl": 12.2759,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 5.06839,
+              "curl": 7.95692,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 4.22644,
-              "spread": 1.02488,
+              "curl": 4.5388,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 10.74423,
+              "curl": 12.71556,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 5.52707,
+              "curl": 8.39658,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 5.69312,
+              "curl": 4.97846,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 11.12946,
+              "curl": 13.15521,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 6.51358,
+              "curl": 8.83624,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 8.97444,
+              "curl": 5.41812,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 15.62974,
+              "curl": 13.59487,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 9.64252,
+              "curl": 9.2759,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10634,97 +10634,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.64349,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 13.47162,
-              "spread": -32.39876,
-              "twist": -8.02486
+              "curl": 8.57395,
+              "spread": -31.35651,
+              "twist": -8.64349
             },
             {
               "name": "thumb_2",
-              "curl": 2.86088,
+              "curl": 14.82616,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.93491,
+              "curl": 9.53918,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 10.75079,
-              "spread": -3.67226,
+              "curl": 4.60872,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 16.91023,
+              "curl": 14.72185,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 8.06281,
+              "curl": 9.79139,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 7.69575,
-              "spread": 3.92402,
+              "curl": 5.25221,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 21.33576,
+              "curl": 15.36534,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 9.84679,
+              "curl": 10.43487,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 9.28114,
+              "curl": 5.89569,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 16.63108,
+              "curl": 16.00882,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 9.8624,
+              "curl": 11.07836,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 13.64956,
+              "curl": 6.53918,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 22.3827,
+              "curl": 16.65231,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 14.05792,
+              "curl": 11.72185,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10757,97 +10757,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.86401,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 13.73048,
-              "spread": -34.96231,
-              "twist": -10.57153
+              "curl": 9.45605,
+              "spread": -31.13599,
+              "twist": -8.86401
             },
             {
               "name": "thumb_2",
-              "curl": 6.61298,
+              "curl": 16.48009,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.14973,
+              "curl": 10.75207,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 13.73382,
-              "spread": -6.576,
+              "curl": 5.16003,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 27.7168,
+              "curl": 17.36814,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 13.37164,
+              "curl": 11.77611,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 12.25838,
-              "spread": 7.73681,
+              "curl": 6.02404,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 35.26513,
+              "curl": 18.23216,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 15.52784,
+              "curl": 12.64012,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 13.17047,
+              "curl": 6.88805,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 22.59472,
+              "curl": 19.09617,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 13.49244,
+              "curl": 13.50413,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 17.91646,
+              "curl": 7.75207,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 28.546,
+              "curl": 19.96018,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 18.08777,
+              "curl": 14.36814,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -10880,97 +10880,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.0908,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 13.05626,
-              "spread": -39.40173,
-              "twist": -15.03783
+              "curl": 10.36319,
+              "spread": -30.9092,
+              "twist": -9.0908
             },
             {
               "name": "thumb_2",
-              "curl": 14.27722,
+              "curl": 18.18098,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 3.78137,
+              "curl": 11.99939,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 16.98462,
-              "spread": -9.95989,
+              "curl": 5.72699,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 40.1725,
+              "curl": 20.08957,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 19.52072,
+              "curl": 13.81718,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 16.75122,
-              "spread": 11.49127,
+              "curl": 6.81779,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 48.98146,
+              "curl": 21.18037,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 21.122,
+              "curl": 14.90798,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 16.38914,
+              "curl": 7.90859,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 27.53002,
+              "curl": 22.27117,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 16.49654,
+              "curl": 15.99877,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 20.60879,
+              "curl": 8.99939,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 32.43492,
+              "curl": 23.36196,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 20.63052,
+              "curl": 17.08957,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11003,97 +11003,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.31341,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 12.07101,
-              "spread": -44.46645,
-              "twist": -20.144
+              "curl": 11.25364,
+              "spread": -30.68659,
+              "twist": -9.31341
             },
             {
               "name": "thumb_2",
-              "curl": 23.24551,
+              "curl": 19.85057,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 2.21863,
+              "curl": 13.22375,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 20.03343,
-              "spread": -12.98157,
+              "curl": 6.28352,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 51.38412,
+              "curl": 22.76092,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 25.03592,
+              "curl": 15.82069,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.01117,
-              "spread": 14.21546,
+              "curl": 7.59693,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 58.93383,
+              "curl": 24.07433,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 25.18104,
+              "curl": 17.1341,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 17.96521,
+              "curl": 8.91034,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 29.94665,
+              "curl": 25.38774,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 17.96753,
+              "curl": 18.44751,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 10.22375,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 26.70115,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 19.76092,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11126,97 +11126,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.52141,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 11.39679,
-              "spread": -48.90588,
-              "twist": -24.61029
+              "curl": 12.08565,
+              "spread": -30.47859,
+              "twist": -9.52141
             },
             {
               "name": "thumb_2",
-              "curl": 30.90975,
+              "curl": 21.41059,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.85027,
+              "curl": 14.36777,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 22.41044,
-              "spread": -14.79865,
+              "curl": 6.80353,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 58.45846,
+              "curl": 25.25695,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.4431,
+              "curl": 17.69271,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 8.32494,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 26.77836,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 19.21412,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 9.84636,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 28.29977,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 20.73554,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 11.36777,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 29.82119,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 22.25695,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11249,97 +11249,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.70437,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 11.65565,
-              "spread": -51.46942,
-              "twist": -27.15696
+              "curl": 12.81749,
+              "spread": -30.29563,
+              "twist": -9.70437
             },
             {
               "name": "thumb_2",
-              "curl": 34.66185,
+              "curl": 22.78279,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.06509,
+              "curl": 15.37404,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 23.88636,
-              "spread": -15.0,
+              "curl": 7.26093,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 59.98333,
+              "curl": 27.45246,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.02273,
+              "curl": 19.33934,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 8.9653,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 29.15683,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 21.04371,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 10.66967,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 30.8612,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 22.74809,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 12.37404,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 32.56557,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 24.45246,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11372,97 +11372,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.85185,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 13.06667,
-              "spread": -51.71667,
-              "twist": -27.33333
+              "curl": 13.40741,
+              "spread": -30.14815,
+              "twist": -9.85185
             },
             {
               "name": "thumb_2",
-              "curl": 33.58333,
+              "curl": 23.88889,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 16.18519,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 25.25,
-              "spread": -15.0,
+              "curl": 7.62963,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 60.81667,
+              "curl": 29.22222,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.25,
+              "curl": 20.66667,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 9.48148,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 31.07408,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 22.51852,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 11.33333,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 32.92593,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 24.37037,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 13.18519,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 34.77778,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 26.22222,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11495,97 +11495,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.95342,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 14.58182,
-              "spread": -51.75455,
-              "twist": -27.29545
+              "curl": 13.81367,
+              "spread": -30.04658,
+              "twist": -9.95342
             },
             {
               "name": "thumb_2",
-              "curl": 32.06818,
+              "curl": 24.65064,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 16.7438,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 26.61364,
-              "spread": -15.0,
+              "curl": 7.88355,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 61.65,
+              "curl": 30.44102,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.47727,
+              "curl": 21.58077,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 9.83696,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 32.39444,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 23.53418,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 11.79038,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 34.34786,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 25.4876,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 13.7438,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 36.30128,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 27.44102,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11618,97 +11618,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.99864,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.09697,
-              "spread": -51.79242,
-              "twist": -27.25758
+              "curl": 13.99455,
+              "spread": -30.00136,
+              "twist": -9.99864
             },
             {
               "name": "thumb_2",
-              "curl": 30.55303,
+              "curl": 24.98977,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 16.9925,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 27.97727,
-              "spread": -15.0,
+              "curl": 7.99659,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 62.48333,
+              "curl": 30.98364,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.70455,
+              "curl": 21.98773,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 9.99523,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 32.98227,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 23.98636,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 11.99386,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 34.98091,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 25.985,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 13.9925,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 36.97955,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 27.98364,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11741,97 +11741,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.4,
-              "spread": -51.8,
-              "twist": -27.25
+              "curl": 14.0,
+              "spread": -30.0,
+              "twist": -10.0
             },
             {
               "name": "thumb_2",
-              "curl": 30.25,
+              "curl": 25.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 28.25,
-              "spread": -15.0,
+              "curl": 8.0,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 62.65,
+              "curl": 31.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.75,
+              "curl": 22.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "middle_3",
-              "curl": 26.35,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_1",
-              "curl": 18.0,
-              "spread": 2.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_2",
-              "curl": 30.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_3",
-              "curl": 18.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_1",
-              "curl": 21.0,
-              "spread": 4.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_2",
               "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "middle_3",
+              "curl": 24.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_1",
+              "curl": 12.0,
+              "spread": 2.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_2",
+              "curl": 35.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_3",
+              "curl": 26.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_1",
+              "curl": 14.0,
+              "spread": 4.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_2",
+              "curl": 37.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11873,97 +11873,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.4,
-              "spread": -51.8,
-              "twist": -27.25
+              "curl": 14.0,
+              "spread": -30.0,
+              "twist": -10.0
             },
             {
               "name": "thumb_2",
-              "curl": 30.25,
+              "curl": 25.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 17.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 28.25,
-              "spread": -15.0,
+              "curl": 8.0,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 62.65,
+              "curl": 31.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.75,
+              "curl": 22.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "middle_3",
-              "curl": 26.35,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_1",
-              "curl": 18.0,
-              "spread": 2.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_2",
-              "curl": 30.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "ring_3",
-              "curl": 18.0,
-              "spread": 0.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_1",
-              "curl": 21.0,
-              "spread": 4.0,
-              "twist": 0.0
-            },
-            {
-              "name": "little_2",
               "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
+              "name": "middle_3",
+              "curl": 24.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_1",
+              "curl": 12.0,
+              "spread": 2.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_2",
+              "curl": 35.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "ring_3",
+              "curl": 26.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_1",
+              "curl": 14.0,
+              "spread": 4.0,
+              "twist": 0.0
+            },
+            {
+              "name": "little_2",
+              "curl": 37.0,
+              "spread": 0.0,
+              "twist": 0.0
+            },
+            {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -11996,97 +11996,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.9673,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 14.88485,
-              "spread": -51.76212,
-              "twist": -27.28788
+              "curl": 13.86922,
+              "spread": -30.0327,
+              "twist": -9.9673
             },
             {
               "name": "thumb_2",
-              "curl": 31.76515,
+              "curl": 24.75478,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 16.82017,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 26.88636,
-              "spread": -15.0,
+              "curl": 7.91826,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 61.81667,
+              "curl": 30.60765,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.52273,
+              "curl": 21.70574,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 9.88556,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 32.57495,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 23.67304,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 11.85287,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 34.54226,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 25.64034,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 21.0,
+              "curl": 13.82017,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.0,
+              "curl": 36.50956,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.0,
+              "curl": 27.60765,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12119,97 +12119,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.87617,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 13.3697,
-              "spread": -51.72424,
-              "twist": -27.32576
+              "curl": 13.50469,
+              "spread": -30.12383,
+              "twist": -9.87617
             },
             {
               "name": "thumb_2",
-              "curl": 33.2803,
+              "curl": 24.07129,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 16.31895,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 25.52273,
-              "spread": -15.0,
+              "curl": 7.69043,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 60.98333,
+              "curl": 29.51406,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.29545,
+              "curl": 20.88555,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 9.5666,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 31.39024,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 22.76172,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 18.0,
+              "curl": 11.44277,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.0,
+              "curl": 33.26641,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.0,
+              "curl": 24.63789,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 20.93507,
+              "curl": 13.31895,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 32.90622,
+              "curl": 35.14258,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 20.93868,
+              "curl": 26.51406,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12242,97 +12242,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.73704,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 11.85455,
-              "spread": -51.68636,
-              "twist": -27.36364
+              "curl": 12.94816,
+              "spread": -30.26296,
+              "twist": -9.73704
             },
             {
               "name": "thumb_2",
-              "curl": 34.79545,
+              "curl": 23.0278,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 15.55372,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 24.15909,
-              "spread": -15.0,
+              "curl": 7.3426,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 60.15,
+              "curl": 27.84448,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.06818,
+              "curl": 19.63336,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.95,
-              "spread": 15.0,
+              "curl": 9.07964,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.8,
+              "curl": 29.58152,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.35,
+              "curl": 21.3704,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 17.62163,
+              "curl": 10.81668,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 29.41983,
+              "curl": 31.31856,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 17.64686,
+              "curl": 23.10744,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 18.94256,
+              "curl": 12.55372,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 30.02814,
+              "curl": 33.0556,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 19.05686,
+              "curl": 24.84448,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12365,97 +12365,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.56034,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 10.3394,
-              "spread": -51.64848,
-              "twist": -27.40152
+              "curl": 12.24137,
+              "spread": -30.43966,
+              "twist": -9.56034
             },
             {
               "name": "thumb_2",
-              "curl": 36.3106,
+              "curl": 21.70256,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.0,
+              "curl": 14.58188,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 22.74469,
-              "spread": -14.90897,
+              "curl": 6.90085,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 59.00403,
+              "curl": 25.7241,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.68161,
+              "curl": 18.04308,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 19.72356,
-              "spread": 13.97512,
+              "curl": 8.4612,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 58.05577,
+              "curl": 27.28444,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 24.82293,
+              "curl": 19.60342,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 15.30688,
+              "curl": 10.02154,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 25.87055,
+              "curl": 28.84479,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 15.48642,
+              "curl": 21.16376,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 15.02556,
+              "curl": 11.58188,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 24.37026,
+              "curl": 30.40513,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 15.35748,
+              "curl": 22.7241,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12488,97 +12488,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.35651,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 8.92838,
-              "spread": -51.40124,
-              "twist": -27.22514
+              "curl": 11.42605,
+              "spread": -30.64349,
+              "twist": -9.35651
             },
             {
               "name": "thumb_2",
-              "curl": 37.38912,
+              "curl": 20.17384,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.06509,
+              "curl": 13.46082,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 20.49921,
-              "spread": -13.32774,
+              "curl": 6.39128,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 52.73977,
+              "curl": 23.27815,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 25.68719,
+              "curl": 16.20861,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 16.25425,
-              "spread": 11.07598,
+              "curl": 7.74779,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 47.46424,
+              "curl": 24.63466,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 20.50321,
+              "curl": 17.56513,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 11.71886,
+              "curl": 9.10431,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 20.36892,
+              "curl": 25.99118,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 12.1376,
+              "curl": 18.92164,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 10.35044,
+              "curl": 10.46082,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 17.61731,
+              "curl": 27.34769,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 10.94208,
+              "curl": 20.27815,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12611,97 +12611,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 1.13599,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 8.66952,
-              "spread": -48.83769,
-              "twist": -24.67847
+              "curl": 10.54395,
+              "spread": -30.86401,
+              "twist": -9.13599
             },
             {
               "name": "thumb_2",
-              "curl": 33.63702,
+              "curl": 18.51991,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.85027,
+              "curl": 12.24793,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 17.51618,
-              "spread": -10.424,
+              "curl": 5.83997,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 41.9332,
+              "curl": 20.63186,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 20.37836,
+              "curl": 14.22389,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 11.69162,
-              "spread": 7.26319,
+              "curl": 6.97596,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 33.53487,
+              "curl": 21.76784,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 14.82216,
+              "curl": 15.35988,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 7.82953,
+              "curl": 8.11195,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 14.40528,
+              "curl": 22.90383,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 8.50756,
+              "curl": 16.49587,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 6.08354,
+              "curl": 9.24793,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 11.454,
+              "curl": 24.03982,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 6.91224,
+              "curl": 17.63186,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12734,97 +12734,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.9092,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 9.34374,
-              "spread": -44.39827,
-              "twist": -20.21217
+              "curl": 9.63681,
+              "spread": -31.0908,
+              "twist": -8.9092
             },
             {
               "name": "thumb_2",
-              "curl": 25.97278,
+              "curl": 16.81902,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 2.21863,
+              "curl": 11.00061,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 14.26538,
-              "spread": -7.04011,
+              "curl": 5.27301,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 29.4775,
+              "curl": 17.91043,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 14.22928,
+              "curl": 12.18282,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 7.19878,
-              "spread": 3.50873,
+              "curl": 6.18221,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 19.81855,
+              "curl": 18.81963,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 9.228,
+              "curl": 13.09202,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 4.61086,
+              "curl": 7.09141,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 9.46998,
+              "curl": 19.72883,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 5.50347,
+              "curl": 14.00123,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.39121,
+              "curl": 8.00061,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.56509,
+              "curl": 20.63804,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.36948,
+              "curl": 14.91043,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12857,97 +12857,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.68659,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 10.32899,
-              "spread": -39.33355,
-              "twist": -15.106
+              "curl": 8.74636,
+              "spread": -31.31341,
+              "twist": -8.68659
             },
             {
               "name": "thumb_2",
-              "curl": 17.00449,
+              "curl": 15.14943,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 3.78137,
+              "curl": 9.77625,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 11.21658,
-              "spread": -4.01843,
+              "curl": 4.71648,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 18.26588,
+              "curl": 15.23908,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 8.71408,
+              "curl": 10.17931,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.93883,
-              "spread": 0.78454,
+              "curl": 5.40307,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 9.86617,
+              "curl": 15.92567,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 5.16896,
+              "curl": 10.8659,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.03479,
+              "curl": 6.08966,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.05335,
+              "curl": 16.61226,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.03248,
+              "curl": 11.55249,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 6.77625,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 17.29885,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 12.23908,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -12980,97 +12980,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.47859,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 11.00321,
-              "spread": -34.89412,
-              "twist": -10.63971
+              "curl": 7.91435,
+              "spread": -31.52141,
+              "twist": -8.47859
             },
             {
               "name": "thumb_2",
-              "curl": 9.34025,
+              "curl": 13.58941,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.14973,
+              "curl": 8.63223,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 8.83956,
-              "spread": -2.20134,
+              "curl": 4.19647,
+              "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 11.19154,
+              "curl": 12.74305,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 5.3069,
+              "curl": 8.30729,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 4.67506,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 13.22164,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 8.78588,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 5.15364,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 13.70023,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 9.26446,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 5.63223,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 14.17881,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 9.74305,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -13103,97 +13103,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.29563,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 10.74435,
-              "spread": -32.33058,
-              "twist": -8.09304
+              "curl": 7.18251,
+              "spread": -31.70437,
+              "twist": -8.29563
             },
             {
               "name": "thumb_2",
-              "curl": 5.58815,
+              "curl": 12.21721,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.93491,
+              "curl": 7.62596,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 7.36364,
+              "curl": 3.73907,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 9.66667,
+              "curl": 10.54754,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.72727,
+              "curl": 6.66066,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 4.0347,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 10.84317,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 6.95629,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 4.33033,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 11.1388,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 7.25191,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 4.62596,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 11.43443,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 7.54754,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -13226,97 +13226,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.14815,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 9.33333,
-              "spread": -32.08333,
-              "twist": -7.91667
+              "curl": 6.59259,
+              "spread": -31.85185,
+              "twist": -8.14815
             },
             {
               "name": "thumb_2",
-              "curl": 6.66667,
+              "curl": 11.11111,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 6.81481,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 6.0,
+              "curl": 3.37037,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 8.83333,
+              "curl": 8.77778,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.5,
+              "curl": 5.33333,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 3.51852,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 8.92592,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 5.48148,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 3.66667,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 9.07407,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 5.62963,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 3.81481,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 9.22222,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 5.77778,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -13349,97 +13349,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.04658,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 7.81818,
-              "spread": -32.04545,
-              "twist": -7.95455
+              "curl": 6.18633,
+              "spread": -31.95342,
+              "twist": -8.04658
             },
             {
               "name": "thumb_2",
-              "curl": 8.18182,
+              "curl": 10.34936,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 6.2562,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 4.63636,
+              "curl": 3.11645,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 8.0,
+              "curl": 7.55898,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.27273,
+              "curl": 4.41923,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 3.16304,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 7.60556,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 4.46582,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 3.20962,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 7.65214,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 4.5124,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 3.2562,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 7.69872,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 4.55898,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -13472,97 +13472,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.0,
+              "curl": 0.00136,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 6.30303,
-              "spread": -32.00758,
-              "twist": -7.99242
+              "curl": 6.00545,
+              "spread": -31.99864,
+              "twist": -8.00136
             },
             {
               "name": "thumb_2",
-              "curl": 9.69697,
+              "curl": 10.01023,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 6.0,
+              "curl": 6.0075,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 3.27273,
+              "curl": 3.00341,
               "spread": -2.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 7.16667,
+              "curl": 7.01636,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 4.04545,
+              "curl": 4.01227,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 3.0,
+              "curl": 3.00477,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 7.0,
+              "curl": 7.01773,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 4.0,
+              "curl": 4.01364,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 3.0,
+              "curl": 3.00614,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 7.0,
+              "curl": 7.01909,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 4.0,
+              "curl": 4.015,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 3.0,
+              "curl": 3.0075,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 7.0,
+              "curl": 7.02045,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 4.0,
+              "curl": 4.01636,
               "spread": 0.0,
               "twist": 0.0
             }

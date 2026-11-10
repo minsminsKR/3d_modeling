@@ -218,7 +218,7 @@ namespace HappyToy.V2.CloudTests
                 }
                 Assert.That(rightHand.gameObject.activeInHierarchy, Is.True);
                 var held = HandProp(rightGrip); var surface = HandPropVertices(held);
-                if (item == "Incense" || item == "Talisman" || item == "Snapper")
+                if (item == "Incense" || item == "Talisman")
                 {
                     var index = HandMarker(rightHand, "index_tip").position;
                     var pinchThumb = HandMarker(rightHand, "thumb_tip").position;

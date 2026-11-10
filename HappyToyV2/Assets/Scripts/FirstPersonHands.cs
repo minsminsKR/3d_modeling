@@ -418,7 +418,7 @@ namespace HappyToy.V2
             torch.position = leftRig.Palm + leftRig.PalmRotationDelta * left.TransformVector(handleOffset) - torch.up * HandleCenterY;
             torch.position += torch.TransformVector(torchProfile.anchorOffset);
             torchContact.Correct(leftRig, skipThumb: leftClip != null, maxDegrees: 6);
-            AlignProps(item);
+            AlignProps(item, rightClip, rightTime);
             if (owned && used == PlayerItem.Trap && item == PlayerItem.Trap) MoveTrapToFloor(actionOwner, time);
             if (held) held.gameObject.SetActive(!released);
             if (item == PlayerItem.Snapper && held && !released) PredictSnapper(sideScale, reducedMotion ? default : rightSway);
@@ -443,10 +443,15 @@ namespace HappyToy.V2
             held.localPosition = Vector3.zero;
             held.localRotation = Quaternion.Euler(profile.propEuler);
         }
-        void AlignProps(PlayerItem item)
+        void AlignProps(PlayerItem item, HandAnimationLibrary.Clip clip, float time)
         {
             if (!held) return;
             var profile = grips.Get(item);
+            if (item == PlayerItem.Snapper)
+            {
+                held.position = SnapperGripPosition(clip, time);
+                return;
+            }
             switch (profile.anchor)
             {
                 case HandGripAnchor.PaperLowerCorner:
@@ -455,7 +460,7 @@ namespace HappyToy.V2
                     held.position = rightRig.Pinch - held.up * (heldBounds.min.y + .008f) - held.right * (heldBounds.min.x + .008f); break;
                 case HandGripAnchor.SlenderPinch:
                     held.position = rightRig.Pinch + held.up * (heldBounds.size.y * .5f - .035f); break;
-                case HandGripAnchor.Pinch: held.position = SnapperGripPosition(); break;
+                case HandGripAnchor.Pinch: held.position = rightRig.Pinch; break;
                 case HandGripAnchor.Palm: held.position = rightRig.Palm - held.up * heldBounds.min.y; break;
             }
             if (profile.anchor != HandGripAnchor.Pinch) held.position += held.TransformVector(profile.anchorOffset);
@@ -479,8 +484,22 @@ namespace HappyToy.V2
                 held.localScale = Vector3.one * Mathf.Lerp(1, lens, blend);
             }
         }
-        Vector3 SnapperGripPosition() => rightRig.Pinch - viewCamera.transform.forward * .01f +
-            held.TransformVector(grips.Get(PlayerItem.Snapper).anchorOffset);
+        Vector3 SnapperGripPosition(HandAnimationLibrary.Clip clip, float time)
+        {
+            Vector3 normal = rightRig.PalmNormal;
+            // Place the actual scaled prop bounds above the palm along its
+            // animated normal, even when the wrist or prop is rotated.
+            float radius = Mathf.Abs(Vector3.Dot(normal, held.TransformVector(Vector3.right))) * heldBounds.extents.x +
+                Mathf.Abs(Vector3.Dot(normal, held.TransformVector(Vector3.up))) * heldBounds.extents.y +
+                Mathf.Abs(Vector3.Dot(normal, held.TransformVector(Vector3.forward))) * heldBounds.extents.z;
+            Vector3 palm = rightRig.Palm + normal * radius - held.TransformVector(heldBounds.center);
+            float pickup = clip != null && clip.name == "UseSnapper" ? Ease(.06f, .22f, time) : 0;
+            float flick = clip != null && clip.name == "UseSnapper" ? Ease(.22f, clip.releaseTime, time) : 0;
+            // Transfer from the thumb/index pinch to the index pad as that
+            // finger extends; the launch prediction uses this identical path.
+            Vector3 fingers = Vector3.Lerp(rightRig.Pinch, rightRig.Tip("index"), flick * .75f) + normal * (radius * .4f);
+            return Vector3.Lerp(palm, fingers, pickup) + held.TransformVector(grips.Get(PlayerItem.Snapper).anchorOffset);
+        }
         Vector3 predictedSnapperPoint, predictedSnapperDirection;
         bool predictedSnapper;
         void PredictSnapper(float sideScale, HandMotionSample motion)
@@ -499,7 +518,7 @@ namespace HappyToy.V2
             // well as its fingertips when a profile has a local anchor offset.
             held.localRotation = Quaternion.Euler(profile.propEuler);
             held.rotation = rightRig.PalmRotationDelta * held.rotation;
-            held.position = SnapperGripPosition();
+            held.position = SnapperGripPosition(clip, clip.releaseTime);
             predictedSnapperPoint = WorldPoint(held.position);
             predictedSnapperDirection = WorldDirection(rightGrip.forward);
             predictedSnapper = true;

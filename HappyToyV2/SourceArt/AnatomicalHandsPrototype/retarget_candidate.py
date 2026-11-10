@@ -3,6 +3,7 @@ This maintains the original gameplay release times; it does not certify visual q
 """
 import json
 from pathlib import Path
+from snapper_palm_action import author as author_snapper_palm
 root=Path(__file__).resolve().parent
 base=json.loads((root/'original-poses.json').read_text(encoding='utf8'))
 cal=json.loads((root/'candidate-rest.json').read_text(encoding='utf8'))
@@ -28,4 +29,5 @@ for clip in base['clips']:
   else:
    release=clip['releaseTime'];weight=(1-t/release) if t<=release else (t-release)/(duration-release)
   adjust(frame['bones'],deltas[clip['item']],max(0.,min(1.,weight)))
+author_snapper_palm(base)
 (root/'candidate-retargeted-poses.json').write_text(json.dumps(base,indent=2)+'\n',encoding='utf8')

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HappyToy.V2
 {
-    public enum HandGripKind { Power, Precision, Slender, PaperPinch, Support }
+    public enum HandGripKind { Power, Precision, Slender, PaperPinch, Support, PalmToFlick }
     public enum HandGripSide { Left, Right }
     public enum HandGripAnchor { Cylinder, Pinch, SlenderPinch, PaperLowerCorner, Palm }
 
@@ -47,7 +47,7 @@ namespace HappyToy.V2
                 if (found.hand != (item == PlayerItem.Flashlight ? HandGripSide.Left : HandGripSide.Right))
                     throw new InvalidOperationException("Unsupported hand assignment for grip: " + item);
                 HandGripAnchor required = item == PlayerItem.Flashlight ? HandGripAnchor.Cylinder :
-                    item == PlayerItem.Snapper ? HandGripAnchor.Pinch : item == PlayerItem.Incense ? HandGripAnchor.SlenderPinch :
+                    item == PlayerItem.Snapper ? HandGripAnchor.Palm : item == PlayerItem.Incense ? HandGripAnchor.SlenderPinch :
                     item == PlayerItem.Talisman ? HandGripAnchor.PaperLowerCorner : HandGripAnchor.Palm;
                 if (found.anchor != required) throw new InvalidOperationException("Unsupported anchor for grip: " + item);
                 if (animations.GetPose(found.fingerPose).hand != found.hand.ToString())

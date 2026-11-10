@@ -64,6 +64,7 @@ namespace HappyToy.V2
         { if (!markers.TryGetValue(name, out var value)) throw new InvalidOperationException("Missing hand contact: " + name); return value.position; }
         public Vector3 Tip(string digit) => Marker(digit + "_tip");
         public Vector3 Palm => Marker("palm_contact");
+        public Vector3 PalmNormal => markers["palm_contact"].up;
         public Quaternion PalmRotationDelta => markers["palm"].rotation * Quaternion.Inverse(Root.rotation * bindPalmInRoot);
         public Vector3 Pinch => (Tip("thumb") + Tip("index")) * .5f;
         public void SavePose()

@@ -1,5 +1,10 @@
 # HappyToyV2 프로젝트 메모리
 
+## 콩알탄 손바닥 대기와 손가락 투척 — 2026-11-10
+
+- 콩알탄 장착 시 손바닥 위에 놓고 사용하면 엄지·검지로 옮겨 검지를 펴는 동작과 기존 방출 마커를 연결했다. 표시 물체와 물리 투척 예측은 같은 방출 경로를 쓴다. 기존 재고 차감·취소·일시정지 규칙은 유지하며 다른 아이템 동작은 변경하지 않았다.
+- CPU `hand-animation-logic` Edit 113/113·Play 13/13, GPU `player-hands` Edit 104/104·Play 4/4 통과. 실제 PlayMode 월드/손 카메라 레이어와 에디터 손 액션 스틸을 확인했으며 합성에는 HUD가 없다. 독립 표면 전체 충돌·사용자 기기 FPS 및 네이티브 플레이어는 확인하지 않았다. 상세와 재현은 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/README.md`.
+
 ## 사용자 사진 기준 엄지손톱 중심 보정 — 2026-11-10
 
 - 엄지손톱 원본의 길이·너비 축을 직교화하고 실제 모델 손끝 표면 단면을 따라 위치와 방향을 조정했다. 중립 손의 투영 단면에서 중앙 및 양쪽 5mm 지점의 표면 중심과 손톱 축 차이는 각각 0.45mm, 0.85mm 이내다. 사진은 일부 잘려 있어 정밀 실측이 아니며 손톱은 UV 베이크 디테일이다. 재현은 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/README.md`.
