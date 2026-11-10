@@ -34,7 +34,7 @@ BLENDER -b -t 2 --python-exit-code 1 --python HappyToyV2/SourceArt/AnatomicalHan
 `WORK/joint-detail-trial.png` is the final atlas; the checked-in copy is
 `../draft-skin-reference-wrinkles.png` and the runtime copy is
 `Assets/Resources/PlayerItems/hand/albedo.png`. All three matched SHA-256
-`067ca522f29e6edab720c31a5c3c28b641b1d806c635c9e3e4c00309983cde83` in the
+`3b2514b070777ed75d4c385c780fbaeb3d29cec00673868a9ffd1ad12304f465` in the
 local reproduction. `../install_candidate.py` installs this final atlas.
 
 ## Validation — 2026-11-10

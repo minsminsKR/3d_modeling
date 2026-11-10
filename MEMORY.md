@@ -1,5 +1,10 @@
 # HappyToyV2 프로젝트 메모리
 
+## 사용자 사진 기준 엄지손톱 중심 보정 — 2026-11-10
+
+- 엄지손톱 원본의 길이·너비 축을 직교화하고 실제 모델 손끝 표면 단면을 따라 위치와 방향을 조정했다. 중립 손의 투영 단면에서 중앙 및 양쪽 5mm 지점의 표면 중심과 손톱 축 차이는 각각 0.45mm, 0.85mm 이내다. 사진은 일부 잘려 있어 정밀 실측이 아니며 손톱은 UV 베이크 디테일이다. 재현은 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/README.md`.
+- Unity `player-hands` D3D11 Edit 104/104·Play 4/4. 회랑 PlayMode의 실제 월드·손 카메라를 같은 표본에서 각각 캡처해 합성 검토했다. HUD와 네이티브 플레이어 프레임버퍼는 포함하지 않으며 파지 중 손톱은 일부 가려진다.
+
 ## 사용자 손 사진 기준 마디 주름 — 2026-11-10
 
 - 사용자가 제공한 손등 사진의 엄지 및 각 손가락 관절 주름을 현 리그의 중립 관절 좌표에 수동 대응해 국소 피부 디테일을 베이크했다. 사진·재현 도구와 한계는 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/ReferenceWrinkles/README.md`. 사진은 사용자 제공 자료이며 별도의 공개 허가를 추정하지 않는다.

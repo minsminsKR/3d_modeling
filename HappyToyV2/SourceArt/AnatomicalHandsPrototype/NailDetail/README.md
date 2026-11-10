@@ -3,8 +3,8 @@
 The intermediate atlas `../draft-skin-2048-nails.png` adds short nail detail to
 the existing v7 skin atlas. It is baked into the existing UV and deforms with
 the hand; the temporary fitting mesh is not part of the game. The thumb patch
-was shifted left in the first-person view and reduced after comparing the fully
-extended hand from the back, obliquely and from the side. The source is not a human
+was subsequently recentered on the projected fingertip surface and aligned
+with its longitudinal axis after comparing the user photograph and extended hand. The source is not a human
 scan, and this addition does not resolve the remaining stylized hand shape,
 finger deformation or incomplete prop contact.
 
@@ -43,13 +43,31 @@ python HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/compose_nails.py
 
 CPU bake sampling can differ by one 8-bit color value on a few pixels between
 runs. The nail-stage atlas SHA-256 is
-`20d8eca21f42235285ee6d0a20123b0c06f2d262a8fd73964ccd2d3269dbccdc`.
+`325dad437098073a86833b706de42da8f7a55eacbfba09293295a05ad4033ad4`.
 The runtime atlas additionally includes the user-reference joint detail from
 `../ReferenceWrinkles/`; `../install_candidate.py` installs that final atlas.
 Its other FBX and pose inputs remain the previously installed sources. Run
 `PlayerItemsImport.ApplyHand` when reimporting the complete candidate.
 
-## 2026-11-10 validation and limitations
+## Surface alignment — 2026-11-10
+
+The thumb source is first expressed in its principal width/length axes; independent
+world-X/Z rescaling previously skewed the diagonal nail. Its new basis follows
+the dorsal fingertip rather than the thumb bone alone. Run `measure_thumb_surface.py`
+in Blender background mode to reproduce the 0.1 mm-spaced surface-section
+measurements: at the nail center and 5 mm either side, silhouette midpoints are
+0.45 mm, 0.85 mm and 0.85 mm from the chosen centerline. These are projected
+mesh measurements, not anatomical measurements of the partly cropped photo.
+The thumbnail is still a baked detail; it has no independent 3D nail geometry.
+
+Unity `player-hands` D3D11 passed EditMode 104/104 and PlayMode 4/4. In the
+actual corridor test fixture, separate gameplay world-camera and hand-camera
+frames were captured at the same idle poses and composited for visual review.
+Those composites omit the HUD and are not native player framebuffer captures.
+The thumb is partly obscured in held-item poses; the neutral Blender close-up
+and Unity open-hand view are separate visual checks.
+
+## Earlier validation and limitations
 
 Unity 6000.6.0f1 D3D11 hand-camera review was run hidden with desktop-input
 isolation. `player-hands` EditMode passed 104/104; PlayMode initially passed

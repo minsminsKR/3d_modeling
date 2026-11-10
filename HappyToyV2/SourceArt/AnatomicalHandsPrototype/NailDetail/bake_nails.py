@@ -42,13 +42,32 @@ components.sort(key=lambda c: sum(data['verts'][i][0] for i in c) / len(c), reve
 regions = [(.088, .136, .0035, .0043), (.0525, .210, .0045, .006),
            (.0185, .224, .0045, .006), (-.012, .215, .0045, .0055),
            (-.049, .188, .004, .005)]
-for part, (cx, cz, rx, rz) in zip(components, regions):
+for part_index, (part, (cx, cz, rx, rz)) in enumerate(zip(components, regions)):
+    # The thumb surface axis differs from the bone axis. Cross-sections of the
+    # dorsal fingertip determine this center and basis in the neutral hand.
+    if part_index == 0:
+        cx, cz, rx, rz = .0830, .1339, .0045, .0050
     xs = [data['verts'][i][0] for i in part]
     zs = [data['verts'][i][2] for i in part]
+    # Orthogonalize the source thumb before sizing; normalizing x/z bounds
+    # independently skews the original diagonal nail into a narrow wedge.
+    if part_index == 0:
+        width_samples = [.96241665 * data['verts'][i][0] - .27157724 * data['verts'][i][2] for i in part]
+        length_samples = [.27157724 * data['verts'][i][0] + .96241665 * data['verts'][i][2] for i in part]
     for i in part:
         vertex = data['verts'][i]
-        vertex[2] = cz + (2 * (vertex[2] - min(zs)) / (max(zs) - min(zs)) - 1) * rz
-        vertex[0] = cx + (2 * (vertex[0] - min(xs)) / (max(xs) - min(xs)) - 1) * rx
+        u = (2 * (vertex[0] - min(xs)) / (max(xs) - min(xs)) - 1) * rx
+        v = (2 * (vertex[2] - min(zs)) / (max(zs) - min(zs)) - 1) * rz
+        if part_index == 0:
+            width = .96241665 * vertex[0] - .27157724 * vertex[2]
+            length = .27157724 * vertex[0] + .96241665 * vertex[2]
+            u = (2 * (width - min(width_samples)) / (max(width_samples) - min(width_samples)) - 1) * rx
+            v = (2 * (length - min(length_samples)) / (max(length_samples) - min(length_samples)) - 1) * rz
+            vertex[0] = cx + .727 * u + .686 * v
+            vertex[2] = cz - .3511 * u + .9363 * v
+        else:
+            vertex[0] = cx + u
+            vertex[2] = cz + v
 bvh = BVHTree.FromPolygons([v.co for v in hand.data.vertices],
                            [list(face.vertices) for face in hand.data.polygons])
 vertices = []

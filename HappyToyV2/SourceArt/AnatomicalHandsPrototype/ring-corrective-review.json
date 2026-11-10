@@ -16,7 +16,7 @@
     "maximumPenetrationMetresWith": 0.0063807033
   },
   "runtimeGeometrySha256": "5d5fe439789be7fb6e170198ee60f34ad910836e066ea973a6875e8c304e10d3",
-  "runtimeAlbedoSha256": "067ca522f29e6edab720c31a5c3c28b641b1d806c635c9e3e4c00309983cde83",
+  "runtimeAlbedoSha256": "3b2514b070777ed75d4c385c780fbaeb3d29cec00673868a9ffd1ad12304f465",
   "limitations": [
     "Corrective affects only ring_1",
     "Talisman result is a single static pose, not every animation frame",

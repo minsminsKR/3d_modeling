@@ -363,6 +363,36 @@ namespace HappyToy.V2.CloudTests
                     System.IO.Directory.CreateDirectory(directory);
                     System.IO.File.WriteAllBytes(System.IO.Path.Combine(directory, label.Replace(' ', '-') + ".png"), frame.EncodeToPNG());
                 }
+                // Optional evidence from the live world and hand cameras in the
+                // same fixture. Save the layers separately: any later composite
+                // is a diagnostic reconstruction and does not include the HUD.
+                string worldReview = Environment.GetEnvironmentVariable("HAPPYTOY_HAND_WORLD_REVIEW_DIR");
+                if (!string.IsNullOrEmpty(worldReview) &&
+                    (label == "16x9 Snapper idle" || label == "16x9 Talisman idle"))
+                {
+                    var worldCamera = Camera.main;
+                    Assert.That(worldCamera, Is.Not.Null, "The gameplay world camera is missing");
+                    var directory = System.IO.Path.GetFullPath(worldReview);
+                    System.IO.Directory.CreateDirectory(directory);
+                    var reviewTarget = RenderTexture.GetTemporary(1280, 720, 24, RenderTextureFormat.ARGB32);
+                    Texture2D world = null, hand = null;
+                    try
+                    {
+                        RenderPipeline.SubmitRenderRequest(worldCamera, new UniversalRenderPipeline.SingleCameraRequest { destination = reviewTarget });
+                        world = CloudExperienceTests.Read(reviewTarget);
+                        RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = reviewTarget });
+                        hand = CloudExperienceTests.Read(reviewTarget);
+                        var prefix = System.IO.Path.Combine(directory, label.Replace(' ', '-'));
+                        System.IO.File.WriteAllBytes(prefix + "-world.png", world.EncodeToPNG());
+                        System.IO.File.WriteAllBytes(prefix + "-hand.png", hand.EncodeToPNG());
+                    }
+                    finally
+                    {
+                        if (world) Object.Destroy(world);
+                        if (hand) Object.Destroy(hand);
+                        RenderTexture.ReleaseTemporary(reviewTarget);
+                    }
+                }
             }
             catch
             {
