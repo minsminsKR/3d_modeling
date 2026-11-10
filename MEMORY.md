@@ -1,5 +1,10 @@
 # HappyToyV2 프로젝트 메모리
 
+## 손 표면 손톱 디테일 — 2026-11-10
+
+- 기존 Blender 손 UV에 MakeHuman CC0 짧은 손톱 디테일을 베이크해 런타임 피부에 적용했다. 원본·저작권·재현 방법은 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/README.md`. 손 리그·가중치·아이템 자세는 변경하지 않았다.
+- Unity D3D11 `player-hands` Edit 104/104, Play 최초 3/4에서 휠 입력 해제 이동 검사가 실패했고 해당 검사 단독 재검사는 1/1 통과했다. 격리된 손 카메라에서는 열린 손의 손톱을 확인했으며 전체 게임 화면·실제 FPS는 확인하지 않았다. 손 실루엣과 관절·손전등/부적 파지는 여전히 어색하다.
+
 ## 아이템 파지 구조와 손전등 표면 — 2026-11-09
 
 - `HandGripCatalog` ScriptableObject가 다섯 아이템의 파지 종류·손·앵커·포즈·위치/회전·전환 시간을 제공하며 기존 아이템/재고/방출 소유권을 유지한다. 부적의 사용자 사진 기준 아래 모서리 파지는 유지한다.

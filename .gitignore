@@ -39,6 +39,9 @@ model_test/model/
 *.onnx
 *.gguf
 
+# Portable CC0 hand-texturing source meshes used by the nail bake.
+!HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/Source/*.obj
+
 # Editable meshes retained from the generated pine's original service result.
 !HappyToyV2/SourceArt/TemplePrologue/pine/hunyuan-original-assets/*.obj
 !HappyToyV2/SourceArt/TemplePrologue/pine/hunyuan-original-assets/*.glb

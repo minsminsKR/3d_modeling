@@ -4,6 +4,11 @@ The reviewed horror-game and user-photo grip references, current visual
 comparison, and item-specific acceptance targets are in
 `GRIP_REFERENCE_REVIEW.md`.
 
+2026-11-10: the runtime atlas now includes baked short nail detail using a CC0
+source. The hand mesh, weights and grip poses remain the previous candidate;
+they still need anatomical art work. Sources, reproducible bake and actual
+verification scope are in `NailDetail/README.md`.
+
 This candidate is installed in the game. Its appearance and grip quality have remaining issues described below. The base is Blender Studio Human Base Meshes v1.4.1, CC0, https://www.blender.org/download/demo-files/ . The unmodified archive SHA-256 is 811f43accbb31a88266d932f8f5563b2d13586fca0ba2693aad1f5fe582b3515. Blender 4.2.23 LTS is required: https://download.blender.org/release/Blender4.2/ .
 
 The editable v4 draft appends the Blender hand, approximates alignment to the existing rig, extends its wrist toward the elbow, adjusts the little finger and transfers initial weights, then creates a new UV layout. It does not have a valid finished texture for the new UV, or certified forearm anatomy, deformation, grip contacts, or Unity integration. The existing generated texture transfer has 116 zero-area UV faces; v4 smart UV has none, but needs a new texture. Pose audits show some old fingertip markers are up to 23.5 mm from the new surface. These are geometry signals, not proof of contact or visual quality. Those v4 observations are historical; the later v7 runtime candidate is described below.
