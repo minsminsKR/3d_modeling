@@ -142,8 +142,10 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 root.SetActive(false);
-                var forearm = BoneAt(root, "forearm"); var wrist = BoneAt(root, "wrist"); var palm = BoneAt(root, "palm");
+                var forearm = BoneAt(root, "forearm"); var upperarm = BoneAt(root, "upperarm");
+                var wrist = BoneAt(root, "wrist"); var palm = BoneAt(root, "palm");
                 Assert.That(wrist.parent, Is.SameAs(forearm)); Assert.That(palm.parent, Is.SameAs(wrist));
+                Assert.That(Vector3.Distance(forearm.position, upperarm.position), Is.LessThan(.003f), "Upper arm does not start at the forearm");
                 Assert.That(Vector3.Distance(forearm.position, wrist.position), Is.InRange(.12f, .32f));
                 Assert.That(Vector3.Distance(wrist.position, palm.position), Is.InRange(.025f, .095f));
                 foreach (var digit in new[] { "thumb", "index", "middle", "ring", "little" })
@@ -158,6 +160,10 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(skins.Length, Is.EqualTo(1)); var skin = skins[0]; var mesh = skin.sharedMesh;
                 Assert.That(skin.bones.All(bone => bone), Is.True);
                 Assert.That(skin.bones.Any(bone => bone == forearm), Is.True);
+                int upperarmIndex = System.Array.IndexOf(skin.bones, upperarm);
+                Assert.That(upperarmIndex, Is.GreaterThanOrEqualTo(0), "Upper arm must share the retained skin");
+                Assert.That(mesh.boneWeights.Count(weight => weight.boneIndex0 == upperarmIndex && weight.weight0 > .9f),
+                    Is.GreaterThan(100), "Upper arm has no substantial skinned surface");
                 Assert.That(skin.bones.Any(bone => bone == wrist), Is.True);
                 Assert.That(mesh.bindposes.Length, Is.EqualTo(skin.bones.Length));
                 Assert.That(mesh.boneWeights.Length, Is.EqualTo(mesh.vertexCount));

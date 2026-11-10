@@ -110,12 +110,12 @@
       "twist": 0.0
     },
     "index_2": {
-      "curl": 40.0,
+      "curl": 25.0,
       "spread": 0.0,
       "twist": 0.0
     },
     "index_3": {
-      "curl": 6.1,
+      "curl": -3.0,
       "spread": 0.0,
       "twist": 0.0
     }
@@ -132,7 +132,7 @@
       "twist": 0.0
     },
     "thumb_3": {
-      "curl": 20.0,
+      "curl": 12.0,
       "spread": 0.0,
       "twist": 0.0
     },
@@ -142,12 +142,12 @@
       "twist": 0.0
     },
     "index_2": {
-      "curl": 20.0,
+      "curl": 12.0,
       "spread": 0.0,
       "twist": 0.0
     },
     "index_3": {
-      "curl": 5.55,
+      "curl": -5.0,
       "spread": 0.0,
       "twist": 0.0
     },

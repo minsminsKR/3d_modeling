@@ -110,6 +110,36 @@ namespace HappyToy.V2.CloudTests
             }
         }
 
+        // Paired camera evidence from the actual placement state. Normal tests
+        // never render or create these diagnostic files.
+        void CaptureTrapActionFrame(string directory, int frame, Component actions)
+        {
+            if (string.IsNullOrEmpty(directory)) return;
+            var target = RenderTexture.GetTemporary(960, 540, 24, RenderTextureFormat.ARGB32);
+            Texture2D image = null;
+            try
+            {
+                System.IO.Directory.CreateDirectory(directory);
+                foreach (var pair in new[] { (camera: Get<Camera>(player, "eyes"), name: "world"),
+                    (camera: HandStudio.GetComponent<Camera>(), name: "hand") })
+                {
+                    RenderPipeline.SubmitRenderRequest(pair.camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                    image = CloudExperienceTests.Read(target);
+                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(directory, $"{frame:D3}-{pair.name}.png"), image.EncodeToPNG());
+                    Object.Destroy(image); image = null;
+                }
+                var grip = HandStudio.Find("Right item grip");
+                var hand = HandRoot(grip);
+                var wrist = HandMarker(hand, "wrist");
+                var palm = HandMarker(hand, "palm_contact");
+                var viewport = HandStudio.GetComponent<Camera>().WorldToViewportPoint(wrist.position);
+                System.IO.File.AppendAllText(System.IO.Path.Combine(directory, "frames.csv"),
+                    $"{frame},{Get<float>(actions, "AnimationTime"):F6},{Get<bool>(actions, "Released")}," +
+                    $"{viewport.x:F5},{viewport.y:F5},{viewport.z:F5},{Vector3.Distance(wrist.position, palm.position):F5}\n");
+            }
+            finally { if (image) Object.Destroy(image); RenderTexture.ReleaseTemporary(target); }
+        }
+
         [UnityTest, Timeout(120000)]
         public IEnumerator SnapperRestsOnPalmThenMovesToFingersAndFlicksAtRelease()
         {
@@ -336,6 +366,20 @@ namespace HappyToy.V2.CloudTests
             var pose = FindAnimatedTrapFloor(inventory);
             var fixedPoint = Get<Vector3>(pose, "position");
             var fixedRotation = Get<Quaternion>(pose, "rotation");
+            string review = Environment.GetEnvironmentVariable("HAPPYTOY_TRAP_ACTION_REVIEW_DIR");
+            if (!string.IsNullOrEmpty(review) && Environment.GetEnvironmentVariable("HAPPYTOY_TRAP_REVIEW_CROUCH") == "1")
+            {
+                player.GetComponent<CharacterController>().enabled = true;
+                yield return null;
+                Assert.That((bool)Call(player, "TrySetCrouching", true), Is.True, "Could not crouch for placement review");
+            }
+            if (!string.IsNullOrEmpty(review) && Environment.GetEnvironmentVariable("HAPPYTOY_TRAP_REVIEW_LOOK_DOWN") == "1")
+            {
+                var pitch = player.GetType().GetField("pitch", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                Assert.That(pitch, Is.Not.Null, "Player look pitch is unavailable for the opt-in view");
+                pitch.SetValue(player, 45f);
+                Get<Camera>(player, "eyes").transform.localRotation = Quaternion.Euler(45, 0, 0);
+            }
             Call(ItemLoadout, "Select", AnimatedItem("Trap")); yield return HandSimulation(.3f);
             var actions = AnimatedActions;
             int stock = Get<int>(inventory, "Count"), committed = Get<int>(actions, "CommittedCount");
@@ -345,7 +389,26 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(stock));
             Assert.That(world.GetComponentsInChildren(RequireType("PlacedMonsterTrap"), true).Length, Is.EqualTo(installed),
                 "Preparation created an armed world trap before the hands reached the floor");
-            yield return Wait(() => Get<int>(actions, "CommittedCount") > committed, 8, "Trap floor release never committed");
+            if (string.IsNullOrEmpty(review))
+                yield return Wait(() => Get<int>(actions, "CommittedCount") > committed, 8, "Trap floor release never committed");
+            else
+            {
+                float previousCaptureDelta = Time.captureDeltaTime;
+                int frame = 0;
+                try
+                {
+                    Time.captureDeltaTime = 1f / 20;
+                    float deadline = Time.realtimeSinceStartup + 35;
+                    while (Get<int>(actions, "CommittedCount") == committed && Time.realtimeSinceStartup < deadline)
+                    {
+                        if (Get<bool>(actions, "Playing")) CaptureTrapActionFrame(review, frame++, actions);
+                        yield return null;
+                    }
+                    CaptureTrapActionFrame(review, frame, actions);
+                    Assert.That(Get<int>(actions, "CommittedCount"), Is.GreaterThan(committed), "Trap floor release never committed");
+                }
+                finally { Time.captureDeltaTime = previousCaptureDelta; }
+            }
             var trap = Get<Component>(inventory, "LastPlaced");
             Assert.That(trap, Is.Not.Null); Assert.That(Get<bool>(trap, "Armed"), Is.True);
             Assert.That(Vector3.Distance(trap.transform.position, fixedPoint + Vector3.up * .006f), Is.LessThan(.015f));

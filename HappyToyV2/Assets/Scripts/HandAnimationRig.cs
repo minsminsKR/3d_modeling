@@ -15,6 +15,9 @@ namespace HappyToy.V2
         readonly Dictionary<string, Transform> markers = new Dictionary<string, Transform>();
         readonly Dictionary<string, int[]> digitBones = new Dictionary<string, int[]>();
         readonly Quaternion bindPalmInRoot;
+        readonly Transform forearmBone, upperarmBone;
+        readonly Quaternion upperarmInForearm;
+        readonly Vector3 upperarmScale;
         readonly SkinnedMeshRenderer skin;
         readonly int ringCorrectiveBone, ringCorrectiveShape;
         bool applied;
@@ -42,6 +45,12 @@ namespace HappyToy.V2
             ringCorrectiveBone = Index("ring_1");
             ringCorrectiveShape = skin && skin.sharedMesh ? skin.sharedMesh.GetBlendShapeIndex("Correct_ring_1") : -1;
             bindPalmInRoot = Quaternion.Inverse(root.rotation) * markers["palm"].rotation;
+            forearmBone = markers["forearm"];
+            if (markers.TryGetValue("upperarm", out upperarmBone))
+            {
+                upperarmInForearm = Quaternion.Inverse(forearmBone.rotation) * upperarmBone.rotation;
+                upperarmScale = upperarmBone.localScale;
+            }
         }
         public void Apply(HandAnimationLibrary.Pose pose, HandAnimationLibrary.Clip clip, float time)
         {
@@ -58,6 +67,7 @@ namespace HappyToy.V2
                 authored[i] = current[i] = new Vector3(curl, spread, twist);
                 ApplyBone(i);
             }
+            SyncUpperArm();
             applied = true;
         }
         public Vector3 Marker(string name)
@@ -67,6 +77,27 @@ namespace HappyToy.V2
         public Vector3 PalmNormal => markers["palm_contact"].up;
         public Quaternion PalmRotationDelta => markers["palm"].rotation * Quaternion.Inverse(Root.rotation * bindPalmInRoot);
         public Vector3 Pinch => (Tip("thumb") + Tip("index")) * .5f;
+        void SyncUpperArm()
+        {
+            if (!upperarmBone) return;
+            upperarmBone.localScale = upperarmScale;
+            upperarmBone.SetPositionAndRotation(forearmBone.position, forearmBone.rotation * upperarmInForearm);
+        }
+        public void AimUpperArmToViewEdge(Camera camera, float weight)
+        {
+            if (!upperarmBone || !camera || weight <= 0) return;
+            var view = camera.WorldToViewportPoint(forearmBone.position);
+            if (view.z <= camera.nearClipPlane) return;
+            var target = camera.ViewportToWorldPoint(new Vector3(.88f, -.18f, Mathf.Min(view.z, .8f)));
+            Vector3 direction = target - forearmBone.position;
+            if (direction.sqrMagnitude < .000001f) return;
+            var original = upperarmBone.rotation;
+            var targetRotation = Quaternion.FromToRotation(upperarmBone.up, direction) * original;
+            upperarmBone.rotation = Quaternion.Slerp(original, targetRotation, Mathf.Clamp01(weight));
+            var scale = upperarmScale;
+            scale.y *= Mathf.Lerp(1, Mathf.Clamp(direction.magnitude / .195f, .5f, 6f), Mathf.Clamp01(weight));
+            upperarmBone.localScale = scale;
+        }
         public void SavePose()
         {
             for (int i = 0; i < bones.Length; i++)
@@ -77,6 +108,7 @@ namespace HappyToy.V2
             for (int i = 0; i < bones.Length; i++)
             { bones[i].localRotation = saved[i]; authored[i] = savedAuthored[i]; current[i] = savedCurrent[i]; }
             ApplyRingCorrective();
+            SyncUpperArm();
         }
         void ApplyBone(int index)
         {

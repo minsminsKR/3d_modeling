@@ -114,6 +114,8 @@ PROFILES = {
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
     "snapper-live-review": ("Opt-in actual gameplay snapper action camera capture and release integration", [
         ("PlayMode", (PLAY + "HandTimelineCommitsOneSnapperAtVisibleReleaseAndHoldsDuringPauseAndWheel",))]),
+    "trap-live-review": ("Opt-in actual gameplay trap placement camera capture and release integration", [
+        ("PlayMode", (PLAY + "HandTrapPlacementOnlyArmsAtFloorReleaseAndRejectsBlockedCommit",))]),
     "item-wheel": ("Real quarter-time movement measured over simulation time, input isolation, selection, fresh press, pause and focus", [
         ("PlayMode", (PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress",))]),
     "player-hands": ("Retained original hand/skin, authored articulated forearm and grips, real throw/pause and supported rendered camera aspects", [

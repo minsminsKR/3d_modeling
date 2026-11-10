@@ -222,6 +222,37 @@ Transform:
   - {fileID: 8936604873374428536}
   m_Father: {fileID: 8136082499551219144}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2820344938328554462
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7557134805411836721}
+  m_Layer: 0
+  m_Name: upperarm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7557134805411836721
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2820344938328554462}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.00000005338508, y: 0.7071068, z: -0.7071067, w: -0.000000053385072}
+  m_LocalPosition: {x: -0, y: 0, z: -0.0025999998}
+  m_LocalScale: {x: 1, y: 0.9999997, z: 0.99999994}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5725470450581491325}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4211217619997855485
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,6 +634,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 586117815216425425}
+  - {fileID: 7557134805411836721}
   m_Father: {fileID: 256869463974597036}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7121594691835888633
@@ -906,11 +938,13 @@ SkinnedMeshRenderer:
   - {fileID: 9044267424336865507}
   - {fileID: 8762183445416437436}
   - {fileID: 5570171130611953092}
-  m_BlendShapeWeights: []
+  - {fileID: 7557134805411836721}
+  m_BlendShapeWeights:
+  - 0
   m_RootBone: {fileID: 586117815216425425}
   m_AABB:
-    m_Center: {x: -0.00020388956, y: 0.0024894183, z: 0.0000068722293}
-    m_Extent: {x: 0.0007890174, y: 0.0024894178, z: 0.00045744373}
+    m_Center: {x: -0.0001274521, y: 0.0015120029, z: -0.000071135175}
+    m_Extent: {x: 0.0008654549, y: 0.0034668332, z: 0.00058373803}
   m_DirtyAABB: 0
 --- !u!1 &8924052567623737838
 GameObject:

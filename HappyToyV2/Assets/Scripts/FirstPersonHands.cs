@@ -483,6 +483,10 @@ namespace HappyToy.V2
                 float lens = Mathf.Tan(viewCamera.fieldOfView * Mathf.Deg2Rad * .5f) / Mathf.Tan(player.eyes.fieldOfView * Mathf.Deg2Rad * .5f);
                 held.localScale = Vector3.one * Mathf.Lerp(1, lens, blend);
             }
+            var wristView = viewCamera.WorldToViewportPoint(rightRig.Marker("wrist"));
+            float visible = Ease(-.15f, .10f, wristView.y);
+            float connect = Ease(.14f, .38f, time) * (1 - Ease(.95f, clip.duration, time)) * visible;
+            rightRig.AimUpperArmToViewEdge(viewCamera, connect);
         }
         Vector3 SnapperGripPosition(HandAnimationLibrary.Clip clip, float time)
         {
