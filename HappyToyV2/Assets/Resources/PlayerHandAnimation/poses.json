@@ -6689,97 +6689,97 @@
             },
             {
               "name": "palm",
-              "curl": 1.87617,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 14.14859,
-              "spread": -31.34972,
-              "twist": -11.06801
+              "curl": 14.51852,
+              "spread": -33.88888,
+              "twist": -12.07407
             },
             {
               "name": "thumb_2",
-              "curl": 25.32505,
+              "curl": 28.37036,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 15.94747,
+              "curl": 17.77778,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 9.25375,
-              "spread": -2.80488,
+              "curl": 15.77776,
+              "spread": -3.55555,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 32.95957,
+              "curl": 38.51851,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 22.47983,
+              "curl": 23.55555,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 10.67796,
-              "spread": 0.92871,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 34.78312,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 24.1455,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 12.37148,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 34.69043,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 25.50469,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 14.4334,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 36.75234,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 27.5666,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -6812,97 +6812,97 @@
             },
             {
               "name": "palm",
-              "curl": 1.56034,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 14.52759,
-              "spread": -34.79228,
-              "twist": -13.79206
+              "curl": 15.48148,
+              "spread": -41.11112,
+              "twist": -15.92593
             },
             {
               "name": "thumb_2",
-              "curl": 26.1541,
+              "curl": 34.62964,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 13.2629,
+              "curl": 19.22222,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 12.45154,
-              "spread": -4.85778,
+              "curl": 30.22224,
+              "spread": -6.44445,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 37.9576,
+              "curl": 52.48149,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 23.70368,
+              "curl": 26.44445,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 12.40713,
-              "spread": 3.29744,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 39.33108,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 24.5166,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 13.31898,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 33.90085,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 24.24137,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 15.53881,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 36.12068,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 26.46119,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -6935,97 +6935,97 @@
             },
             {
               "name": "palm",
-              "curl": 1.13599,
+              "curl": 2.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 15.03681,
-              "spread": -39.41773,
-              "twist": -17.4521
+              "curl": 16.0,
+              "spread": -45.0,
+              "twist": -18.0
             },
             {
               "name": "thumb_2",
-              "curl": 27.26803,
+              "curl": 38.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 9.6559,
+              "curl": 20.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 16.74812,
-              "spread": -7.61608,
+              "curl": 38.0,
+              "spread": -8.0,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 44.67299,
+              "curl": 60.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 25.34805,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 14.73047,
-              "spread": 6.48009,
+              "curl": 10.0,
+              "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 45.44177,
+              "curl": 33.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 25.01521,
+              "curl": 24.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 14.59204,
+              "curl": 12.0,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 32.83997,
+              "curl": 35.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 22.54395,
+              "curl": 26.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 17.02404,
+              "curl": 14.0,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 35.27198,
+              "curl": 37.0,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 24.97596,
+              "curl": 28.0,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7058,97 +7058,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.68659,
+              "curl": 1.62277,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 15.57609,
-              "spread": -44.31616,
-              "twist": -21.32815
+              "curl": 16.07545,
+              "spread": -46.28258,
+              "twist": -19.74468
             },
             {
               "name": "thumb_2",
-              "curl": 28.4477,
+              "curl": 36.53824,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 5.83602,
+              "curl": 16.22772,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 21.29827,
-              "spread": -10.53716,
+              "curl": 36.16101,
+              "spread": -9.3203,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 51.7847,
+              "curl": 60.49983,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 27.08946,
+              "curl": 28.33007,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 17.19092,
-              "spread": 9.85057,
+              "curl": 12.06533,
+              "spread": 2.82921,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 51.91309,
+              "curl": 38.43209,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 25.54326,
+              "curl": 24.44324,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 15.94023,
+              "curl": 13.13169,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 31.71648,
+              "curl": 34.05693,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 20.74636,
+              "curl": 24.49109,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 18.59693,
+              "curl": 15.3203,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 34.37318,
+              "curl": 36.24554,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 23.40307,
+              "curl": 26.6797,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7181,97 +7181,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.29563,
+              "curl": 0.83402,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.04525,
-              "spread": -48.57765,
-              "twist": -24.70021
+              "curl": 16.2332,
+              "spread": -48.96434,
+              "twist": -23.39266
             },
             {
               "name": "thumb_2",
-              "curl": 29.47398,
+              "curl": 33.48182,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 2.51284,
+              "curl": 8.34018,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 25.25677,
-              "spread": -13.07842,
+              "curl": 32.31584,
+              "spread": -12.08094,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 57.97168,
+              "curl": 61.54493,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 28.60444,
+              "curl": 29.02023,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 19.33144,
-              "spread": 12.78279,
+              "curl": 16.38375,
+              "spread": 8.74486,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 57.54295,
+              "curl": 49.79014,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.00264,
+              "curl": 25.37003,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 17.11312,
+              "curl": 15.49794,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.73907,
+              "curl": 32.08505,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 19.18251,
+              "curl": 21.33607,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 19.9653,
+              "curl": 18.08094,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.59126,
+              "curl": 34.66804,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 22.0347,
+              "curl": 23.91906,
               "spread": 0.0,
               "twist": 0.0
             }
@@ -7304,97 +7304,97 @@
             },
             {
               "name": "palm",
-              "curl": 0.04658,
+              "curl": 0.14815,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_1",
-              "curl": 16.3441,
-              "spread": -51.29226,
-              "twist": -26.84823
+              "curl": 16.37037,
+              "spread": -51.2963,
+              "twist": -26.56481
             },
             {
               "name": "thumb_2",
-              "curl": 30.12772,
+              "curl": 30.82407,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "thumb_3",
-              "curl": 0.39594,
+              "curl": 1.48148,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_1",
-              "curl": 27.77836,
-              "spread": -14.69722,
+              "curl": 28.97222,
+              "spread": -14.48148,
               "twist": 0.0
             },
             {
               "name": "index_2",
-              "curl": 61.91285,
+              "curl": 62.4537,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "index_3",
-              "curl": 29.5695,
+              "curl": 29.62037,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_1",
-              "curl": 20.69497,
-              "spread": 14.65064,
+              "curl": 20.13889,
+              "spread": 13.88889,
               "twist": 0.0
             },
             {
               "name": "middle_2",
-              "curl": 61.12923,
+              "curl": 59.66667,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "middle_3",
-              "curl": 26.29527,
+              "curl": 26.17593,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_1",
-              "curl": 17.86026,
+              "curl": 17.55556,
               "spread": 2.0,
               "twist": 0.0
             },
             {
               "name": "ring_2",
-              "curl": 30.11645,
+              "curl": 30.37037,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "ring_3",
-              "curl": 18.18633,
+              "curl": 18.59259,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_1",
-              "curl": 20.83696,
+              "curl": 20.48148,
               "spread": 4.0,
               "twist": 0.0
             },
             {
               "name": "little_2",
-              "curl": 33.09316,
+              "curl": 33.2963,
               "spread": 0.0,
               "twist": 0.0
             },
             {
               "name": "little_3",
-              "curl": 21.16304,
+              "curl": 21.51852,
               "spread": 0.0,
               "twist": 0.0
             }

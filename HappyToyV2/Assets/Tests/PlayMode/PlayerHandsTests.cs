@@ -111,7 +111,7 @@ namespace HappyToy.V2.CloudTests
                 }
                 return best;
             }
-            static Vector3 ClosestTrianglePoint(Vector3 p,Vector3 a,Vector3 b,Vector3 c)
+            public static Vector3 ClosestTrianglePoint(Vector3 p,Vector3 a,Vector3 b,Vector3 c)
             {
                 var ab=b-a;var ac=c-a;var ap=p-a;float d1=Vector3.Dot(ab,ap),d2=Vector3.Dot(ac,ap);
                 if(d1<=0 && d2<=0)return a;

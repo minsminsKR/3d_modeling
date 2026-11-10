@@ -6,6 +6,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.TestTools;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 using Object = UnityEngine.Object;
@@ -33,6 +35,81 @@ namespace HappyToy.V2.CloudTests
             point = (Vector3)arguments[0]; return ready;
         }
 
+        static float DistanceToHandSurface(Transform hand, Vector3 point)
+        {
+            var skin = hand.GetComponentInChildren<SkinnedMeshRenderer>();
+            var mesh = skin.sharedMesh;
+            var source = mesh.vertices;
+            for (int shape = 0; shape < mesh.blendShapeCount; shape++)
+            {
+                float weight = skin.GetBlendShapeWeight(shape);
+                if (Mathf.Abs(weight) < .00001f) continue;
+                var delta = new Vector3[source.Length];
+                mesh.GetBlendShapeFrameVertices(shape, 0, delta, null, null);
+                float scale = weight / mesh.GetBlendShapeFrameWeight(shape, 0);
+                for (int i = 0; i < source.Length; i++) source[i] += delta[i] * scale;
+            }
+            var weights = mesh.boneWeights; var bind = mesh.bindposes; var bones = skin.bones;
+            var matrices = new Matrix4x4[bind.Length];
+            for (int i = 0; i < bind.Length; i++) matrices[i] = bones[i].localToWorldMatrix * bind[i];
+            var vertices = new Vector3[source.Length];
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var w = weights[i];
+                vertices[i] = matrices[w.boneIndex0].MultiplyPoint3x4(source[i]) * w.weight0;
+                if (w.weight1 > 0) vertices[i] += matrices[w.boneIndex1].MultiplyPoint3x4(source[i]) * w.weight1;
+                if (w.weight2 > 0) vertices[i] += matrices[w.boneIndex2].MultiplyPoint3x4(source[i]) * w.weight2;
+                if (w.weight3 > 0) vertices[i] += matrices[w.boneIndex3].MultiplyPoint3x4(source[i]) * w.weight3;
+            }
+            var triangles = mesh.triangles;
+            float nearest = float.PositiveInfinity;
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                var a = vertices[triangles[i]]; var b = vertices[triangles[i + 1]]; var c = vertices[triangles[i + 2]];
+                if (Vector3.Cross(b - a, c - a).sqrMagnitude < 1e-16f) continue;
+                var closest = HandShaftSurface.ClosestTrianglePoint(point, a, b, c);
+                nearest = Mathf.Min(nearest, (point - closest).sqrMagnitude);
+            }
+            return Mathf.Sqrt(nearest);
+        }
+
+        // Optional evidence from the live gameplay cameras. It is deliberately
+        // opt-in: normal gameplay and normal tests do not render or write frames.
+        void CaptureSnapperActionFrame(string directory, int frame, Component actions)
+        {
+            if (string.IsNullOrEmpty(directory)) return;
+            var handCamera = HandStudio.GetComponent<Camera>();
+            var worldCamera = Get<Camera>(player, "eyes");
+            var target = RenderTexture.GetTemporary(960, 540, 24, RenderTextureFormat.ARGB32);
+            Texture2D image = null;
+            try
+            {
+                System.IO.Directory.CreateDirectory(directory);
+                foreach (var pair in new[] { (camera: worldCamera, name: "world"), (camera: handCamera, name: "hand") })
+                {
+                    RenderPipeline.SubmitRenderRequest(pair.camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                    image = CloudExperienceTests.Read(target);
+                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(directory, $"{frame:D3}-{pair.name}.png"), image.EncodeToPNG());
+                    Object.Destroy(image); image = null;
+                }
+                var grip = HandStudio.Find("Right item grip");
+                var hand = HandRoot(grip);
+                var prop = grip.GetComponentsInChildren<Transform>(true).FirstOrDefault(node => node.name == "pellet(Clone)");
+                string V(Vector3 v) => $"{v.x:F6},{v.y:F6},{v.z:F6}";
+                var row = $"{frame},{Get<float>(actions, "AnimationTime"):F6},{Get<bool>(actions, "Released")}," +
+                    $"{(prop && prop.gameObject.activeInHierarchy ? V(prop.position) : "hidden")}," +
+                    $"{V(HandMarker(hand, "palm_contact").position)},{V(HandMarker(hand, "thumb_tip").position)}," +
+                    $"{V(HandMarker(hand, "index_tip").position)}," +
+                    $"{(prop && prop.gameObject.activeInHierarchy ? DistanceToHandSurface(hand, prop.position).ToString("F6", System.Globalization.CultureInfo.InvariantCulture) : "hidden")}\n";
+                System.IO.File.AppendAllText(System.IO.Path.Combine(directory, "frames.csv"), row);
+            }
+            finally
+            {
+                if (image) Object.Destroy(image);
+                RenderTexture.ReleaseTemporary(target);
+            }
+        }
+
         [UnityTest, Timeout(120000)]
         public IEnumerator SnapperRestsOnPalmThenMovesToFingersAndFlicksAtRelease()
         {
@@ -51,6 +128,16 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(support, Is.InRange(-.006f, .012f), "Idle snapper is not resting on the palm");
                 Assert.That(Vector3.ProjectOnPlane(prop.position - palm.position, palm.up).magnitude,
                     Is.LessThan(.035f), "Idle snapper is outside the supporting palm");
+
+                // Inspect the actually skinned triangle surface during pickup,
+                // not only the hand's abstract contact markers. This bounds
+                // visible separation; it is not a penetration test.
+                foreach (float sample in new[] { .10f, .166f, .20f, .22f, .30f })
+                {
+                    Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, sample / .85f, 16f / 9);
+                    Assert.That(DistanceToHandSurface(hand, prop.position), Is.LessThan(.018f),
+                        "Snapper drifted away from the skinned hand during pickup at " + sample);
+                }
 
                 Call(hands, "PrepareCpuPreview", AnimatedItem("Snapper"), -1f, .22f / .85f, 16f / 9);
                 var pinch = (HandMarker(hand, "thumb_tip").position + HandMarker(hand, "index_tip").position) * .5f;
@@ -152,12 +239,22 @@ namespace HappyToy.V2.CloudTests
 
             var visibleOrigins = new List<Vector3>();
             float deadline = Time.realtimeSinceStartup + 12;
-            while (Get<int>(actions, "CommittedCount") == committed && Time.realtimeSinceStartup < deadline)
+            string review = Environment.GetEnvironmentVariable("HAPPYTOY_SNAPPER_ACTION_REVIEW_DIR");
+            float previousCaptureDelta = Time.captureDeltaTime;
+            int reviewFrame = 0;
+            try
             {
-                if (SampleAnimatedLaunch(out var origin)) visibleOrigins.Add(origin);
-                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2), "Stock changed without the release marker");
-                yield return null;
+                if (!string.IsNullOrEmpty(review)) Time.captureDeltaTime = 1f / 30;
+                while (Get<int>(actions, "CommittedCount") == committed && Time.realtimeSinceStartup < deadline)
+                {
+                    CaptureSnapperActionFrame(review, reviewFrame++, actions);
+                    if (SampleAnimatedLaunch(out var origin)) visibleOrigins.Add(origin);
+                    Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2), "Stock changed without the release marker");
+                    yield return null;
+                }
+                CaptureSnapperActionFrame(review, reviewFrame, actions);
             }
+            finally { Time.captureDeltaTime = previousCaptureDelta; }
             if (SampleAnimatedLaunch(out var afterRelease)) visibleOrigins.Add(afterRelease);
             Assert.That(Get<int>(actions, "CommittedCount"), Is.EqualTo(committed + 1));
             Assert.That(Get<bool>(actions, "CommitSucceeded"), Is.True);

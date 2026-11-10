@@ -27,6 +27,17 @@ def author(document):
     idle = copy.deepcopy(poses['Trap']['bones'])
     # A slightly cupped hand supports the small pellet without closing around it.
     snapper['bones'] = idle
+    # Reach toward the supported pellet before it begins to rise. The former
+    # idle-to-pinch interpolation moved the object while both fingers were far
+    # from it, making it visibly float off the palm.
+    reach = copy.deepcopy(idle)
+    reach_angles = {
+        'thumb_1': (16, -45, -18), 'thumb_2': (38, 0, 0), 'thumb_3': (20, 0, 0),
+        'index_1': (38, -8, 0), 'index_2': (60, 0, 0), 'index_3': (28, 0, 0),
+    }
+    for channel in reach:
+        if channel['name'] in reach_angles:
+            channel['curl'], channel['spread'], channel['twist'] = reach_angles[channel['name']]
     flick = copy.deepcopy(idle)
     for channel in flick:
         if channel['name'].startswith('index_'):
@@ -46,8 +57,10 @@ def author(document):
             elif clip['name'] == 'UnequipSnapper':
                 frame['bones'] = blend(idle, open_pose, smooth(time / clip['duration']))
             elif clip['name'] == 'UseSnapper':
-                if time <= .22:
-                    frame['bones'] = blend(idle, pinch, smooth(time / .22))
+                if time <= .10:
+                    frame['bones'] = blend(idle, reach, smooth(time / .10))
+                elif time <= .22:
+                    frame['bones'] = blend(reach, pinch, smooth((time - .10) / .12))
                 elif time <= clip['releaseTime']:
                     frame['bones'] = blend(pinch, flick, smooth((time - .22) / (clip['releaseTime'] - .22)))
                 else:

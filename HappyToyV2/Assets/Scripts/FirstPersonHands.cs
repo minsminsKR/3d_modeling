@@ -493,11 +493,15 @@ namespace HappyToy.V2
                 Mathf.Abs(Vector3.Dot(normal, held.TransformVector(Vector3.up))) * heldBounds.extents.y +
                 Mathf.Abs(Vector3.Dot(normal, held.TransformVector(Vector3.forward))) * heldBounds.extents.z;
             Vector3 palm = rightRig.Palm + normal * radius - held.TransformVector(heldBounds.center);
-            float pickup = clip != null && clip.name == "UseSnapper" ? Ease(.06f, .22f, time) : 0;
+            float pickup = clip != null && clip.name == "UseSnapper" ? Ease(.10f, .22f, time) : 0;
             float flick = clip != null && clip.name == "UseSnapper" ? Ease(.22f, clip.releaseTime, time) : 0;
             // Transfer from the thumb/index pinch to the index pad as that
             // finger extends; the launch prediction uses this identical path.
-            Vector3 fingers = Vector3.Lerp(rightRig.Pinch, rightRig.Tip("index"), flick * .75f) + normal * (radius * .4f);
+            Vector3 pinched = Vector3.Lerp(rightRig.Pinch, rightRig.Tip("index"), flick * .75f);
+            // Approach along the thumb rather than heading straight for an
+            // elevated pinch midpoint while both fingertips are still apart.
+            Vector3 thumbApproach = rightRig.Marker("thumb_2") + normal * (radius * 1.5f);
+            Vector3 fingers = Vector3.Lerp(thumbApproach, pinched + normal * (radius * .4f), pickup);
             return Vector3.Lerp(palm, fingers, pickup) + held.TransformVector(grips.Get(PlayerItem.Snapper).anchorOffset);
         }
         Vector3 predictedSnapperPoint, predictedSnapperDirection;

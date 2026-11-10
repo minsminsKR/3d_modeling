@@ -112,6 +112,8 @@ PROFILES = {
     "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
         ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
         ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
+    "snapper-live-review": ("Opt-in actual gameplay snapper action camera capture and release integration", [
+        ("PlayMode", (PLAY + "HandTimelineCommitsOneSnapperAtVisibleReleaseAndHoldsDuringPauseAndWheel",))]),
     "item-wheel": ("Real quarter-time movement measured over simulation time, input isolation, selection, fresh press, pause and focus", [
         ("PlayMode", (PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress",))]),
     "player-hands": ("Retained original hand/skin, authored articulated forearm and grips, real throw/pause and supported rendered camera aspects", [
