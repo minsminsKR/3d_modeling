@@ -14,13 +14,15 @@ Blender 원본·생성기와 엄지손톱 베이크는 `SourceArt/AnatomicalHand
 
 덫 설치의 연결된 상완 메시와 제작 경로는
 `SourceArt/AnatomicalHandsPrototype/TrapUpperArm`에 있다. `HandAnimationRig`는
-기존 전완 동작에 상완을 연결하고, `FirstPersonHands`는 설치 중에만 화면
-하단으로 상완을 보정한다. 물리적인 설치 좌표와 방출 판정은 변경하지 않는다.
+기존 전완 동작에 상완을 연결한다. `FirstPersonHands`는 덫을 몸 가까이에서
+짧게 던지는 손 동작을 소유하며 상완을 늘리지 않는다. `PlayerHandActions`는
+방출 마커에서 유효 지점을 재확인하고, `MonsterTrapInventory`는 재고를
+차감하고 목적지를 예약한다. `PlacedMonsterTrap`은 손에서 착지까지 0.36초
+이동한 뒤 작동하며 `TrapWorld`는 이동 중 저장 시에도 목적지를 보존한다.
 `trap-live-review`는 환경 변수 `HAPPYTOY_TRAP_ACTION_REVIEW_DIR` 지정 시
 실제 PlayMode 월드·손 카메라를 20Hz로 기록한다. 선택적인
 `HAPPYTOY_TRAP_REVIEW_LOOK_DOWN=1`은 아래를 보는 설치 시점을 만든다.
-레이어 합성에는 HUD가 없고 네이티브 플레이어 검증은 아니다. 긴 도달
-자세의 상완 늘어남과 팔꿈치 피부 경계는 남아 있다.
+레이어 합성에는 HUD가 없고 네이티브 플레이어 검증은 아니다.
 
 사찰 서사 재구성의 소유권과 검증 경로는 다음과 같다. `Core/TemplePrologueClueState`가 양일 쪽지 조사 순서·향 허용과 구형 저장 면제를, `TemplePrologueWorld`가 조사·저장 연결을, `TempleStoryEvidence`가 기존 종이와 두 날의 잉크를, `StoryNarration`과 `ShellHudView`가 정지 가능한 독립 대사와 판독 표시를 소유한다. `CorridorRun`의 첫 회수 기억은 회수 개수로 기록을 복원하며 `ShellJournalScreen`은 기억과 주변 조사를 구분한다. `temple-prologue-restore`는 새 쪽지와 구형 저장의 위치·자세·충돌 및 마이그레이션을, `temple-prologue-flow`는 양일 진행과 입력을, `corridor-story-logic`은 무음·무화면으로 회랑 수집·기록·저장과 실제 사찰 전환을, `temple-story-ui-presentation`은 격리된 UI와 카메라의 화면비별 합성을 검증한다. 세 화면비·두 글씨 크기의 게임 카메라/UI 합성은 확인했고 청음과 표시 FPS는 별도 확인이 필요하다. 목표·장면 설계는 `SourceArt/TemplePrologue/STORY_DESIGN.md`다.
 

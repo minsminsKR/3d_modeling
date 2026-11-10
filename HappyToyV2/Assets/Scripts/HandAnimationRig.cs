@@ -83,21 +83,6 @@ namespace HappyToy.V2
             upperarmBone.localScale = upperarmScale;
             upperarmBone.SetPositionAndRotation(forearmBone.position, forearmBone.rotation * upperarmInForearm);
         }
-        public void AimUpperArmToViewEdge(Camera camera, float weight)
-        {
-            if (!upperarmBone || !camera || weight <= 0) return;
-            var view = camera.WorldToViewportPoint(forearmBone.position);
-            if (view.z <= camera.nearClipPlane) return;
-            var target = camera.ViewportToWorldPoint(new Vector3(.88f, -.18f, Mathf.Min(view.z, .8f)));
-            Vector3 direction = target - forearmBone.position;
-            if (direction.sqrMagnitude < .000001f) return;
-            var original = upperarmBone.rotation;
-            var targetRotation = Quaternion.FromToRotation(upperarmBone.up, direction) * original;
-            upperarmBone.rotation = Quaternion.Slerp(original, targetRotation, Mathf.Clamp01(weight));
-            var scale = upperarmScale;
-            scale.y *= Mathf.Lerp(1, Mathf.Clamp(direction.magnitude / .195f, .5f, 6f), Mathf.Clamp01(weight));
-            upperarmBone.localScale = scale;
-        }
         public void SavePose()
         {
             for (int i = 0; i < bones.Length; i++)

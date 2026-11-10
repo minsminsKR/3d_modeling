@@ -382,6 +382,8 @@ namespace HappyToy.V2.CloudTests
             }
             Call(ItemLoadout, "Select", AnimatedItem("Trap")); yield return HandSimulation(.3f);
             var actions = AnimatedActions;
+            var upperarm = HandMarker(HandRoot(HandStudio.Find("Right item grip")), "upperarm");
+            Vector3 restUpperarmScale = upperarm.localScale;
             int stock = Get<int>(inventory, "Count"), committed = Get<int>(actions, "CommittedCount");
             var world = Get<Transform>(inventory, "WorldRoot");
             int installed = world.GetComponentsInChildren(RequireType("PlacedMonsterTrap"), true).Length;
@@ -404,17 +406,46 @@ namespace HappyToy.V2.CloudTests
                         if (Get<bool>(actions, "Playing")) CaptureTrapActionFrame(review, frame++, actions);
                         yield return null;
                     }
-                    CaptureTrapActionFrame(review, frame, actions);
                     Assert.That(Get<int>(actions, "CommittedCount"), Is.GreaterThan(committed), "Trap floor release never committed");
+                    var flying = Get<Component>(inventory, "LastPlaced");
+                    Assert.That(flying, Is.Not.Null);
+                    Assert.That(Get<bool>(flying, "InFlight"), Is.True, "The tossed trap must travel after release");
+                    Assert.That(Get<bool>(flying, "Armed"), Is.False, "The trap armed before landing");
+                    Assert.That(Vector3.Distance(upperarm.localScale, restUpperarmScale), Is.LessThan(.001f), "The arm stretched to the floor");
+                    while (Get<bool>(flying, "InFlight") && Time.realtimeSinceStartup < deadline)
+                    {
+                        CaptureTrapActionFrame(review, frame++, actions);
+                        yield return null;
+                    }
+                    CaptureTrapActionFrame(review, frame, actions);
                 }
                 finally { Time.captureDeltaTime = previousCaptureDelta; }
             }
             var trap = Get<Component>(inventory, "LastPlaced");
-            Assert.That(trap, Is.Not.Null); Assert.That(Get<bool>(trap, "Armed"), Is.True);
+            Assert.That(trap, Is.Not.Null);
+            var visual = trap.GetComponentsInChildren<Transform>(true).First(node => node.GetComponent(RequireType("TrapVisuals")));
+            if (Get<bool>(trap, "InFlight"))
+            {
+                Assert.That(Get<bool>(trap, "Armed"), Is.False);
+                Assert.That(Vector3.Distance(upperarm.localScale, restUpperarmScale), Is.LessThan(.001f), "The arm stretched to the floor");
+                var capture = RequireType("TrapWorld").GetMethod("Capture", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                Assert.That(capture, Is.Not.Null);
+                var checkpoint = capture.Invoke(null, new object[] { player });
+                var saved = Get<System.Array>(checkpoint, "armed");
+                Assert.That(saved.Length, Is.EqualTo(installed + 1), "Checkpoint lost the committed airborne trap");
+                var pausedAt = visual.position;
+                Call(shell, "Pause");
+                for (int frame = 0; frame < 3; frame++) yield return null;
+                Assert.That(visual.position, Is.EqualTo(pausedAt), "Pause moved the airborne trap");
+                Call(shell, "Resume");
+                yield return Wait(() => !Get<bool>(trap, "InFlight"), 3, "Thrown trap never landed");
+            }
+            Assert.That(Get<bool>(trap, "Armed"), Is.True);
+            Assert.That(Vector3.Distance(visual.position, trap.transform.position), Is.LessThan(.001f));
             Assert.That(Vector3.Distance(trap.transform.position, fixedPoint + Vector3.up * .006f), Is.LessThan(.015f));
             Assert.That(Quaternion.Angle(trap.transform.rotation, fixedRotation), Is.LessThan(.1f));
-            Assert.That(Vector3.Distance(trap.transform.position, Get<Vector3>(actions, "LastVisualReleasePosition")), Is.LessThan(.025f),
-                "The floor trap appeared apart from the actual lowered held model");
+            Assert.That(Vector3.Distance(trap.transform.position, Get<Vector3>(actions, "LastVisualReleasePosition")), Is.GreaterThan(.1f),
+                "The toss unexpectedly dragged the hand to the landing point");
             Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(stock - 1));
             yield return Wait(() => !Get<bool>(actions, "Busy"), 8, "Trap placement recovery never finished");
             Assert.That(world.GetComponentsInChildren(RequireType("PlacedMonsterTrap"), true).Length, Is.EqualTo(installed + 1));

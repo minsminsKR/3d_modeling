@@ -19,9 +19,15 @@ namespace HappyToy.V2
         EnemyTrapRestraint captured;
         int ticket;
         float closed, spentSeconds;
+        const float ThrowDuration = .36f;
+        float throwElapsed = ThrowDuration;
+        Vector3 throwStart;
+        Quaternion throwRotation;
+        float throwScale;
         public bool Triggered { get; private set; }
         public bool Spent { get; private set; }
-        public bool Armed => !Triggered;
+        public bool InFlight => throwElapsed < ThrowDuration;
+        public bool Armed => !Triggered && !InFlight;
         public EnemyTrapRestraint Captured => captured;
         public static int ActorScanCount { get; private set; }
         static NavMeshAgent[] Actors(GameSession session)
@@ -54,11 +60,27 @@ namespace HappyToy.V2
             if (playPlacement) trap.audioCue.Play("trap-place");
             return trap;
         }
+        public void BeginThrow(Vector3 start, Quaternion rotation, float scale)
+        {
+            throwStart = start; throwRotation = rotation; throwScale = scale; throwElapsed = 0;
+            visual.transform.SetPositionAndRotation(start, rotation);
+            visual.transform.localScale = Vector3.one * scale;
+        }
         void Update()
         {
             var session = GameSession.Current;
             if (!session || session.EncountersResolved) { Destroy(gameObject); return; }
             if (!session.InputAllowed) return;
+            if (InFlight)
+            {
+                throwElapsed = Mathf.Min(ThrowDuration, throwElapsed + Time.deltaTime);
+                float t = throwElapsed / ThrowDuration;
+                visual.transform.position = Vector3.Lerp(throwStart, transform.position, t) + Vector3.up * (.08f * 4 * t * (1 - t));
+                visual.transform.rotation = Quaternion.Slerp(throwRotation, transform.rotation, t);
+                visual.transform.localScale = Vector3.one * Mathf.Lerp(throwScale, 1, t);
+                if (!InFlight) audioCue.Play("trap-place");
+                return;
+            }
             if (!Triggered)
             {
                 foreach(var entry in previous)if(!entry.Key)retiredActors.Add(entry.Key);

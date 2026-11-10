@@ -48,7 +48,8 @@ namespace HappyToy.V2
                 stock = player.Traps.Count, cooldown = player.Traps.Cooldown,
                 supplies = root.GetComponentsInChildren<Interactable>(true).Where(x=>x.kind==Interactable.Kind.TrapSupply)
                     .OrderBy(x=>x.stableId,StringComparer.Ordinal).Select(x=>new TrapExplorationCheckpoint.Supply{id=x.stableId,available=x.gameObject.activeSelf}).ToArray(),
-                armed = root.GetComponentsInChildren<PlacedMonsterTrap>().Where(x=>x.Armed)
+                // A committed toss is saved at its reserved landing position.
+                armed = root.GetComponentsInChildren<PlacedMonsterTrap>().Where(x=>!x.Triggered)
                     .Select(x=>new TrapExplorationCheckpoint.Placed{point=x.transform.position-Vector3.up*.006f,rotation=x.transform.rotation}).ToArray() };
         }
         public static void ValidateRestore(TrapExplorationCheckpoint data, PlayerMotor player)

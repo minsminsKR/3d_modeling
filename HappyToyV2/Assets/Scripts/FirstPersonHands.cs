@@ -396,7 +396,17 @@ namespace HappyToy.V2
             right.localRotation = Quaternion.Euler(rightProfile.wristEuler);
             right.gameObject.SetActive(item != PlayerItem.Flashlight && (present || rightClip != null || retiringPaper));
             ApplySocket(leftGrip, leftClip, time, reducedMotion ? default : leftSway);
-            ApplySocket(rightGrip, rightClip, rightTime, reducedMotion ? default : rightSway);
+            bool tossTrap = rightClip != null && rightClip.name == "UseTrap";
+            ApplySocket(rightGrip, tossTrap ? null : rightClip, rightTime, reducedMotion ? default : rightSway);
+            if (tossTrap)
+            {
+                // A short underhand toss: keep the elbow near the camera instead
+                // of dragging the complete hand rig to the floor destination.
+                float windup = Ease(0, .28f, rightTime) * (1 - Ease(.28f, .68f, rightTime));
+                float release = Ease(.28f, .68f, rightTime) * (1 - Ease(.68f, rightClip.duration, rightTime));
+                rightGrip.localPosition += new Vector3(-.01f, -.025f, -.045f) * windup + new Vector3(-.025f, .025f, .09f) * release;
+                rightGrip.localRotation *= Quaternion.Euler(-8 * release + 7 * windup, 0, -4 * release);
+            }
             if (!reducedMotion)
             { leftGrip.localPosition += Vector3.down * stepImpulse; rightGrip.localPosition += Vector3.down * stepImpulse * .75f; }
             rightGrip.localPosition += Vector3.down * (.34f * (1 - equip.Visibility) + .30f * (1 - Ease(0, 1, replenish)));
@@ -419,7 +429,6 @@ namespace HappyToy.V2
             torch.position += torch.TransformVector(torchProfile.anchorOffset);
             torchContact.Correct(leftRig, skipThumb: leftClip != null, maxDegrees: 6);
             AlignProps(item, rightClip, rightTime);
-            if (owned && used == PlayerItem.Trap && item == PlayerItem.Trap) MoveTrapToFloor(actionOwner, time);
             if (held) held.gameObject.SetActive(!released);
             if (item == PlayerItem.Snapper && held && !released) PredictSnapper(sideScale, reducedMotion ? default : rightSway);
             foreach (var material in materials) if (material) material.SetFloat("_Monochrome", burning ? 1 : 0);
@@ -464,29 +473,6 @@ namespace HappyToy.V2
                 case HandGripAnchor.Palm: held.position = rightRig.Palm - held.up * heldBounds.min.y; break;
             }
             if (profile.anchor != HandGripAnchor.Pinch) held.position += held.TransformVector(profile.anchorOffset);
-        }
-        void MoveTrapToFloor(PlayerHandActions owner, float time)
-        {
-            var clip = library.GetClip("UseTrap");
-            float blend = time <= clip.releaseTime ? Ease(.14f, clip.releaseTime, time) : 1 - Ease(clip.releaseTime, clip.duration, time);
-            Vector3 floor = owner.Placement.position + Vector3.up * .006f;
-            if (player.eyes.WorldToViewportPoint(floor).z <= .08f) return;
-            Vector3 targetPoint = ViewPoint(floor);
-            Quaternion targetRotation = viewCamera.transform.rotation * Quaternion.Inverse(player.eyes.transform.rotation) * owner.Placement.rotation;
-            Vector3 source = rightRig.Palm - (rightGrip.rotation * Quaternion.Euler(grips.Get(PlayerItem.Trap).propEuler) * Vector3.up) * heldBounds.min.y;
-            var offset = (targetPoint - source) * blend;
-            rightGrip.position += offset;
-            if (held)
-            {
-                held.position = source + offset;
-                held.rotation = Quaternion.Slerp(held.rotation, targetRotation, blend);
-                float lens = Mathf.Tan(viewCamera.fieldOfView * Mathf.Deg2Rad * .5f) / Mathf.Tan(player.eyes.fieldOfView * Mathf.Deg2Rad * .5f);
-                held.localScale = Vector3.one * Mathf.Lerp(1, lens, blend);
-            }
-            var wristView = viewCamera.WorldToViewportPoint(rightRig.Marker("wrist"));
-            float visible = Ease(-.15f, .10f, wristView.y);
-            float connect = Ease(.14f, .38f, time) * (1 - Ease(.95f, clip.duration, time)) * visible;
-            rightRig.AimUpperArmToViewEdge(viewCamera, connect);
         }
         Vector3 SnapperGripPosition(HandAnimationLibrary.Clip clip, float time)
         {
@@ -539,7 +525,6 @@ namespace HappyToy.V2
             var viewport = viewCamera.WorldToViewportPoint(point);
             return player && player.eyes ? player.eyes.ViewportToWorldPoint(viewport) : viewCamera.transform.InverseTransformPoint(point);
         }
-        Vector3 ViewPoint(Vector3 point) => viewCamera.ViewportToWorldPoint(player.eyes.WorldToViewportPoint(point));
         Vector3 WorldDirection(Vector3 direction)
         {
             if (!player || !player.eyes) return direction.normalized;
@@ -561,6 +546,15 @@ namespace HappyToy.V2
             point = default;
             if (!studio || displayed != item || !held || !held.gameObject.activeInHierarchy) return false;
             point = WorldPoint(held.position); return true;
+        }
+        public bool TryGetTrapThrowPose(out Vector3 point, out Quaternion rotation, out float scale)
+        {
+            rotation = Quaternion.identity; scale = 1;
+            if (!TryGetHeldRootWorld(PlayerItem.Trap, out point) || !player || !player.eyes) return false;
+            rotation = player.eyes.transform.rotation * Quaternion.Inverse(viewCamera.transform.rotation) * held.rotation;
+            scale = held.lossyScale.x * Mathf.Tan(player.eyes.fieldOfView * Mathf.Deg2Rad * .5f) /
+                Mathf.Tan(viewCamera.fieldOfView * Mathf.Deg2Rad * .5f);
+            return true;
         }
         public string ContactDiagnostics => torchContact == null ? "Unprepared" : JsonUtility.ToJson(new ContactReport {
             digits = new List<HandCylinderContact.Diagnostic>(torchContact.LastDiagnostics).ToArray() });

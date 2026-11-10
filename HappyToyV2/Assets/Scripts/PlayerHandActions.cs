@@ -94,11 +94,10 @@ namespace HappyToy.V2
                         break;
                     case PlayerItem.Trap:
                         LastCommitPosition = placement.position;
-                        if (player.Hands.TryGetHeldRootWorld(PlayerItem.Trap, out var visualPoint))
+                        if (player.Hands.TryGetTrapThrowPose(out var visualPoint, out var visualRotation, out var visualScale))
                         {
                             LastVisualReleasePosition = visualPoint;
-                            if (Vector3.Distance(visualPoint, placement.position + Vector3.up * .006f) < .025f)
-                                result = player.Traps.TryPlaceAt(placement);
+                            result = player.Traps.TryThrowAt(placement, visualPoint, visualRotation, visualScale);
                         }
                         break;
                     case PlayerItem.Incense: result = player.Rituals.UseIncense(false); break;

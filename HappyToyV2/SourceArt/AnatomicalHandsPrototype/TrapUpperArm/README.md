@@ -6,8 +6,9 @@ see the parent README for provenance). It is joined to the existing
 `../hand-rig-corrective.blend`: the open forearm and upper-arm rings are
 bridged, with two intermediate skinning bands. The hand, its finger bones,
 corrective shape key and existing skin atlas remain in use. The independent
-`upperarm` bone is synchronized with the forearm at runtime; during floor
-placement only, it is aimed and stretched toward the lower screen edge.
+`upperarm` bone is synchronized with the forearm at runtime. The previous
+floor-placement stretch was removed on 2026-11-11; the trap is now tossed
+from a short hand motion instead.
 
 `hand-with-upperarm.blend` is the editable final source. Rebuild it with
 Blender 4.2.23 from the repository root, with an empty scratch directory:
@@ -25,11 +26,11 @@ FBX container bytes can differ between Blender exports. Use the parent
 `export_candidate.py` and `install_candidate.py` to regenerate the runtime
 asset, then reimport the hand prefab with the project import pipeline.
 
-An opt-in 20 Hz PlayMode capture uses the actual game and hand cameras at a
+The earlier opt-in 20 Hz PlayMode capture used the actual game and hand cameras at a
 45-degree downward view; it is a layered composite without HUD, not a native
 player capture. The floor position, release and blocked-placement rules were
 also tested. The arm no longer terminates in mid-screen in that view, but the
 long reach still stretches the arm and the elbow skin transition remains
 visible. This is not a full body IK solution or an approval of all camera
-angles. Historical surface reports in the parent folder apply to the geometry
+angles. That capture predates the short-toss change. Historical surface reports in the parent folder apply to the geometry
 hash recorded in each report, not automatically to this new mesh.

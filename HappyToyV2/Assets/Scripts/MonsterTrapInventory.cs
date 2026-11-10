@@ -5,7 +5,7 @@ namespace HappyToy.V2
     [DefaultExecutionOrder(50)]
     public sealed class MonsterTrapInventory : MonoBehaviour
     {
-        // A fixed supported destination prepared before the hands begin lowering.
+        // A fixed supported destination prepared before the short toss.
         // It is deliberately not checkpointed until the placement is committed.
         public struct PlacementPose
         {
@@ -100,11 +100,20 @@ namespace HappyToy.V2
             if (!CanPlaceAt(pose, out var reason)) return Reject(reason);
             return CommitPlacement(pose, playHandAction);
         }
-        bool CommitPlacement(PlacementPose pose, bool playHandAction)
+        public bool TryThrowAt(PlacementPose pose, Vector3 start, Quaternion rotation, float scale)
+        {
+            if (!CanPlaceAt(pose, out var reason)) return Reject(reason);
+            if (!CorridorCheckpoint.Vector(start) || !ChapterCheckpoint.Rotation(rotation) ||
+                float.IsNaN(scale) || float.IsInfinity(scale) || scale <= 0 || scale > 3) return false;
+            return CommitPlacement(pose, false, start, rotation, scale);
+        }
+        bool CommitPlacement(PlacementPose pose, bool playHandAction, Vector3? throwStart = null,
+            Quaternion throwRotation = default, float throwScale = 1)
         {
             var session = GameSession.Current;
             if (!WorldRoot) WorldRoot = session.transform;
-            LastPlaced = PlacedMonsterTrap.Create(WorldRoot, pose.position, pose.rotation, true);
+            LastPlaced = PlacedMonsterTrap.Create(WorldRoot, pose.position, pose.rotation, !throwStart.HasValue);
+            if (throwStart.HasValue) LastPlaced.BeginThrow(throwStart.Value, throwRotation, throwScale);
             player.Items.Select(PlayerItem.Trap);
             if (playHandAction) player.Hands?.PlayAction(PlayerItem.Trap);
             if (!player.Items.Unlimited) Count--;
