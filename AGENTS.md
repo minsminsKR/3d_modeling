@@ -151,30 +151,38 @@ latest GitHub `origin/main` playable on this machine, not merely update sources.
   latest-main playable build is not yet ready. Do not label an older executable
   as the latest main build.
 
-# Group superseded HappyToyV2 builds after every verified new build
+# Clear superseded HappyToyV2 builds after every verified new build
 
-Persistent user instruction, 2026-10-24: after successfully creating and verifying
-a new player build, create `HappyToyV2/Builds/구버전_삭제대기/` when necessary and
-move superseded player build folders into it. This applies whether or not a Git
-push was requested. It supersedes the older automatic post-push deletion policy.
+Persistent user instruction, 2026-11-10: after each successfully created and
+verified new player build, permanently delete the superseded player builds in
+`HappyToyV2/Builds/구버전_삭제대기/`. This updates the 2026-10-24 grouping-only
+instruction and applies independently of a Git push. Group eligible old builds
+first, then clear eligible player-build folders from that holding directory.
 
 - Keep the latest verified playable build directly under `HappyToyV2/Builds/`,
   including its executable, _Data, DLLs, credits and build/input manifest. Update
   `HappyToyV2-Latest.lnk`, when present, to that retained executable.
 - Group each old player build as a complete folder under `구버전_삭제대기`,
   preserving its name. Never overwrite an existing destination; defer a name
-  collision and report it. Already grouped builds stay in that folder.
+  collision and report it. Include previously grouped eligible builds in the
+  post-verification cleanup.
 - Resolve and validate source and destination paths as children of the exact
-  project's Builds directory before moving. Reject reparse points. Identify
-  actual player builds; do not group source assets, editable authoring originals,
-  modeling downloads, tools, test reports, saves or unrelated projects as builds.
+  project's Builds directory before moving or deleting. Reject reparse points,
+  including inside a deletion target. Identify actual player builds; do not move
+  or delete source assets, editable authoring originals, modeling downloads,
+  tools, test reports, saves or unrelated projects as builds.
 - Never move the retained latest build or a running player's build. Report and
   defer a running old build until it has exited. If no verified replacement
   exists or the new build fails, preserve the last playable build in place.
-- Grouping is automatic under this standing instruction; permanent deletion is
-  a separate action requiring an explicit user request. A Git push alone does
-  not authorize deletion. Grouping does not reclaim disk space.
-- Report the grouping and provide the retained executable link when relevant.
+- After a verified new build, permanently delete identified, non-running old
+  player-build folders in the holding directory. Preserve and report unknown,
+  running, colliding, or unsafe entries; do not delete the holding directory
+  recursively if it contains any such entries. If the build fails, delete none.
+  A Git push alone, without a newly verified build, does not authorize cleanup.
+- Use `HappyToyV2/Tools/quality/Clear-VerifiedOldBuilds.ps1 -RetainedBuild
+  <verified-build>`; it rechecks build inputs and applies the path, reparse,
+  known-entry and running-player safeguards before grouping and deletion.
+- Report deleted and deferred builds and provide the retained executable link.
 
 # Preferred 3D model generation workflow
 

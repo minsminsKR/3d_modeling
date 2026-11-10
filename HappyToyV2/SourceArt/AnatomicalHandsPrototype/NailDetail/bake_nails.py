@@ -39,7 +39,7 @@ while unseen:
 if len(components) != 5:
     raise RuntimeError(f'Expected five fingernail components, got {len(components)}')
 components.sort(key=lambda c: sum(data['verts'][i][0] for i in c) / len(c), reverse=True)
-regions = [(.085, .136, .0045, .0048), (.0525, .210, .0045, .006),
+regions = [(.088, .136, .0035, .0043), (.0525, .210, .0045, .006),
            (.0185, .224, .0045, .006), (-.012, .215, .0045, .0055),
            (-.049, .188, .004, .005)]
 for part, (cx, cz, rx, rz) in zip(components, regions):
@@ -47,8 +47,8 @@ for part, (cx, cz, rx, rz) in zip(components, regions):
     zs = [data['verts'][i][2] for i in part]
     for i in part:
         vertex = data['verts'][i]
-        vertex[0] = cx + (2 * (vertex[0] - min(xs)) / (max(xs) - min(xs)) - 1) * rx
         vertex[2] = cz + (2 * (vertex[2] - min(zs)) / (max(zs) - min(zs)) - 1) * rz
+        vertex[0] = cx + (2 * (vertex[0] - min(xs)) / (max(xs) - min(xs)) - 1) * rx
 bvh = BVHTree.FromPolygons([v.co for v in hand.data.vertices],
                            [list(face.vertices) for face in hand.data.polygons])
 vertices = []

@@ -3,7 +3,8 @@
 The shipped atlas `../draft-skin-2048-nails.png` adds short nail detail to
 the existing v7 skin atlas. It is baked into the existing UV and deforms with
 the hand; the temporary fitting mesh is not part of the game. The thumb patch
-was moved closer to the tip and made smaller in the follow-up. The source is not a human
+was shifted left in the first-person view and reduced after comparing the fully
+extended hand from the back, obliquely and from the side. The source is not a human
 scan, and this addition does not resolve the remaining stylized hand shape,
 finger deformation or incomplete prop contact.
 
@@ -42,7 +43,7 @@ python HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/compose_nails.py
 
 CPU bake sampling can differ by one 8-bit color value on a few pixels between
 runs. The shipped atlas SHA-256 is
-`e05070d8340bdae49197e6bce7354277612f5db60b3cee4feb026f88781ea615`.
+`20d8eca21f42235285ee6d0a20123b0c06f2d262a8fd73964ccd2d3269dbccdc`.
 `../install_candidate.py` installs this atlas; its other FBX and pose inputs
 remain the previously installed sources. Run `PlayerItemsImport.ApplyHand`
 when reimporting the complete candidate.

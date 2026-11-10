@@ -12,6 +12,10 @@ source. Nail sources, reproducible bake and verification scope are in
 
 The thumb nail patch was moved toward the tip and reduced in width and length;
 `NailDetail/bake_nails.py` and the shipped atlas are the reproducible sources.
+In the subsequent user-directed adjustment its center was shifted left in the
+first-person view and assessed on the neutral extended hand from dorsal,
+oblique and side viewpoints, then in the Unity hand-camera still. The adjusted
+2K atlas is installed with the unchanged ring-corrective geometry.
 The existing hand is still the base: `generate_ring_corrective.py` derives a
 single 60-degree ring metacarpophalangeal bend corrective from Blender's dual
 quaternion/linear skinning difference, back-projected into bind space. The

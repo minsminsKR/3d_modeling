@@ -1,5 +1,9 @@
 # HappyToyV2 기능별 수정 지도
 
+Windows 새 빌드 검증 뒤의 구버전 정리는 `Tools/quality/Clear-VerifiedOldBuilds.ps1`이
+현재 입력 해시를 재검증하고 실제 플레이어 폴더·실행 중 여부·경로와 링크를 확인한 뒤
+수행한다. 식별되지 않은 항목은 보존하고 보고한다.
+
 손 관절의 국소 보정은 `HandAnimationRig`가 현재 약지 굴곡에 따라 FBX
 `Correct_ring_1` 블렌드셰이프를 구동하고 자세 저장·복원에 반영한다.
 Blender 원본·생성기와 엄지손톱 베이크는 `SourceArt/AnatomicalHandsPrototype`에
