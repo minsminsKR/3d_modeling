@@ -39,7 +39,7 @@ while unseen:
 if len(components) != 5:
     raise RuntimeError(f'Expected five fingernail components, got {len(components)}')
 components.sort(key=lambda c: sum(data['verts'][i][0] for i in c) / len(c), reverse=True)
-regions = [(.083, .132, .005, .0055), (.0525, .210, .0045, .006),
+regions = [(.085, .136, .0045, .0048), (.0525, .210, .0045, .006),
            (.0185, .224, .0045, .006), (-.012, .215, .0045, .0055),
            (-.049, .188, .004, .005)]
 for part, (cx, cz, rx, rz) in zip(components, regions):

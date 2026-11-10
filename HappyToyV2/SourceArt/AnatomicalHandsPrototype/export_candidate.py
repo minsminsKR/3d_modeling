@@ -2,7 +2,7 @@ import bpy
 from pathlib import Path
 from mathutils import Matrix
 root=Path(__file__).resolve().parent
-bpy.ops.wm.open_mainfile(filepath=str(root/'hand-rig-prototype-v6.blend'))
+bpy.ops.wm.open_mainfile(filepath=str(root/'hand-rig-corrective.blend'))
 h=bpy.data.objects['Blender anatomical hand candidate'];rig=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
 # FBX maps the first/render-active UV to Unity UV0. The draft retained an old
 # transfer layer for comparison, while its skin was baked against NewSkinUV.

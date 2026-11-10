@@ -15,6 +15,8 @@ namespace HappyToy.V2
         readonly Dictionary<string, Transform> markers = new Dictionary<string, Transform>();
         readonly Dictionary<string, int[]> digitBones = new Dictionary<string, int[]>();
         readonly Quaternion bindPalmInRoot;
+        readonly SkinnedMeshRenderer skin;
+        readonly int ringCorrectiveBone, ringCorrectiveShape;
         bool applied;
         public Transform Root { get; }
         public HandAnimationRig(Transform root, HandAnimationLibrary source)
@@ -36,6 +38,9 @@ namespace HappyToy.V2
                 for (int joint = 1; joint <= 3; joint++) chain[joint - 1] = Index(digit + "_" + joint);
                 digitBones.Add(digit, chain);
             }
+            skin = root.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            ringCorrectiveBone = Index("ring_1");
+            ringCorrectiveShape = skin && skin.sharedMesh ? skin.sharedMesh.GetBlendShapeIndex("Correct_ring_1") : -1;
             bindPalmInRoot = Quaternion.Inverse(root.rotation) * markers["palm"].rotation;
         }
         public void Apply(HandAnimationLibrary.Pose pose, HandAnimationLibrary.Clip clip, float time)
@@ -70,12 +75,23 @@ namespace HappyToy.V2
         {
             for (int i = 0; i < bones.Length; i++)
             { bones[i].localRotation = saved[i]; authored[i] = savedAuthored[i]; current[i] = savedCurrent[i]; }
+            ApplyRingCorrective();
         }
         void ApplyBone(int index)
         {
             Vector3 value = current[index];
             bones[index].localRotation = rest[index] * Quaternion.AngleAxis(value.y, Vector3.forward) *
                 Quaternion.AngleAxis(value.z, Vector3.up) * Quaternion.AngleAxis(value.x, Vector3.right);
+            if (index == ringCorrectiveBone) ApplyRingCorrective();
+        }
+        void ApplyRingCorrective()
+        {
+            if (!skin || ringCorrectiveShape < 0 || ringCorrectiveBone < 0) return;
+            // The authoring correction reproduces the volume-preserving bend
+            // at 60 degrees. Zero bend must leave the neutral mesh untouched.
+            float angle = Mathf.Max(0, current[ringCorrectiveBone].x) * Mathf.Deg2Rad;
+            float weight = (1 - Mathf.Cos(angle * .5f)) / (1 - Mathf.Cos(30 * Mathf.Deg2Rad));
+            skin.SetBlendShapeWeight(ringCorrectiveShape, 100 * Mathf.Clamp01(weight));
         }
         // A small contact finish on an authored grip, never a replacement pose.
         // Numerical hinge CCD uses the actual transforms, including a mirrored

@@ -1,0 +1,26 @@
+{
+  "status": "LOCALIZED_IMPROVEMENT",
+  "scope": "One ring-finger base-joint corrective, static talisman and flashlight samples; not complete hand art or all-frame collision validation.",
+  "talismanSkin": {
+    "measurement": "Unity BakeMesh triangle area compared with neutral bind, below 25 percent",
+    "leftWithout": 30,
+    "leftWith": 11,
+    "rightWithout": 30,
+    "rightWith": 11
+  },
+  "flashlightSurface": {
+    "measurement": "Weighted vertices including active blendshape against measured cylinder approximation, static pose",
+    "deepOver3mmWithout": 59,
+    "deepOver3mmWith": 59,
+    "maximumPenetrationMetresWithout": 0.0063807033,
+    "maximumPenetrationMetresWith": 0.0063807033
+  },
+  "runtimeGeometrySha256": "5d5fe439789be7fb6e170198ee60f34ad910836e066ea973a6875e8c304e10d3",
+  "runtimeAlbedoSha256": "e05070d8340bdae49197e6bce7354277612f5db60b3cee4feb026f88781ea615",
+  "limitations": [
+    "Corrective affects only ring_1",
+    "Talisman result is a single static pose, not every animation frame",
+    "Flashlight is a cylinder approximation, not a full mesh intersection test",
+    "Full game scene appearance and frame rate were not measured"
+  ]
+}

@@ -1,5 +1,13 @@
 # HappyToyV2 기능별 수정 지도
 
+손 관절의 국소 보정은 `HandAnimationRig`가 현재 약지 굴곡에 따라 FBX
+`Correct_ring_1` 블렌드셰이프를 구동하고 자세 저장·복원에 반영한다.
+Blender 원본·생성기와 엄지손톱 베이크는 `SourceArt/AnatomicalHandsPrototype`에
+있다. `hand-animation-logic`은 양손의 실제 스킨·보정·자세 복원과 심한
+삼각형 수축을, `player-hands`는 게임 손 카메라·아이템 동작을 검사한다.
+`HandGripSurfaceAudit`은 활성 보정까지 포함해 손전등 원통 근사 접촉을
+측정하며 실제 전체 표면 무관통 인증은 아니다.
+
 사찰 서사 재구성의 소유권과 검증 경로는 다음과 같다. `Core/TemplePrologueClueState`가 양일 쪽지 조사 순서·향 허용과 구형 저장 면제를, `TemplePrologueWorld`가 조사·저장 연결을, `TempleStoryEvidence`가 기존 종이와 두 날의 잉크를, `StoryNarration`과 `ShellHudView`가 정지 가능한 독립 대사와 판독 표시를 소유한다. `CorridorRun`의 첫 회수 기억은 회수 개수로 기록을 복원하며 `ShellJournalScreen`은 기억과 주변 조사를 구분한다. `temple-prologue-restore`는 새 쪽지와 구형 저장의 위치·자세·충돌 및 마이그레이션을, `temple-prologue-flow`는 양일 진행과 입력을, `corridor-story-logic`은 무음·무화면으로 회랑 수집·기록·저장과 실제 사찰 전환을, `temple-story-ui-presentation`은 격리된 UI와 카메라의 화면비별 합성을 검증한다. 세 화면비·두 글씨 크기의 게임 카메라/UI 합성은 확인했고 청음과 표시 FPS는 별도 확인이 필요하다. 목표·장면 설계는 `SourceArt/TemplePrologue/STORY_DESIGN.md`다.
 
 공통 하단 HUD는 `ShellHudView`가 화면 바닥의 작은 일반 대사, 위쪽 증거 판독, 상호작용 키 표시와 입력을 가로채지 않는 페더 배경 메시를 소유하고, `StoryNarration`은 대사 순서와 시간을 소유한다. `hud-interaction-logic`은 실제 가상 키보드·게임패드 입력, 대사·증거·일시정지와 큰 글씨·고대비 배치를 무화면으로 검사한다. 일반 대사 중 기존 하단 인벤토리와 조작 안내는 겹치지 않도록 잠시 숨겼다가 복원하고, 소리 자막과 상호작용은 대사 높이에 맞춰 위로 이동한다. `temple-story-ui-presentation`은 사찰 게임 카메라에서 실제 조준과 입력을 사용해 일반/증거 화면, 키보드/게임패드, 보통/큰 글씨, 일반/고대비와 세 화면비를 오프스크린 합성해 검사한다. 화면 표시 FPS나 실제 기기 사용감은 별도다.

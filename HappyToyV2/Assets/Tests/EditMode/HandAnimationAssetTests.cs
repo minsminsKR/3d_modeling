@@ -219,6 +219,71 @@ namespace HappyToy.V2.CloudTests
         }
 
         [Test]
+        public void RingCorrectiveFollowsTheAppliedGripAndRestoresOnBothHands()
+        {
+            var prefab = Resources.Load<GameObject>("PlayerItems/hand");
+            Assert.That(prefab, Is.Not.Null);
+            var library = Call(RequireType("HandAnimationLibrary"), "Load");
+            foreach (float side in new[] { 1f, -1f })
+            {
+                var root = Object.Instantiate(prefab);
+                var neutral = new Mesh();
+                var without = new Mesh();
+                var with = new Mesh();
+                try
+                {
+                    root.transform.localScale = new Vector3(side, 1, 1);
+                    var skin = root.GetComponentInChildren<SkinnedMeshRenderer>(true);
+                    int shape = skin.sharedMesh.GetBlendShapeIndex("Correct_ring_1");
+                    Assert.That(shape, Is.GreaterThanOrEqualTo(0), "Missing ring joint corrective");
+                    var rig = Activator.CreateInstance(RequireType("HandAnimationRig"), root.transform, library);
+                    skin.BakeMesh(neutral);
+                    Call(rig, "Apply", Call(library, "GetPose", "Talisman"), null, 0f);
+                    float held = skin.GetBlendShapeWeight(shape);
+                    Assert.That(held, Is.GreaterThan(10), "Bent ring joint did not activate its corrective");
+                    skin.BakeMesh(with);
+                    skin.SetBlendShapeWeight(shape, 0);
+                    skin.BakeMesh(without);
+                    Assert.That(with.vertices.Zip(without.vertices, (a, b) => (a - b).sqrMagnitude).Max(),
+                        Is.GreaterThan(.00000001f), "Corrective has no effect on the actual skinned surface");
+                    var reference = neutral.vertices;
+                    var plain = without.vertices;
+                    var corrected = with.vertices;
+                    var triangles = skin.sharedMesh.triangles;
+                    int CountCollapsed(Vector3[] vertices)
+                    {
+                        int count = 0;
+                        for (int i = 0; i < triangles.Length; i += 3)
+                        {
+                            int a = triangles[i], b = triangles[i + 1], c = triangles[i + 2];
+                            float restArea = Vector3.Cross(reference[b] - reference[a], reference[c] - reference[a]).magnitude;
+                            if (restArea < 1e-10f) continue;
+                            float currentArea = Vector3.Cross(vertices[b] - vertices[a], vertices[c] - vertices[a]).magnitude;
+                            if (currentArea < .25f * restArea) count++;
+                        }
+                        return count;
+                    }
+                    int before = CountCollapsed(plain), after = CountCollapsed(corrected);
+                    TestContext.WriteLine("Collapsed talisman triangles, before={0}, after={1}, side={2}", before, after, side);
+                    Assert.That(after, Is.LessThanOrEqualTo(before), "Joint corrective increased severely collapsed triangles");
+                    Call(rig, "Apply", Call(library, "GetPose", "Talisman"), null, 0f);
+                    Call(rig, "SavePose");
+                    Call(rig, "Apply", Call(library, "GetPose", "Open"), null, 0f);
+                    Assert.That(skin.GetBlendShapeWeight(shape), Is.LessThan(held));
+                    Call(rig, "RestorePose");
+                    Assert.That(skin.GetBlendShapeWeight(shape), Is.EqualTo(held).Within(.001f));
+                }
+                finally
+                {
+                    Object.DestroyImmediate(without);
+                    Object.DestroyImmediate(with);
+                    Object.DestroyImmediate(neutral);
+                    Object.DestroyImmediate(root);
+                }
+            }
+        }
+
+        [Test]
         public void AllAuthoredUsePosesBakeFiniteSkinWithTheActualImportedRestAxes()
         {
             var prefab = Resources.Load<GameObject>("PlayerItems/hand"); Assert.That(prefab, Is.Not.Null);

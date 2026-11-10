@@ -1,5 +1,10 @@
 # HappyToyV2 프로젝트 메모리
 
+## 엄지손톱 위치와 약지 관절 보정 — 2026-11-10
+
+- 엄지손톱을 더 작은 크기로 손끝 쪽에 옮겼다. 손등/손바닥의 약지 첫 관절 굽힘에는 기존 동작을 유지하는 국소 볼륨 보정 블렌드셰이프를 추가했다. 양손에서 부적 정적 자세의 심한 삼각형 수축이 30→11개였으며 다른 손가락·손바닥 전체의 해부학적 완성이나 무관통 인증은 아니다.
+- `hand-animation-logic` Edit 113/113·Play 12/12, `player-hands` GPU Edit 104/104·Play 4/4 통과. GPU 전체 검사는 인접한 이전 엄지 위치에서 수행했고 최종 엄지 위치는 별도 Unity 손 카메라 스틸로 확인했다. 손전등의 정적 원통 근사에서 보정 전후 3mm 초과 정점은 59개로 유지됐다. 재현·한계는 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/README.md`.
+
 ## 손 표면 손톱 디테일 — 2026-11-10
 
 - 기존 Blender 손 UV에 MakeHuman CC0 짧은 손톱 디테일을 베이크해 런타임 피부에 적용했다. 원본·저작권·재현 방법은 `HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/README.md`. 손 리그·가중치·아이템 자세는 변경하지 않았다.

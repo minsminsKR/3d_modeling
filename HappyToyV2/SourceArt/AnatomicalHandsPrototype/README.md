@@ -4,10 +4,43 @@ The reviewed horror-game and user-photo grip references, current visual
 comparison, and item-specific acceptance targets are in
 `GRIP_REFERENCE_REVIEW.md`.
 
-2026-11-10: the runtime atlas now includes baked short nail detail using a CC0
-source. The hand mesh, weights and grip poses remain the previous candidate;
-they still need anatomical art work. Sources, reproducible bake and actual
-verification scope are in `NailDetail/README.md`.
+2026-11-10: the runtime atlas includes baked short nail detail using a CC0
+source. Nail sources, reproducible bake and verification scope are in
+`NailDetail/README.md`; the subsequent local ring correction is described below.
+
+## Thumb placement and ring joint corrective — 2026-11-10
+
+The thumb nail patch was moved toward the tip and reduced in width and length;
+`NailDetail/bake_nails.py` and the shipped atlas are the reproducible sources.
+The existing hand is still the base: `generate_ring_corrective.py` derives a
+single 60-degree ring metacarpophalangeal bend corrective from Blender's dual
+quaternion/linear skinning difference, back-projected into bind space. The
+editable result is `hand-rig-corrective.blend`; `export_candidate.py` exports
+the FBX and `install_candidate.py` installs it with the revised skin. Rebuilding
+both editable versions produced the same vertex/weight/shape data hash
+`56a60c68a4f5a7053acaefc99053dcd803a205c4f90e25ae86e98626b36c3c5e`;
+FBX container bytes can differ between exports. The existing bind, item poses
+and action markers remain in use.
+
+`HandAnimationRig` drives the corrective smoothly from ring curl, including
+contact adjustments and pose restoration, on both mirrored and non-mirrored
+hands. The Unity skinned-mesh test compares the same static talisman pose with
+and without the corrective: triangles below 25% of neutral area decrease
+from 30 to 11 on each hand. This is a deformation metric, not a collision or
+visual-quality guarantee for all poses. The revised `HandGripSurfaceAudit`
+includes active blendshape deltas before applying bone matrices; with the
+corrective enabled and disabled the static flashlight's cylindrical
+approximation reports 59 vertices deeper than 3 mm and a 6.38 mm maximum.
+It does not establish zero penetration, other items or animated frames.
+
+The candidate passed `hand-animation-logic` EditMode 113/113 and PlayMode
+12/12, and `player-hands` D3D11 EditMode 104/104 and PlayMode 4/4. The latter
+ran with the same joint correction and an earlier nearby thumb position; the
+final atlas was reviewed again in the Unity hand-camera stills under local
+`Builds/HandJointThumbStudioAdjusted-20261110/`. These are isolated hand-layer
+captures, not full-scene player or FPS validation. The ring corrective is a
+localized improvement; other fingers, palm and wrist, realistic skin and
+item contact still need art review and possible further correction.
 
 This candidate is installed in the game. Its appearance and grip quality have remaining issues described below. The base is Blender Studio Human Base Meshes v1.4.1, CC0, https://www.blender.org/download/demo-files/ . The unmodified archive SHA-256 is 811f43accbb31a88266d932f8f5563b2d13586fca0ba2693aad1f5fe582b3515. Blender 4.2.23 LTS is required: https://download.blender.org/release/Blender4.2/ .
 

@@ -34,6 +34,11 @@ namespace HappyToy.V2.Editor
             var contact = Field<HandCylinderContact>(hands, "torchContact");
             var skin = hand.GetComponentInChildren<SkinnedMeshRenderer>(true);
             if (!skin || !skin.sharedMesh) throw new InvalidOperationException("Missing actual left-hand skin.");
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-v2-hand-no-corrective") >= 0)
+            {
+                int shape = skin.sharedMesh.GetBlendShapeIndex("Correct_ring_1");
+                if (shape >= 0) skin.SetBlendShapeWeight(shape, 0);
+            }
             var mesh = skin.sharedMesh;
             var source = mesh.vertices;
             var weights = mesh.boneWeights;
@@ -41,10 +46,25 @@ namespace HappyToy.V2.Editor
             var bones = skin.bones;
             if (source.Length != weights.Length || bind.Length != bones.Length)
                 throw new InvalidOperationException("Hand skin topology is inconsistent.");
+            // Apply active one-frame corrective deltas in bind space before
+            // transforming through the same bone matrices as the baseline.
+            for (int shape = 0; shape < mesh.blendShapeCount; shape++)
+            {
+                float active = skin.GetBlendShapeWeight(shape);
+                if (Mathf.Abs(active) < .00001f) continue;
+                if (mesh.GetBlendShapeFrameCount(shape) != 1)
+                    throw new InvalidOperationException("Audit does not support multi-frame blendshapes.");
+                float frameWeight = mesh.GetBlendShapeFrameWeight(shape, 0);
+                if (Mathf.Abs(frameWeight) < .00001f)
+                    throw new InvalidOperationException("Invalid corrective frame weight.");
+                var delta = new Vector3[source.Length];
+                mesh.GetBlendShapeFrameVertices(shape, 0, delta, null, null);
+                for (int i = 0; i < source.Length; i++) source[i] += delta[i] * (active / frameWeight);
+            }
             var matrices = new Matrix4x4[bind.Length];
             for (int i = 0; i < bind.Length; i++) matrices[i] = torch.worldToLocalMatrix * bones[i].localToWorldMatrix * bind[i];
             var result = new Result { item = "Flashlight", radius = contact.Radius, minimum = contact.Minimum,
-                maximum = contact.Maximum, scope = "Actual weighted skin vertices against a measured cylindrical barrel approximation; not triangle intersection or full prop surface certification." };
+                maximum = contact.Maximum, scope = "Weighted skin and active corrective vertices against a measured cylindrical barrel approximation; not triangle intersection or full prop surface certification." };
             for (int i = 0; i < source.Length; i++)
             {
                 var bw = weights[i]; var point = matrices[bw.boneIndex0].MultiplyPoint3x4(source[i]) * bw.weight0;
