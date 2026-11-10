@@ -4,6 +4,10 @@ The reviewed horror-game and user-photo grip references, current visual
 comparison, and item-specific acceptance targets are in
 `GRIP_REFERENCE_REVIEW.md`.
 
+The 2026-11-10 user-supplied hand photo and the local, manually aligned
+joint-crease texture pass are recorded in `ReferenceWrinkles/README.md`.
+This is a skin-detail adjustment, not a new skeleton or full-scene approval.
+
 2026-11-10: the runtime atlas includes baked short nail detail using a CC0
 source. Nail sources, reproducible bake and verification scope are in
 `NailDetail/README.md`; the subsequent local ring correction is described below.
