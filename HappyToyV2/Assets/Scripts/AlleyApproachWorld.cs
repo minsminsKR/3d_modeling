@@ -255,6 +255,9 @@ namespace HappyToy.V2
             var prefab = Resources.Load<GameObject>("AlleyBrickHouse/BrickHousePbr") ??
                 Resources.Load<GameObject>("AlleyBrickHouse/BrickHouse");
             if (!prefab) return;
+            // The walls were just created and rotated in this same frame.
+            // Refresh physics bounds before using them for house placement.
+            Physics.SyncTransforms();
             // The existing colliding garden walls remain the navigation boundary.
             foreach (Transform child in transform)
             {
@@ -294,14 +297,27 @@ namespace HappyToy.V2
                     CorridorEntranceModels.GroundAtHeight(holder,
                         new Vector3(side * setback + RoadBend(z), 0, z + (variant % 2) * .3f), height,
                         Quaternion.Euler(0, yaw, 0));
-                    // The generated meshes have different footprints. Keep
-                    // their entire world-space bounds outside the widest bend,
-                    // rather than letting a facade clip through the wall.
+                    // Seat each generated footprint behind the actual walls
+                    // spanning it. A single worst-case lane width pushes houses
+                    // unnecessarily far from the outside of the curved street.
                     var bounds = MonsterPresentationScale.Bounds(holder);
-                    float clearance = transform.position.x + side * 4.85f;
-                    float nearEdge = side > 0 ? bounds.min.x : bounds.max.x;
-                    if ((side > 0 && nearEdge < clearance) || (side < 0 && nearEdge > clearance))
+                    float clearance = side > 0 ? float.NegativeInfinity : float.PositiveInfinity;
+                    foreach (Transform wallNode in transform)
+                    {
+                        if (wallNode.localPosition.x * side <= 0 ||
+                            (wallNode.name != "Curved residential wall" && wallNode.name != "Weathered residential wall")) continue;
+                        var wallCollider = wallNode.GetComponent<BoxCollider>();
+                        if (!wallCollider || !wallCollider.enabled) continue;
+                        var wallBounds = wallCollider.bounds;
+                        if (wallBounds.max.z < bounds.min.z || wallBounds.min.z > bounds.max.z) continue;
+                        clearance = side > 0 ? Mathf.Max(clearance, wallBounds.max.x + .30f) :
+                            Mathf.Min(clearance, wallBounds.min.x - .30f);
+                    }
+                    if (!float.IsInfinity(clearance))
+                    {
+                        float nearEdge = side > 0 ? bounds.min.x : bounds.max.x;
                         holder.position += Vector3.right * (clearance - nearEdge);
+                    }
                     foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 }
                 // A second row breaks the empty skyline beyond the nearer roofs.

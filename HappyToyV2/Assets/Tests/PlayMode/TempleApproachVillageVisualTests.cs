@@ -28,19 +28,34 @@ namespace HappyToy.V2.CloudTests
             var nearHouses = alley.transform.Cast<Transform>()
                 .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
             Assert.That(nearHouses.Length, Is.EqualTo(7));
+            bool closerToCurvedWall = false;
             foreach (var house in nearHouses)
             {
                 var renderers = house.GetComponentsInChildren<Renderer>(true);
                 Assert.That(renderers.Length, Is.GreaterThan(0));
                 var bounds = renderers[0].bounds;
                 foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
-                if (house.position.x > alley.transform.position.x)
-                    Assert.That(bounds.min.x, Is.GreaterThanOrEqualTo(alley.transform.position.x + 4.84f),
-                        "Right house intersects the lane");
-                else
-                    Assert.That(bounds.max.x, Is.LessThanOrEqualTo(alley.transform.position.x - 4.84f),
-                        "Left house intersects the lane");
+                bool right = house.position.x > alley.transform.position.x;
+                int matchingWalls = 0;
+                foreach (Transform wall in alley.transform)
+                {
+                    if ((wall.localPosition.x > 0) != right ||
+                        (wall.name != "Curved residential wall" && wall.name != "Weathered residential wall")) continue;
+                    var collider = wall.GetComponent<BoxCollider>();
+                    if (!collider || !collider.enabled) continue;
+                    var wallBounds = collider.bounds;
+                    if (wallBounds.max.z < bounds.min.z || wallBounds.min.z > bounds.max.z) continue;
+                    matchingWalls++;
+                    float gap = right ? bounds.min.x - wallBounds.max.x : wallBounds.min.x - bounds.max.x;
+                    Assert.That(gap, Is.GreaterThanOrEqualTo(.09f),
+                        "House intersects or nearly touches the local wall at " + house.name);
+                }
+                Assert.That(matchingWalls, Is.GreaterThan(0), "No local wall was checked for " + house.name);
+                if (house.name == "Old Korean brick house")
+                    closerToCurvedWall |= right ? bounds.min.x < alley.transform.position.x + 4.80f :
+                        bounds.max.x > alley.transform.position.x - 4.80f;
             }
+            Assert.That(closerToCurvedWall, Is.True, "No curved-street house moved closer to its wall");
             var cleanedHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
                 .Any(child => child.name.StartsWith("TwoStoryHouseClean", StringComparison.Ordinal)));
             Assert.That(cleanedHouse, Is.Not.Null, "Cleaned two-story house was not applied");
