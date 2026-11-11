@@ -36,6 +36,7 @@ namespace HappyToy.V2
                 session.CreatePrologue();
                 session.Prologue.NextDayRequested += TempleNextDay;
                 session.Prologue.CorridorRequested += TempleEnterCorridor;
+                session.Prologue.BeginApproach(TempleApproachEnd);
                 if (session.TempleSuspension.HasRun && session.TempleSuspension.Writable &&
                     !session.TempleSuspension.Consume(session.TempleSuspension.Snapshot.token))
                     throw new InvalidOperationException(session.TempleSuspension.Status);
@@ -52,6 +53,21 @@ namespace HappyToy.V2
         void TempleNextDay()
         {
             if (!IsReloading && session.PrologueMode) StartCoroutine(TempleNextDayTransition());
+        }
+        void TempleApproachEnd()
+        {
+            if (!IsReloading && session.PrologueMode) StartCoroutine(TempleApproachTransition());
+        }
+        IEnumerator TempleApproachTransition()
+        {
+            IsReloading = true; ApplyScreenState();
+            for (float t = 0; t < .6f; t += Time.unscaledDeltaTime)
+            { TransitionBlack = Mathf.SmoothStep(0, 1, t / .6f); yield return null; }
+            TransitionBlack = 1; yield return null;
+            session.Prologue.FinishApproach();
+            for (float t = 0; t < .8f; t += Time.unscaledDeltaTime)
+            { TransitionBlack = 1 - Mathf.SmoothStep(0, 1, t / .8f); yield return null; }
+            TransitionBlack = 0; IsReloading = false; GameplayEntryFrame = Time.frameCount; ApplyScreenState();
         }
         IEnumerator TempleNextDayTransition()
         {

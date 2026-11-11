@@ -1107,11 +1107,23 @@ namespace HappyToy.V2.CloudTests
             }
             finally { if (mouse.added) InputSystem.RemoveDevice(mouse); }
         }
+        // These existing cases exercise the temple section in isolation. The
+        // separate actual-route test exercises the preceding alley and climb.
+        IEnumerator TempleOnlyFixtureAfterTitle()
+        {
+            var world = Get<Component>(session, "Prologue");
+            Assert.That(Get<bool>(world, "ApproachActive"), Is.True, "The title did not start the new approach");
+            Call(world, "FinishApproach");
+            yield return null;
+            Assert.That(Get<bool>(world, "ApproachActive"), Is.False);
+            Assert.That(player.transform.position.z, Is.InRange(479f, 481f));
+        }
         [UnityTest, Timeout(180000)]
         public IEnumerator TempleFullWalkingRouteUsesKeyboardAndMouseWithoutTeleporting()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
             yield return RecoveryUiReady(); Call(shell, "RestoreDefaultSettings"); yield return RecoveryClick("begin");
+            yield return TempleOnlyFixtureAfterTitle();
             var mouse = InputSystem.AddDevice<Mouse>();
             try
             {
@@ -1156,6 +1168,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
             yield return RecoveryUiReady(); Call(shell, "RestoreDefaultSettings"); AddAuditPad();
             yield return PadPulse(GamepadButton.South); yield return RecoveryWaitForTempleEntry();
+            yield return TempleOnlyFixtureAfterTitle();
             var world = Get<Component>(session, "Prologue"); var director = Get<Component>(world, "Director");
             yield return PadState(new GamepadState { leftStick = Vector2.up });
             yield return Wait(() => player.transform.position.z >= 505.8f, 20, "Gamepad could not walk from spawn to the incense");
@@ -1219,6 +1232,7 @@ namespace HappyToy.V2.CloudTests
         {
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
             yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            yield return TempleOnlyFixtureAfterTitle();
             string path = Path.Combine(directory, "temple-suspend-v1.json");
             const string raw = "외부에서 변경된 손상 기록";
             File.WriteAllText(path, raw);
@@ -1233,6 +1247,7 @@ namespace HappyToy.V2.CloudTests
         {
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
             yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            yield return TempleOnlyFixtureAfterTitle();
             var world = Get<Component>(session, "Prologue"); var director = Get<Component>(world, "Director");
             Call(world, "ReadStoryClue");
             PlacePlayer(new Vector3(500, .04f, 505.2f));
@@ -1264,6 +1279,7 @@ namespace HappyToy.V2.CloudTests
         {
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
             yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            yield return TempleOnlyFixtureAfterTitle();
             Assert.That(Get<bool>(session, "PrologueMode"), Is.True);
             Assert.That(Get<bool>(session, "CorridorMode"), Is.False);
             var world = Get<Component>(session, "Prologue");

@@ -1,0 +1,191 @@
+{
+  "version": "actions-v2",
+  "clips": [
+    {
+      "name": "Idle",
+      "label": "대기",
+      "duration": 3.2,
+      "channels": 4
+    },
+    {
+      "name": "Wave",
+      "label": "팔 흔들기",
+      "duration": 2.4,
+      "channels": 4
+    },
+    {
+      "name": "Bow",
+      "label": "인사",
+      "duration": 2.8,
+      "channels": 4
+    },
+    {
+      "name": "Hop",
+      "label": "점프",
+      "duration": 2.4,
+      "channels": 5
+    }
+  ],
+  "roles": {
+    "roots": [
+      31
+    ],
+    "arms": [
+      {
+        "node": 13,
+        "side": -1
+      },
+      {
+        "node": 27,
+        "side": 1
+      }
+    ],
+    "head": 17,
+    "height": 0.8035070896148682,
+    "convention": "glTF Y-up; geometric lateral-branch classification",
+    "joint_names": {
+      "31": "bone_0",
+      "18": "bone_1",
+      "17": "bone_2",
+      "16": "bone_3",
+      "4": "bone_4",
+      "3": "bone_5",
+      "2": "bone_6",
+      "1": "bone_7",
+      "0": "bone_8",
+      "9": "bone_9",
+      "8": "bone_10",
+      "7": "bone_11",
+      "6": "bone_12",
+      "5": "bone_13",
+      "14": "bone_14",
+      "13": "bone_15",
+      "12": "bone_16",
+      "11": "bone_17",
+      "10": "bone_18",
+      "15": "bone_19",
+      "30": "bone_20",
+      "22": "bone_21",
+      "21": "bone_22",
+      "20": "bone_23",
+      "19": "bone_24",
+      "29": "bone_25",
+      "26": "bone_26",
+      "25": "bone_27",
+      "24": "bone_28",
+      "23": "bone_29",
+      "28": "bone_30",
+      "27": "bone_31"
+    },
+    "groups": []
+  },
+  "method": "procedural presets on AI-inferred skeleton",
+  "model_file": "rig-actions-v2.glb",
+  "preview_file": "preview-actions-v2.glb",
+  "source_file": "rigged.glb",
+  "full_model": {
+    "bone_count": 32,
+    "skin_count": 1,
+    "vertices": 882671,
+    "faces": 962037,
+    "skinned_vertices": 882671,
+    "max_weight_error": 1.7881393432617188e-07,
+    "texture_sizes": [
+      [
+        4096,
+        4096
+      ],
+      [
+        4096,
+        4096
+      ]
+    ],
+    "bytes": 98569876,
+    "animations": [
+      "Idle",
+      "Wave",
+      "Bow",
+      "Hop"
+    ]
+  },
+  "preview_model": {
+    "bone_count": 32,
+    "skin_count": 1,
+    "vertices": 882671,
+    "faces": 962037,
+    "skinned_vertices": 882671,
+    "max_weight_error": 1.7881393432617188e-07,
+    "texture_sizes": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2048,
+        2048
+      ]
+    ],
+    "bytes": 69815952,
+    "animations": [
+      "Idle",
+      "Wave",
+      "Bow",
+      "Hop"
+    ]
+  },
+  "preview_roles": {
+    "roots": [
+      31
+    ],
+    "arms": [
+      {
+        "node": 13,
+        "side": -1
+      },
+      {
+        "node": 27,
+        "side": 1
+      }
+    ],
+    "head": 17,
+    "height": 0.8035070896148682,
+    "convention": "glTF Y-up; geometric lateral-branch classification",
+    "joint_names": {
+      "31": "bone_0",
+      "18": "bone_1",
+      "17": "bone_2",
+      "16": "bone_3",
+      "4": "bone_4",
+      "3": "bone_5",
+      "2": "bone_6",
+      "1": "bone_7",
+      "0": "bone_8",
+      "9": "bone_9",
+      "8": "bone_10",
+      "7": "bone_11",
+      "6": "bone_12",
+      "5": "bone_13",
+      "14": "bone_14",
+      "13": "bone_15",
+      "12": "bone_16",
+      "11": "bone_17",
+      "10": "bone_18",
+      "15": "bone_19",
+      "30": "bone_20",
+      "22": "bone_21",
+      "21": "bone_22",
+      "20": "bone_23",
+      "19": "bone_24",
+      "29": "bone_25",
+      "26": "bone_26",
+      "25": "bone_27",
+      "24": "bone_28",
+      "23": "bone_29",
+      "28": "bone_30",
+      "27": "bone_31"
+    },
+    "groups": []
+  },
+  "geometry_preserved": true,
+  "preview_texture_size": 2048
+}

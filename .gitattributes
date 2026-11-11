@@ -240,3 +240,11 @@ HappyToyV2/SourceArt/AnatomicalHandsPrototype/*.blend filter=lfs diff=lfs merge=
 HappyToyV2/SourceArt/AnatomicalHandsPrototype/*.zip filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/*.zip filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/AnatomicalHandsPrototype/NailDetail/Source/*.obj filter=lfs diff=lfs merge=lfs -text
+
+# Alley creature original, editable source and imported production assets.
+HappyToyV2/SourceArt/AlleyBeast/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/AlleyBeast/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/AlleyBeast/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/AlleyBeast/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyBeast/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyBeast/*.png filter=lfs diff=lfs merge=lfs -text

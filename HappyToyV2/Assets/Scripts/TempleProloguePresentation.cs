@@ -138,6 +138,7 @@ namespace HappyToy.V2
                         .8f + .25f * i, Quaternion.Euler(0, i * 71, 0));
                 }
             gameObject.AddComponent<TempleForestDressing>().Prepare(world, camera);
+            gameObject.AddComponent<TempleApproachPolish>().Prepare();
             gameObject.AddComponent<TempleForestBanks>().Prepare();
             gameObject.AddComponent<TempleForestFerns>().Prepare();
             gameObject.AddComponent<TempleForestUndergrowth>().Prepare();

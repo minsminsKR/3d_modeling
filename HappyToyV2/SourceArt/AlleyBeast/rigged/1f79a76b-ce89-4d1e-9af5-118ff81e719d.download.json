@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "job_id": "1f79a76b-ce89-4d1e-9af5-118ff81e719d",
+  "downloaded_at": "2026-11-11T06:07:38Z",
+  "archive": "E:\\AI\\3d_modeling\\HappyToyV2\\SourceArt\\AlleyBeast\\rigged\\1f79a76b-ce89-4d1e-9af5-118ff81e719d.zip",
+  "generation_record": {
+    "schema_version": 1,
+    "id": "1f79a76b-ce89-4d1e-9af5-118ff81e719d",
+    "status": "completed",
+    "message": "Model is ready.",
+    "created_at": 1794376568.8666115,
+    "updated_at": 1794376976.3256378,
+    "source_filename": "reference.png",
+    "batch_index": 1,
+    "batch_total": 1,
+    "options": {
+      "model": "trellis2",
+      "gpu_id": 1,
+      "texture_gpu_id": null,
+      "gpu_mode": "manual",
+      "texture_profile": "detail",
+      "omni_use_ema": false,
+      "trellis_pipeline": "1024_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 4096,
+      "trellis_max_tokens": 49152,
+      "trellis_dual_postprocess": false,
+      "texture": true,
+      "remove_background": true,
+      "seed": 1234,
+      "num_inference_steps": 50,
+      "guidance_scale": 7.5,
+      "octree_resolution": 512,
+      "num_chunks": 50000,
+      "output_format": "glb"
+    },
+    "request_id": "5f984b42-388e-4772-95d6-373a1bd29a09",
+    "submitted_options": {
+      "gpu_id": [
+        "1"
+      ],
+      "model": [
+        "trellis2"
+      ],
+      "trellis_pipeline": [
+        "1024_cascade"
+      ],
+      "trellis_texture_size": [
+        "4096"
+      ]
+    },
+    "source": "cli",
+    "inputs": [
+      {
+        "name": "reference.png",
+        "archive_name": "inputs/01_reference.png",
+        "sha256": "ac7e591de2e855d291262839aa5434affb9f7be4220eb81baca6c6d9ce76f226",
+        "size": 2189134
+      }
+    ],
+    "saved": true,
+    "saved_at": 1794376568.8666115,
+    "started_at": 1794376568.8862777,
+    "finished_at": 1794376976.3256218,
+    "used_texture": true,
+    "warnings": [],
+    "rigging": {
+      "status": "completed",
+      "message": "AI 리깅과 동작 프리셋이 준비됐습니다. 아래에서 동작을 재생하세요.",
+      "run_id": "cbcb7488-01d7-4982-b311-eb01f0bf1190",
+      "options": {
+        "seed": 1234,
+        "analysis_faces": 50000,
+        "preserve_original": true
+      },
+      "created_at": 1794377048.7258496,
+      "started_at": 1794377048.7425845,
+      "finished_at": 1794377180.9297092,
+      "updated_at": 1794377180.9297166,
+      "bone_count": 32,
+      "skin_count": 1,
+      "vertices": 882671,
+      "faces": 962037,
+      "skinned_vertices": 882671,
+      "max_weight_error": 1.7881393432617188e-07,
+      "texture_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "bytes": 98550956,
+      "animations": [],
+      "preview_joint_count": 12,
+      "source": {
+        "bone_count": 0,
+        "skin_count": 0,
+        "vertices": 881508,
+        "faces": 962044,
+        "skinned_vertices": 0,
+        "max_weight_error": 0.0,
+        "texture_sizes": [
+          [
+            4096,
+            4096
+          ],
+          [
+            4096,
+            4096
+          ]
+        ],
+        "bytes": 80850380,
+        "animations": []
+      },
+      "preserve_original": true,
+      "preparation": {
+        "source_faces": 962037,
+        "analysis_faces": 50000,
+        "face_budget": 50000
+      },
+      "gpu_id": 1,
+      "model": "SkinTokens / TokenRig",
+      "torch_peak_allocated_mib": 2015.0,
+      "torch_peak_reserved_mib": 3170.0,
+      "elapsed_seconds": 132,
+      "ready": true,
+      "start_url": "/api/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging",
+      "status_url": "/api/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging",
+      "editor_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging/edit",
+      "model_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging/model?v=cbcb7488-01d7-4982-b311-eb01f0bf1190",
+      "download_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging/download?v=cbcb7488-01d7-4982-b311-eb01f0bf1190",
+      "preview_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging/action-preview?v=cbcb7488-01d7-4982-b311-eb01f0bf1190&motion=actions-v2",
+      "motion_clips": [
+        {
+          "name": "Idle",
+          "label": "대기",
+          "duration": 3.2,
+          "channels": 4
+        },
+        {
+          "name": "Wave",
+          "label": "팔 흔들기",
+          "duration": 2.4,
+          "channels": 4
+        },
+        {
+          "name": "Bow",
+          "label": "인사",
+          "duration": 2.8,
+          "channels": 4
+        },
+        {
+          "name": "Hop",
+          "label": "점프",
+          "duration": 2.4,
+          "channels": 5
+        }
+      ],
+      "motion_method": "procedural presets on AI-inferred skeleton",
+      "motion_download_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/rigging/motion-download?v=cbcb7488-01d7-4982-b311-eb01f0bf1190",
+      "preview_faces": 962037
+    },
+    "web_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d",
+    "status_url": "/api/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d",
+    "archive_url": "/api/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/archive",
+    "record_url": "/api/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/record",
+    "elapsed_seconds": 407,
+    "display_name": "reference",
+    "download_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/download",
+    "model_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/model",
+    "mixamo_package_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/mixamo/package",
+    "mixamo_upload_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/mixamo/upload",
+    "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+    "mixamo_files": [],
+    "processed_input_url": "/jobs/1f79a76b-ce89-4d1e-9af5-118ff81e719d/processed/1",
+    "saved_at_label": "2026-11-11 14:56",
+    "created_at_label": "2026-11-11 14:56",
+    "artifacts": [
+      {
+        "name": "model.glb",
+        "sha256": "c56b67edb015863e2d2c4dc74854dcad29ea2ed7fe7c4d0105108c0b7e8b9ff9",
+        "size": 80850380
+      },
+      {
+        "name": "metadata.json",
+        "sha256": "46bdded1b458a38a6aae2b53bf602b02836bd8f63e670f272378f87fe2561178",
+        "size": 2449
+      },
+      {
+        "name": "outputs/generation_request.json",
+        "sha256": "a162fc287212d55e04d8b70c7c612519aa81704d3faf72e1518781cbd74caaeb",
+        "size": 856
+      },
+      {
+        "name": "outputs/generation_result.json",
+        "sha256": "dc81dab060ed05a83b8e58c55fd5defb4c326f2f016842e952bd2f3d0be6c664",
+        "size": 333
+      },
+      {
+        "name": "processed_inputs/01.png",
+        "sha256": "8351652fc95da417bbaeadba711ebfe245754c236c0cf1e5c4fb9578e5e712cc",
+        "size": 462970
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/analysis.glb",
+        "sha256": "f696925b366e6ba2c0bf95e57e38bee8fd378cfe8d77ee77f15f4c23167a91f5",
+        "size": 44092372
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/motion-actions-v2.json",
+        "sha256": "0b7d6ee8c2a4c0f1a93c9801f92ebff88214954c06f9430ac0f08e0550f7f522",
+        "size": 3651
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/preparation.json",
+        "sha256": "6562d3a592491cc5f99d942d712579f9fda8026a9189950d5983a587252d46a4",
+        "size": 71
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/preview-actions-v2.glb",
+        "sha256": "1a88730b36274e02b05725307ab796a7f1952c39ef01d6cc2a1e704ef7d638bd",
+        "size": 69815952
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/rig-actions-v2.glb",
+        "sha256": "9482ef27650ec8c378a2325a630df58c1b118187d576c15a29d36eecb9d2b8c6",
+        "size": 98569876
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/rig-preview.glb",
+        "sha256": "209d47a8fefceca7079f08daf3586e100168209b7a0b6e2086721cd676009c99",
+        "size": 98554720
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/rigged.glb",
+        "sha256": "9b01fac8ac9c7757d9e4a4bc54db8eea503ade298af5775772fcd0a8d523f57e",
+        "size": 98550956
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/rigging-request.json",
+        "sha256": "a1f0df079e5e67cb7e029659f5c8a43bcc0f56dd7b5ee842ba2cbe34ce208871",
+        "size": 638
+      },
+      {
+        "name": "outputs/rigging/cbcb7488-01d7-4982-b311-eb01f0bf1190/rigging-result.json",
+        "sha256": "c2f1cdd8af6dbd3bc4dddd4461c2d2406ecb1293bf0dc55807ae8d4312a97114",
+        "size": 1326
+      }
+    ]
+  },
+  "archive_sha256": "7764cdd9c2d939503de091e5458e6b253f2b1e888d8e1fa23fbaceeb8e73cf74",
+  "archive_bytes": 355336615,
+  "archive_etag": "\"7764cdd9c2d939503de091e5458e6b253f2b1e888d8e1fa23fbaceeb8e73cf74\"",
+  "resumed_bytes": 0,
+  "received_bytes": 355336615,
+  "transfer_seconds": 8.078
+}

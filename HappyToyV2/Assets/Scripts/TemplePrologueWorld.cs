@@ -15,6 +15,8 @@ namespace HappyToy.V2
         public TemplePrologueDirector Director { get; private set; }
         public bool Ready { get; private set; }
         public bool TransitionRequested { get; private set; }
+        public bool ApproachActive => approach && approach.Active;
+        public bool ApproachSnapperAllowed => ApproachActive && approach.SnapperAcquired;
         public bool IncensePlacementPending => Ready && presentation && presentation.IncensePending;
         public bool SecondIncensePlaced => Ready && Director && (int)Director.Phase >= (int)TemplePrologueSequence.Phase.SecondPrayer && presentation && presentation.IncensePlaced;
         public bool IsStoneApproach(Vector3 contact) => Ready && presentation && presentation.IsStoneApproach(contact);
@@ -24,6 +26,7 @@ namespace HappyToy.V2
         {
             get
             {
+                if (ApproachActive) return approach.Objective;
                 if (!Director) return "숲길을 따라 절로 가세요.";
                 switch (Director.Phase)
                 {
@@ -41,6 +44,7 @@ namespace HappyToy.V2
         TemplePrologueClueState clues;
         TempleStoryEvidence evidence;
         StoryNarration narration;
+        TempleApproachFlow approach;
         Interactable prayerTarget, gateTarget;
         BoxCollider[] gateColliders;
         Collider noteCollider;
@@ -138,6 +142,7 @@ namespace HappyToy.V2
         }
         public TemplePrologueCheckpoint Capture(float seconds)
         {
+            if (ApproachActive) throw new InvalidOperationException("사찰에 도착한 뒤 중단 저장할 수 있습니다.");
             if (!Ready || TransitionRequested) throw new InvalidOperationException("전환을 마친 뒤 저장하세요.");
             var light = session.player.FlashlightSystem;
             var result = new TemplePrologueCheckpoint {
@@ -236,6 +241,7 @@ namespace HappyToy.V2
         void Update()
         {
             if (!Ready || !session || !session.InputAllowed || TransitionRequested) return;
+            if (ApproachActive) return;
             if (Director.Phase == TemplePrologueSequence.Phase.FirstDeparture && session.player.transform.position.z <= Spawn.z + 1.5f)
             {
                 if (Director.LeaveFirstDay()) { TransitionRequested = true; NextDayRequested?.Invoke(); }
@@ -329,6 +335,19 @@ namespace HappyToy.V2
         internal void AbortPreparation()
         {
             if (presentation) presentation.ReleaseEnvironment();
+        }
+        public void BeginApproach(Action onMountainEnd)
+        {
+            if (!Ready || approach) throw new InvalidOperationException("사찰 도입을 시작할 수 없습니다.");
+            approach = gameObject.AddComponent<TempleApproachFlow>();
+            approach.Prepare(session, onMountainEnd);
+        }
+        public void FinishApproach()
+        {
+            if (!ApproachActive) throw new InvalidOperationException("도입 경로가 진행 중이 아닙니다.");
+            approach.Finish();
+            session.player.RelocateWorld(Spawn, Quaternion.identity);
+            session.Notify("절의 제단에 놓인 쪽지를 먼저 살펴보세요.");
         }
         public TempleGateReviewMotion InstallGateReview()
         {

@@ -38,7 +38,9 @@ namespace HappyToy.V2
             Gamepad.current.dpad.ReadValue().sqrMagnitude > .1f || Gamepad.current.leftStick.ReadValue().sqrMagnitude > .25f);
         bool KeyboardSubmitIntent => Keyboard.current != null && (Keyboard.current.enterKey.isPressed || Keyboard.current.numpadEnterKey.isPressed);
         string NavigationHelp => PlayerControls.UsingGamepad ? "방향 패드  선택     아래 버튼  확인     오른쪽 버튼  뒤로" : "Tab / 방향키  선택      Enter  확인      Esc  뒤로";
-        string ControlsFooter => session && session.PrologueMode ? (PlayerControls.UsingGamepad ? "아래 버튼  상호작용    위  빛    Start  메뉴" : "E  상호작용    F  빛    Esc  메뉴") : PlayerControls.UsingGamepad ? "RB  아이템 선택    RT  사용    LB  덫    위  빛    Start  메뉴" : "Tab  아이템 선택    왼쪽 클릭  사용    F  빛    J  기록    Esc  메뉴";
+        string ControlsFooter => session && session.PrologueMode ? (session.Prologue.ApproachActive ?
+            (PlayerControls.UsingGamepad ? "아래 버튼  상호작용    RT  콩알탄    Start  메뉴" : "E  줍기    Q / 왼쪽 클릭  콩알탄    Esc  메뉴") :
+            (PlayerControls.UsingGamepad ? "아래 버튼  상호작용    위  빛    Start  메뉴" : "E  상호작용    F  빛    Esc  메뉴")) : PlayerControls.UsingGamepad ? "RB  아이템 선택    RT  사용    LB  덫    위  빛    Start  메뉴" : "Tab  아이템 선택    왼쪽 클릭  사용    F  빛    J  기록    Esc  메뉴";
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1, shownTotalRecords = -1;
         bool shownContrast, shownLargeText, shownGamepad, settingsLabelsDirty;

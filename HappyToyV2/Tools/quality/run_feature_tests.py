@@ -88,6 +88,17 @@ PROFILES = {
         ("PlayMode", (PLAY + "TempleForestHorizonExtendsAllFourSidesWithoutCollision",))]),
     "corridor-story-logic": ("First memory story, real temple-to-corridor entry, journal and old/new checkpoint restoration; CPU only", [
         ("PlayMode", play_tests("CloudCorridorStoryTests.cs"))]),
+    "temple-approach-logic": ("Alley pickup and first-person throw, new-run approach and saved progress protection", [
+        ("PlayMode", (PLAY + "TempleApproachPickupEnablesRealSnapperAndProtectsOldCheckpointFormat",))]),
+    "temple-approach-route": ("Real title, alley input, physical snapper contact, mountain walking and temple arrival", [
+        ("PlayMode", (PLAY + "TempleApproachRealTitleKeysAndCollisionReachTemple",))]),
+    "temple-approach-visual": ("Opt-in real route gameplay camera snapshots", [
+        ("PlayMode", (PLAY + "TempleApproachRealTitleKeysAndCollisionReachTemple",))]),
+    "temple-approach-existing": ("Prior temple walking, save and title integration after new approach", [
+        ("PlayMode", tuple(PLAY + name for name in (
+            "TempleFullWalkingRouteUsesGamepadWithoutTeleporting", "TempleFullWalkingRouteUsesKeyboardAndMouseWithoutTeleporting",
+            "TempleRealTitleAndInteractionReachCorridor", "TempleSaveRejectsConcurrentCorruptionWithoutOverwriting",
+            "TempleSuspendDuringPrayerRestoresOnce")))]),
     "temple-prologue-flow": ("Actual title, two prayers, hold, next day, gate and corridor transition; CPU/physics only", [
         ("PlayMode", play_tests("TemplePrologueFlowTests.cs", "TempleStoryNarrationTests.cs", "TempleClueCollisionTests.cs", "TempleForestPathTests.cs", "TempleIndividualStoneDefaultPathTests.cs", "TempleStonePathCandidateTests.cs", "TempleForestAtmosphereTests.cs", "TempleForestDressingTests.cs", "TempleForestBanksTests.cs", "TempleForestPresenceTests.cs", "TempleForestTreeTests.cs", "TemplePineBranchesCandidateTests.cs", "TemplePineFarCandidateTests.cs", "TempleWideTreeTests.cs", "TempleForestPuddlesTests.cs", "TempleForestFernsTests.cs", "TempleForestUndergrowthTests.cs", "TempleForestBackgroundTreesTests.cs", "TempleForestDepthCandidateTests.cs", "TempleShrineDressingTests.cs", "TempleStoneLanternsTests.cs", "TempleHallPresentationTests.cs", "TempleIncenseVesselTests.cs") + (CLOUD + "TempleStoryEvidenceTests", PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "temple-forest-environment": ("Forest art, path bounds, background tree collision and older checkpoint clearance; CPU/physics only", [
@@ -687,7 +698,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
         if profile == "full":
             editor_args += ["-noaudio"]
-        if profile in ("temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("temple-approach-existing", "temple-approach-route", "temple-approach-logic", "temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-facade-color-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]
