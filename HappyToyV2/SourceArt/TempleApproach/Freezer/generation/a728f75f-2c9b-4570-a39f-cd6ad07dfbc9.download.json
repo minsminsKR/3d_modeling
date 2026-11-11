@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "job_id": "a728f75f-2c9b-4570-a39f-cd6ad07dfbc9",
+  "downloaded_at": "2026-11-11T07:10:23Z",
+  "archive": "E:\\AI\\3d_modeling\\HappyToyV2\\SourceArt\\TempleApproach\\Freezer\\generation\\a728f75f-2c9b-4570-a39f-cd6ad07dfbc9.zip",
+  "generation_record": {
+    "schema_version": 1,
+    "id": "a728f75f-2c9b-4570-a39f-cd6ad07dfbc9",
+    "status": "completed",
+    "message": "Model is ready.",
+    "created_at": 1794380579.7765415,
+    "updated_at": 1794381012.2999516,
+    "source_filename": "reference.png",
+    "batch_index": 1,
+    "batch_total": 1,
+    "options": {
+      "model": "trellis2",
+      "gpu_id": 1,
+      "texture_gpu_id": null,
+      "gpu_mode": "manual",
+      "texture_profile": "detail",
+      "omni_use_ema": false,
+      "trellis_pipeline": "1024_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 4096,
+      "trellis_max_tokens": 49152,
+      "trellis_dual_postprocess": false,
+      "texture": true,
+      "remove_background": true,
+      "seed": 46321,
+      "num_inference_steps": 50,
+      "guidance_scale": 7.5,
+      "octree_resolution": 512,
+      "num_chunks": 50000,
+      "output_format": "glb"
+    },
+    "request_id": "aafb156b-757d-45d1-a885-f1a4c74a0c4c",
+    "submitted_options": {
+      "gpu_id": [
+        "1"
+      ],
+      "model": [
+        "trellis2"
+      ],
+      "seed": [
+        "46321"
+      ],
+      "trellis_pipeline": [
+        "1024_cascade"
+      ],
+      "trellis_texture_size": [
+        "4096"
+      ]
+    },
+    "source": "cli",
+    "inputs": [
+      {
+        "name": "reference.png",
+        "archive_name": "inputs/01_reference.png",
+        "sha256": "e050f805e229c7f264436095e268745f0af333b8114feae833eb543a069690c6",
+        "size": 2468288
+      }
+    ],
+    "saved": true,
+    "saved_at": 1794380579.7765415,
+    "started_at": 1794380579.789867,
+    "finished_at": 1794381012.2999415,
+    "used_texture": true,
+    "warnings": [],
+    "web_url": "/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9",
+    "status_url": "/api/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9",
+    "archive_url": "/api/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/archive",
+    "record_url": "/api/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/record",
+    "rigging": {
+      "status": "idle",
+      "ready": true,
+      "start_url": "/api/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/rigging",
+      "status_url": "/api/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/rigging"
+    },
+    "elapsed_seconds": 432,
+    "display_name": "reference",
+    "download_url": "/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/download",
+    "model_url": "/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/model",
+    "mixamo_package_url": "/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/mixamo/package",
+    "mixamo_upload_url": "/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/mixamo/upload",
+    "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+    "mixamo_files": [],
+    "processed_input_url": "/jobs/a728f75f-2c9b-4570-a39f-cd6ad07dfbc9/processed/1",
+    "saved_at_label": "2026-11-11 16:02",
+    "created_at_label": "2026-11-11 16:02",
+    "artifacts": [
+      {
+        "name": "model.glb",
+        "sha256": "8d2683ffdafe78587c053cad7c69963d81ca7ce0a1310fe49a2de4979ee3aef2",
+        "size": 69159676
+      },
+      {
+        "name": "metadata.json",
+        "sha256": "9c07303ae3d3ca0185ddcf7ffe796802632d3482246c67c6ecb0d0e10469cb38",
+        "size": 2450
+      },
+      {
+        "name": "outputs/generation_request.json",
+        "sha256": "58f2072ca5bcf5376fb14cb29ccde4f445820ff918eb0ad76c0404be6fd5d442",
+        "size": 857
+      },
+      {
+        "name": "outputs/generation_result.json",
+        "sha256": "0a23a48d12bbc87fddfcef9005a0ff76172758c6e0fdd1179ac5ae103de88eda",
+        "size": 333
+      },
+      {
+        "name": "processed_inputs/01.png",
+        "sha256": "3e761db23c7cbae3b37bdcd926945c1d19f44e3074a73c877f931ade3677e9ec",
+        "size": 888713
+      }
+    ]
+  },
+  "archive_sha256": "23a4ba3e30f64976d8516977aaf6d2610665ed6cf7b91622dd8a90b0beae189f",
+  "archive_bytes": 59410483,
+  "archive_etag": "\"23a4ba3e30f64976d8516977aaf6d2610665ed6cf7b91622dd8a90b0beae189f\"",
+  "resumed_bytes": 0,
+  "received_bytes": 59410483,
+  "transfer_seconds": 1.328
+}

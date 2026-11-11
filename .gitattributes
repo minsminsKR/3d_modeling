@@ -246,5 +246,22 @@ HappyToyV2/SourceArt/AlleyBeast/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/AlleyBeast/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/AlleyBeast/**/*.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/AlleyBeast/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/AlleyBeast/RunCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/AlleyBeast/RunCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyBeast/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyBeast/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyBeast/Animated/*.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Generated storefront freezer and its reproducible authoring sources.
+HappyToyV2/SourceArt/TempleApproach/Freezer/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Freezer/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Freezer/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Freezer/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyFreezer/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyFreezer/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Storefront/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Storefront/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Storefront/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Storefront/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyStorefront/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyStorefront/*.png filter=lfs diff=lfs merge=lfs -text

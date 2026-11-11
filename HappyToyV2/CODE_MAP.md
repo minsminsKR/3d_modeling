@@ -3,11 +3,14 @@
 새 이야기 골목·산길 초안은 `TempleApproachFlow`, `AlleyApproachWorld`,
 `MountainApproachWorld`, `AlleySnapperEncounter`가 소유한다. 기존 사찰
 진입과 체크포인트는 별도이며 도입 중에는 저장을 잠시 제한한다.
-`TempleApproachPolish`는 기존 사찰 길 양옆의 장식을 추가한다. 사용자
+`TempleApproachPolish`는 기존 사찰 길 양옆의 장식을 추가한다. `AlleyDuskEnvironment`는 골목의 황혼 하늘·조명을 적용하고 산길에서 복원하며 `AlleyRoadDressing`은 충돌 없는 도로 세부 메시를 소유한다. 사용자
 기준 이미지·구현 범위는 `SourceArt/TempleApproach/README.md`, 새 진입의
-기본 획득·발사 검사는 `temple-approach-logic`이다. 짐승 리소스가 없으면
-막힘을 해제하는 미완성 경로가 있으므로 모델 적용과 전 구간 조작 검증 전
-완성으로 간주하지 않는다.
+기본 획득·발사 검사는 `temple-approach-logic`, 실제 조작 경로 및 선택적 카메라 검사는
+`temple-approach-visual`이다. `AlleyBeastRetreat`은 실제 착탄 후 50k 면 모프 클립과
+방향·이동을 함께 진행하고, 일시정지에서는 같은 시간을 멈춘다. 애니메이션 리소스가
+없으면 기존 정적 모델로, 둘 다 없으면 길을 열어 진행 불가를 막는다. 접지 보정은 전체
+메시 기준 근사이며 개별 발 고정·자연스러운 사족 달리기는 미완성이다. 원본과 재현 경로는
+`SourceArt/AlleyBeast/RunCandidate/README.md`에 있다.
 
 Windows 새 빌드 검증 뒤의 구버전 정리는 `Tools/quality/Clear-VerifiedOldBuilds.ps1`이
 현재 입력 해시를 재검증하고 실제 플레이어 폴더·실행 중 여부·경로와 링크를 확인한 뒤

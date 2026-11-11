@@ -11,6 +11,7 @@ namespace HappyToy.V2
         Vector3 beastPosition;
         FirecrackerProjectile observed;
         float retreat;
+        AlleyBeastRetreat animatedRetreat;
         public bool Acquired { get; private set; }
         public bool Cleared { get; private set; }
         public bool ModelAvailable { get; private set; }
@@ -34,7 +35,8 @@ namespace HappyToy.V2
             var visual = SnapperVisuals.AttachPackage(result.pickup.transform);
             foreach (var child in visual.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = 9;
 
-            var prefab = Resources.Load<GameObject>("AlleyBeast/Beast");
+            var animatedPrefab = Resources.Load<GameObject>("AlleyBeast/Animated/DogMorphReview");
+            var prefab = SelectBeastPrefab(animatedPrefab, Resources.Load<GameObject>("AlleyBeast/Beast"));
             result.ModelAvailable = prefab;
             if (!prefab)
             {
@@ -46,11 +48,23 @@ namespace HappyToy.V2
             }
             result.beast = Instantiate(prefab, root.transform);
             result.beast.transform.position = beastPosition;
+            if (prefab == animatedPrefab)
+                result.animatedRetreat = new AlleyBeastRetreat(result.beast.transform,
+                    result.beast.GetComponentInChildren<Animation>(true));
             result.barrier = new GameObject("Beast passage blocker");
             result.barrier.transform.SetParent(root.transform, false);
             result.barrier.transform.position = beastPosition + Vector3.up * .8f;
             result.barrier.AddComponent<BoxCollider>().size = new Vector3(5.8f, 1.6f, .45f);
             return result;
+        }
+
+        // Broken or absent animation art keeps the previously verified static dog.
+        static GameObject SelectBeastPrefab(GameObject animated, GameObject fallback)
+        {
+            var animation = animated ? animated.GetComponentInChildren<Animation>(true) : null;
+            var skin = animated ? animated.GetComponentInChildren<SkinnedMeshRenderer>(true) : null;
+            return animation && animation.clip && animation.clip.length > 0 && skin && skin.sharedMesh &&
+                skin.sharedMesh.blendShapeCount > 1 ? animated : fallback;
         }
 
         void Update()
@@ -80,6 +94,11 @@ namespace HappyToy.V2
         void LateUpdate()
         {
             if (!Cleared || !beast || !session || !session.InputAllowed) return;
+            if (animatedRetreat != null)
+            {
+                if (animatedRetreat.Advance(Time.deltaTime)) beast.SetActive(false);
+                return;
+            }
             retreat += Time.deltaTime;
             beast.transform.position = beastPosition + Vector3.forward * Mathf.Min(4f, retreat * 4f);
             if (retreat >= 1f) beast.SetActive(false);

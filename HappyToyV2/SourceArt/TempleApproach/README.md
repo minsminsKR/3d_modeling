@@ -17,10 +17,20 @@ avoid an invisible hard blocker; that is incomplete content, not a finished
 animal encounter. A player-facing save cannot be made until the temple is
 reached. Existing temple checkpoints do not depend on this new route.
 
-The imported static creature is now present. A real-input PlayMode route
-passed from title through pickup, collision, sound impact, mountain ascent
-and temple transition. D3D11 game-camera stills were reviewed; the animal's
-FBX axis was corrected after two visibly incorrect attempts. The model has no
-approved quadruped animation and slides away; the alley and mountain are far
-less detailed than the references. The stills have no HUD and are not native
-player, frame-rate or broad visual-quality certification.
+The alley now has its own dusk sky, lighting and fog, restored to the existing
+night environment at the mountain boundary. The old shop facade and freezer
+are generated assets; their inputs, editable sources and limitations are in
+`Storefront/README.md` and `Freezer/README.md`. Street cracks, drains, signage,
+wires and roof detail supplement the existing collision geometry. The mountain
+adds irregular paving, lanterns, foliage and a view of the existing temple.
+The visual result still falls well short of the supplied photorealistic references.
+
+The animal uses a retargeted, morph-baked running candidate and turns toward its
+retreat direction after the actual snapper impact. The original static model is
+a fallback. Foot locking, deformation and visual quality remain incomplete;
+see `../AlleyBeast/RunCandidate/README.md` for source, license and measurements.
+A real-input PlayMode route passed from title through pickup, collision, sound
+impact, mountain ascent and temple transition. D3D11 game-camera stills and
+24 motion samples were reviewed; these omit the HUD and are not a native player,
+frame-rate or broad visual-quality certification. Interactive modeling-service
+inspection was unavailable and remains outstanding.
