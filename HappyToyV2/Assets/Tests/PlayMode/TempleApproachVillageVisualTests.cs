@@ -92,6 +92,23 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(material.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
                 Assert.That(material.GetTexture("_MetallicGlossMap"), Is.Not.Null);
             }
+            var background = nodes.Where(node => node.name == "Distant neighborhood roof" ||
+                node.name == "Residential roofs behind shop").ToArray();
+            Assert.That(background.Length, Is.EqualTo(4), "Background houses are missing");
+            foreach (var house in background)
+            {
+                var filters = house.GetComponentsInChildren<MeshFilter>(true);
+                Assert.That(filters.Length, Is.GreaterThan(0));
+                long triangles = 0;
+                foreach (var filter in filters)
+                    for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                        triangles += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
+                Assert.That(triangles, Is.LessThanOrEqualTo(32000), "Background house used the full mesh");
+                Assert.That(house.GetComponentsInChildren<Collider>(true), Is.Empty);
+                Assert.That(house.GetComponentsInChildren<Renderer>(true).All(renderer => renderer.sharedMaterial &&
+                    renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")), Is.True,
+                    "Background house lost its PBR material");
+            }
             var yardWall = nodes.SingleOrDefault(node => node.name == "Shop rear courtyard wall");
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));

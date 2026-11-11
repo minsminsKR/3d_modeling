@@ -286,6 +286,22 @@ namespace HappyToy.V2
                 Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
             var twoStory = Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouseClean") ??
                 Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouse");
+            // Distant houses reuse the authored PBR materials on their
+            // 30k-triangle versions, leaving room for a varied skyline.
+            var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-clean-far") ??
+                Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
+            var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
+            var farPlaster = Resources.Load<GameObject>("AlleyPlasterHouse/geometry-far");
+            var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHousePbr") ??
+                Resources.Load<Material>("AlleyPlasterHouse/PlasterHouse");
+            void PlaceBackground(Transform holder, GameObject full, GameObject reduced, Material material)
+            {
+                bool useReduced = reduced && material;
+                Instantiate(useReduced ? reduced : full, holder, false);
+                if (useReduced)
+                    foreach (var renderer in holder.GetComponentsInChildren<Renderer>(true))
+                        renderer.sharedMaterial = material;
+            }
             // Replace the flat foreground block above the right wall with the
             // authored house, keeping its actual mesh outside the lane.
             var foreground = CorridorEntranceModels.Group(transform, "Foreground old Korean house", Vector3.zero);
@@ -336,9 +352,13 @@ namespace HappyToy.V2
                 }
                 // A second row breaks the empty skyline beyond the nearer roofs.
                 var rear = CorridorEntranceModels.Group(transform, "Distant neighborhood roof", Vector3.zero);
-                Instantiate(twoStory ? twoStory : (alternate ? alternate : prefab), rear, false);
+                bool plasterRear = (side < 0 || !twoStory) && alternate;
+                bool twoStoryRear = !plasterRear && twoStory;
+                PlaceBackground(rear, plasterRear ? alternate : (twoStoryRear ? twoStory : prefab),
+                    plasterRear ? farPlaster : (twoStoryRear ? farHouse : null),
+                    plasterRear ? farPlasterMaterial : (twoStoryRear ? farMaterial : null));
                 CorridorEntranceModels.GroundAtHeight(rear,
-                    new Vector3(side * 12.8f, 0, side < 0 ? 5f : 10f), twoStory ? 6.6f : 5.0f,
+                    new Vector3(side * 12.8f, 0, side < 0 ? 5f : 10f), plasterRear ? 5.0f : (twoStory ? 6.6f : 5.0f),
                     Quaternion.Euler(0, side < 0 ? 83 : -96, 0));
                 foreach (var node in rear.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in rear.GetComponentsInChildren<Renderer>(true))
@@ -367,7 +387,11 @@ namespace HappyToy.V2
             for (int i = 0; i < 2; i++)
             {
                 var rearShop = CorridorEntranceModels.Group(transform, "Residential roofs behind shop", Vector3.zero);
-                Instantiate(i == 0 && twoStory ? twoStory : (alternate ? alternate : prefab), rearShop, false);
+                bool useTwoStory = i == 0 && twoStory;
+                bool usePlaster = !useTwoStory && alternate;
+                PlaceBackground(rearShop, useTwoStory ? twoStory : (usePlaster ? alternate : prefab),
+                    useTwoStory ? farHouse : (usePlaster ? farPlaster : null),
+                    useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null));
                 CorridorEntranceModels.GroundAtHeight(rearShop,
                     new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && twoStory ? 5.8f : 4.7f,
                     Quaternion.Euler(0, 83f + i * 9f, 0));
@@ -377,12 +401,6 @@ namespace HappyToy.V2
             }
             // A lighter version of the authored house makes a second roofline
             // possible without duplicating the full-detail mesh or its texture.
-            var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-clean-far") ??
-                Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
-            var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
-            var farPlaster = Resources.Load<GameObject>("AlleyPlasterHouse/geometry-far");
-            var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHousePbr") ??
-                Resources.Load<Material>("AlleyPlasterHouse/PlasterHouse");
             if (farHouse && farMaterial)
                 for (int i = 0; i < 2; i++)
                 {
