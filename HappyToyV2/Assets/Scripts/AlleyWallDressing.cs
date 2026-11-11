@@ -4,13 +4,13 @@ using UnityEngine.Rendering;
 
 namespace HappyToy.V2
 {
-    // Reuses the existing authored weathered-pipe LOD as visual wall fixtures.
+    // Visual wall fixtures reuse the authored pipe LOD and notice material.
     [DisallowMultipleComponent]
     public sealed class AlleyWallDressing : MonoBehaviour
     {
         bool prepared;
 
-        public void Prepare(Vector3 leftWallFace, Vector3 rightWallFace)
+        public void Prepare(Vector3 leftWallFace, Vector3 rightWallFace, Vector3 noticePoint, Vector3 noticeInward)
         {
             if (prepared) throw new InvalidOperationException("Wall dressing already prepared");
             prepared = true;
@@ -18,6 +18,19 @@ namespace HappyToy.V2
             if (!pipe) throw new InvalidOperationException("Authored weathered wall pipe is missing");
             Place(pipe, leftWallFace, -1);
             Place(pipe, rightWallFace, 1);
+            var noticeMaterial = Resources.Load<Material>("AlleyNotices/fire-notice");
+            if (!noticeMaterial) throw new InvalidOperationException("Village notice material is missing");
+            var notice = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            notice.name = "Weathered village fire notice"; notice.layer = 8;
+            notice.transform.SetParent(transform, false);
+            notice.transform.localPosition = noticePoint;
+            // Quad UVs read correctly from the lane when its back points inward.
+            notice.transform.localRotation = Quaternion.LookRotation(-noticeInward, Vector3.up);
+            notice.transform.localScale = new Vector3(.42f, .28f, 1);
+            var renderer = notice.GetComponent<Renderer>();
+            renderer.sharedMaterial = noticeMaterial;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            Destroy(notice.GetComponent<Collider>());
         }
 
         void Place(GameObject prefab, Vector3 face, int side)

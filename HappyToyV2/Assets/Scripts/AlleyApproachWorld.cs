@@ -197,9 +197,13 @@ namespace HappyToy.V2
                 Box("Lamp arm", new Vector3(2.57f, 3.34f, z), new Vector3(.45f, .07f, .07f), iron, false);
             }
             gameObject.AddComponent<AlleyUtilityDressing>().Prepare();
+            float noticeZ = 1.8f;
+            float noticeSlope = (RoadBend(noticeZ + .02f) - RoadBend(noticeZ - .02f)) / .04f;
+            Vector3 noticeInward = new Vector3(1, 0, -noticeSlope).normalized;
+            Vector3 noticePoint = new Vector3(-3.2f + RoadBend(noticeZ), 1.48f, noticeZ) + noticeInward * .198f;
             gameObject.AddComponent<AlleyWallDressing>().Prepare(
                 new Vector3(-3.025f + RoadBend(.7f), 0, .7f),
-                new Vector3(3.025f + RoadBend(1.4f), 0, 1.4f));
+                new Vector3(3.025f + RoadBend(1.4f), 0, 1.4f), noticePoint, noticeInward);
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
             InstallKoreanWallCandidate();
             InstallResidentialHouses();

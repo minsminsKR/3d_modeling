@@ -45,6 +45,10 @@ namespace HappyToy.V2.CloudTests
             Assert.That(wires, Is.Not.Null, "Village wiring was not created");
             Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);
             Assert.That(wires.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var notice = nodes.SingleOrDefault(node => node.name == "Weathered village fire notice");
+            Assert.That(notice, Is.Not.Null, "Village notice is missing");
+            Assert.That(notice.GetComponent<Renderer>().sharedMaterial, Is.Not.Null);
+            Assert.That(notice.GetComponentsInChildren<Collider>(true), Is.Empty);
             var wallPipes = nodes.Where(node => node.name == "Weathered wall service pipe").ToArray();
             Assert.That(wallPipes.Length, Is.EqualTo(2), "Authored wall fittings are missing");
             foreach (var pipe in wallPipes)
@@ -78,6 +82,13 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-07-curve-right-roofs");
             ApproachLookAt(eye + new Vector3(-5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-08-curve-left-roofs");
+            ApproachLookAt(notice.position);
+            yield return ApproachWalkUntil(Key.W, () =>
+                Vector2.Distance(new Vector2(player.transform.position.x, player.transform.position.z),
+                    new Vector2(notice.position.x, notice.position.z)) <= 1.1f, 10,
+                "Cannot approach the wall notice");
+            ApproachLookAt(notice.position); yield return null;
+            CaptureApproachReview("village-09-wall-notice-close");
             ApproachFaceForward();
         }
     }
