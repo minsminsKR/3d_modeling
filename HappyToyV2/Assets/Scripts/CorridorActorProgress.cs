@@ -24,6 +24,8 @@ namespace HappyToy.V2
             { ValidatePosition(ChapterCheckpoint.Point); }
             public void ValidateTemple()
             { ValidatePosition(TemplePrologueCheckpoint.Point); }
+            public void ValidateApproach()
+            { ValidatePosition(TemplePrologueCheckpoint.ApproachPoint); }
             void ValidatePosition(Func<Vector3, bool> validPoint)
             {
                 CabinetHidingRules.Validate(hidingEntry, hidingRolls, hidingOutcome);
@@ -51,6 +53,8 @@ namespace HappyToy.V2
         { data.ValidateChapter(); RestoreValidatedProgress(data); }
         public void RestoreTempleProgress(Progress data)
         { data.ValidateTemple(); RestoreValidatedProgress(data); }
+        public void RestoreApproachProgress(Progress data)
+        { data.ValidateApproach(); RestoreValidatedProgress(data); }
         void RestoreValidatedProgress(Progress data)
         {
             controller.enabled=false;
@@ -74,6 +78,8 @@ namespace HappyToy.V2
         { data.ValidateChapter(); return CanRestoreValidatedProgress(data,Physics.DefaultRaycastLayers); }
         public bool CanRestoreTempleProgress(Progress data)
         { data.ValidateTemple(); return CanRestoreValidatedProgress(data,Physics.DefaultRaycastLayers,false); }
+        public bool CanRestoreApproachProgress(Progress data)
+        { data.ValidateApproach(); return CanRestoreValidatedProgress(data,Physics.DefaultRaycastLayers,false); }
         bool CanRestoreValidatedProgress(Progress data,int supportLayers,bool requireNavMesh=true)
         {
             if(requireNavMesh && !NavMesh.SamplePosition(data.position,out _,.65f,NavMesh.AllAreas) ||

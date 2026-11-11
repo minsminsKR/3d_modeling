@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Annex/SchoolAnnex.unity
     guid: d8ad5eb908405ba4d8b034a946738720
+  - enabled: 1
+    path: Assets/Approach/Village.unity
+    guid: ea6c83eb2c9280d43a38705d6dfa5351
+  - enabled: 1
+    path: Assets/Approach/MountainPath.unity
+    guid: 28f9572c1465f574581869b702acab77
   m_configObjects: {}

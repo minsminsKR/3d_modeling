@@ -5,7 +5,7 @@
   "protected_files": {
     "Assets/Annex/SchoolAnnex.unity": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
     "Assets/Annex/SchoolAnnex.unity.meta": "cced22a74976e0f4ebaa80138bda97d0bf5b1103a776613a31b2f1279a0ed77b",
-    "ProjectSettings/EditorBuildSettings.asset": "bba9b21dd739d2451b44faa463225a94be4ea90b6c6ff284b27a14b06de2ef21"
+    "ProjectSettings/EditorBuildSettings.asset": "5bdc027aa537fd3b0c996f41a24d9d460a9d36256887ee4d06610a163cfc8e60"
   },
   "preexisting_external_script_guids": [
     "1e3fdca004f2d45fe8abbed571a8abd5",
@@ -13,5 +13,5 @@
     "7a5ac11cc976e418e8d13136b07e1f52",
     "172515602e62fb746b5d573b38a5fe58"
   ],
-  "note": "Captured from the unchanged authored review scene. Never regenerate/expand the scene or update these hashes merely to silence a validation failure. External package references are inventoried, not resolved without Unity."
+  "note": "Authored review scene hashes remain unchanged. Build settings were intentionally updated for the two additive approach scenes while preserving SchoolAnnex as the first scene. Never rewrite these hashes merely to silence a validation failure. External package references are inventoried, not resolved without Unity."
 }

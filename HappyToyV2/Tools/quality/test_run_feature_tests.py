@@ -78,14 +78,21 @@ class FeatureRoutingTests(unittest.TestCase):
             self.assertNotIn("--allow-install", row["command"])
             self.assertEqual(row["command"][row["command"].index("--editor-version") + 1], runner.VERSION)
 
-    def test_each_feature_includes_rules_without_restarting_editmode_twice(self):
+    def test_full_cpu_keeps_both_complete_modes_without_graphics_or_audio(self):
+        planned = runner.commands("full-cpu", Path("Project"), Path("Output"))
+        self.assertEqual([row["mode"] for row in planned], ["EditMode", "PlayMode"])
+        for row in planned:
+            self.assertNotIn("--filter", row["command"])
+            self.assertIn("-nographics", row["editorArguments"])
+            self.assertIn("-noaudio", row["editorArguments"])
+
+    def test_each_feature_runs_only_its_explicitly_declared_stages(self):
         for profile in runner.PROFILES:
-            if profile == "full":
-                continue
             stages = runner.stages(profile)
-            self.assertEqual(sum(mode == "EditMode" for mode, _ in stages), 1)
-            self.assertEqual(stages[0][0], "EditMode")
-            self.assertTrue(set(runner.CORE_FIXTURES).issubset(stages[0][1]))
+            self.assertEqual(stages, list(runner.PROFILES[profile][1]), profile)
+        route = runner.stages("temple-approach-route")
+        self.assertEqual([mode for mode, _ in route], ["PlayMode"])
+        self.assertFalse(any(selector in runner.CORE_FIXTURES for _, selectors in route for selector in selectors))
 
     def test_editor_graphics_override_and_logs_are_explicit_and_optional(self):
         defaults = runner.commands("core", Path("Project"), Path("Output"))[0]

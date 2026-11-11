@@ -89,9 +89,11 @@ PROFILES = {
     "corridor-story-logic": ("First memory story, real temple-to-corridor entry, journal and old/new checkpoint restoration; CPU only", [
         ("PlayMode", play_tests("CloudCorridorStoryTests.cs"))]),
     "temple-approach-logic": ("Alley pickup and first-person throw, new-run approach and saved progress protection", [
-        ("PlayMode", (PLAY + "TempleApproachPickupEnablesRealSnapperAndProtectsOldCheckpointFormat",))]),
+        ("PlayMode", play_tests("TempleApproachFlowTests.cs"))]),
     "temple-approach-route": ("Real title, alley input, physical snapper contact, mountain walking and temple arrival", [
-        ("PlayMode", (PLAY + "TempleApproachRealTitleKeysAndCollisionReachTemple",))]),
+        ("PlayMode", play_tests("TempleApproachActualRouteTests.cs"))]),
+    "temple-approach-streaming": ("Additive scene lifecycle, continuous mountain seam and environment ownership; CPU only", [
+        ("PlayMode", (CLOUD + "ApproachSceneStreamTests", CLOUD + "MountainForkSafetyTests", CLOUD + "ConnectorSafetyTests") + play_tests("TempleApproachStreamingEnvironmentTests.cs", "TempleApproachAudioTests.cs"))]),
     "temple-approach-visual": ("Opt-in real route gameplay camera snapshots", [
         ("PlayMode", (PLAY + "TempleApproachRealTitleKeysAndCollisionReachTemple",))]),
     "temple-approach-existing": ("Prior temple walking, save and title integration after new approach", [
@@ -185,7 +187,9 @@ PROFILES = {
     "lady-polish": ("Core plus real Lady FBX-to-clip pose equivalence, original rig and reduced imported LOD budgets", [
         ("EditMode", (CLOUD + "LadyAuthoredAssetTests",))]),
     "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
-        ("EditMode", CORE_FIXTURES + (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
+        ("EditMode", tuple("HappyToy.V2.CoreTests." + name for name in (
+            "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "RitualItemRulesTests", "TrapHoldClockTests")) +
+            (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
         ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "LadyHeartbeatTests.cs", "LadyItemResponseTests.cs", "RitualTimeStopTests.cs") + (
             PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
             PLAY + "EntranceStartCameraUsesSelectedLightingWithoutIncreasingTheShadowBudget",
@@ -353,7 +357,8 @@ PROFILES = {
             PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement") +
             play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),
-    "core": ("Engine-independent rules; no scene setup", []),
+    "core": ("All engine-independent rules; use only when explicitly requested or the entire core is affected", [
+        ("EditMode", CORE_FIXTURES)]),
     "readability": ("Rendered body wall clearance, pickup borders, candle blackout and creature gait", [
         ("PlayMode", play_tests("CloudGameplayReadabilityTests.cs") + (
             PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
@@ -397,6 +402,8 @@ PROFILES = {
         ("PlayMode", play_tests("CloudChapterCheckpointTests.cs", "CloudCorridorCheckpointTests.cs",
                                 "CloudCorridorSuspendTests.cs"))]),
     "full": ("All EditMode and PlayMode tests; player build/native review remains separate", [
+        ("EditMode", ()), ("PlayMode", ())]),
+    "full-cpu": ("All EditMode and PlayMode tests with no graphics/audio; GPU-dependent tests may fail or be unavailable", [
         ("EditMode", ()), ("PlayMode", ())]),
 }
 
@@ -669,20 +676,16 @@ PROFILES["temple-forest-depth-fill-review"] = (
     [("PlayMode", (PLAY + "TempleForestDepthFillOffscreenReview",))])
 
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
-    selected = list(PROFILES[profile][1])
-    if profile != "full":
-        if selected and selected[0][0] == "EditMode":
-            selected[0] = ("EditMode", CORE_FIXTURES + selected[0][1])
-        else:
-            selected.insert(0, ("EditMode", CORE_FIXTURES))
-    return selected
+    # Do not automatically add broad, unrelated rule fixtures. Every profile
+    # explicitly declares its own affected tests; full suites remain opt-in.
+    return list(PROFILES[profile][1])
 
 
 def commands(profile: str, project: Path, output: Path, unity: str = "unity",
              editor_path: str | None = None, timeout: int | None = None,
              graphics_api: str | None = None, no_desktop_interaction: bool = True,
              selected_stages: list[tuple[str, tuple[str, ...]]] | None = None) -> list[dict]:
-    timeout = timeout if timeout is not None else (7200 if profile == "full" else 1800)
+    timeout = timeout if timeout is not None else (7200 if profile in ("full", "full-cpu") else 1800)
     result = []
     planned_stages = stages(profile) if selected_stages is None else selected_stages
     for index, (mode, selectors) in enumerate(planned_stages, 1):
@@ -696,9 +699,11 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile == "full":
+        if profile in ("full", "full-cpu"):
             editor_args += ["-noaudio"]
-        if profile in ("temple-approach-existing", "temple-approach-route", "temple-approach-logic", "temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile == "full-cpu":
+            editor_args += ["-nographics"]
+        if profile in ("temple-approach-streaming", "temple-approach-existing", "temple-approach-route", "temple-approach-logic", "temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-facade-color-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]

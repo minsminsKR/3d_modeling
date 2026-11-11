@@ -19,13 +19,17 @@ namespace HappyToy.V2
         public bool reviewGateWalk, reviewGateStarted;
         public float reviewGateProgress;
         public Vector3 reviewPreviousPosition;
+        // Version 4 contains a pre-temple approach snapshot. Versions 2/3 remain unchanged.
+        public bool approachActive, approachAcquired, approachCleared, approachBypassed;
         public PlayerMotor.Progress player;
+        public static bool ApproachPoint(Vector3 p) => CorridorCheckpoint.Number(p.x, 488f, 512f) &&
+            CorridorCheckpoint.Number(p.y, -.15f, 4f) && CorridorCheckpoint.Number(p.z, 385f, 474.5f);
 
         public static bool Point(Vector3 p) => CorridorCheckpoint.Number(p.x, 478.5f, 521.5f) &&
             CorridorCheckpoint.Number(p.y, -.15f, .85f) && CorridorCheckpoint.Number(p.z, 473.5f, 528.5f);
         public void Validate()
         {
-            if ((version != 2 && version != 3) || !Guid.TryParseExact(token, "N", out _) || phase < 0 || phase > 5 ||
+            if ((version != 2 && version != 3 && version != 4) || !Guid.TryParseExact(token, "N", out _) || phase < 0 || phase > 5 ||
                 !CorridorCheckpoint.Number(seconds, 0, 1000000000) || !FlashlightChargeRules.Valid(flashlightCharge) ||
                 flashlightPacks < 0 || flashlightPacks > 128 || flashlightDepletions < 0 || flashlightDepletions > 1000000 ||
                 !CorridorCheckpoint.Number(prayerElapsed, 0, 4) || prayerElapsed >= 4 ||
@@ -44,18 +48,30 @@ namespace HappyToy.V2
                     phase >= 1 && !firstClueRead && (legacyClueExemptMask & 1) == 0 ||
                     phase >= 4 && !secondClueRead && (legacyClueExemptMask & 2) == 0) ||
                 version == 2 && (reviewGateWalk || reviewGateStarted || reviewGateProgress != 0 || reviewPreviousPosition != Vector3.zero) ||
+                version == 4 && (!approachActive || phase != 0 || reviewGateWalk || reviewGateStarted || reviewGateProgress != 0 || reviewPreviousPosition != Vector3.zero ||
+                    approachCleared && !approachAcquired && !approachBypassed || approachBypassed && !approachCleared || player != null &&
+                    (player.snapperStockVersion != 1 || !approachAcquired && player.stock != 0 ||
+                     !approachCleared && player.position.z > 405.5f)) ||
+                version != 4 && (approachActive || approachAcquired || approachCleared || approachBypassed) ||
                 version == 3 && (!reviewGateWalk || !Point(reviewPreviousPosition) ||
                     !CorridorCheckpoint.Number(reviewGateProgress, 0, 1) ||
                     !reviewGateStarted && reviewGateProgress != 0 ||
                     reviewGateStarted && (phase != 5 || !gateVisible)))
                 throw new ArgumentException("Invalid temple checkpoint");
-            player.ValidateTemple();
+            if (version == 4) player.ValidateApproach(); else player.ValidateTemple();
             if (flashlightCharge == 0 && player.light) throw new ArgumentException("Empty flashlight cannot be lit");
         }
         public string ToJson()
         {
             Validate();
             string json = JsonUtility.ToJson(this, true);
+            if (version != 4)
+            {
+                json = CheckpointJsonFields.Omit(json, "approachActive");
+                json = CheckpointJsonFields.Omit(json, "approachAcquired");
+                json = CheckpointJsonFields.Omit(json, "approachCleared");
+                json = CheckpointJsonFields.Omit(json, "approachBypassed");
+            }
             if (storyVersion < 2)
                 json = CheckpointJsonFields.Omit(json, "legacyClueExemptMask");
             if (storyVersion == 0)
@@ -87,6 +103,22 @@ namespace HappyToy.V2
                     data.storyVersion == 2 && (!hasMask || CheckpointJsonFields.AbsentOrNull(json, "legacyClueExemptMask")) ||
                     data.storyVersion < 1 || data.storyVersion > 2))
                 throw new ArgumentException("Incomplete or invalid temple clue state");
+            bool hasApproach = CheckpointJsonFields.Omit(json, "approachActive") != json;
+            bool hasAcquired = CheckpointJsonFields.Omit(json, "approachAcquired") != json;
+            bool hasCleared = CheckpointJsonFields.Omit(json, "approachCleared") != json;
+            bool hasBypassed = CheckpointJsonFields.Omit(json, "approachBypassed") != json;
+            if (data.version == 4 && (!hasApproach || !hasAcquired || !hasCleared || !hasBypassed ||
+                    CheckpointJsonFields.AbsentOrNull(json, "approachActive") ||
+                    CheckpointJsonFields.AbsentOrNull(json, "approachAcquired") ||
+                    CheckpointJsonFields.AbsentOrNull(json, "approachCleared") ||
+                    CheckpointJsonFields.AbsentOrNull(json, "approachBypassed")) ||
+                data.version != 4 && (hasApproach || hasAcquired || hasCleared || hasBypassed) &&
+                    (!(hasApproach && hasAcquired && hasCleared && hasBypassed) ||
+                     CheckpointJsonFields.AbsentOrNull(json, "approachActive") ||
+                     CheckpointJsonFields.AbsentOrNull(json, "approachAcquired") ||
+                     CheckpointJsonFields.AbsentOrNull(json, "approachCleared") ||
+                     CheckpointJsonFields.AbsentOrNull(json, "approachBypassed")))
+                throw new ArgumentException("Incomplete approach checkpoint");
             if (data.version == 1)
             {
                 // Version 1 started its prayer clock together with the hand action.

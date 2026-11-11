@@ -37,9 +37,13 @@ namespace HappyToy.V2
         void Update()
         {
             if (!eyes || !dusk) return;
-            float weight = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(407, 414, eyes.transform.position.z));
+            // The streetlight-lined transition lasts beyond the first dirt,
+            // rather than switching the entire sky at the scene boundary.
+            float weight = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(407, 428, eyes.transform.position.z));
             if (weight <= 0) { Restore(); return; }
             if (!applied) Capture();
+            if (previousSky && previousSky.HasProperty("_SkyTime"))
+                dusk.SetFloat("_SkyTime", previousSky.GetFloat("_SkyTime"));
             RenderSettings.skybox = dusk; dusk.SetFloat("_DuskWeight", weight);
             RenderSettings.ambientLight = Color.Lerp(previousAmbient, new Color(.22f, .13f, .105f), weight);
             RenderSettings.fogColor = Color.Lerp(previousFog, new Color(.105f, .060f, .055f), weight);
@@ -50,12 +54,18 @@ namespace HappyToy.V2
         void Restore()
         {
             if (!applied) return;
-            if (RenderSettings.skybox == dusk) RenderSettings.skybox = previousSky;
+            // Another environment owner may already have replaced the sky;
+            // do not overwrite its fog, ambient or light during late teardown.
+            if (RenderSettings.skybox != dusk) { applied = false; return; }
+            RenderSettings.skybox = previousSky;
             RenderSettings.ambientLight = previousAmbient; RenderSettings.fogColor = previousFog;
             RenderSettings.fogDensity = previousFogDensity;
             if (sun) { sun.color = previousSun; sun.intensity = previousIntensity; }
             applied = false;
         }
+        // Release the temporary overlay before the temple restores the render
+        // settings that predate it. The village can outlive the base scene.
+        public void ReleaseEnvironment() { Restore(); enabled = false; }
         void OnDestroy() { Restore(); if (dusk) Destroy(dusk); }
     }
 }

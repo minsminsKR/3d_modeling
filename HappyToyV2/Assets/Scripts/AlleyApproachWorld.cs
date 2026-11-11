@@ -13,6 +13,7 @@ namespace HappyToy.V2
         public static readonly Vector3 Exit = new Vector3(500, .04f, 414);
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         Material storeSignMaterial;
+        GameObject walkInStorefront;
 
         public static AlleyApproachWorld Create(Transform parent)
         {
@@ -30,6 +31,7 @@ namespace HappyToy.V2
 
         void Build()
         {
+            walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
             var road = surfaces.Get("concrete-rough", new Color(.17f, .155f, .145f));
             var wall = surfaces.Get("plaster-damp", new Color(.61f, .55f, .48f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
@@ -39,8 +41,6 @@ namespace HappyToy.V2
             var cream = surfaces.Get("cloth-charred", new Color(.72f, .64f, .51f));
             Box("Alley pavement", new Vector3(0, -.12f, -1.25f), new Vector3(8, .24f, 31.5f), road, true);
             gameObject.AddComponent<AlleyRoadDressing>().Prepare();
-            Box("Dirt path visible beyond alley", new Vector3(0, -.11f, 17), new Vector3(8, .22f, 5),
-                surfaces.Get("wood-aged", new Color(.32f, .27f, .20f)), true);
             var pine = Resources.Load<GameObject>("TemplePrologue/pine-trunk-review");
             if (pine)
                 foreach (float side in new[] { -1f, 1f })
@@ -59,7 +59,10 @@ namespace HappyToy.V2
                 foreach (float side in new[] { -1f, 1f })
                 {
                     float height = i == 4 ? 2.1f : 2.8f;
-                    Box("Weathered residential wall", new Vector3(side * 3.2f, height * .5f, z), new Vector3(.35f, height, 6), wall, true);
+                    if (walkInStorefront && side < 0 && (i == 0 || i == 1))
+                        ShopDoorWallSegments(z - 3, z + 3, height, wall);
+                    else
+                        Box("Weathered residential wall", new Vector3(side * 3.2f, height * .5f, z), new Vector3(.35f, height, 6), wall, true);
                     Box("Wall tile coping", new Vector3(side * 3.2f, height + .05f, z), new Vector3(.58f, .16f, 6), roof, false);
                     float upperHeight = 1.3f + (i % 3) * .3f;
                     Box("House facade above wall", new Vector3(side * (4.75f + .15f * (i % 2)), height + upperHeight * .5f, z + .3f),
@@ -74,7 +77,7 @@ namespace HappyToy.V2
             // A shallow shop front is part of the streetscape, not a generated asset.
             Box("Shop frontage", new Vector3(-3.02f, 1.38f, -8), new Vector3(.18f, 2.75f, 5.1f), dark, false);
             Box("Shop upper sign", new Vector3(-2.88f, 2.5f, -8), new Vector3(.12f, .55f, 5.1f), wall, false);
-            var sign = new GameObject("산길상회 hand-painted sign");
+            var sign = new GameObject("우암상회 hand-painted sign");
             sign.layer = 8; sign.transform.SetParent(transform, false);
             sign.transform.localPosition = new Vector3(-2.76f, 2.48f, -8);
             sign.transform.localRotation = Quaternion.Euler(0, 90, 0);
@@ -82,7 +85,7 @@ namespace HappyToy.V2
             lettering.font = Resources.Load<Font>("Fonts/PauseMyeongjo");
             if (!lettering.font) throw new InvalidOperationException("Korean sign font is missing");
             lettering.GetComponent<MeshRenderer>().sharedMaterial = lettering.font.material;
-            lettering.text = "산 길 상 회"; lettering.anchor = TextAnchor.MiddleCenter;
+            lettering.text = "우 암 상 회"; lettering.anchor = TextAnchor.MiddleCenter;
             lettering.alignment = TextAlignment.Center; lettering.fontSize = 90;
             lettering.characterSize = .008f; lettering.color = new Color(.18f, .10f, .075f);
             // A perpendicular sign faces people entering from the near end;
@@ -184,10 +187,50 @@ namespace HappyToy.V2
                     new Vector3(2.76f, 4.8f + wire * .08f, -7 + wire * 4.7f), iron);
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
             InstallStorefront();
+            if (walkInStorefront) BuildShopInterior(wall, dark);
+        }
+
+        // The measured opening straddles the two original six-metre wall
+        // segments. Keep every part outside the door and its upper lintel.
+        void ShopDoorWallSegments(float start, float end, float height, Material wall)
+        {
+            const float left = -9.09946f, right = -8.11197f, top = 1.859f;
+            void Segment(float a, float b, float bottom, float upper)
+            {
+                if (b - a < .005f || upper <= bottom) return;
+                Box("Weathered residential wall", new Vector3(-3.2f, (bottom + upper) * .5f, (a + b) * .5f),
+                    new Vector3(.35f, upper - bottom, b - a), wall, true);
+            }
+            Segment(start, Mathf.Min(end, left), 0, height);
+            Segment(Mathf.Max(start, right), end, 0, height);
+            Segment(Mathf.Max(start, left), Mathf.Min(end, right), top, height);
+        }
+
+        void BuildShopInterior(Material wall, Material wood)
+        {
+            // A small replaceable interior joins the existing road at y=0.
+            // Coordinates are relative to the village origin (500,0,400).
+            Box("Shop interior floor", new Vector3(-4.7f, -.12f, -8.6f), new Vector3(3, .24f, 5.5f),
+                surfaces.Get("concrete-rough", new Color(.34f, .30f, .26f)), true);
+            Box("Shop interior back wall", new Vector3(-6.12f, 1.2f, -8.6f), new Vector3(.12f, 2.4f, 5.5f), wall, true);
+            foreach (float z in new[] { -11.3f, -5.9f })
+                Box("Shop interior side wall", new Vector3(-4.95f, 1.2f, z), new Vector3(2.3f, 2.4f, .12f), wall, true);
+            Box("Shop interior counter", new Vector3(-5.6f, .48f, -7.45f), new Vector3(.38f, .96f, 1.7f), wood, true);
+            foreach (float z in new[] { -9.09946f, -8.11197f })
+                Box("Shop entrance timber jamb", new Vector3(-3.89f, .93f, z), new Vector3(.12f, 1.86f, .09f), wood, false);
+            Box("Shop entrance timber lintel", new Vector3(-3.89f, 1.87f, -8.6057f), new Vector3(.12f, .12f, 1.08f), wood, false);
+            for (int shelf = 0; shelf < 3; shelf++)
+                Box("Shop interior shelf", new Vector3(-6.0f, .65f + shelf * .43f, -7.5f), new Vector3(.32f, .06f, 1.6f), wood, false);
+            for (int crate = 0; crate < 2; crate++)
+                Box("Shop plain drink crate", new Vector3(-5.6f, .17f, -10f + crate * .55f), new Vector3(.45f, .34f, .45f), wood, false);
+            var lamp = new GameObject("Shop interior warm bulb"); lamp.transform.SetParent(transform, false);
+            lamp.transform.localPosition = new Vector3(-4.9f, 2.1f, -8.0f);
+            var light = lamp.AddComponent<Light>(); light.type = LightType.Point; light.color = new Color(1f, .57f, .27f);
+            light.range = 4f; light.intensity = 1.2f; light.shadows = LightShadows.None;
         }
         void InstallStorefront()
         {
-            var prefab = Resources.Load<GameObject>("AlleyStorefront/Storefront");
+            var prefab = walkInStorefront ? walkInStorefront : Resources.Load<GameObject>("AlleyStorefront/Storefront");
             if (!prefab) return; // Preserve the original facade on old builds.
             var holder = CorridorEntranceModels.Group(transform, "Authored Korean neighborhood shop", Vector3.zero);
             Instantiate(prefab, holder, false);
@@ -209,7 +252,7 @@ namespace HappyToy.V2
                     n.StartsWith("Store jar") || n.StartsWith("Store display") || n.StartsWith("Damaged window") ||
                     n.StartsWith("Shop entrance frame") || n.StartsWith("Shop entrance wood") ||
                     n.StartsWith("Shop entrance upper") || n.StartsWith("Shop entrance handle") ||
-                    n.StartsWith("산길상회 hand-painted");
+                    n.StartsWith("우암상회 hand-painted");
                 bool hiddenOldWall = child.localPosition.x < -3 && child.localPosition.z < -3 &&
                     child.localPosition.z > -15 && (n == "Weathered residential wall" || n == "Wall tile coping" ||
                     n == "House facade above wall" || n == "Sloping dark tile roof" || n == "Roof tile ridge");

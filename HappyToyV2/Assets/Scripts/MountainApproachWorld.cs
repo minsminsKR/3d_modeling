@@ -144,24 +144,9 @@ namespace HappyToy.V2
                 MakeVisualOnly(holder);
             }
             AddRitualCords();
-            // Give the uphill walk a visible destination before the masked
-            // transfer to the existing, separately saved temple world.
-            // Use the same facade that was visually reviewed in the temple;
-            // the old closed gate blocked the entire destination from view.
-            var templePrefab = Resources.Load<GameObject>("TempleForest/temple-hall-v2-visual");
-            if (!templePrefab) throw new InvalidOperationException("Mountain temple landmark is missing");
-            var temple = CorridorEntranceModels.Group(transform, "Distant temple landmark", Vector3.zero);
-            Instantiate(templePrefab, temple, false);
-            CorridorEntranceModels.GroundAtHeight(temple, new Vector3(0, Length * Slope, 39), 6f, Quaternion.identity);
-            foreach (var node in temple.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
-            BuildDistantSoil(soil);
-            foreach (float side in new[] { -1f, 1f })
-            {
-                var lightObject = new GameObject("Temple facade warm light"); lightObject.transform.SetParent(transform, false);
-                lightObject.transform.localPosition = new Vector3(side * 2.1f, Length * Slope + 2.2f, 35.5f);
-                var light = lightObject.AddComponent<Light>(); light.type = LightType.Point;
-                light.color = new Color(1, .68f, .42f); light.range = 8; light.intensity = 1.25f; light.shadows = LightShadows.None;
-            }
+            // The existing temple is now reached continuously in world space.
+            // Its authored hall and lights are the only destination; the
+            // connector owns the matching visual and physical slope beyond us.
         }
         static float BankHeight(float x, float z)
         {
@@ -194,6 +179,9 @@ namespace HappyToy.V2
             var visual = new GameObject("Mountain raised soil bank " + side); visual.layer = 8; visual.transform.SetParent(transform, false);
             visual.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = visual.AddComponent<MeshRenderer>(); renderer.sharedMaterial = soil; renderer.shadowCastingMode = ShadowCastingMode.Off;
+            // The visible raised bank is walkable terrain, not a cosmetic shell
+            // above the flatter base plane. Reuse its exact mesh for support.
+            visual.AddComponent<MeshCollider>().sharedMesh = mesh;
         }
         void AddDressing(GameObject prefab, string name, float x, float z, float height, float yaw)
         {
@@ -201,18 +189,6 @@ namespace HappyToy.V2
             Instantiate(prefab, holder, false);
             CorridorEntranceModels.GroundAtHeight(holder, new Vector3(x, z * Slope + BankHeight(x, z) - .015f, z), height, Quaternion.Euler(0, yaw, 0));
             MakeVisualOnly(holder);
-        }
-        void BuildDistantSoil(Material soil)
-        {
-            float y = Length * Slope - .01f;
-            var mesh = new Mesh { name = "Mountain distant soil" };
-            mesh.vertices = new[] { new Vector3(-12, y, Length), new Vector3(12, y, Length),
-                new Vector3(-12, y, 48), new Vector3(12, y, 48) };
-            mesh.uv = new[] { Vector2.zero, Vector2.right, Vector2.up, Vector2.one };
-            mesh.triangles = new[] { 0, 2, 1, 1, 2, 3 }; mesh.RecalculateNormals(); mesh.RecalculateBounds(); ownedMeshes.Add(mesh);
-            var visual = new GameObject("Distant temple ground"); visual.layer = 8; visual.transform.SetParent(transform, false);
-            visual.AddComponent<MeshFilter>().sharedMesh = mesh;
-            visual.AddComponent<MeshRenderer>().sharedMaterial = soil;
         }
         static void MakeVisualOnly(Transform holder)
         {

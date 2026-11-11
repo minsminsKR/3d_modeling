@@ -33,3 +33,5 @@ remains more detailed than this implementation.
 The input image
 and generation output contain no intended third-party logos; this description
 does not assert a third-party license for generated output.
+
+The separately authored walk-in derivative, marker measurements and its current placeholder interior are documented under `Interior/README.md`. The original generated facade and its sources remain unchanged for fallback.

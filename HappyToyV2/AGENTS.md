@@ -16,7 +16,9 @@ New independent rules belong in `Assets/Scripts/Core`, and their tests directly
 reference `HappyToy.V2.Core` without loading a scene or using reflection.
 Use narrow inputs/actions rather than passing an entire session or view to each
 helper. Retain existing Unity script metadata and checkpoint schemas.
-Choose checks by the affected behavior and keep the map/profile list current.
+Choose only checks for the changed behavior and directly affected boundaries;
+do not automatically run unrelated fixtures or complete Unity test suites.
+The user must explicitly request a complete suite. Keep the map/profile list current.
 
 # Audio direction
 

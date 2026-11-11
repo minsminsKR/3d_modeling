@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -11,6 +12,8 @@ namespace HappyToy.V2
     {
         GameObject root;
         Material material;
+        readonly List<GameObject> approachHiddenTrees = new List<GameObject>();
+        bool approachCorridorClear;
 
         public void Prepare(Renderer ground)
         {
@@ -59,6 +62,31 @@ namespace HappyToy.V2
                 { piece.sharedMaterial = material; piece.shadowCastingMode = ShadowCastingMode.Off; }
             }
             root.SetActive(true);
+        }
+
+        // The original rear tree ring was outside the old teleport-only
+        // boundary. A continuous approach crosses it; hide only trunks in
+        // that new corridor and preserve the original layout for legacy saves.
+        public void SetApproachCorridorClear(bool clear)
+        {
+            if (approachCorridorClear == clear) return;
+            if (!root) throw new InvalidOperationException("Forest depth is not ready");
+            approachCorridorClear = clear;
+            if (clear)
+            {
+                foreach (Transform tree in root.transform)
+                {
+                    Vector3 p = tree.position - transform.position;
+                    if (Mathf.Abs(p.x) > 13f || p.z < -86f || p.z > -26f || !tree.gameObject.activeSelf) continue;
+                    approachHiddenTrees.Add(tree.gameObject);
+                    tree.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                foreach (var tree in approachHiddenTrees) if (tree) tree.SetActive(true);
+                approachHiddenTrees.Clear();
+            }
         }
 
         static float HeightAt(Vector3[] vertices, int[] triangles, Vector3 point)

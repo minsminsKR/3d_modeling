@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -16,6 +17,9 @@ namespace HappyToy.V2
         GameObject horizon, undergrowth;
         Renderer groundRenderer;
         bool previousGroundRenderingOff;
+        readonly List<GameObject> approachHiddenTrees = new List<GameObject>();
+        Vector3[] originalApproachVertices, originalApproachHazeVertices;
+        bool approachCorridorClear;
 
         // Ring 2 is the previously approved near slope, sampled at twice its
         // former resolution by interpolation. The outer two rings use a
@@ -187,6 +191,68 @@ namespace HappyToy.V2
                 var lod = plant.GetComponent<LODGroup>(); lod.ForceLOD(lod.lodCount - 1);
                 foreach (var piece in plant.GetComponentsInChildren<Renderer>(true))
                     piece.shadowCastingMode = ShadowCastingMode.Off;
+            }
+        }
+
+        // The old horizon was drawn behind a solid boundary and a masked
+        // teleport. Only the continuous walk-in route needs a clear, lower
+        // southern corridor. Preserve the original vertices and tree states so
+        // legacy temple/checkpoint presentation remains unchanged.
+        public void SetApproachCorridorClear(bool clear)
+        {
+            if (approachCorridorClear == clear) return;
+            if (!mesh || !horizon) throw new InvalidOperationException("Forest horizon is not ready");
+            approachCorridorClear = clear;
+            if (!clear)
+            {
+                mesh.vertices = originalApproachVertices;
+                mesh.RecalculateNormals(); mesh.RecalculateBounds();
+                if (hazeMesh && originalApproachHazeVertices != null)
+                { hazeMesh.vertices = originalApproachHazeVertices; hazeMesh.RecalculateBounds(); }
+                originalApproachVertices = null; originalApproachHazeVertices = null;
+                foreach (var tree in approachHiddenTrees) if (tree) tree.SetActive(true);
+                approachHiddenTrees.Clear();
+                return;
+            }
+
+            originalApproachVertices = mesh.vertices;
+            originalApproachHazeVertices = hazeMesh ? hazeMesh.vertices : null;
+            var carved = (Vector3[])originalApproachVertices.Clone();
+            // Ring 2 sits at z=450, above the new connector. Rings 3/4
+            // extend behind it across the mountain itself; extend that slope
+            // below the terrain so the full approach, not just the seam, clears.
+            for (int ring = 2; ring <= 4; ring++)
+            for (int i = 0; i < SideSteps; i++)
+            {
+                int index = ring * Perimeter + i;
+                var point = transform.TransformPoint(carved[index]);
+                float offset = Mathf.Abs(point.x - transform.position.x);
+                // The outer ring is coarse (6 m between vertices), so keep
+                // its neighbouring vertices flat beyond the 24 m corridor;
+                // otherwise a diagonal triangle can still cover its edge.
+                if (offset >= 23f) continue;
+                float blend = 1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(18.25f, 23f, offset));
+                float z = point.z - MountainApproachWorld.Origin.z;
+                float ground = MountainApproachWorld.Origin.y +
+                    (z <= 34f ? z * .045f : (56f - z) * (1.53f / 22f));
+                var target = transform.InverseTransformPoint(new Vector3(point.x, ground - .08f, point.z));
+                carved[index].y = Mathf.Lerp(carved[index].y, Mathf.Min(carved[index].y, target.y), blend);
+            }
+            mesh.vertices = carved; mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            if (hazeMesh && originalApproachHazeVertices != null)
+            {
+                var hazeVertices = (Vector3[])originalApproachHazeVertices.Clone();
+                for (int ring = 2; ring <= 4; ring++)
+                for (int i = 0; i < Perimeter; i++)
+                    hazeVertices[(ring - 2) * Perimeter + i] = carved[ring * Perimeter + i] + Vector3.up * .012f;
+                hazeMesh.vertices = hazeVertices; hazeMesh.RecalculateBounds();
+            }
+            foreach (Transform tree in horizon.transform)
+            {
+                if (!tree.name.StartsWith("Distant forest pine", StringComparison.Ordinal) || !tree.gameObject.activeSelf) continue;
+                Vector3 p = tree.position - transform.position;
+                if (Mathf.Abs(p.x) > 13f || p.z < -86f || p.z > -26f) continue;
+                approachHiddenTrees.Add(tree.gameObject); tree.gameObject.SetActive(false);
             }
         }
 

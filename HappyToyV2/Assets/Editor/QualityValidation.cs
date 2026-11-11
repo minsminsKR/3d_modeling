@@ -32,8 +32,9 @@ namespace HappyToy.V2.Editor
         {
             Directory.CreateDirectory(Output);
             var scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
-            if (scenes.Length != 1 || scenes[0].path != ScenePath)
-                throw new InvalidOperationException("Select only the preserved authored annex scene before validation.");
+            var expectedScenes = new[] { ScenePath, ApproachSceneStream.VillagePath, ApproachSceneStream.MountainPath };
+            if (!scenes.Select(scene => scene.path).SequenceEqual(expectedScenes))
+                throw new InvalidOperationException("The preserved annex and two additive approach scenes must be enabled in order.");
             string before = Hash(ScenePath);
             int clockAssertions = EnemyAttackClockChecks.Run();
             int rippleAssertions = SurfaceRippleChecks.Run();
@@ -75,6 +76,7 @@ namespace HappyToy.V2.Editor
         }
         public static void BuildWindows()
         {
+            ApproachSceneAuthoring.Ensure();
             SkinnedMeshPerformanceSetup.Apply();
             EnemyStudioGameImport.Ensure();
             LadyGameImport.Ensure();
@@ -120,7 +122,7 @@ namespace HappyToy.V2.Editor
             bool development = Array.IndexOf(args, "-v2-release-player") < 0;
             // Retain real native CPU/GPU timestamp availability in release players.
             PlayerSettings.enableFrameTimingStats=true;
-            var report = BuildPipeline.BuildPlayer(new[] { ScenePath }, Path.Combine(destination, "HappyToyV2.exe"),
+            var report = BuildPipeline.BuildPlayer(new[] { ScenePath, ApproachSceneStream.VillagePath, ApproachSceneStream.MountainPath }, Path.Combine(destination, "HappyToyV2.exe"),
                 BuildTarget.StandaloneWindows64, development ? BuildOptions.Development : BuildOptions.None);
             if (Hash(ScenePath) != before) throw new InvalidOperationException("Authored scene changed during build.");
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Quality build failed: " + report.summary.result);

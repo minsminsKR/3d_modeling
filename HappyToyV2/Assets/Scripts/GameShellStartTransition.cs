@@ -37,6 +37,23 @@ namespace HappyToy.V2
                 session.Prologue.NextDayRequested += TempleNextDay;
                 session.Prologue.CorridorRequested += TempleEnterCorridor;
                 session.Prologue.BeginApproach(TempleApproachEnd);
+            }
+            catch (Exception error) { failure = error; }
+            if (failure != null) { FailTempleTransition(failure.Message); yield break; }
+            var approach = session.Prologue.GetComponent<TempleApproachFlow>();
+            float villageDeadline = Time.realtimeSinceStartup + 60f;
+            while (approach && !approach.VillageReady && string.IsNullOrEmpty(approach.VillageFailure) &&
+                   Time.realtimeSinceStartup < villageDeadline) yield return null;
+            if (!approach || !approach.VillageReady)
+            {
+                string error = approach && !string.IsNullOrEmpty(approach.VillageFailure)
+                    ? approach.VillageFailure : "마을을 불러오는 시간이 초과되었습니다.";
+                TemplePreparing = false; FailTempleTransition(error); yield break;
+            }
+            try
+            {
+                // Consume an older suspended run only after the replacement is
+                // actually ready; a failed async load must not erase the save.
                 if (session.TempleSuspension.HasRun && session.TempleSuspension.Writable &&
                     !session.TempleSuspension.Consume(session.TempleSuspension.Snapshot.token))
                     throw new InvalidOperationException(session.TempleSuspension.Status);
@@ -56,18 +73,7 @@ namespace HappyToy.V2
         }
         void TempleApproachEnd()
         {
-            if (!IsReloading && session.PrologueMode) StartCoroutine(TempleApproachTransition());
-        }
-        IEnumerator TempleApproachTransition()
-        {
-            IsReloading = true; ApplyScreenState();
-            for (float t = 0; t < .6f; t += Time.unscaledDeltaTime)
-            { TransitionBlack = Mathf.SmoothStep(0, 1, t / .6f); yield return null; }
-            TransitionBlack = 1; yield return null;
-            session.Prologue.FinishApproach();
-            for (float t = 0; t < .8f; t += Time.unscaledDeltaTime)
-            { TransitionBlack = 1 - Mathf.SmoothStep(0, 1, t / .8f); yield return null; }
-            TransitionBlack = 0; IsReloading = false; GameplayEntryFrame = Time.frameCount; ApplyScreenState();
+            if (!IsReloading && session.PrologueMode) session.Prologue.FinishApproach();
         }
         IEnumerator TempleNextDayTransition()
         {

@@ -1,16 +1,20 @@
 # HappyToyV2 기능별 수정 지도
 
-새 이야기 골목·산길 초안은 `TempleApproachFlow`, `AlleyApproachWorld`,
-`MountainApproachWorld`, `AlleySnapperEncounter`가 소유한다. 기존 사찰
-진입과 체크포인트는 별도이며 도입 중에는 저장을 잠시 제한한다.
-`TempleApproachPolish`는 기존 사찰 길 양옆의 장식을 추가한다. `AlleyDuskEnvironment`는 골목의 황혼 하늘·조명을 적용하고 산길에서 복원하며 `AlleyRoadDressing`은 충돌 없는 도로 세부 메시를 소유한다. 사용자
-기준 이미지·구현 범위는 `SourceArt/TempleApproach/README.md`, 새 진입의
-기본 획득·발사 검사는 `temple-approach-logic`, 실제 조작 경로 및 선택적 카메라 검사는
-`temple-approach-visual`이다. `AlleyBeastRetreat`은 실제 착탄 후 50k 면 모프 클립과
-방향·이동을 함께 진행하고, 일시정지에서는 같은 시간을 멈춘다. 애니메이션 리소스가
-없으면 기존 정적 모델로, 둘 다 없으면 길을 열어 진행 불가를 막는다. 접지 보정은 전체
-메시 기준 근사이며 개별 발 고정·자연스러운 사족 달리기는 미완성이다. 원본과 재현 경로는
-`SourceArt/AlleyBeast/RunCandidate/README.md`에 있다.
+새 이야기 도입은 `TempleApproachFlow`와 `ApproachSceneStream`이 Village·MountainPath
+additive 씬의 로드·해제·복귀 게이트를, `AlleyApproachWorld`,
+`VillageMountainTransitionDressing`, `MountainApproachWorld`, `MountainForkDressing`,
+`TempleApproachConnector`, `ConnectorBankDressing`, `ConnectorStoneDressing`이 지형과 배치를 소유한다. 도입 때만 `TempleForestHorizon`과 `TempleForestDepthFill`의 기존 원경을 통로 아래로 조정하거나 가린다. 씬은 마커 컨테이너이며 실제
+배경 오브젝트 생성은 메인 스레드에서 동기 실행된다. 사찰까지 순간이동 없이
+이동하며 기존 플레이어·인벤토리를 재사용한다. `AlleySnapperEncounter`는 임시
+상점 주인, 재보급, 위쪽을 향한 지정 바닥 착탄 판정, 개와 장애물 상태를 소유하고
+`AlleyBeastRetreat`은 도주를 표현한다. 도입 체크포인트 v4는 이벤트 상태를
+보존하고 예전 v2/v3는 유지한다. `AlleyDuskEnvironment`와
+`ApproachAmbientSoundscape`가 위치별 황혼 및 녹음 음량 전환을 맡으며,
+`TempleApproachPolish`는 기존 사찰 길을 장식한다. 제작 출처·제약은
+`SourceArt/TempleApproach/README.md`와 `SourceArt/AlleyBeast/RunCandidate/README.md`.
+검사는 `temple-approach-logic`(획득·저장·복원), `temple-approach-route`(실제 입력·충돌),
+`temple-approach-streaming`(씬 수명·환경·갈림길), `temple-approach-existing`이다.
+대기·짖기 애니메이션과 발 접지, 실제 주인 모델·완성된 실내, GPU·FPS 및 청취 검증은 미완성이다.
 
 Windows 새 빌드 검증 뒤의 구버전 정리는 `Tools/quality/Clear-VerifiedOldBuilds.ps1`이
 현재 입력 해시를 재검증하고 실제 플레이어 폴더·실행 중 여부·경로와 링크를 확인한 뒤
@@ -620,7 +624,9 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.E
 사례만 새로 실행하고 `--include-profile <기능>`으로 영향받은 기능을 추가한다.
 `--timings-only`는 Unity를 실행하지 않고 사례별 시간과 느린 검사를 읽는다.
 `run_feature_tests.py`의 결과에도 이 시간 분석이 자동으로 남는다. 원본 전체 결과와
-부분 재검사의 범위·판정은 함께 보존한다. 공유 경계/전체 개편/배포의 전체 검사 요구는 유지한다.
+부분 재검사의 범위·판정은 함께 보존한다. 사용자 지시(2026-11-11)에 따라 변경된
+기능·씬과 직접 영향을 받는 경계만 검사하며, 공유 경계·대규모 변경·배포라는 이유만으로
+무관한 검사나 Unity 전체 테스트를 자동 실행하지 않는다. 전체 검사는 명시적으로 요청받을 때만 실행한다.
 
 `school-horror`의 선택 렌더 내보내기는 `HAPPYTOY_SCHOOL_HORROR_REVIEW_DIR`를 새 `Builds/` 하위 폴더로 명시한다. 복도 정/역방향·정독반/음악실 창문·바닥/누수·파손 천장/박리 벽 근접·손전등 켜짐의9시점을 실제1920×1080 게임 카메라로 저장한다. 평면 반사 검사는 실제 바닥의 활성/비활성 픽셀 차이·소유 타깃과 카메라 수명·GL/전역 셰이더 원복을 확인한다. 화면은 참조 학교 전체의 포토그래메트리·볼류메트릭 그림자 또는 실제 플레이 FPS의 인증이 아니다. 재현과 남은 고품질 리소스는 `SourceArt/SchoolHorror/README.md`에 기록한다.
 

@@ -1114,6 +1114,9 @@ namespace HappyToy.V2.CloudTests
             var world = Get<Component>(session, "Prologue");
             Assert.That(Get<bool>(world, "ApproachActive"), Is.True, "The title did not start the new approach");
             Call(world, "FinishApproach");
+            // This fixture intentionally isolates the existing temple tests;
+            // normal gameplay traverses the connector without a teleport.
+            PlacePlayer(Get<Vector3>(world, "Spawn"));
             yield return null;
             Assert.That(Get<bool>(world, "ApproachActive"), Is.False);
             Assert.That(player.transform.position.z, Is.InRange(479f, 481f));

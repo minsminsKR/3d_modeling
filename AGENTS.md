@@ -38,12 +38,17 @@ Keep independent rules in `HappyToy.V2.Core`, with no game/session/Unity depende
 Adding `partial` files alone does not establish a module boundary. Preserve
 scene script GUIDs, serialized names and save compatibility when refactoring.
 
-Use the feature verification profiles documented in `HappyToyV2/CODE_MAP.md`.
-Run fast rule checks and relevant integration checks for each change; broaden
-coverage when shared behavior, assembly boundaries or unresolved failures require
-it. Run both complete Unity test suites and a player build for broad refactors
-or release readiness. Update the code map/profiles when ownership or entry points
-change. Keep diagnostic code opt-in and preserve the quiet verification policy.
+User instruction, 2026-11-11: verify only the changed feature, scene, and the
+directly affected integration or save boundaries. Select the narrowest meaningful
+checks from `HappyToyV2/CODE_MAP.md`; do not automatically run unrelated core
+fixtures, complete Unity suites, or whole-game regressions merely because a
+change touches a shared boundary, is broad, or is being prepared for release.
+Run a complete suite only when the user explicitly requests that suite. Do not
+repeat a passing check without a relevant new change or failure. A Windows build
+is performed when requested or otherwise necessary to deliver the requested
+playable result; a build does not imply running the entire test suite. Update
+the code map/profiles when ownership or entry points change. Keep diagnostic
+code opt-in and preserve the quiet verification policy.
 
 # School anomaly judgment loop — user direction, 2026-10-24
 

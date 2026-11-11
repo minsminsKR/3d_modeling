@@ -12,7 +12,7 @@ draw = ImageDraw.Draw(image)
 draw.rectangle((13, 13, 498, 498), outline=(80, 51, 38), width=10)
 draw.rectangle((31, 31, 480, 480), outline=(151, 108, 76), width=3)
 font = ImageFont.truetype(str(font_path), 156)
-for text, y in [('산길', 57), ('상회', 251)]:
+for text, y in [('우암', 57), ('상회', 251)]:
     bounds = draw.textbbox((0, 0), text, font=font)
     x = (512 - (bounds[2] - bounds[0])) / 2 - bounds[0]
     draw.text((x, y - bounds[1]), text, font=font, fill=(54, 30, 25))

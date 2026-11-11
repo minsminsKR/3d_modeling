@@ -13,11 +13,11 @@ namespace HappyToy.V2
             public bool CorridorMode, ChapterMode, TempleMode, CanSuspendCorridor, CanSuspendChapter, CanSuspendTemple, ShowSuspensionMessage;
             public static State Read(GameSession session, GameShell shell) => new State {
                 CorridorMode = session.CorridorMode, ChapterMode = session.ChapterMode,
-                TempleMode = session.PrologueMode, CanSuspendTemple = session.PrologueMode && !session.Prologue.ApproachActive && session.TempleSuspension.Writable,
+                TempleMode = session.PrologueMode, CanSuspendTemple = session.PrologueMode && session.Prologue.CanSuspendApproach && session.TempleSuspension.Writable,
                 CanSuspendCorridor = session.CorridorMode && session.Suspension.Writable && string.IsNullOrEmpty(session.Corridor.SuspendBlockReason),
                 CanSuspendChapter = session.ChapterMode && session.ChapterSuspension.Writable && string.IsNullOrEmpty(session.Chapter.SuspendBlockReason),
                 ShowSuspensionMessage = string.IsNullOrEmpty(shell.ReloadError),
-                SuspensionMessage = session.PrologueMode && session.Prologue.ApproachActive ? "사찰에 도착한 뒤 중단 저장할 수 있습니다." :
+                SuspensionMessage = session.PrologueMode && !session.Prologue.CanSuspendApproach ? "콩알탄 사용 또는 구역 준비가 끝난 뒤 저장할 수 있습니다." :
                     session.PrologueMode && !session.TempleSuspension.Writable ?
                     (string.IsNullOrWhiteSpace(session.TempleSuspension.Status) ? "현재 사찰 저장을 사용할 수 없습니다." : session.TempleSuspension.Status) :
                     session.ChapterMode && !session.ChapterSuspension.Writable ?

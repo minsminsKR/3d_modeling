@@ -1,5 +1,13 @@
 HAPPY TOY V2 — EXTERNAL SOUND CREDITS
 
+Village dog bark — Edo.pt2, "Ladrido perro" (2026), CC0 1.0.
+https://commons.wikimedia.org/wiki/File:Ladrido_perro.ogg
+The complete original Opus recording is decoded to mono WAV for Unity.
+Village/mountain cicadas — Ngguls, "蝉鸣" (2018), CC0 1.0.
+https://commons.wikimedia.org/wiki/File:%E8%9D%89%E9%B8%A3.ogg
+Originals, source hashes, license and conversion: ThirdParty/Audio/VillageApproach.
+
+
 Baby crying.wav — Alex_hears_things
 https://freesound.org/people/Alex_hears_things/sounds/636845/
 CC0 1.0. Actual baby voice recorded with a Zoom H4n Pro. Public high-quality MP3
@@ -219,3 +227,7 @@ CC0 1.0. Four edited contacts from the public HQ preview; source, comparison, ha
 Temple forest wind — Wind Through Trees ambience.wav — Noted451
 https://freesound.org/people/Noted451/sounds/531016/
 CC0 1.0. A crossfaded loop from the public HQ preview; source, hashes and reproducible extraction: ThirdParty/Audio/TempleForest/README.md.
+
+Mountain wind chime — Windglockenspiel.Koshi.ogg — Membeth
+https://commons.wikimedia.org/wiki/File:Windglockenspiel.Koshi.ogg
+CC0 1.0. Mono conversion for spatial playback; original, checksum and reproduction: ThirdParty/Audio/VillageApproach/README.md.

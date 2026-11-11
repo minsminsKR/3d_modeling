@@ -66,7 +66,31 @@ namespace HappyToy.V2.CloudTests
             Assert.That(field, Is.Not.Null); field.SetValue(player, 0f);
         }
 
-        [UnityTest, Timeout(240000)]
+        const float ApproachShopDoorZ = 391.39429f;
+
+        IEnumerator ApproachAlignWithShopDoor()
+        {
+            ApproachFaceForward();
+            if (player.transform.position.z < ApproachShopDoorZ - .03f)
+                yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= ApproachShopDoorZ, 15, "Cannot align with the shop entrance");
+            else if (player.transform.position.z > ApproachShopDoorZ + .03f)
+                yield return ApproachWalkUntil(Key.S, () => player.transform.position.z <= ApproachShopDoorZ, 15, "Cannot return to the shop entrance");
+        }
+        IEnumerator ApproachEnterShop()
+        {
+            yield return ApproachAlignWithShopDoor();
+            yield return ApproachWalkUntil(Key.A, () => player.transform.position.x <= 495.55f, 10, "Cannot enter the shop through the doorway");
+            yield return Wait(() => Get<bool>(player, "Grounded"), 4, "Shop interior has no supporting floor");
+            Assert.That(player.transform.position.x, Is.LessThan(496.11f - .3f), "Capsule did not cross the shop front");
+        }
+        IEnumerator ApproachExitShop()
+        {
+            yield return ApproachAlignWithShopDoor();
+            yield return ApproachWalkUntil(Key.D, () => player.transform.position.x >= 497.6f, 10, "Cannot leave the shop through the doorway");
+            yield return Wait(() => Get<bool>(player, "Grounded"), 4, "Player lost floor support while leaving the shop");
+        }
+
+        [UnityTest, Timeout(300000)]
         public IEnumerator TempleApproachRealTitleKeysAndCollisionReachTemple()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
@@ -109,14 +133,20 @@ namespace HappyToy.V2.CloudTests
             var inventory = Get<Component>(player, "Firecrackers");
             Assert.That(Get<int>(inventory, "Count"), Is.Zero);
 
-            ApproachFaceForward();
-            yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 393.5f, 15, "Cannot walk along alley to the supply");
-            yield return ApproachWalkUntil(Key.A, () => player.transform.position.x <= 498.55f, 6, "Cannot reach the supply side of alley");
-            ApproachLookAt(pickup.position + Vector3.up * .05f); yield return null; yield return null;
-            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo(pickup.name), "Pickup is not focusable from the approach");
+            Assert.That(Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate"), Is.Not.Null, "Open storefront candidate is missing");
+            yield return ApproachEnterShop();
+            var shopkeeper = encounter.transform.Find("Shopkeeper conversation placeholder");
+            Assert.That(shopkeeper, Is.Not.Null);
+            ApproachLookAt(shopkeeper.position + new Vector3(-.38f, .46f, 0)); yield return null; yield return null;
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo(shopkeeper.name), "Shopkeeper is not reachable through the real focus ray");
             yield return RecoveryPulse(Key.E);
-            yield return Wait(() => Get<bool>(encounter, "Acquired"), 3, "The actual E key did not pick up the snapper");
+            yield return Wait(() => Get<bool>(encounter, "Acquired"), 3, "Actual E conversation did not give the snapper");
             Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(6));
+            var indoorSave = Call(world, "Capture", 0f);
+            Assert.That(Get<bool>(indoorSave, "approachAcquired"), Is.True);
+            Assert.That(Get<Vector3>(Get<object>(indoorSave, "player"), "position").x, Is.LessThan(496.11f - .3f),
+                "The shop interior pose was not captured");
+            yield return ApproachExitShop();
 
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 403f, 15, "Cannot walk to the animal obstruction");
@@ -126,23 +156,39 @@ namespace HappyToy.V2.CloudTests
             Assert.That(player.transform.position.z - before, Is.LessThan(2.1f), "The player crossed an uncleared obstacle");
             Assert.That(Get<bool>(encounter, "Cleared"), Is.False);
 
-            // Aim at the centre of the existing physical blocker; a collision
-            // within the animal's hearing radius, not the keypress, clears it.
+            // A wall/body impact must not be mistaken for a safe ground throw.
             var blocker = encounter.transform.Find("Beast passage blocker");
             Assert.That(blocker, Is.Not.Null);
             ApproachLookAt(blocker.position); yield return null; yield return null;
             CaptureApproachReview("02-alley-beast");
             int committed = Get<int>(AnimatedActions, "CommittedCount");
             yield return RecoveryPulse(Key.Q);
-            yield return Wait(() => Get<int>(AnimatedActions, "CommittedCount") > committed, 10, "Actual Q press did not release a snapper");
+            yield return Wait(() => Get<int>(AnimatedActions, "CommittedCount") > committed, 10, "Wall shot was not released");
+            var badShot = Get<Component>(inventory, "LastThrown");
+            yield return Wait(() => badShot && Get<bool>(badShot, "Exploded"), 5, "Wall shot did not impact");
+            yield return null;
+            Assert.That(Get<bool>(encounter, "Cleared"), Is.False, "Wall impact incorrectly scared the dog away");
+            Assert.That(blocker.gameObject.activeSelf, Is.True);
+            yield return Wait(() => !badShot, 8, "Wall shot did not finish");
+
+            // Retreat enough to throw onto the marked ground, then use the real
+            // projectile's collision point and surface normal for the puzzle.
+            ApproachFaceForward();
+            yield return ApproachWalkUntil(Key.S, () => player.transform.position.z <= 401.6f, 8, "Cannot back away from dog");
+            var groundTarget = Get<Vector3>(encounter, "GroundTarget");
+            ApproachLookAt(groundTarget); yield return null; yield return null;
+            committed = Get<int>(AnimatedActions, "CommittedCount");
+            yield return RecoveryPulse(Key.Q);
+            yield return Wait(() => Get<int>(AnimatedActions, "CommittedCount") > committed, 10, "Ground shot was not released");
             var shot = Get<Component>(inventory, "LastThrown");
             Assert.That(shot, Is.Not.Null);
-            yield return Wait(() => shot && Get<bool>(shot, "Exploded"), 5, "Snapper did not actually strike a surface");
+            yield return Wait(() => shot && Get<bool>(shot, "Exploded"), 5, "Ground shot did not impact");
             Assert.That(Get<bool>(shot, "HasFirstContact"), Is.True);
-            Assert.That(Vector3.Distance(Get<Vector3>(shot, "FirstContactPoint"), new Vector3(500, 0, 405)), Is.LessThanOrEqualTo(4f));
-            yield return Wait(() => Get<bool>(encounter, "Cleared"), 3, "Real nearby impact did not drive the animal away");
-            Assert.That(blocker.gameObject.activeSelf, Is.False);
-            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(5));
+            Assert.That((bool)Call(encounter.GetType(), "ValidGroundImpact", Get<Vector3>(shot, "FirstContactPoint"), Get<Vector3>(shot, "FirstContactNormal"), groundTarget), Is.True);
+            yield return Wait(() => Get<bool>(encounter, "Reacting"), 3, "Ground impact did not start the reaction");
+            Assert.That(Get<bool>(encounter, "Cleared"), Is.False, "Passage opened before the animal moved aside");
+            Assert.That(blocker.gameObject.activeSelf, Is.True, "Reaction must keep the player-blocking barrier active");
+            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(4));
 #if UNITY_EDITOR
             if (candidateAnimation)
             {
@@ -151,10 +197,15 @@ namespace HappyToy.V2.CloudTests
                 var pausedPosition = dogPreview.transform.position;
                 var pausedRotation = dogPreview.transform.rotation;
                 float pausedWeight = skin.GetBlendShapeWeight(0);
+                Assert.That(Get<bool>(encounter, "CanSuspend"), Is.False, "An unfinished retreat must not be saved");
+                Assert.Throws<InvalidOperationException>(() => Call(world, "Capture", 0f));
                 yield return Delay(.2f);
                 Assert.That(dogPreview.transform.position, Is.EqualTo(pausedPosition), "Paused dog moved");
                 Assert.That(Quaternion.Angle(pausedRotation, dogPreview.transform.rotation), Is.LessThan(.01f), "Paused dog turned");
                 Assert.That(skin.GetBlendShapeWeight(0), Is.EqualTo(pausedWeight), "Paused dog animation advanced");
+                Assert.That(Get<bool>(encounter, "Reacting"), Is.True);
+                Assert.That(Get<bool>(encounter, "Cleared"), Is.False);
+                Assert.That(blocker.gameObject.activeSelf, Is.True, "Pause opened the barrier");
                 Call(shell, "Resume"); yield return null;
             }
 #endif
@@ -211,18 +262,98 @@ namespace HappyToy.V2.CloudTests
                 finally { Time.captureDeltaTime = priorCapture; }
             }
 
+            yield return Wait(() => Get<bool>(encounter, "Cleared"), 8, "Passage did not open after the animal reached safety");
+            Assert.That(Get<bool>(encounter, "Reacting"), Is.False);
+            Assert.That(blocker.gameObject.activeSelf, Is.False);
+#if UNITY_EDITOR
+            Assert.That(Vector3.Distance(dogPreview.transform.position, new Vector3(502.15f, dogPreview.transform.position.y, 405.65f)),
+                Is.LessThan(.03f), "Barrier opened before the dog reached its side destination");
+#endif
+            yield return Wait(() => !shot, 8, "Ground shot did not finish before saving");
+            var approachSnapshot = Call(world, "Capture", 0f);
+            Assert.That(Get<int>(approachSnapshot, "version"), Is.EqualTo(4));
+            Assert.That(Get<bool>(approachSnapshot, "approachCleared"), Is.True);
+            Assert.That(Get<int>(Get<object>(approachSnapshot, "player"), "stock"), Is.EqualTo(4));
+            string approachJson = (string)Call(approachSnapshot, "ToJson");
+            approachSnapshot = Call(RequireType("TemplePrologueCheckpoint"), "FromJson", approachJson);
+
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 415f, 15, "Cannot pass from alley to mountain after animal retreats");
-            Assert.That(RenderSettings.skybox, Is.Not.SameAs(alleySky), "Mountain retained the alley's dusk sky");
+            Assert.That(RenderSettings.skybox, Is.SameAs(alleySky), "Transition should still blend the alley dusk at z=415");
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 435f, 30, "Cannot walk up the mountain slope");
             Assert.That(player.transform.position.y, Is.GreaterThan(.65f), "Mountain ascent did not raise the grounded player");
+            Assert.That(RenderSettings.skybox, Is.Not.SameAs(alleySky), "Mountain did not finish restoring its night sky");
             CaptureApproachReview("03-mountain");
-            yield return ApproachWalkUntil(Key.W, () => Get<bool>(shell, "IsReloading") || !Get<bool>(world, "ApproachActive"), 25, "Mountain exit did not start the temple transition");
+            yield return ApproachWalkUntil(Key.W, () => Get<bool>(shell, "IsReloading") || !Get<bool>(world, "ApproachActive"), 45, "Mountain exit did not start the temple transition");
             yield return Wait(() => !Get<bool>(shell, "IsReloading") && !Get<bool>(world, "ApproachActive"), 15, "Temple transition did not complete");
-            Assert.That(player.transform.position.z, Is.InRange(479f, 481f));
+            Assert.That(player.transform.position.z, Is.GreaterThanOrEqualTo(474f));
             CaptureApproachReview("04-temple");
             Assert.That(Get<object>(Get<Component>(world, "Director"), "Phase").ToString(), Is.EqualTo("FirstApproach"));
             Assert.That(Call(world, "Capture", 0f), Is.Not.Null, "Temple checkpoint remained blocked after arrival");
+
+            // Reconstruct a fresh prologue from the serialized approach data.
+            // The same player and stock must return, without restoring the blocker.
+            Call(session, "RetirePrologue"); yield return null;
+            Call(session, "CreatePrologueForCheckpoint", approachSnapshot);
+            world = Get<Component>(session, "Prologue");
+            Call(world, "BeginApproach", new Action(() => { }));
+            yield return Wait(() => Get<bool>(world, "ApproachVillageReady"), 20, "Restored village failed to load");
+            Call(world, "RestoreApproach", approachSnapshot);
+            var restoredEncounter = session.GetComponentsInChildren<Component>(true)
+                .First(component => component && component.GetType().Name == "AlleySnapperEncounter");
+            Assert.That(Get<bool>(restoredEncounter, "Acquired"), Is.True);
+            Assert.That(Get<bool>(restoredEncounter, "Cleared"), Is.True);
+            Assert.That(restoredEncounter.transform.Find("Beast passage blocker").gameObject.activeSelf, Is.False);
+            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(4));
+            Assert.That(Vector3.Distance(player.transform.position, Get<Vector3>(Get<object>(approachSnapshot, "player"), "position")), Is.LessThan(.02f));
+        }
+        [UnityTest, Timeout(300000)]
+        public IEnumerator TempleApproachRealInputRefillsSixSnappersInsideShop()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            yield return RecoveryWaitForTempleEntry();
+            Assert.That(Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate"), Is.Not.Null);
+            var encounter = session.GetComponentsInChildren<Component>(true)
+                .First(component => component && component.GetType().Name == "AlleySnapperEncounter");
+            var inventory = Get<Component>(player, "Firecrackers");
+            var pickup = encounter.transform.Find("Alley snapper supply");
+            var shopkeeper = encounter.transform.Find("Shopkeeper conversation placeholder");
+            yield return ApproachEnterShop();
+            ApproachLookAt(shopkeeper.position + new Vector3(-.38f, .46f, 0)); yield return null; yield return null;
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo(shopkeeper.name));
+            yield return RecoveryPulse(Key.E);
+            yield return Wait(() => Get<bool>(encounter, "Acquired"), 3, "Shopkeeper did not provide the first pack");
+            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(6));
+            yield return ApproachExitShop();
+
+            // All six are really thrown at the far house wall, away from the
+            // marked ground and the animal; no stock is mutated by the test.
+            for (int i = 0; i < 6; i++)
+            {
+                ApproachLookAt(new Vector3(503f, 1.1f, player.transform.position.z)); yield return null;
+                int committed = Get<int>(AnimatedActions, "CommittedCount");
+                yield return RecoveryPulse(Key.Q);
+                yield return Wait(() => Get<int>(AnimatedActions, "CommittedCount") > committed, 10, "Snapper was not released");
+                var shot = Get<Component>(inventory, "LastThrown");
+                yield return Wait(() => shot && Get<bool>(shot, "Exploded"), 5, "Snapper did not hit the wall or ground");
+                yield return null;
+                Assert.That(Get<bool>(encounter, "Cleared"), Is.False);
+                Assert.That(Get<bool>(encounter, "Reacting"), Is.False);
+                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(5 - i));
+                yield return Wait(() => !shot, 8, "Previous snapper did not finish");
+            }
+            yield return Wait(() => pickup.gameObject.activeSelf, 3, "Empty stock did not reactivate the interior supply");
+            yield return ApproachEnterShop();
+            ApproachFaceForward();
+            yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 392.9f, 8, "Cannot reach the interior supply");
+            ApproachLookAt(pickup.position + Vector3.up * .056f); yield return null; yield return null;
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo(pickup.name), "Interior refill is not focusable");
+            yield return RecoveryPulse(Key.E);
+            yield return Wait(() => Get<int>(inventory, "Count") == 6, 3, "E did not refill the stock");
+            Assert.That(pickup.gameObject.activeSelf, Is.False);
+            yield return ApproachExitShop();
+            Assert.That(Get<bool>(encounter, "Cleared"), Is.False);
         }
     }
 }

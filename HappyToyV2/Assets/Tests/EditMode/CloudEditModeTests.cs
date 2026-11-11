@@ -29,7 +29,7 @@ namespace HappyToy.V2.Tests.EditMode
         {
             { ScenePath, "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede" },
             { ScenePath + ".meta", "cced22a74976e0f4ebaa80138bda97d0bf5b1103a776613a31b2f1279a0ed77b" },
-            { "ProjectSettings/EditorBuildSettings.asset", "bba9b21dd739d2451b44faa463225a94be4ea90b6c6ff284b27a14b06de2ef21" }
+            { "ProjectSettings/EditorBuildSettings.asset", "5bdc027aa537fd3b0c996f41a24d9d460a9d36256887ee4d06610a163cfc8e60" }
         };
 
         [Serializable]
@@ -116,8 +116,11 @@ namespace HappyToy.V2.Tests.EditMode
                 InvokeEditorCheck("QualityValidation", "Validate", typeof(void));
                 Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(ScenePath));
                 EditorBuildSettingsScene[] enabled = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
-                Assert.That(enabled.Length, Is.EqualTo(1));
-                Assert.That(enabled[0].path, Is.EqualTo(ScenePath));
+                Assert.That(enabled.Select(scene => scene.path).ToArray(), Is.EqualTo(new[] {
+                    ScenePath, "Assets/Approach/Village.unity", "Assets/Approach/MountainPath.unity" }));
+                Assert.That(enabled.Select(scene => scene.guid.ToString()).ToArray(), Is.EqualTo(new[] {
+                    "d8ad5eb908405ba4d8b034a946738720", "ea6c83eb2c9280d43a38705d6dfa5351",
+                    "28f9572c1465f574581869b702acab77" }));
 
                 string reportPath = Path.Combine(projectRoot, "Verification/quality-unity/editor-validation.json");
                 Assert.That(File.Exists(reportPath), Is.True, "The real validator must produce its current result.");

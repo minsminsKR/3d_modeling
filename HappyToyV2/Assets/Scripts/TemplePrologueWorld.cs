@@ -16,6 +16,12 @@ namespace HappyToy.V2
         public bool Ready { get; private set; }
         public bool TransitionRequested { get; private set; }
         public bool ApproachActive => approach && approach.Active;
+        public bool ApproachVillageReady => approach && approach.VillageReady;
+        public string ApproachVillageFailure => approach ? approach.VillageFailure : "Approach not started";
+        public bool CanSuspendApproach => !ApproachActive || approach.VillageReady && approach.CanSuspend && approach.Encounter && approach.Encounter.CanSuspend;
+        public bool ApproachMountainReady => approach && approach.MountainReady;
+        public string ApproachMountainFailure => approach ? approach.MountainFailure : "Approach not started";
+        public void PreloadApproachMountain() { if (approach) approach.PreloadMountain(); }
         public bool ApproachSnapperAllowed => ApproachActive && approach.SnapperAcquired;
         public bool IncensePlacementPending => Ready && presentation && presentation.IncensePending;
         public bool SecondIncensePlaced => Ready && Director && (int)Director.Phase >= (int)TemplePrologueSequence.Phase.SecondPrayer && presentation && presentation.IncensePlaced;
@@ -104,7 +110,7 @@ namespace HappyToy.V2
             gateTarget.gameObject.SetActive(false);
             Director.PhaseChanged += PhaseChanged;
             if (checkpoint == null) session.player.RelocateWorld(Spawn, Quaternion.identity);
-            else
+            else if (!checkpoint.approachActive)
             {
                 if (checkpoint.phase >= 3) presentation.BeginSecondDay();
                 if (checkpoint.gateVisible) { presentation.RevealGate(); gateTarget.gameObject.SetActive(true); }
@@ -142,7 +148,7 @@ namespace HappyToy.V2
         }
         public TemplePrologueCheckpoint Capture(float seconds)
         {
-            if (ApproachActive) throw new InvalidOperationException("사찰에 도착한 뒤 중단 저장할 수 있습니다.");
+            if (ApproachActive && !CanSuspendApproach) throw new InvalidOperationException("콩알탄 사용 또는 구역 준비가 끝난 뒤 저장하세요.");
             if (!Ready || TransitionRequested) throw new InvalidOperationException("전환을 마친 뒤 저장하세요.");
             var light = session.player.FlashlightSystem;
             var result = new TemplePrologueCheckpoint {
@@ -150,14 +156,26 @@ namespace HappyToy.V2
                 storyVersion = 2, firstClueRead = clues.FirstClueRead, secondClueRead = clues.SecondClueRead,
                 legacyClueExemptMask = clues.LegacyClueExemptMask,
                 gateVisible = presentation.GateVisible, incensePlaced = presentation.IncensePlaced,
-                version = walkReview ? 3 : 2, reviewGateWalk = walkReview,
+                version = ApproachActive ? 4 : walkReview ? 3 : 2,
+                approachActive = ApproachActive,
+                approachAcquired = ApproachActive && approach.Encounter.Acquired,
+                approachCleared = ApproachActive && approach.Encounter.Cleared,
+                approachBypassed = ApproachActive && approach.Encounter.Bypassed,
+                reviewGateWalk = walkReview,
                 reviewGateStarted = walkReview && walkReview.Started,
                 reviewGateProgress = walkReview ? walkReview.Progress : 0,
                 reviewPreviousPosition = walkReview ? walkReview.PreviousPosition : Vector3.zero,
                 seconds = seconds, player = session.player.CaptureProgress(),
                 flashlightCharge = light.Charge, flashlightPacks = light.PacksCollected, flashlightDepletions = light.Depletions
             };
-            result.Validate(); return result;
+            result.Validate();
+            if (ApproachActive)
+            {
+                Physics.SyncTransforms();
+                if (!session.player.CanRestoreApproachProgress(result.player))
+                    throw new InvalidOperationException("바닥에 안전하게 선 뒤 저장하세요.");
+            }
+            return result;
         }
         Interactable Target(string name, Vector3 position, Vector3 size, string label, Func<bool> available, Action<PlayerMotor> action)
         {
@@ -329,24 +347,41 @@ namespace HappyToy.V2
         {
             Ready = false;
             if (session && session.player && session.player.Items) session.player.Items.Select(PlayerItem.Snapper);
+            if (approach) approach.ReleaseAlleyEnvironment();
             if (presentation) presentation.ReleaseEnvironment();
             gameObject.SetActive(false);
         }
         internal void AbortPreparation()
         {
+            if (approach) approach.ReleaseAlleyEnvironment();
             if (presentation) presentation.ReleaseEnvironment();
         }
         public void BeginApproach(Action onMountainEnd)
         {
             if (!Ready || approach) throw new InvalidOperationException("사찰 도입을 시작할 수 없습니다.");
             approach = gameObject.AddComponent<TempleApproachFlow>();
+            presentation.SetApproachEntranceOpen(true);
             approach.Prepare(session, onMountainEnd);
+        }
+        public void RestoreApproach(TemplePrologueCheckpoint checkpoint)
+        {
+            if (checkpoint == null || !checkpoint.approachActive || !ApproachVillageReady ||
+                checkpoint.player.position.z >= 413f && !ApproachMountainReady)
+                throw new InvalidOperationException("도입 구역이 준비되지 않았습니다.");
+            checkpoint.Validate();
+            approach.Encounter.Restore(checkpoint.approachAcquired, checkpoint.approachCleared,
+                SnapperStockRules.Restore(checkpoint.player.stock, checkpoint.player.snapperStockVersion), checkpoint.approachBypassed);
+            Physics.SyncTransforms();
+            if (!session.player.CanRestoreApproachProgress(checkpoint.player))
+                throw new InvalidOperationException("저장된 도입 위치가 가려져 있습니다.");
+            session.player.RestoreApproachProgress(checkpoint.player);
+            session.player.FlashlightSystem.Restore(checkpoint.flashlightCharge, checkpoint.flashlightPacks, checkpoint.flashlightDepletions);
+            if (checkpoint.approachAcquired) session.player.Items.Select(PlayerItem.Snapper);
         }
         public void FinishApproach()
         {
             if (!ApproachActive) throw new InvalidOperationException("도입 경로가 진행 중이 아닙니다.");
             approach.Finish();
-            session.player.RelocateWorld(Spawn, Quaternion.identity);
             session.Notify("절의 제단에 놓인 쪽지를 먼저 살펴보세요.");
         }
         public TempleGateReviewMotion InstallGateReview()

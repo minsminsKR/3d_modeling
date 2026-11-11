@@ -224,6 +224,7 @@ namespace HappyToy.V2
         {
             if (Screen != Page.Title || IsReloading || !session.TempleSuspension.HasRun || !session.TempleSuspension.Writable) return;
             var data = session.TempleSuspension.Snapshot;
+            if (data.approachActive) { StartCoroutine(ContinueApproachAfterLoading(data)); return; }
             try
             {
                 session.CreatePrologueForCheckpoint(data);
@@ -238,6 +239,54 @@ namespace HappyToy.V2
                 Debug.LogWarning("Temple restore failed: " + error.Message, this);
                 if (session.PrologueMode) { checkpointReloadError = ReloadError; Restart(false); }
             }
+        }
+        IEnumerator ContinueApproachAfterLoading(TemplePrologueCheckpoint data)
+        {
+            IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
+            Exception failure = null;
+            try
+            {
+                session.CreatePrologueForCheckpoint(data);
+                session.Prologue.NextDayRequested += TempleNextDay;
+                session.Prologue.CorridorRequested += TempleEnterCorridor;
+                session.Prologue.BeginApproach(TempleApproachEnd);
+            }
+            catch (Exception error) { failure = error; }
+            float until = Time.realtimeSinceStartup + 30f;
+            while (failure == null && session.Prologue && !session.Prologue.ApproachVillageReady &&
+                   string.IsNullOrEmpty(session.Prologue.ApproachVillageFailure) && Time.realtimeSinceStartup < until)
+                yield return null;
+            if (failure == null && (!session.Prologue || !session.Prologue.ApproachVillageReady))
+                failure = new InvalidOperationException("마을 구역을 불러오지 못했습니다.");
+            if (failure == null && data.player.position.z >= 413f)
+            {
+                session.Prologue.PreloadApproachMountain();
+                while (session.Prologue && !session.Prologue.ApproachMountainReady &&
+                       string.IsNullOrEmpty(session.Prologue.ApproachMountainFailure) && Time.realtimeSinceStartup < until)
+                    yield return null;
+                if (!session.Prologue || !session.Prologue.ApproachMountainReady)
+                    failure = new InvalidOperationException("산길 구역을 불러오지 못했습니다.");
+            }
+            if (failure == null)
+            {
+                try
+                {
+                    session.Prologue.RestoreApproach(data);
+                    if (!session.TempleSuspension.Consume(data.token))
+                        throw new InvalidOperationException(session.TempleSuspension.Status);
+                }
+                catch (Exception error) { failure = error; }
+            }
+            if (failure != null)
+            {
+                ReloadError = "도입 구간을 복원하지 못했습니다. 중단 기록을 보존했습니다.";
+                Debug.LogWarning("Approach restore failed: " + failure.Message, this);
+                IsReloading = false;
+                if (session.PrologueMode) { checkpointReloadError = ReloadError; Restart(false); }
+                else ApplyScreenState();
+                yield break;
+            }
+            IsReloading = false; Set(Page.Pause); ApplyScreenState();
         }
         public void SuspendChapter()
         {

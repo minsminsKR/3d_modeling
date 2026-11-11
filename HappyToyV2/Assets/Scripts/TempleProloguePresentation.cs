@@ -20,6 +20,7 @@ namespace HappyToy.V2
         Transform incense, gate;
         Vector3 incenseTipLocal;
         Renderer stoneApproach;
+        GameObject forestEnd, forestEntranceLeft, forestEntranceRight;
         IncenseSmokeTrail smoke;
         AudioSource cry, bell, air, gateSound;
         TempleGateReviewAudio reviewGateAudio;
@@ -78,7 +79,10 @@ namespace HappyToy.V2
             gameObject.AddComponent<TempleForestPuddles>().Prepare(forestGround, stoneApproach);
             foreach (float side in new[] { -1f, 1f })
                 Box("Forest boundary", new Vector3(side * 22, 3, -2), new Vector3(.3f, 6, 64), earth, true, false);
-            Box("Forest end", new Vector3(0, 3, -27), new Vector3(44, 6, .3f), earth, true, false);
+            forestEnd = Box("Forest end", new Vector3(0, 3, -27), new Vector3(44, 6, .3f), earth, true, false);
+            forestEntranceLeft = Box("Forest end left of approach", new Vector3(-17, 3, -27), new Vector3(10, 6, .3f), earth, true, false);
+            forestEntranceRight = Box("Forest end right of approach", new Vector3(17, 3, -27), new Vector3(10, 6, .3f), earth, true, false);
+            forestEntranceLeft.SetActive(false); forestEntranceRight.SetActive(false);
             Box("Temple boundary", new Vector3(0, 3, 29), new Vector3(44, 6, .3f), earth, true, false);
             var moon = new GameObject("Temple outdoor fill"); moon.transform.SetParent(transform, false);
             moon.transform.localRotation = Quaternion.Euler(48, -35, 0);
@@ -152,6 +156,7 @@ namespace HappyToy.V2
             cry = Source("Distant child crying", "enemy-baby-cry", new Vector3(0, 1.5f, -8), true, DistantCryVolume, 22);
             gateSound = Source("Gate opening", "door-open", new Vector3(0, 1.5f, -8), false, .65f, 16);
             gateSound.ignoreListenerPause = true; // The interaction immediately enters the masked transition.
+            gameObject.AddComponent<ApproachAmbientSoundscape>().Prepare(world, camera, air);
             cry.Stop(); air.Play(); bell.Play(); nextBell = 18f;
         }
         void CaptureEnvironment()
@@ -211,6 +216,20 @@ namespace HappyToy.V2
             go.GetComponent<Renderer>().sharedMaterial = material; go.GetComponent<Renderer>().enabled = visible;
             if (!collision) Destroy(go.GetComponent<Collider>());
             return go;
+        }
+        // Older temple checkpoints retain their original boundary. Only a new
+        // walk-in approach opens the central passage, keeping both side walls.
+        public void SetApproachEntranceOpen(bool open)
+        {
+            if (!forestEnd || !forestEntranceLeft || !forestEntranceRight)
+                throw new InvalidOperationException("Temple forest entrance is not ready");
+            var horizon = GetComponent<TempleForestHorizon>();
+            var depth = GetComponent<TempleForestDepthFill>();
+            if (!horizon || !depth) throw new InvalidOperationException("Temple forest scenery is not ready");
+            horizon.SetApproachCorridorClear(open);
+            depth.SetApproachCorridorClear(open);
+            forestEnd.SetActive(!open);
+            forestEntranceLeft.SetActive(open); forestEntranceRight.SetActive(open);
         }
         void Lamp(Vector3 at, float range, float intensity)
         {
@@ -375,6 +394,8 @@ namespace HappyToy.V2
         public void ReleaseEnvironment()
         {
             if (!captured) return;
+            var approach = world ? world.GetComponent<TempleApproachFlow>() : null;
+            if (approach) approach.ReleaseAlleyEnvironment();
             if (atmosphere) atmosphere.ReleaseSky();
             RenderSettings.fog = oldFog; RenderSettings.fogMode = oldFogMode; RenderSettings.fogColor = oldFogColor;
             RenderSettings.fogDensity = oldFogDensity; RenderSettings.ambientMode = oldAmbientMode;
