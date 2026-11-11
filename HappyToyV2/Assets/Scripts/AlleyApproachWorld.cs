@@ -42,7 +42,7 @@ namespace HappyToy.V2
             var agedBrick = surfaces.Get("alley-aged-brick", new Color(.88f, .87f, .84f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
             var roof = surfaces.Get("concrete-rough", new Color(.21f, .20f, .21f));
-            var wallCoping = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));
+            var wallCoping = surfaces.Get("alley-concrete-wall", new Color(.66f, .64f, .60f));
             var iron = surfaces.Get("painted-metal", new Color(.22f, .23f, .22f));
             var red = surfaces.Get("cloth-charred", new Color(.54f, .24f, .19f));
             var cream = surfaces.Get("cloth-charred", new Color(.72f, .64f, .51f));
@@ -78,7 +78,7 @@ namespace HappyToy.V2
                     else
                         CurvedWall(side, z - 3, z + 3, height, wallFinish, wallCoping);
                     if (i < 2)
-                        Box("Wall tile coping", new Vector3(side * 3.2f, height + .05f, z), new Vector3(.58f, .16f, 6), wallCoping, false);
+                        Box("Wall tile coping", new Vector3(side * 3.2f, height + .04f, z), new Vector3(.45f, .12f, 6), wallCoping, false);
                     float upperHeight = 1.3f + (i % 3) * .3f;
                     Box("House facade above wall", new Vector3(side * (4.75f + .15f * (i % 2)), height + upperHeight * .5f, z + .3f),
                         new Vector3(2.6f, upperHeight, 4.8f), i % 2 == 0 ? wall : dark, false);
@@ -465,8 +465,8 @@ namespace HappyToy.V2
                 Vector3 up = Vector3.up * height;
                 surface.Quad(nearA, nearB, nearB + up, nearA + up);
                 surface.Quad(farB, farA, farA + up, farB + up);
-                TiltedBox("Curved wall coping", new Vector3(center.x, height + .05f, center.z),
-                    new Vector3(.58f, .16f, length), Quaternion.Euler(0, angle, 0), roof);
+                TiltedBox("Curved wall coping", new Vector3(center.x, height + .04f, center.z),
+                    new Vector3(.45f, .12f, length), Quaternion.Euler(0, angle, 0), roof);
                 // Keep the structural band subordinate to the wall face. The
                 // old dark, tall band and wide posts read as a black frame.
                 var footing = surfaces.Get("alley-concrete-wall", new Color(.66f, .64f, .60f));
@@ -565,6 +565,8 @@ namespace HappyToy.V2
             piece.name = label; piece.layer = 8; piece.transform.SetParent(transform, false);
             piece.transform.localPosition = point; piece.transform.localRotation = rotation; piece.transform.localScale = size;
             piece.GetComponent<Renderer>().sharedMaterial = material;
+            if (label == "Curved wall coping")
+                piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, GraphicsSurfaceLibrary.TileSpan(material));
             Destroy(piece.GetComponent<Collider>());
         }
         void Box(string label, Vector3 point, Vector3 size, Material material, bool collision)
@@ -575,7 +577,8 @@ namespace HappyToy.V2
             piece.GetComponent<Renderer>().sharedMaterial = material;
             if (label == "Alley pavement")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, surfaces.TileSpan("concrete-rough"));
-            else if (label == "Weathered residential wall" || label == "Curved residential wall" || label == "Concrete wall pier")
+            else if (label == "Weathered residential wall" || label == "Curved residential wall" ||
+                label == "Concrete wall pier" || label == "Wall tile coping")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, GraphicsSurfaceLibrary.TileSpan(material));
             if (!collision) Destroy(piece.GetComponent<Collider>());
         }
