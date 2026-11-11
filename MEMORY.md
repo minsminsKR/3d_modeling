@@ -1,5 +1,9 @@
 # HappyToyV2 프로젝트 메모리
 
+## 골목 전선과 담장 설비 — 2026-11-12
+
+- 기존 전봇대의 충돌을 유지하고 처진 전선·가로대는 충돌 없는 단일 메시로 구성했다. 기존 `SchoolRenewal/pipe-run` LOD 프리팹을 양쪽 담장에 붙여 재사용했다. `temple-approach-village-visual`에서 실제 카메라·오브젝트·충돌과 골목 이동을 확인했다. 레퍼런스급 배경 품질, 독립 실행 화면과 FPS는 별도 검증이 필요하다.
+
 ## 골목 콘크리트 담장과 원경 주택 — 2026-11-12
 
 - CC0 Poly Haven `concrete_wall_007` 공식 2K 원본과 변환 설정을 `SourceArt/TempleApproach/ConcreteWallPbr/`에 보존해 실제 크기 2.16m의 곡선 담장에 적용했다. 원본에서 게임 맵을 재생성해 해시를 비교했다.

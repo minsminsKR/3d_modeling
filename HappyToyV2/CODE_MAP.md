@@ -2,7 +2,7 @@
 
 새 이야기 도입은 `TempleApproachFlow`와 `ApproachSceneStream`이 Village·MountainPath
 additive 씬의 로드·해제·복귀 게이트를, `AlleyApproachWorld`,
-`VillageMountainTransitionDressing`, `MountainApproachWorld`, `MountainForkDressing`,
+`AlleyUtilityDressing`, `AlleyWallDressing`, `VillageMountainTransitionDressing`, `MountainApproachWorld`, `MountainForkDressing`,
 `TempleApproachConnector`, `ConnectorBankDressing`, `ConnectorStoneDressing`이 지형과 배치를 소유한다. 도입 때만 `TempleForestHorizon`과 `TempleForestDepthFill`의 기존 원경을 통로 아래로 조정하거나 가린다. 씬은 마커 컨테이너이며 실제
 배경 오브젝트 생성은 메인 스레드에서 동기 실행된다. 사찰까지 순간이동 없이
 이동하며 기존 플레이어·인벤토리를 재사용한다. `AlleySnapperEncounter`는 임시

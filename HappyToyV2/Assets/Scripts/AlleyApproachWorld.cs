@@ -195,16 +195,11 @@ namespace HappyToy.V2
                 var lamp = light.AddComponent<Light>(); lamp.type = LightType.Point; lamp.color = new Color(1, .66f, .35f);
                 lamp.range = 6; lamp.intensity = .8f; lamp.shadows = LightShadows.None;
                 Box("Lamp arm", new Vector3(2.57f, 3.34f, z), new Vector3(.45f, .07f, .07f), iron, false);
-                if (i < 3)
-                {
-                    float nextZ = -10 + (i + 1) * 8;
-                    Box("Overhead wire", new Vector3(2.76f, 5.2f, (z + nextZ) * .5f),
-                        new Vector3(.025f, .025f, nextZ - z), iron, false);
-                }
             }
-            for (int wire = 0; wire < 5; wire++)
-                Wire(new Vector3(-3.15f, 4.2f + wire * .14f, -10 + wire * 4.7f),
-                    new Vector3(2.76f, 4.8f + wire * .08f, -7 + wire * 4.7f), iron);
+            gameObject.AddComponent<AlleyUtilityDressing>().Prepare();
+            gameObject.AddComponent<AlleyWallDressing>().Prepare(
+                new Vector3(-3.025f + RoadBend(.7f), 0, .7f),
+                new Vector3(3.025f + RoadBend(1.4f), 0, 1.4f));
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
             InstallKoreanWallCandidate();
             InstallResidentialHouses();
@@ -483,17 +478,6 @@ namespace HappyToy.V2
                     if (renderer) renderer.enabled = false;
                 }
             }
-        }
-        void Wire(Vector3 a, Vector3 b, Material material)
-        {
-            var segment = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            segment.name = "Overhead crossing cable"; segment.layer = 8;
-            segment.transform.SetParent(transform, false);
-            segment.transform.localPosition = (a + b) * .5f;
-            segment.transform.localRotation = Quaternion.FromToRotation(Vector3.up, b - a);
-            segment.transform.localScale = new Vector3(.018f, Vector3.Distance(a, b) * .5f, .018f);
-            segment.GetComponent<Renderer>().sharedMaterial = material;
-            Destroy(segment.GetComponent<Collider>());
         }
         void TiltedBox(string label, Vector3 point, Vector3 size, Quaternion rotation, Material material)
         {

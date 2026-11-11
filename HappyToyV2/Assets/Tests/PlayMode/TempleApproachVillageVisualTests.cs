@@ -41,6 +41,18 @@ namespace HappyToy.V2.CloudTests
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
             Assert.That(yardWall.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var wires = nodes.SingleOrDefault(node => node.name == "Batched sagging village cables");
+            Assert.That(wires, Is.Not.Null, "Village wiring was not created");
+            Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);
+            Assert.That(wires.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var wallPipes = nodes.Where(node => node.name == "Weathered wall service pipe").ToArray();
+            Assert.That(wallPipes.Length, Is.EqualTo(2), "Authored wall fittings are missing");
+            foreach (var pipe in wallPipes)
+            {
+                Assert.That(pipe.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
+                Assert.That(pipe.GetComponentsInChildren<Collider>(true), Is.Empty,
+                    "Visual wall fittings must not add collision");
+            }
 
             CaptureApproachReview("village-01-start");
             var eye = Get<Camera>(player, "eyes").transform.position;
