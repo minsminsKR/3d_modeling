@@ -1,0 +1,6 @@
+# Korean wall candidate
+
+Created on the designated TRELLIS.2 service using request 1c7bb725-dc4b-47d2-acd9-791902190e58, job b866f8f9-a828-4469-8334-a24c8321745c, 1024 cascade, 4096 texture, seed 1234. The complete GLB, reference image and generation record are preserved. ImageGen prompt: isolated Korean residential plaster wall with stone base, tiled coping and aged green gate, 1980s, three-quarter view, neutral background.
+
+Run Blender 4.2.23 `blender -b --threads 2 --python-exit-code 1 --python prepare_wall.py`, copy FBX and albedo into `Assets/Resources/AlleyKoreanWall/`, convert the generated `metallic-roughness.png` using `python SourceArt/TempleApproach/convert_gltf_material.py <input> <asset-folder>/metallic-smoothness.png`, then execute `HappyToy.V2.Editor.AlleyKoreanWallImport.Apply`. The prepared 80,000-face FBX was reviewed in a Blender CPU still. Interactive designated web viewer was unavailable because browser access was disabled. Game-camera review and gameplay tests are recorded separately.
+The glTF metallic/roughness map is retained from the generated original and converted to URP metallic/smoothness (blue to red, inverse green to alpha); the importer marks it linear and enables the material keyword.

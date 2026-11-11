@@ -183,7 +183,8 @@ namespace HappyToy.V2
             }
             for (int i = 0; i < 4; i++)
             {
-                float z = -10 + i * 8;
+                // Keep the first pole clear of the authored tiled wall.
+                float z = i == 0 ? -8.2f : -10 + i * 8;
                 Cylinder("Utility pole", new Vector3(2.76f, 2.7f, z), new Vector3(.18f, 2.7f, .18f), iron, true);
 
                 var light = new GameObject("Warm alley lamp"); light.transform.SetParent(transform, false);
@@ -191,17 +192,52 @@ namespace HappyToy.V2
                 var lamp = light.AddComponent<Light>(); lamp.type = LightType.Point; lamp.color = new Color(1, .66f, .35f);
                 lamp.range = 6; lamp.intensity = .8f; lamp.shadows = LightShadows.None;
                 Box("Lamp arm", new Vector3(2.57f, 3.34f, z), new Vector3(.45f, .07f, .07f), iron, false);
-                if (i < 3) Box("Overhead wire", new Vector3(2.76f, 5.2f, z + 4), new Vector3(.025f, .025f, 8), iron, false);
+                if (i < 3)
+                {
+                    float nextZ = -10 + (i + 1) * 8;
+                    Box("Overhead wire", new Vector3(2.76f, 5.2f, (z + nextZ) * .5f),
+                        new Vector3(.025f, .025f, nextZ - z), iron, false);
+                }
             }
             for (int wire = 0; wire < 5; wire++)
                 Wire(new Vector3(-3.15f, 4.2f + wire * .14f, -10 + wire * 4.7f),
                     new Vector3(2.76f, 4.8f + wire * .08f, -7 + wire * 4.7f), iron);
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
+            InstallKoreanWallCandidate();
             InstallResidentialHouses();
             InstallStorefront();
             if (walkInStorefront) BuildShopInterior(wall, dark);
         }
 
+        void InstallKoreanWallCandidate()
+        {
+            var prefab = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
+            if (!prefab) return;
+            var holder = CorridorEntranceModels.Group(transform, "Authored Korean wall candidate", Vector3.zero);
+            Instantiate(prefab, holder, false);
+            CorridorEntranceModels.GroundAtHeight(holder, new Vector3(3.2f, 0, -12f), 2.35f, Quaternion.Euler(0, -90, 0));
+            var bounds = MonsterPresentationScale.Bounds(holder);
+            if (bounds.size.z < .05f) { Destroy(holder.gameObject); return; }
+            var scale = holder.localScale;
+            scale.z *= 6f / bounds.size.z;
+            holder.localScale = scale;
+            bounds = MonsterPresentationScale.Bounds(holder);
+            Vector3 target = transform.TransformPoint(new Vector3(3.2f, 0, -12f));
+            holder.position += new Vector3(target.x - bounds.center.x, target.y - bounds.min.y, target.z - bounds.center.z);
+            foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+            // Hide only the old visual surfaces; their collision remains active.
+            foreach (Transform child in transform)
+            {
+                bool wallPart = child.name == "Weathered residential wall" || child.name == "Wall tile coping";
+                bool gatePart = child.name == "House gate" || child.name == "Gate vertical rail" ||
+                    child.name == "Gate horizontal rail" || child.name == "Gate edge frame";
+                if (child.localPosition.x > 2.8f && child.localPosition.z > -15f && child.localPosition.z < -9f && (wallPart || gatePart))
+                {
+                    var renderer = child.GetComponent<Renderer>();
+                    if (renderer) renderer.enabled = false;
+                }
+            }
+        }
         void InstallResidentialHouses()
         {
             var prefab = Resources.Load<GameObject>("AlleyBrickHouse/BrickHouse");
@@ -217,6 +253,7 @@ namespace HappyToy.V2
                 }
             }
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
+            var twoStory = Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouse");
             // Replace the flat foreground block above the right wall with the
             // authored house, keeping its actual mesh outside the lane.
             var foreground = CorridorEntranceModels.Group(transform, "Foreground old Korean house", Vector3.zero);
@@ -234,9 +271,9 @@ namespace HappyToy.V2
                 {
                     var holder = CorridorEntranceModels.Group(transform, "Old Korean brick house", Vector3.zero);
                     int variant = houseIndex++;
-                    var selected = alternate && variant % 2 == 0 ? alternate : prefab;
+                    var selected = twoStory && variant == 3 ? twoStory : (alternate && variant % 2 == 0 ? alternate : prefab);
                     Instantiate(selected, holder, false);
-                    float height = 4.15f + (variant % 3) * .22f;
+                    float height = twoStory && variant == 3 ? 6f : 4.15f + (variant % 3) * .22f;
                     float setback = 6.65f + (variant % 2) * .25f;
                     float yaw = (side < 0 ? 90 : -90) + (variant % 3 - 1) * 4;
                     CorridorEntranceModels.GroundAtHeight(holder,
@@ -254,9 +291,9 @@ namespace HappyToy.V2
                 }
                 // A second row breaks the empty skyline beyond the nearer roofs.
                 var rear = CorridorEntranceModels.Group(transform, "Distant neighborhood roof", Vector3.zero);
-                Instantiate(alternate ? alternate : prefab, rear, false);
+                Instantiate(twoStory ? twoStory : (alternate ? alternate : prefab), rear, false);
                 CorridorEntranceModels.GroundAtHeight(rear,
-                    new Vector3(side * 11.8f, 0, side < 0 ? 9.5f : 16.5f), 5.0f,
+                    new Vector3(side * 12.8f, 0, side < 0 ? 5f : 10f), twoStory ? 6.6f : 5.0f,
                     Quaternion.Euler(0, side < 0 ? 83 : -96, 0));
                 foreach (var node in rear.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in rear.GetComponentsInChildren<Renderer>(true))

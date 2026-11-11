@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "id": "b866f8f9-a828-4469-8334-a24c8321745c",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1794411242.1138864,
+  "updated_at": 1794411428.603509,
+  "source_filename": "korean-wall-reference-v2.png",
+  "batch_index": 1,
+  "batch_total": 2,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 65536,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "batch_id": "d2e790d3-cbd9-4a41-a9ce-73e6037406fa",
+  "request_id": "1c7bb725-dc4b-47d2-acd9-791902190e58",
+  "submitted_options": {
+    "model": [
+      "trellis2"
+    ],
+    "trellis_pipeline": [
+      "1024_cascade"
+    ],
+    "trellis_texture_size": [
+      "4096"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "korean-wall-reference-v2.png",
+      "archive_name": "inputs/01_korean-wall-reference-v2.png",
+      "sha256": "d77b691156cd740bbccdcff74d9d47769dfd93e5d11129a4b40c281a311d5200",
+      "size": 2561217
+    }
+  ],
+  "saved": true,
+  "saved_at": 1794411242.1138864,
+  "started_at": 1794411242.1369886,
+  "finished_at": 1794411428.6034462,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/b866f8f9-a828-4469-8334-a24c8321745c",
+  "status_url": "/api/jobs/b866f8f9-a828-4469-8334-a24c8321745c",
+  "archive_url": "/api/jobs/b866f8f9-a828-4469-8334-a24c8321745c/archive",
+  "record_url": "/api/jobs/b866f8f9-a828-4469-8334-a24c8321745c/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/b866f8f9-a828-4469-8334-a24c8321745c/rigging",
+    "status_url": "/api/jobs/b866f8f9-a828-4469-8334-a24c8321745c/rigging"
+  },
+  "elapsed_seconds": 186,
+  "display_name": "korean-wall-reference-v2",
+  "download_url": "/jobs/b866f8f9-a828-4469-8334-a24c8321745c/download",
+  "model_url": "/jobs/b866f8f9-a828-4469-8334-a24c8321745c/model",
+  "mixamo_package_url": "/jobs/b866f8f9-a828-4469-8334-a24c8321745c/mixamo/package",
+  "mixamo_upload_url": "/jobs/b866f8f9-a828-4469-8334-a24c8321745c/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/b866f8f9-a828-4469-8334-a24c8321745c/processed/1",
+  "saved_at_label": "2026-11-12 00:34",
+  "created_at_label": "2026-11-12 00:34",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "0c544e767dea810b93696e600ac5a12d87e90a34ff6e45a07a3ee66b2b0616c0",
+      "size": 61066652
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "8649cbe4eca5bf5d00402cc2648a0940b019ddbef5ccef0a3e7eff7de4ea67d5",
+      "size": 3073
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "59c13dcfba5faea7588e33a68078e6a38aab990e7c2f80ce41d92458d31d1e15",
+      "size": 867
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "f5ba2e016e5f7577747f37c0829f341de2cee680e98e359394334b792863132c",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "d7b8b8439a35068cc97e8ba0a73c8d0471e8baaf9938412597fd8eec1ff4846b",
+      "size": 664965
+    }
+  ]
+}

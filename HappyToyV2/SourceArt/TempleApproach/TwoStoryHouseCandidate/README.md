@@ -1,0 +1,6 @@
+# Two-story Korean house candidate
+
+Created on the designated TRELLIS.2 service using request 1c7bb725-dc4b-47d2-acd9-791902190e58, job 83a06962-a7fd-4a4a-a0f9-192788b4cea9, 1024 cascade, 4096 texture, seed 1234. Original GLB, reference image and generation record are preserved. ImageGen prompt: isolated 1990s Korean two-story red brick house with small balcony, barred windows and faded gate, three-quarter view, neutral background.
+
+Run Blender 4.2.23 `blender -b --threads 2 --python-exit-code 1 --python prepare_house.py`, copy FBX and albedo into `Assets/Resources/AlleyTwoStoryHouse/`, convert the generated `metallic-roughness.png` using `python SourceArt/TempleApproach/convert_gltf_material.py <input> <asset-folder>/metallic-smoothness.png`, then execute `HappyToy.V2.Editor.AlleyTwoStoryHouseImport.Apply`. The prepared 100,000-face FBX was reviewed in a Blender CPU still. Rooftop geometry is imperfect, so it is used as distant background. The designated interactive web viewer was unavailable. Game-camera review and gameplay tests are separate.
+The glTF metallic/roughness map is retained from the generated original and converted to URP metallic/smoothness (blue to red, inverse green to alpha); the importer marks it linear and enables the material keyword.

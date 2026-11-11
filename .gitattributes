@@ -293,3 +293,17 @@ HappyToyV2/Assets/Resources/AlleyUtilityPole/*.png filter=lfs diff=lfs merge=lfs
 # Village wall source scans and Unity maps.
 HappyToyV2/SourceArt/TempleApproach/AlleyWallPbr/source/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/GraphicsPbr/alley-red-brick/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Authored village wall and two-story background house.
+HappyToyV2/SourceArt/TempleApproach/KoreanWallCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/KoreanWallCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/KoreanWallCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/KoreanWallCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/TwoStoryHouseCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/TwoStoryHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/TwoStoryHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/TwoStoryHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyKoreanWall/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyKoreanWall/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyTwoStoryHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyTwoStoryHouse/*.png filter=lfs diff=lfs merge=lfs -text
