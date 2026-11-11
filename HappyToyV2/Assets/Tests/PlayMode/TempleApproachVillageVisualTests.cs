@@ -141,6 +141,30 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(hit.collider.name, Is.EqualTo("Weathered residential wall"),
                     "Straight gate extends past its wall");
             }
+            var farCurveGate = nodes.SingleOrDefault(node => node.name == "House gate" &&
+                node.position.z > 410.5f && node.position.z < 411.5f);
+            Assert.That(farCurveGate, Is.Not.Null, "Far curved-wall gate is missing");
+            var nearGateMaterial = curveGate.GetComponent<Renderer>().sharedMaterial;
+            var farGateMaterial = farCurveGate.GetComponent<Renderer>().sharedMaterial;
+            Assert.That(nearGateMaterial, Is.Not.Null);
+            Assert.That(farGateMaterial, Is.Not.Null);
+            Assert.That(nearGateMaterial.GetColor("_BaseColor"), Is.Not.EqualTo(farGateMaterial.GetColor("_BaseColor")),
+                "Curved gates lost their individual finishes");
+            foreach (var gate in new[] { curveGate, farCurveGate })
+            {
+                var turn = Quaternion.Euler(0, gate.localEulerAngles.y, 0);
+                foreach (float offset in new[] { -.78f, 0f, .78f })
+                {
+                    Vector3 start = gate.position + turn * new Vector3(-.5f, 0, offset);
+                    Assert.That(Physics.Raycast(start, turn * Vector3.right, out var hit, 1f, 1 << 8,
+                        QueryTriggerInteraction.Ignore), Is.True, "Curved gate has no wall support");
+                    Assert.That(hit.collider.name, Is.EqualTo("Curved residential wall"),
+                        "Curved gate extends beyond the wall");
+                    // The ray starts 0.5 m in front of the gate centre;
+                    // constrain the wall to within another 0.2 m.
+                    Assert.That(hit.distance, Is.LessThan(.7f), "Curved gate floats away from the wall");
+                }
+            }
             Assert.That(nodes.Count(node => node.name == "Gate door pull"), Is.EqualTo(4));
             var notice = nodes.SingleOrDefault(node => node.name == "Weathered village fire notice");
             Assert.That(notice, Is.Not.Null, "Village notice is missing");
@@ -191,6 +215,10 @@ namespace HappyToy.V2.CloudTests
                 "Cannot walk alongside the formed-concrete wall");
             ApproachLookAt(alley.transform.TransformPoint(new Vector3(-1.95f, 1.35f, 5f))); yield return null;
             CaptureApproachReview("village-10-formed-wall");
+            ApproachLookAt(curveGate.position); yield return null;
+            CaptureApproachReview("village-11-near-curved-gate");
+            ApproachLookAt(farCurveGate.position); yield return null;
+            CaptureApproachReview("village-12-far-curved-gate");
             ApproachFaceForward();
         }
     }

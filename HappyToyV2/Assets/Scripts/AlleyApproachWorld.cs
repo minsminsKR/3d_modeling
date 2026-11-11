@@ -192,7 +192,12 @@ namespace HappyToy.V2
                     Box(label, pivot + rotation * offset, size, material, false);
                     transform.GetChild(transform.childCount - 1).localRotation = rotation;
                 }
-                GatePiece("House gate", new Vector3(0, 1.06f, 0), new Vector3(.08f, 2.12f, 1.75f), iron);
+                // Older neighboring gates were painted independently rather
+                // than sharing an identical black factory finish.
+                var gateFinish = Mathf.Approximately(z, 4f) ?
+                    surfaces.Get("painted-metal", new Color(.42f, .56f, .44f)) :
+                    (Mathf.Approximately(z, 11f) ? surfaces.Get("painted-metal", new Color(.44f, .48f, .53f)) : iron);
+                GatePiece("House gate", new Vector3(0, 1.06f, 0), new Vector3(.08f, 2.12f, 1.75f), gateFinish);
                 for (int bar = 0; bar < 7; bar++)
                     GatePiece("Gate vertical rail", new Vector3(-.06f, 1.08f, -.7f + bar * .23f), new Vector3(.05f, 1.9f, .035f), dark);
                 foreach (float y in new[] { .22f, 1.05f, 1.98f })
