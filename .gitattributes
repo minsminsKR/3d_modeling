@@ -268,3 +268,11 @@ HappyToyV2/Assets/Resources/AlleyStorefront/*.png filter=lfs diff=lfs merge=lfs 
 HappyToyV2/SourceArt/TempleApproach/Storefront/Interior/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TempleApproach/Storefront/Interior/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyStorefrontInterior/*.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Generated Korean village house and editable source.
+HappyToyV2/SourceArt/TempleApproach/BrickHouseCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/BrickHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/BrickHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/BrickHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyBrickHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyBrickHouse/*.png filter=lfs diff=lfs merge=lfs -text

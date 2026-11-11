@@ -39,7 +39,7 @@ namespace HappyToy.V2
             var iron = surfaces.Get("painted-metal", new Color(.22f, .23f, .22f));
             var red = surfaces.Get("cloth-charred", new Color(.54f, .24f, .19f));
             var cream = surfaces.Get("cloth-charred", new Color(.72f, .64f, .51f));
-            Box("Alley pavement", new Vector3(0, -.12f, -1.25f), new Vector3(8, .24f, 31.5f), road, true);
+            Box("Alley pavement", new Vector3(0, -.12f, -1.25f), new Vector3(10.5f, .24f, 31.5f), road, true);
             gameObject.AddComponent<AlleyRoadDressing>().Prepare();
             var pine = Resources.Load<GameObject>("TemplePrologue/pine-trunk-review");
             if (pine)
@@ -61,9 +61,12 @@ namespace HappyToy.V2
                     float height = i == 4 ? 2.1f : 2.8f;
                     if (walkInStorefront && side < 0 && (i == 0 || i == 1))
                         ShopDoorWallSegments(z - 3, z + 3, height, wall);
-                    else
+                    else if (i < 2)
                         Box("Weathered residential wall", new Vector3(side * 3.2f, height * .5f, z), new Vector3(.35f, height, 6), wall, true);
-                    Box("Wall tile coping", new Vector3(side * 3.2f, height + .05f, z), new Vector3(.58f, .16f, 6), roof, false);
+                    else
+                        CurvedWall(side, z - 3, z + 3, height, wall, roof);
+                    if (i < 2)
+                        Box("Wall tile coping", new Vector3(side * 3.2f, height + .05f, z), new Vector3(.58f, .16f, 6), roof, false);
                     float upperHeight = 1.3f + (i % 3) * .3f;
                     Box("House facade above wall", new Vector3(side * (4.75f + .15f * (i % 2)), height + upperHeight * .5f, z + .3f),
                         new Vector3(2.6f, upperHeight, 4.8f), i % 2 == 0 ? wall : dark, false);
@@ -186,12 +189,64 @@ namespace HappyToy.V2
                 Wire(new Vector3(-3.15f, 4.2f + wire * .14f, -10 + wire * 4.7f),
                     new Vector3(2.76f, 4.8f + wire * .08f, -7 + wire * 4.7f), iron);
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
+            InstallResidentialHouses();
             InstallStorefront();
             if (walkInStorefront) BuildShopInterior(wall, dark);
         }
 
-        // The measured opening straddles the two original six-metre wall
-        // segments. Keep every part outside the door and its upper lintel.
+        void InstallResidentialHouses()
+        {
+            var prefab = Resources.Load<GameObject>("AlleyBrickHouse/BrickHouse");
+            if (!prefab) return;
+            // The existing colliding garden walls remain the navigation boundary.
+            foreach (Transform child in transform)
+            {
+                bool oldHouse = child.name == "House facade above wall" || child.name == "Sloping dark tile roof" || child.name == "Roof tile ridge";
+                if (oldHouse && child.localPosition.z > -3f)
+                {
+                    var renderer = child.GetComponent<Renderer>();
+                    if (renderer) renderer.enabled = false;
+                }
+            }
+            foreach (float side in new[] { -1f, 1f })
+            {
+                foreach (float z in new[] { 0f, 8f, 15f })
+                {
+                    var holder = CorridorEntranceModels.Group(transform, "Old Korean brick house", Vector3.zero);
+                    Instantiate(prefab, holder, false);
+                    CorridorEntranceModels.GroundAtHeight(holder,
+                        new Vector3(side * 6.8f + RoadBend(z), 0, z), 4.3f,
+                        Quaternion.Euler(0, side < 0 ? 90 : -90, 0));
+                    foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                }
+            }
+        }
+        // Two continuous bends leave the shop, beast marker and mountain seam
+        // at their original coordinates. Segment overlap keeps the colliders closed.
+        static float RoadBend(float z)
+        {
+            if (z <= -3 || z >= 15) return 0;
+            if (z <= 5) return 1.25f * Mathf.Sin((z + 3) * Mathf.PI / 8);
+            return -1.25f * Mathf.Sin((z - 5) * Mathf.PI / 10);
+        }
+        void CurvedWall(float side, float start, float end, float height, Material wall, Material roof)
+        {
+            const int count = 6;
+            for (int i = 0; i < count; i++)
+            {
+                float a = Mathf.Lerp(start, end, i / (float)count);
+                float b = Mathf.Lerp(start, end, (i + 1) / (float)count);
+                float xa = side * 3.2f + RoadBend(a), xb = side * 3.2f + RoadBend(b);
+                var center = new Vector3((xa + xb) * .5f, height * .5f, (a + b) * .5f);
+                float angle = Mathf.Atan2(xb - xa, b - a) * Mathf.Rad2Deg;
+                float length = Vector2.Distance(new Vector2(xa, a), new Vector2(xb, b)) + .06f;
+                Box("Curved residential wall", center, new Vector3(.35f, height, length), wall, true);
+                transform.GetChild(transform.childCount - 1).localRotation = Quaternion.Euler(0, angle, 0);
+                TiltedBox("Curved wall coping", new Vector3(center.x, height + .05f, center.z),
+                    new Vector3(.58f, .16f, length), Quaternion.Euler(0, angle, 0), roof);
+            }
+        }
+        // Preserve the measured opening across the original wall segments.
         void ShopDoorWallSegments(float start, float end, float height, Material wall)
         {
             const float left = -9.09946f, right = -8.11197f, top = 1.859f;

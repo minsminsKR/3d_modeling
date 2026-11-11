@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "job_id": "a0297231-9436-43b5-8715-3f08f7bf63fb",
+  "downloaded_at": "2026-11-11T14:40:15Z",
+  "generation_record": {
+    "schema_version": 1,
+    "id": "a0297231-9436-43b5-8715-3f08f7bf63fb",
+    "status": "completed",
+    "message": "Model is ready.",
+    "created_at": 1794407724.8967514,
+    "updated_at": 1794407930.6488094,
+    "source_filename": "korean-brick-house-reference.png",
+    "batch_index": 1,
+    "batch_total": 1,
+    "options": {
+      "model": "trellis2",
+      "gpu_id": 1,
+      "texture_gpu_id": 0,
+      "gpu_mode": "split",
+      "texture_profile": "detail",
+      "omni_use_ema": false,
+      "trellis_pipeline": "1024_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 4096,
+      "trellis_max_tokens": 65536,
+      "trellis_dual_postprocess": false,
+      "texture": true,
+      "remove_background": true,
+      "seed": 1234,
+      "num_inference_steps": 50,
+      "guidance_scale": 7.5,
+      "octree_resolution": 512,
+      "num_chunks": 50000,
+      "output_format": "glb"
+    },
+    "request_id": "483d95dd-b5f8-48e1-88eb-27898b130611",
+    "submitted_options": {
+      "model": [
+        "trellis2"
+      ],
+      "trellis_pipeline": [
+        "1024_cascade"
+      ],
+      "trellis_texture_size": [
+        "4096"
+      ]
+    },
+    "source": "cli",
+    "inputs": [
+      {
+        "name": "korean-brick-house-reference.png",
+        "archive_name": "inputs/01_korean-brick-house-reference.png",
+        "sha256": "4a1250d93e8036d9158c7193ec5660f67a769aceb33d080d8be542df6e8591cc",
+        "size": 2815069
+      }
+    ],
+    "saved": true,
+    "saved_at": 1794407724.8967514,
+    "started_at": 1794407724.9097903,
+    "finished_at": 1794407930.64875,
+    "used_texture": true,
+    "warnings": [],
+    "web_url": "/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb",
+    "status_url": "/api/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb",
+    "archive_url": "/api/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/archive",
+    "record_url": "/api/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/record",
+    "rigging": {
+      "status": "idle",
+      "ready": true,
+      "start_url": "/api/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/rigging",
+      "status_url": "/api/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/rigging"
+    },
+    "elapsed_seconds": 205,
+    "display_name": "korean-brick-house-reference",
+    "download_url": "/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/download",
+    "model_url": "/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/model",
+    "mixamo_package_url": "/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/mixamo/package",
+    "mixamo_upload_url": "/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/mixamo/upload",
+    "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+    "mixamo_files": [],
+    "processed_input_url": "/jobs/a0297231-9436-43b5-8715-3f08f7bf63fb/processed/1",
+    "saved_at_label": "2026-11-11 23:35",
+    "created_at_label": "2026-11-11 23:35",
+    "artifacts": [
+      {
+        "name": "model.glb",
+        "sha256": "cac329c4a925e6694c40b9debdf617c1e766732f6bf032ce756b1c925b76b70a",
+        "size": 75811400
+      },
+      {
+        "name": "metadata.json",
+        "sha256": "d5c0f70748bc80bd6d055bd057dd1a51f15cdc05cbf94c8208f4c4deda191c9c",
+        "size": 3080
+      },
+      {
+        "name": "outputs/generation_request.json",
+        "sha256": "ab61f7a29a789131e3bcf73548b1d9777172328f4cf543e159a001b49989aa89",
+        "size": 871
+      },
+      {
+        "name": "outputs/generation_result.json",
+        "sha256": "17d4154d565fc50fd93b4a03b97c0616c69a7d0475c8b9fa4d2fbce0b53e272e",
+        "size": 333
+      },
+      {
+        "name": "processed_inputs/01.png",
+        "sha256": "1279392756252297df316d50a75514563b90eedcf7df415f63d4c47c846b36de",
+        "size": 993715
+      }
+    ]
+  },
+  "archive_sha256": "88f29cb108d03ef9f374a0f5532d5f3ea8ec5a345f258158a4e182d0453d3015",
+  "archive_bytes": 66003836,
+  "archive_etag": "\"88f29cb108d03ef9f374a0f5532d5f3ea8ec5a345f258158a4e182d0453d3015\"",
+  "resumed_bytes": 0,
+  "received_bytes": 66003836,
+  "transfer_seconds": 1.531
+}

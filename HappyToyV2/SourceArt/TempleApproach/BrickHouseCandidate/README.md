@@ -1,0 +1,7 @@
+# Korean brick house candidate
+
+Generated with the designated TRELLIS.2 service: request 483d95dd-b5f8-48e1-88eb-27898b130611, job a0297231-9436-43b5-8715-3f08f7bf63fb, 1024 cascade, 4096 texture, seed 1234. Original GLB, input image and generation record are preserved here. The input was generated with ImageGen from a prompt for a single weathered 1990s South Korean red-brick detached house, slate roof, metal gate and barred windows, isolated in a three-quarter view.
+
+Run Blender 4.2.23 in background with `blender -b --threads 2 --python-exit-code 1 --python prepare_house.py`. It saves an editable packed blend and a 125,000-face FBX with extracted base color. Copy FBX and albedo into `Assets/Resources/AlleyBrickHouse/` and run Unity editor method `HappyToy.V2.Editor.AlleyBrickHouseImport.Apply` to regenerate the prefab.
+
+Web interactive 3D inspection was unavailable because the browser tool remained disabled. The candidate has not been verified visually in the game, and repeated instances are not distinct authored house models.
