@@ -252,7 +252,8 @@ namespace HappyToy.V2
         }
         void InstallResidentialHouses()
         {
-            var prefab = Resources.Load<GameObject>("AlleyBrickHouse/BrickHouse");
+            var prefab = Resources.Load<GameObject>("AlleyBrickHouse/BrickHousePbr") ??
+                Resources.Load<GameObject>("AlleyBrickHouse/BrickHouse");
             if (!prefab) return;
             // The existing colliding garden walls remain the navigation boundary.
             foreach (Transform child in transform)
@@ -264,7 +265,8 @@ namespace HappyToy.V2
                     if (renderer) renderer.enabled = false;
                 }
             }
-            var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
+            var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHousePbr") ??
+                Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
             var twoStory = Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouse");
             // Replace the flat foreground block above the right wall with the
             // authored house, keeping its actual mesh outside the lane.
@@ -347,7 +349,8 @@ namespace HappyToy.V2
             var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
             var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
             var farPlaster = Resources.Load<GameObject>("AlleyPlasterHouse/geometry-far");
-            var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHouse");
+            var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHousePbr") ??
+                Resources.Load<Material>("AlleyPlasterHouse/PlasterHouse");
             if (farHouse && farMaterial)
                 for (int i = 0; i < 2; i++)
                 {

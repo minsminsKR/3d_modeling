@@ -37,6 +37,15 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(house.GetComponentsInChildren<Collider>(true), Is.Empty,
                     "Visual background must not create invisible obstacles");
             }
+            var visibleMaterials = nodes.SelectMany(node => node.GetComponents<Renderer>())
+                .SelectMany(renderer => renderer.sharedMaterials).Where(material => material).Distinct().ToArray();
+            foreach (var variant in new[] { "BrickHousePbr", "PlasterHousePbr" })
+            {
+                var material = visibleMaterials.SingleOrDefault(candidate => candidate.name == variant);
+                Assert.That(material, Is.Not.Null, "Original PBR material was not applied: " + variant);
+                Assert.That(material.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
+                Assert.That(material.GetTexture("_MetallicGlossMap"), Is.Not.Null);
+            }
             var yardWall = nodes.SingleOrDefault(node => node.name == "Shop rear courtyard wall");
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
