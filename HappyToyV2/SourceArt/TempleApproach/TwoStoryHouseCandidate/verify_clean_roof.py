@@ -13,6 +13,7 @@ root = Path(__file__).resolve().parent
 points = {
     'mass-centre': (-.195, .245), 'mass-edge': (-.30, .16),
     'tank': (-.07, -.08), 'shed': (.19, .16), 'roof-clear': (-.1, .04),
+    'fragments': (-.12, -.19),
 }
 def sample(path):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -37,6 +38,10 @@ for key in ('mass-centre', 'mass-edge'):
         raise RuntimeError('Rooftop mass not removed at ' + key)
     if abs(original[key][1] - clean[key][1]) > .00001:
         raise RuntimeError('Roof floor changed at ' + key)
+if original['fragments'][0] < .9 or not .749 < clean['fragments'][0] < .753:
+    raise RuntimeError('Rooftop fragment not removed')
+if abs(original['fragments'][1] - clean['fragments'][1]) > .00001:
+    raise RuntimeError('Roof floor changed under fragment')
 for key in ('tank', 'shed', 'roof-clear'):
     if abs(original[key][0] - clean[key][0]) > .00001:
         raise RuntimeError('Roof feature changed at ' + key)

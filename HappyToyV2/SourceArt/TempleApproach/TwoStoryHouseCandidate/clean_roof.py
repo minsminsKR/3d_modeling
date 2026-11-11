@@ -24,13 +24,19 @@ if len(meshes) != 1: raise RuntimeError('Expected one prepared house mesh')
 obj = meshes[0]
 bm = bmesh.new(); bm.from_mesh(obj.data)
 selected = []
+mass_count = 0
+fragment_count = 0
 for face in bm.faces:
     p = obj.matrix_world @ face.calc_center_median()
-    if -.38 < p.x < .02 and .05 < p.y < .46 and p.z > .752:
+    mass = -.38 < p.x < .02 and .05 < p.y < .46 and p.z > .752
+    fragment = -.20 < p.x < -.035 and -.27 < p.y < -.155 and p.z > .754
+    if mass or fragment:
         selected.append(face)
-if not 22000 <= len(selected) <= 22500:
-    raise RuntimeError('Unexpected roof mass selection; aborting')
-print('ROOF_MASS_REMOVED', len(selected), 'OF', len(bm.faces))
+        mass_count += int(mass)
+        fragment_count += int(fragment)
+if not 22000 <= mass_count <= 22500 or not 400 <= fragment_count <= 500:
+    raise RuntimeError('Unexpected roof artifact selection; aborting')
+print('ROOF_ARTIFACTS_REMOVED', mass_count, fragment_count, 'OF', len(bm.faces))
 bmesh.ops.delete(bm, geom=selected, context='FACES')
 bm.to_mesh(obj.data); bm.free(); obj.data.update()
 bpy.ops.file.pack_all()
