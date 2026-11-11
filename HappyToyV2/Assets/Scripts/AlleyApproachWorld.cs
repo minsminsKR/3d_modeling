@@ -408,15 +408,17 @@ namespace HappyToy.V2
                 surface.Quad(farB, farA, farA + up, farB + up);
                 TiltedBox("Curved wall coping", new Vector3(center.x, height + .05f, center.z),
                     new Vector3(.58f, .16f, length), Quaternion.Euler(0, angle, 0), roof);
-                var footing = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));
-                TiltedBox("Weathered wall footing", new Vector3(center.x, .19f, center.z),
-                    new Vector3(.42f, .38f, length), Quaternion.Euler(0, angle, 0), footing);
+                // Keep the structural band subordinate to the wall face. The
+                // old dark, tall band and wide posts read as a black frame.
+                var footing = surfaces.Get("alley-concrete-wall", new Color(.66f, .64f, .60f));
+                TiltedBox("Weathered wall footing", new Vector3(center.x, .09f, center.z),
+                    new Vector3(.39f, .18f, length), Quaternion.Euler(0, angle, 0), footing);
                 if (i % 3 == 0)
                 {
                     Box("Concrete wall pier", new Vector3(xa, height * .5f, a),
-                        new Vector3(.48f, height + .08f, .34f), footing, false);
-                    Box("Concrete wall pier cap", new Vector3(xa, height + .08f, a),
-                        new Vector3(.57f, .12f, .43f), roof, false);
+                        new Vector3(.41f, height + .04f, .22f), footing, false);
+                    Box("Concrete wall pier cap", new Vector3(xa, height + .06f, a),
+                        new Vector3(.48f, .08f, .30f), footing, false);
                 }
             }
             var wallMesh = surface.Mesh("Continuous curved wall skin");
