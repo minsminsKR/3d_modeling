@@ -105,6 +105,20 @@ namespace HappyToy.V2.CloudTests
             Assert.That(curveGate, Is.Not.Null, "Curved wall gate is missing");
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(0, curveGate.localEulerAngles.y)), Is.GreaterThan(5f),
                 "Curved wall gate is not aligned to the bend");
+            var straightGate = nodes.SingleOrDefault(node => node.name == "House gate" &&
+                node.position.z > 395.5f && node.position.z < 395.7f);
+            Assert.That(straightGate, Is.Not.Null, "Straight-wall gate is missing");
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0, straightGate.localEulerAngles.y)), Is.LessThan(.1f),
+                "Straight-wall gate is rotated into the bend");
+            foreach (float offset in new[] { -.78f, 0f, .78f })
+            {
+                Vector3 start = straightGate.position + new Vector3(-.5f, 0, offset);
+                Assert.That(Physics.Raycast(start, Vector3.right, out var hit, 1f, 1 << 8, QueryTriggerInteraction.Ignore),
+                    Is.True, "Straight gate has no wall support behind it");
+                Assert.That(hit.collider.name, Is.EqualTo("Weathered residential wall"),
+                    "Straight gate extends past its wall");
+            }
+            Assert.That(nodes.Count(node => node.name == "Gate door pull"), Is.EqualTo(4));
             var notice = nodes.SingleOrDefault(node => node.name == "Weathered village fire notice");
             Assert.That(notice, Is.Not.Null, "Village notice is missing");
             Assert.That(notice.GetComponent<Renderer>().sharedMaterial, Is.Not.Null);

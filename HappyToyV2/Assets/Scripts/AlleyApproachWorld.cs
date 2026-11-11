@@ -173,7 +173,9 @@ namespace HappyToy.V2
             for (int bulb = 0; bulb < 2; bulb++)
                 Box("Warm shop bulb", new Vector3(-2.48f, 2.12f, -9.5f + bulb * 2.8f), new Vector3(.10f, .15f, .10f),
                     surfaces.Get("painted-metal", new Color(.9f, .7f, .35f), new Color(1.3f, .65f, .18f)), false);
-            foreach (float z in new[] { -11.7f, -3f, 4f, 11f })
+            // Keep the straight gate fully within the straight wall. The
+            // old position straddled the bend and stood out in the lane.
+            foreach (float z in new[] { -11.7f, -4.4f, 4f, 11f })
             {
                 // A gate is rigid, so align it to the average wall tangent
                 // across its width rather than leaving it straight as the
@@ -193,6 +195,16 @@ namespace HappyToy.V2
                     GatePiece("Gate horizontal rail", new Vector3(-.08f, y, 0), new Vector3(.05f, .055f, 1.73f), dark);
                 foreach (float offset in new[] { -.9f, .9f })
                     GatePiece("Gate edge frame", new Vector3(-.05f, 1.06f, offset), new Vector3(.08f, 2.18f, .08f), dark);
+                // A pair of solid leaves with their seam, pull and hinge plates
+                // reads as a usable old steel door at player height.
+                var hardware = surfaces.Get("metal-rust", new Color(.45f, .39f, .32f));
+                GatePiece("Gate meeting seam", new Vector3(-.105f, 1.06f, 0), new Vector3(.025f, 1.94f, .025f), dark);
+                GatePiece("Gate latch plate", new Vector3(-.12f, 1.02f, -.09f), new Vector3(.025f, .17f, .10f), hardware);
+                GatePiece("Gate door pull", new Vector3(-.15f, 1.02f, -.09f), new Vector3(.04f, .105f, .025f), iron);
+                foreach (float hingeZ in new[] { -.78f, .78f })
+                    foreach (float hingeY in new[] { .34f, 1.74f })
+                        GatePiece("Gate hinge plate", new Vector3(-.11f, hingeY, hingeZ),
+                            new Vector3(.025f, .13f, .065f), hardware);
             }
             for (int i = 0; i < 4; i++)
             {
@@ -242,7 +254,9 @@ namespace HappyToy.V2
             {
                 bool wallPart = child.name == "Weathered residential wall" || child.name == "Wall tile coping";
                 bool gatePart = child.name == "House gate" || child.name == "Gate vertical rail" ||
-                    child.name == "Gate horizontal rail" || child.name == "Gate edge frame";
+                    child.name == "Gate horizontal rail" || child.name == "Gate edge frame" ||
+                    child.name == "Gate meeting seam" || child.name == "Gate latch plate" ||
+                    child.name == "Gate door pull" || child.name == "Gate hinge plate";
                 if (child.localPosition.x > 2.8f && child.localPosition.z > -15f && child.localPosition.z < -9f && (wallPart || gatePart))
                 {
                     var renderer = child.GetComponent<Renderer>();
