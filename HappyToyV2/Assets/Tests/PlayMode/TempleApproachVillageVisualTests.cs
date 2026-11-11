@@ -23,6 +23,24 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryWaitForTempleEntry();
             Assert.That(Get<bool>(Get<Component>(session, "Prologue"), "ApproachActive"), Is.True);
             var nodes = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var alley = GameObject.Find("Korean alley approach");
+            Assert.That(alley, Is.Not.Null);
+            var nearHouses = alley.transform.Cast<Transform>()
+                .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
+            Assert.That(nearHouses.Length, Is.EqualTo(7));
+            foreach (var house in nearHouses)
+            {
+                var renderers = house.GetComponentsInChildren<Renderer>(true);
+                Assert.That(renderers.Length, Is.GreaterThan(0));
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                if (house.position.x > alley.transform.position.x)
+                    Assert.That(bounds.min.x, Is.GreaterThanOrEqualTo(alley.transform.position.x + 4.84f),
+                        "Right house intersects the lane");
+                else
+                    Assert.That(bounds.max.x, Is.LessThanOrEqualTo(alley.transform.position.x - 4.84f),
+                        "Left house intersects the lane");
+            }
             var farHouses = nodes.Where(node => node.name == "Far residential roofline").ToArray();
             Assert.That(farHouses.Length, Is.EqualTo(2), "Far neighborhood assets failed to load");
             foreach (var house in farHouses)
