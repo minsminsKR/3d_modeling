@@ -175,14 +175,24 @@ namespace HappyToy.V2
                     surfaces.Get("painted-metal", new Color(.9f, .7f, .35f), new Color(1.3f, .65f, .18f)), false);
             foreach (float z in new[] { -11.7f, -3f, 4f, 11f })
             {
-                float gateX = 3.01f + RoadBend(z);
-                Box("House gate", new Vector3(gateX, 1.06f, z), new Vector3(.08f, 2.12f, 1.75f), iron, false);
+                // A gate is rigid, so align it to the average wall tangent
+                // across its width rather than leaving it straight as the
+                // wall curves away from each edge.
+                float slope = (RoadBend(z + .875f) - RoadBend(z - .875f)) / 1.75f;
+                Quaternion rotation = Quaternion.Euler(0, Mathf.Atan(slope) * Mathf.Rad2Deg, 0);
+                Vector3 pivot = new Vector3(3.01f + RoadBend(z), 0, z);
+                void GatePiece(string label, Vector3 offset, Vector3 size, Material material)
+                {
+                    Box(label, pivot + rotation * offset, size, material, false);
+                    transform.GetChild(transform.childCount - 1).localRotation = rotation;
+                }
+                GatePiece("House gate", new Vector3(0, 1.06f, 0), new Vector3(.08f, 2.12f, 1.75f), iron);
                 for (int bar = 0; bar < 7; bar++)
-                    Box("Gate vertical rail", new Vector3(gateX - .06f, 1.08f, z - .7f + bar * .23f), new Vector3(.05f, 1.9f, .035f), dark, false);
+                    GatePiece("Gate vertical rail", new Vector3(-.06f, 1.08f, -.7f + bar * .23f), new Vector3(.05f, 1.9f, .035f), dark);
                 foreach (float y in new[] { .22f, 1.05f, 1.98f })
-                    Box("Gate horizontal rail", new Vector3(gateX - .08f, y, z), new Vector3(.05f, .055f, 1.73f), dark, false);
+                    GatePiece("Gate horizontal rail", new Vector3(-.08f, y, 0), new Vector3(.05f, .055f, 1.73f), dark);
                 foreach (float offset in new[] { -.9f, .9f })
-                    Box("Gate edge frame", new Vector3(gateX - .05f, 1.06f, z + offset), new Vector3(.08f, 2.18f, .08f), dark, false);
+                    GatePiece("Gate edge frame", new Vector3(-.05f, 1.06f, offset), new Vector3(.08f, 2.18f, .08f), dark);
             }
             for (int i = 0; i < 4; i++)
             {

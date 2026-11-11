@@ -45,6 +45,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(wires, Is.Not.Null, "Village wiring was not created");
             Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);
             Assert.That(wires.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var curveGate = nodes.SingleOrDefault(node => node.name == "House gate" &&
+                node.position.z > 403.5f && node.position.z < 404.5f);
+            Assert.That(curveGate, Is.Not.Null, "Curved wall gate is missing");
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0, curveGate.localEulerAngles.y)), Is.GreaterThan(5f),
+                "Curved wall gate is not aligned to the bend");
             var notice = nodes.SingleOrDefault(node => node.name == "Weathered village fire notice");
             Assert.That(notice, Is.Not.Null, "Village notice is missing");
             Assert.That(notice.GetComponent<Renderer>().sharedMaterial, Is.Not.Null);
