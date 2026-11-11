@@ -39,6 +39,7 @@ namespace HappyToy.V2
             var concreteWall = surfaces.Get("alley-concrete-wall", new Color(.84f, .83f, .80f));
             var formedWall = surfaces.Get("alley-form-wall", new Color(.83f, .82f, .78f));
             var brick = surfaces.Get("alley-red-brick", new Color(.90f, .84f, .78f));
+            var agedBrick = surfaces.Get("alley-aged-brick", new Color(.88f, .87f, .84f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
             var roof = surfaces.Get("concrete-rough", new Color(.21f, .20f, .21f));
             var wallCoping = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));
@@ -68,7 +69,8 @@ namespace HappyToy.V2
                     // A different property uses formed concrete while the
                     // adjacent wall remains the older weathered plaster.
                     var wallFinish = side < 0 && i == 3 ? formedWall :
-                        (side > 0 && (i < 2 || i == 3) ? brick : (i >= 2 ? concreteWall : wall));
+                        (side > 0 && i == 3 ? agedBrick :
+                            (side > 0 && i < 2 ? brick : (i >= 2 ? concreteWall : wall)));
                     if (walkInStorefront && side < 0 && (i == 0 || i == 1))
                         ShopDoorWallSegments(z - 3, z + 3, height, wall);
                     else if (i < 2)

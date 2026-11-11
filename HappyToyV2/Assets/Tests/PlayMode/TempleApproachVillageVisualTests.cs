@@ -115,6 +115,12 @@ namespace HappyToy.V2.CloudTests
             Assert.That(formedWalls.Length, Is.EqualTo(1), "Formed-concrete wall is missing or repeated");
             Assert.That(formedWalls[0].sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
             Assert.That(formedWalls[0].sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
+            var agedBrickWalls = nodes.Where(node => node.name == "Continuous curved wall skin")
+                .Select(node => node.GetComponent<Renderer>()).Where(renderer => renderer && renderer.sharedMaterial &&
+                    renderer.sharedMaterial.GetTag("GraphicsSurface", false) == "alley-aged-brick").ToArray();
+            Assert.That(agedBrickWalls.Length, Is.EqualTo(1), "Aged brick wall is missing or repeated");
+            Assert.That(agedBrickWalls[0].sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
+            Assert.That(agedBrickWalls[0].sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
             var yardWall = nodes.SingleOrDefault(node => node.name == "Shop rear courtyard wall");
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));

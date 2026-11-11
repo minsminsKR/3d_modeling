@@ -10,6 +10,7 @@ concrete-rough / concrete_floor_02 — Rob Tuytel — https://polyhaven.com/a/co
 ceramic-tile / floor_tiles_06 — Rob Tuytel — https://polyhaven.com/a/floor_tiles_06
 metal-rust / rusty_metal_02 — Rob Tuytel — https://polyhaven.com/a/rusty_metal_02
 alley-form-wall / concrete_wall_004 — Charlotte Baglioni (photography), Dario Barresi (processing) — https://polyhaven.com/a/concrete_wall_004
+alley-aged-brick / brick_wall_09 — Rob Tuytel, Matterfield (processing) — https://polyhaven.com/a/brick_wall_09
 
 Alley animal run animation source: Petrov_the_blind, 3d running dog low res PSX, CC0.
 https://petrov-the-blind.itch.io/3d-running-dog-low-res-psx

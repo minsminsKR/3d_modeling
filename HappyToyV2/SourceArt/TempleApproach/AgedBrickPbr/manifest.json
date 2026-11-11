@@ -1,0 +1,58 @@
+{
+  "key": "alley-aged-brick",
+  "slug": "brick_wall_09",
+  "sourcePage": "https://polyhaven.com/a/brick_wall_09",
+  "license": "CC0-1.0",
+  "licensePage": "https://polyhaven.com/license",
+  "authors": {
+    "Rob Tuytel": "Processing",
+    "Matterfield": "Processing"
+  },
+  "tileMetres": [
+    2.009999990463257,
+    2.009999990463257
+  ],
+  "pixels": [
+    2048,
+    2048
+  ],
+  "sources": {
+    "Diffuse": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/brick_wall_09/brick_wall_09_diff_2k.png",
+      "bytes": 22071408,
+      "md5": "2ac295b100129f7221df920498d462be",
+      "sha256": "4975f79b964b79b2505a42f652f38f32a54307db72cce92e18ecfbeb2b7b176a"
+    },
+    "nor_gl": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/brick_wall_09/brick_wall_09_nor_gl_2k.png",
+      "bytes": 23359116,
+      "md5": "bb665bddf097079d6800001bd85d7b65",
+      "sha256": "cd74b94f5330aace417a33174e7da1398a7f6bb647fb1ec0dc1774aaf176f71e"
+    },
+    "arm": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/brick_wall_09/brick_wall_09_arm_2k.png",
+      "bytes": 16974235,
+      "md5": "e12bd3fdff77351e3f59a1fde34e66fb",
+      "sha256": "6a551183b1769c23c447ece05413ec4663283bd15f05561f908c59294ecc4a19"
+    }
+  },
+  "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+  "outputs": {
+    "albedo.png": {
+      "bytes": 7181002,
+      "sha256": "8f0d49e8e7d53784f4fb593c9fc44fd7748a7cc311bb9217916756f02a1b56ff"
+    },
+    "ao.png": {
+      "bytes": 2681035,
+      "sha256": "34c3e999a6d6cbdb159528598538bafd0d6b069f670974f1bdb39a5974211126"
+    },
+    "metallic-smoothness.png": {
+      "bytes": 2812308,
+      "sha256": "37dd53b7dbac6b183ca3ab6028a699084bcab2948ab5e1540825acaf4ea6303b"
+    },
+    "normal.png": {
+      "bytes": 9171519,
+      "sha256": "9cbeb04373e1b9552d03d23dd32904a7efe0b7bae32a28d50d6cf46ef8e85940"
+    }
+  }
+}
