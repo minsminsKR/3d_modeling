@@ -1,0 +1,14 @@
+{
+  "request_id": "23591db4-d7d8-4581-aea0-2af78ae5f0c4",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "reference_sha256": "e467ebc31bc28483bef09dee2330d58ccf05f7d932ee4004a4f75ec54663adba",
+  "model": "trellis2",
+  "gpu": "split",
+  "trellis_pipeline": "1536_cascade",
+  "trellis_texture_size": 8192,
+  "trellis_steps": 12,
+  "seed": 1234,
+  "job_id": "d8edbb54-d9ab-446a-a06f-a32627cbc8ee",
+  "status": "failed",
+  "failure": "1536/8192 CuMesh simplification out of memory on A100 40GB"
+}

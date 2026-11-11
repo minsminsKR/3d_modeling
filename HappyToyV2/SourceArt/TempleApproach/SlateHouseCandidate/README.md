@@ -1,0 +1,11 @@
+# 1990s slate-roof house candidate
+
+Reference generated with the built-in image generation tool, 2026-11-12. Reference SHA-256: `e467ebc31bc28483bef09dee2330d58ccf05f7d932ee4004a4f75ec54663adba`.
+
+Prompt:
+
+Use case: historical-scene. Reference for an isolated production 3D building model in a realistic Korean horror game. Show exactly one ordinary 1980s–1990s South Korean single-story neighborhood house, not a traditional hanok and not a Western cottage: rectangular weathered pale gray cement-plaster structure, shallow blue-gray corrugated slate gable roof, modest exposed eaves, two barred rectangular windows, one faded dark green steel entry door, simple rainwater pipe and an old low brick foundation. The house is old but inhabited, not a ruin. Orthographic-like three-quarter front view showing front, side and entire roof; whole building fully visible and centered, 3D modeling reference with crisp geometry and plausible proportions. Even neutral overcast daylight, detailed photographic materials, isolated on plain light gray background. No surrounding walls, no gate, no yard, no vehicles, no wires, no people, no signage, no lettering, no trees, no props, no extra buildings, no perspective distortion, no shadows that merge into the silhouette.
+
+Designated A100 request ID: `23591db4-d7d8-4581-aea0-2af78ae5f0c4`. 1536/8192 failed during CuMesh simplification because the 40 GB GPU ran out of memory. No game asset was produced. Retry with 1024/4096 uses request `de8533ce-77bb-44a7-a4aa-ad9131cf7762`; generation succeeded as job `b6736a36-1b52-4b72-8627-8acf7cdd1fc3`; original model and full generation record are preserved. Interactive web review and game integration remain pending.
+
+The completed source GLB has 956,813 triangles, one material, an albedo and an original metallic/roughness map. Blender 4.2.23 CPU stills were inspected from two directions; the roof and main facade appeared intact, while the two sides appeared similar and need interactive review. This is a source candidate only: no Blender finishing, Unity prefab, game-camera inspection, or game integration has been completed. The original 1536/8192 job failed with A100 out-of-memory during CuMesh simplification; its request details are retained separately.

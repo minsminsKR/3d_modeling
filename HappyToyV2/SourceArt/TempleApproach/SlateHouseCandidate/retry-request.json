@@ -1,0 +1,15 @@
+{
+  "request_id": "de8533ce-77bb-44a7-a4aa-ad9131cf7762",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "reference_sha256": "e467ebc31bc28483bef09dee2330d58ccf05f7d932ee4004a4f75ec54663adba",
+  "model": "trellis2",
+  "gpu": "split",
+  "trellis_pipeline": "1024_cascade",
+  "trellis_texture_size": 4096,
+  "trellis_steps": 12,
+  "seed": 1234,
+  "status": "completed",
+  "job_id": "b6736a36-1b52-4b72-8627-8acf7cdd1fc3",
+  "archive_sha256": "19ea3d2985c5254456ab6ae01352b6acaac8a6eabcb638ca16811b5cc7e7b488",
+  "archive_bytes": 66080098
+}

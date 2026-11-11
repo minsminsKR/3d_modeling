@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "id": "b6736a36-1b52-4b72-8627-8acf7cdd1fc3",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1794418403.6822145,
+  "updated_at": 1794418631.574659,
+  "source_filename": "reference.png",
+  "batch_index": 1,
+  "batch_total": 1,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 65536,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "request_id": "de8533ce-77bb-44a7-a4aa-ad9131cf7762",
+  "submitted_options": {
+    "gpu_id": [
+      "split"
+    ],
+    "model": [
+      "trellis2"
+    ],
+    "seed": [
+      "1234"
+    ],
+    "trellis_pipeline": [
+      "1024_cascade"
+    ],
+    "trellis_steps": [
+      "12"
+    ],
+    "trellis_texture_size": [
+      "4096"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "reference.png",
+      "archive_name": "inputs/01_reference.png",
+      "sha256": "e467ebc31bc28483bef09dee2330d58ccf05f7d932ee4004a4f75ec54663adba",
+      "size": 2554414
+    }
+  ],
+  "saved": true,
+  "saved_at": 1794418403.6822145,
+  "started_at": 1794418403.6943626,
+  "finished_at": 1794418631.5745947,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3",
+  "status_url": "/api/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3",
+  "archive_url": "/api/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/archive",
+  "record_url": "/api/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/rigging",
+    "status_url": "/api/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/rigging"
+  },
+  "elapsed_seconds": 227,
+  "display_name": "reference",
+  "download_url": "/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/download",
+  "model_url": "/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/model",
+  "mixamo_package_url": "/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/mixamo/package",
+  "mixamo_upload_url": "/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/b6736a36-1b52-4b72-8627-8acf7cdd1fc3/processed/1",
+  "saved_at_label": "2026-11-12 02:33",
+  "created_at_label": "2026-11-12 02:33",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "fb081f4a5dcf65c90ab0aac6cf35f6ff1f73a507b9095f3ab65547216e480253",
+      "size": 78081092
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "78c8da06c72b5386a7133ebe535d46cf83695dd05744fad91fcf2b1ac98a7256",
+      "size": 3063
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "16cf39c0efb2c8c9c997da6e942bd094e25773bf523e0669822599dd2057f8e2",
+      "size": 852
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "6d408ebe57e9c30c393d5f752cc0df49b6891642175844feb932efbc06089127",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "0e30308db2ed156e62d0c53d58f71738d65fcacfcf4241a4ab9399b984092520",
+      "size": 833841
+    }
+  ]
+}

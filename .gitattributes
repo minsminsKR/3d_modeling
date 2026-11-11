@@ -314,3 +314,10 @@ HappyToyV2/Assets/Resources/GraphicsPbr/alley-concrete-wall/*.png filter=lfs dif
 # Generated village notice and the matching Unity texture.
 HappyToyV2/SourceArt/TempleApproach/WallNotices/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyNotices/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Preserve the designated-service slate-house source and generated references.
+HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
