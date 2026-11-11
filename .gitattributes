@@ -276,3 +276,17 @@ HappyToyV2/SourceArt/TempleApproach/BrickHouseCandidate/*.fbx filter=lfs diff=lf
 HappyToyV2/SourceArt/TempleApproach/BrickHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyBrickHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyBrickHouse/*.png filter=lfs diff=lfs merge=lfs -text
+# Alternate Korean alley plaster house.
+HappyToyV2/SourceArt/TempleApproach/PlasterHouseCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/PlasterHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/PlasterHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/PlasterHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyPlasterHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyPlasterHouse/*.png filter=lfs diff=lfs merge=lfs -text
+# Generated Korean alley utility pole.
+HappyToyV2/SourceArt/TempleApproach/UtilityPoleCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityPoleCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityPoleCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityPoleCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyUtilityPole/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyUtilityPole/*.png filter=lfs diff=lfs merge=lfs -text

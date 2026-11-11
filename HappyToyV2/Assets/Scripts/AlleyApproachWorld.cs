@@ -32,7 +32,7 @@ namespace HappyToy.V2
         void Build()
         {
             walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
-            var road = surfaces.Get("concrete-rough", new Color(.17f, .155f, .145f));
+            var road = surfaces.Get("concrete-rough", new Color(.105f, .10f, .095f));
             var wall = surfaces.Get("plaster-damp", new Color(.61f, .55f, .48f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
             var roof = surfaces.Get("concrete-rough", new Color(.21f, .20f, .21f));
@@ -178,6 +178,16 @@ namespace HappyToy.V2
             {
                 float z = -10 + i * 8;
                 Cylinder("Utility pole", new Vector3(2.76f, 2.7f, z), new Vector3(.18f, 2.7f, .18f), iron, true);
+                var polePrefab = Resources.Load<GameObject>("AlleyUtilityPole/UtilityPole");
+                if (polePrefab && i >= 2)
+                {
+                    var previousPole = transform.GetChild(transform.childCount - 1).GetComponent<Renderer>();
+                    if (previousPole) previousPole.enabled = false;
+                    var holder = CorridorEntranceModels.Group(transform, "Weathered Korean utility pole", Vector3.zero);
+                    Instantiate(polePrefab, holder, false);
+                    CorridorEntranceModels.GroundAtHeight(holder, new Vector3(2.76f, 0, z), 5.4f, Quaternion.identity);
+                    foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                }
                 var light = new GameObject("Warm alley lamp"); light.transform.SetParent(transform, false);
                 light.transform.localPosition = new Vector3(2.47f, 3.3f, z);
                 var lamp = light.AddComponent<Light>(); lamp.type = LightType.Point; lamp.color = new Color(1, .66f, .35f);
@@ -208,12 +218,15 @@ namespace HappyToy.V2
                     if (renderer) renderer.enabled = false;
                 }
             }
+            var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
+            int houseIndex = 0;
             foreach (float side in new[] { -1f, 1f })
             {
                 foreach (float z in new[] { 0f, 8f, 15f })
                 {
                     var holder = CorridorEntranceModels.Group(transform, "Old Korean brick house", Vector3.zero);
-                    Instantiate(prefab, holder, false);
+                    var selected = alternate && houseIndex++ % 2 == 0 ? alternate : prefab;
+                    Instantiate(selected, holder, false);
                     CorridorEntranceModels.GroundAtHeight(holder,
                         new Vector3(side * 6.8f + RoadBend(z), 0, z), 4.3f,
                         Quaternion.Euler(0, side < 0 ? 90 : -90, 0));

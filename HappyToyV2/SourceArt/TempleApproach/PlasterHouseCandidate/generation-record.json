@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "id": "dbe44d50-4c57-4ba2-bb86-b14ae87fddec",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1794409036.949676,
+  "updated_at": 1794409254.3092794,
+  "source_filename": "plaster-house.png",
+  "batch_index": 1,
+  "batch_total": 2,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 65536,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "batch_id": "46ef4e71-b230-4d21-8e3c-8d3ab5d53859",
+  "request_id": "638c6667-e8b2-4e4f-beb8-4e758bb1020e",
+  "submitted_options": {
+    "model": [
+      "trellis2"
+    ],
+    "trellis_pipeline": [
+      "1024_cascade"
+    ],
+    "trellis_texture_size": [
+      "4096"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "plaster-house.png",
+      "archive_name": "inputs/01_plaster-house.png",
+      "sha256": "9b19b2f303fcc4becae3e9f28d67c5b8d9e13196999e3b7a699fbddf81aed3fa",
+      "size": 2661700
+    }
+  ],
+  "saved": true,
+  "saved_at": 1794409036.949676,
+  "started_at": 1794409036.9626603,
+  "finished_at": 1794409254.309208,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec",
+  "status_url": "/api/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec",
+  "archive_url": "/api/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/archive",
+  "record_url": "/api/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/rigging",
+    "status_url": "/api/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/rigging"
+  },
+  "elapsed_seconds": 217,
+  "display_name": "plaster-house",
+  "download_url": "/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/download",
+  "model_url": "/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/model",
+  "mixamo_package_url": "/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/mixamo/package",
+  "mixamo_upload_url": "/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/dbe44d50-4c57-4ba2-bb86-b14ae87fddec/processed/1",
+  "saved_at_label": "2026-11-11 23:57",
+  "created_at_label": "2026-11-11 23:57",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "d334582b370d499479c8a5fc689632448f194f3873da6bf904dd73f56fc6388b",
+      "size": 66266884
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "b46ac9ccd81ec55b6c6f578222ef20591aa45e5499a2158470070cbf8d9f879a",
+      "size": 3063
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "a6dd4dd3cdddf41aa9ba1e9137edf0eebb14c19e6e0dfcee6889fc418d9f033e",
+      "size": 856
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "67d633066e794fe36a63d709ec02c6756d9ff7cad3ca9524398e759e3d496c93",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "bc37323d53628cb3aad9710fae7a46cce262e9bdb2889e6d2f01393c76fda38c",
+      "size": 832362
+    }
+  ]
+}

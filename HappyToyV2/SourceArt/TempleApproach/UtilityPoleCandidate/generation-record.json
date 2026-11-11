@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "id": "44c5308d-70a0-4b32-8778-a6c0c58b8ccd",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1794409036.949676,
+  "updated_at": 1794409430.358479,
+  "source_filename": "utility-pole.png",
+  "batch_index": 2,
+  "batch_total": 2,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 65536,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "batch_id": "46ef4e71-b230-4d21-8e3c-8d3ab5d53859",
+  "request_id": "638c6667-e8b2-4e4f-beb8-4e758bb1020e",
+  "submitted_options": {
+    "model": [
+      "trellis2"
+    ],
+    "trellis_pipeline": [
+      "1024_cascade"
+    ],
+    "trellis_texture_size": [
+      "4096"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "utility-pole.png",
+      "archive_name": "inputs/01_utility-pole.png",
+      "sha256": "9bd1cd36899cb952ca5df4e36b99b641fd1e585f191865b443103644c2909238",
+      "size": 1390332
+    }
+  ],
+  "saved": true,
+  "saved_at": 1794409036.949676,
+  "started_at": 1794409036.9679708,
+  "finished_at": 1794409430.3584712,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd",
+  "status_url": "/api/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd",
+  "archive_url": "/api/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/archive",
+  "record_url": "/api/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/rigging",
+    "status_url": "/api/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/rigging"
+  },
+  "elapsed_seconds": 393,
+  "display_name": "utility-pole",
+  "download_url": "/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/download",
+  "model_url": "/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/model",
+  "mixamo_package_url": "/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/mixamo/package",
+  "mixamo_upload_url": "/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/44c5308d-70a0-4b32-8778-a6c0c58b8ccd/processed/1",
+  "saved_at_label": "2026-11-11 23:57",
+  "created_at_label": "2026-11-11 23:57",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "d40c4b3c8567f61f37c5dba61c444b7ac8f239ef5f0dd6f24bc1911e1fc559f1",
+      "size": 71444736
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "6670096343f60925e48c4782a2f18b917209bd7fafd3499694bdbfb37e6dbcef",
+      "size": 3057
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "f8f164f9b1fb7324d6b701b638e27d1ac420e6890c9343ae85cfaf04fc74421d",
+      "size": 855
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "0ef2cec0e9bc7297e3625de801bc82103765e01d8ffb30c322d84029ef472c01",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "faa5e660edb2e7e6fdfd83ec12909193d8a99e4c22b8c18f9ae192cead701b23",
+      "size": 191380
+    }
+  ]
+}
