@@ -19,6 +19,7 @@ namespace HappyToy.V2
                 case "wood-aged": return .54999995f;
                 case "plaster-damp": return 1.80000007f;
                 case "alley-red-brick": return 1.4f;
+                case "alley-concrete-wall": return 2.16f;
                 case "concrete-rough": return 2;
                 case "ceramic-tile": return 3;
                 case "metal-rust": return 1;

@@ -1,0 +1,66 @@
+{
+  "name": "Concrete Wall 007",
+  "categories": [
+    "outdoor",
+    "man made",
+    "wall",
+    "plaster-concrete",
+    "concrete",
+    "plaster"
+  ],
+  "type": 1,
+  "tags": [
+    "rough",
+    "old",
+    "weathered",
+    "wall",
+    "worn",
+    "damaged",
+    "chipped",
+    "discolored",
+    "cracked",
+    "stained",
+    "dirty",
+    "dry",
+    "plaster",
+    "scratched",
+    "concrete",
+    "plastered",
+    "cement",
+    "grey"
+  ],
+  "info": null,
+  "dimensions": [
+    2159.9998474121094,
+    2159.9998474121094
+  ],
+  "date_published": 1674086400,
+  "staging": null,
+  "max_resolution": [
+    8192,
+    8192
+  ],
+  "files_hash": "c5e1c8435799f08d174a94c5e73d43e955572a10",
+  "authors": {
+    "Dario Barresi": "Processing",
+    "Rico Cilliers": "Tiling",
+    "Charlotte Baglioni": "Photography"
+  },
+  "description": "Free 8K texture of weathered concrete wall with plaster patches: rough, pitted surface, horizontal formboard lines, cracks, chips, stains and dirty grey tones.",
+  "category_id": "0a7b70c3-bc79-531b-8cf3-cadeb4cbf686",
+  "category": "Concrete/Cast Walls & Floors/Bare Cast",
+  "attributes": {
+    "surface_use": "wall",
+    "condition": [
+      "weathered",
+      "cracked",
+      "damaged",
+      "worn"
+    ],
+    "origin": "man_made",
+    "setting": "outdoor"
+  },
+  "img_version": "eac7f867",
+  "download_count": 86333,
+  "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/concrete_wall_007.png?width=256&height=256&format=webp&v=eac7f867"
+}

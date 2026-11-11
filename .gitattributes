@@ -307,3 +307,6 @@ HappyToyV2/Assets/Resources/AlleyKoreanWall/*.fbx filter=lfs diff=lfs merge=lfs 
 HappyToyV2/Assets/Resources/AlleyKoreanWall/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyTwoStoryHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyTwoStoryHouse/*.png filter=lfs diff=lfs merge=lfs -text
+# Retain the official concrete-wall scans and Unity maps in LFS.
+HappyToyV2/SourceArt/TempleApproach/ConcreteWallPbr/source/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/GraphicsPbr/alley-concrete-wall/*.png filter=lfs diff=lfs merge=lfs -text

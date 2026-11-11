@@ -36,7 +36,7 @@ namespace HappyToy.V2
             walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
             var road = surfaces.Get("concrete-rough", new Color(.105f, .10f, .095f));
             var wall = surfaces.Get("plaster-damp", new Color(.82f, .78f, .71f));
-            var concreteWall = surfaces.Get("concrete-rough", new Color(.59f, .57f, .54f));
+            var concreteWall = surfaces.Get("alley-concrete-wall", new Color(.84f, .83f, .80f));
             var brick = surfaces.Get("alley-red-brick", new Color(.90f, .84f, .78f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
             var roof = surfaces.Get("concrete-rough", new Color(.21f, .20f, .21f));
@@ -305,8 +305,21 @@ namespace HappyToy.V2
             // The old forest horizon sits below this part of the village.
             // A visual-only residential yard keeps the distant houses grounded
             // without extending the walkable road or adding invisible barriers.
-            Box("Residential ground behind shop", new Vector3(-14f, -.14f, -9f),
-                new Vector3(21f, .22f, 30f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            Box("Residential ground behind shop", new Vector3(-16f, -.14f, -9f),
+                new Vector3(25f, .22f, 30f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            // A second authored boundary gives the rear houses a courtyard
+            // edge and screens the broad empty ground beside the store.
+            var backWall = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
+            if (backWall)
+            {
+                var yardWall = CorridorEntranceModels.Group(transform, "Shop rear courtyard wall", Vector3.zero);
+                Instantiate(backWall, yardWall, false);
+                CorridorEntranceModels.GroundAtHeight(yardWall, new Vector3(-8.3f, 0, -15f), 2.15f,
+                    Quaternion.Euler(0, 90, 0));
+                foreach (var node in yardWall.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                foreach (var renderer in yardWall.GetComponentsInChildren<Renderer>(true))
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+            }
             // Roofs behind the shop fill the empty side skyline without adding
             // collision or changing the shop entrance and event corridor.
             for (int i = 0; i < 2; i++)
@@ -320,6 +333,28 @@ namespace HappyToy.V2
                 foreach (var renderer in rearShop.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
             }
+            // A lighter version of the authored house makes a second roofline
+            // possible without duplicating the full-detail mesh or its texture.
+            var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
+            var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
+            var farPlaster = Resources.Load<GameObject>("AlleyPlasterHouse/geometry-far");
+            var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHouse");
+            if (farHouse && farMaterial)
+                for (int i = 0; i < 2; i++)
+                {
+                    var distant = CorridorEntranceModels.Group(transform, "Far residential roofline", Vector3.zero);
+                    bool usePlaster = i == 0 && farPlaster && farPlasterMaterial;
+                    Instantiate(usePlaster ? farPlaster : farHouse, distant, false);
+                    CorridorEntranceModels.GroundAtHeight(distant,
+                        new Vector3(-20.2f, 0, -15f + i * 12f), 5.2f + i * .5f,
+                        Quaternion.Euler(0, 68f + i * 19f, 0));
+                    foreach (var node in distant.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                    foreach (var renderer in distant.GetComponentsInChildren<Renderer>(true))
+                    {
+                        renderer.sharedMaterial = usePlaster ? farPlasterMaterial : farMaterial;
+                        renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    }
+                }
         }
         // Two continuous bends leave the shop, beast marker and mountain seam
         // at their original coordinates. Segment overlap keeps the colliders closed.
@@ -332,7 +367,7 @@ namespace HappyToy.V2
         void CurvedWall(float side, float start, float end, float height, Material wall, Material roof)
         {
             const int count = 6;
-            var surface = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, 2.2f);
+            var surface = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, GraphicsSurfaceLibrary.TileSpan(wall));
             for (int i = 0; i < count; i++)
             {
                 float a = Mathf.Lerp(start, end, i / (float)count);

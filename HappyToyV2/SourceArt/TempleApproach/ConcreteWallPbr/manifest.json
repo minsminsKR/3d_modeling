@@ -1,0 +1,59 @@
+{
+  "key": "alley-concrete-wall",
+  "slug": "concrete_wall_007",
+  "sourcePage": "https://polyhaven.com/a/concrete_wall_007",
+  "license": "CC0-1.0",
+  "licensePage": "https://polyhaven.com/license",
+  "authors": {
+    "Dario Barresi": "Processing",
+    "Rico Cilliers": "Tiling",
+    "Charlotte Baglioni": "Photography"
+  },
+  "tileMetres": [
+    2.1599998474121094,
+    2.1599998474121094
+  ],
+  "pixels": [
+    2048,
+    2048
+  ],
+  "sources": {
+    "Diffuse": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_wall_007/concrete_wall_007_diff_2k.png",
+      "bytes": 22358054,
+      "md5": "e050b252d95045ae1238d30e4c2f96db",
+      "sha256": "a24f6fc1f6a446763269406dd146f47812e1b5e86eabd4b95f3b03384407fd17"
+    },
+    "nor_gl": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_wall_007/concrete_wall_007_nor_gl_2k.png",
+      "bytes": 22543538,
+      "md5": "54afc38697e452f6ca4130036197228e",
+      "sha256": "758771ebfc797bb9b861becc3a38d92d4d0bec6714c2f7995f42fb09f6af5f43"
+    },
+    "arm": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_wall_007/concrete_wall_007_arm_2k.png",
+      "bytes": 17159413,
+      "md5": "7a63a3899257508a6ffd9f0b246dc6ff",
+      "sha256": "5614f53133f2d39b356cfcd71be9a9bdff06b1069273cf1c90207c211b82ce78"
+    }
+  },
+  "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+  "outputs": {
+    "albedo.png": {
+      "bytes": 7496656,
+      "sha256": "af79cfe183b7d28689a7c4a8aa8655e3d58ad9808c7c4083af9ad8e6df1c8f63"
+    },
+    "ao.png": {
+      "bytes": 2382635,
+      "sha256": "9e26263a3b393f1fea50f5487134b6036a5404886e06591a2622b30803645d6e"
+    },
+    "metallic-smoothness.png": {
+      "bytes": 3614374,
+      "sha256": "b8916742a7cb8bf94ffb211cddae964f1979160c550698f257aad567dfe3d4c7"
+    },
+    "normal.png": {
+      "bytes": 5548786,
+      "sha256": "6da158e44e0947ea557932f997c90e14f497cee348dcd8d7a81858ff3ac6ef46"
+    }
+  }
+}

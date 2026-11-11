@@ -6,9 +6,11 @@ namespace HappyToy.V2.Editor
 {
     public static class AlleyWallPbrImport
     {
-        public static void Apply()
+        public static void Apply() => Import("Assets/Resources/GraphicsPbr/alley-red-brick/");
+        public static void ApplyConcrete() => Import("Assets/Resources/GraphicsPbr/alley-concrete-wall/");
+
+        static void Import(string folder)
         {
-            const string folder = "Assets/Resources/GraphicsPbr/alley-red-brick/";
             AssetDatabase.Refresh();
             foreach (var name in new[] { "albedo", "normal", "ao", "metallic-smoothness" })
             {
