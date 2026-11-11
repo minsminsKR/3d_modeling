@@ -290,3 +290,6 @@ HappyToyV2/SourceArt/TempleApproach/UtilityPoleCandidate/*.fbx filter=lfs diff=l
 HappyToyV2/SourceArt/TempleApproach/UtilityPoleCandidate/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyUtilityPole/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyUtilityPole/*.png filter=lfs diff=lfs merge=lfs -text
+# Village wall source scans and Unity maps.
+HappyToyV2/SourceArt/TempleApproach/AlleyWallPbr/source/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/GraphicsPbr/alley-red-brick/*.png filter=lfs diff=lfs merge=lfs -text

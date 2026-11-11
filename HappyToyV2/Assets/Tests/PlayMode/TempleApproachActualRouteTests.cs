@@ -103,6 +103,22 @@ namespace HappyToy.V2.CloudTests
             var alleySky = RenderSettings.skybox;
             Assert.That(alleySky, Is.Not.Null);
             Assert.That(alleySky.shader.name, Is.EqualTo("HappyToy/AlleyDuskSky"), "Alley did not apply its dusk environment");
+            var alleyGeometry = GameObject.Find("Korean alley approach");
+            Assert.That(alleyGeometry, Is.Not.Null, "Village geometry is missing");
+            var houses = alleyGeometry.transform.Cast<Transform>().Where(t => t.name == "Old Korean brick house" || t.name == "Foreground old Korean house").ToArray();
+            Assert.That(houses.Length, Is.EqualTo(7), "The near residential row is incomplete");
+            foreach (var house in houses)
+            {
+                var renderers = house.GetComponentsInChildren<Renderer>(true);
+                Assert.That(renderers.Length, Is.GreaterThan(0));
+                var bounds = renderers[0].bounds;
+                foreach (var r in renderers.Skip(1)) bounds.Encapsulate(r.bounds);
+                float origin = alleyGeometry.transform.position.x;
+                if (house.position.x > origin)
+                    Assert.That(bounds.min.x, Is.GreaterThanOrEqualTo(origin + 4.84f), "Right house clips into the lane");
+                else
+                    Assert.That(bounds.max.x, Is.LessThanOrEqualTo(origin - 4.84f), "Left house clips into the lane");
+            }
             CaptureApproachReview("01-alley-start");
             var encounter = session.GetComponentsInChildren<Component>(true)
                 .First(component => component && component.GetType().Name == "AlleySnapperEncounter");
@@ -150,6 +166,18 @@ namespace HappyToy.V2.CloudTests
 
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 403f, 15, "Cannot walk to the animal obstruction");
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HAPPYTOY_APPROACH_REVIEW_DIR")))
+            {
+                // Review real eye-level wall and roof details at the curved lane,
+                // then restore gameplay orientation before exercising the barrier.
+                CaptureApproachReview("02-curve-forward");
+                var reviewEye = Get<Camera>(player, "eyes").transform.position;
+                ApproachLookAt(reviewEye + new Vector3(3, .15f, 4)); yield return null;
+                CaptureApproachReview("02-curve-right");
+                ApproachLookAt(reviewEye + new Vector3(-3, .15f, 4)); yield return null;
+                CaptureApproachReview("02-curve-left");
+                ApproachFaceForward(); yield return null;
+            }
             float before = player.transform.position.z;
             yield return KeysObserved(Key.W); yield return Delay(1.5f); Keys(); yield return null;
             Assert.That(player.transform.position.z, Is.LessThan(405f), "The live animal barrier did not block the player");

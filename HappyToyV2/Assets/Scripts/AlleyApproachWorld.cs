@@ -33,9 +33,11 @@ namespace HappyToy.V2
         {
             walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
             var road = surfaces.Get("concrete-rough", new Color(.105f, .10f, .095f));
-            var wall = surfaces.Get("plaster-damp", new Color(.61f, .55f, .48f));
+            var wall = surfaces.Get("plaster-damp", new Color(.82f, .78f, .71f));
+            var brick = surfaces.Get("alley-red-brick", new Color(.90f, .84f, .78f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
             var roof = surfaces.Get("concrete-rough", new Color(.21f, .20f, .21f));
+            var wallCoping = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));
             var iron = surfaces.Get("painted-metal", new Color(.22f, .23f, .22f));
             var red = surfaces.Get("cloth-charred", new Color(.54f, .24f, .19f));
             var cream = surfaces.Get("cloth-charred", new Color(.72f, .64f, .51f));
@@ -58,15 +60,16 @@ namespace HappyToy.V2
                 float z = -12 + i * 6;
                 foreach (float side in new[] { -1f, 1f })
                 {
-                    float height = i == 4 ? 2.1f : 2.8f;
+                    float height = i == 4 ? 2.1f : (side < 0 && i < 2 ? 2.8f : 2.35f);
+                    var wallFinish = side > 0 && (i < 2 || i == 3) ? brick : wall;
                     if (walkInStorefront && side < 0 && (i == 0 || i == 1))
                         ShopDoorWallSegments(z - 3, z + 3, height, wall);
                     else if (i < 2)
-                        Box("Weathered residential wall", new Vector3(side * 3.2f, height * .5f, z), new Vector3(.35f, height, 6), wall, true);
+                        Box("Weathered residential wall", new Vector3(side * 3.2f, height * .5f, z), new Vector3(.35f, height, 6), wallFinish, true);
                     else
-                        CurvedWall(side, z - 3, z + 3, height, wall, roof);
+                        CurvedWall(side, z - 3, z + 3, height, wallFinish, wallCoping);
                     if (i < 2)
-                        Box("Wall tile coping", new Vector3(side * 3.2f, height + .05f, z), new Vector3(.58f, .16f, 6), roof, false);
+                        Box("Wall tile coping", new Vector3(side * 3.2f, height + .05f, z), new Vector3(.58f, .16f, 6), wallCoping, false);
                     float upperHeight = 1.3f + (i % 3) * .3f;
                     Box("House facade above wall", new Vector3(side * (4.75f + .15f * (i % 2)), height + upperHeight * .5f, z + .3f),
                         new Vector3(2.6f, upperHeight, 4.8f), i % 2 == 0 ? wall : dark, false);
@@ -167,27 +170,22 @@ namespace HappyToy.V2
             for (int bulb = 0; bulb < 2; bulb++)
                 Box("Warm shop bulb", new Vector3(-2.48f, 2.12f, -9.5f + bulb * 2.8f), new Vector3(.10f, .15f, .10f),
                     surfaces.Get("painted-metal", new Color(.9f, .7f, .35f), new Color(1.3f, .65f, .18f)), false);
-            for (int i = 0; i < 3; i++)
+            foreach (float z in new[] { -11.7f, -3f, 4f, 11f })
             {
-                float z = -3 + i * 7;
-                Box("House gate", new Vector3(3.01f, 1.06f, z), new Vector3(.08f, 2.12f, 1.75f), iron, false);
+                float gateX = 3.01f + RoadBend(z);
+                Box("House gate", new Vector3(gateX, 1.06f, z), new Vector3(.08f, 2.12f, 1.75f), iron, false);
                 for (int bar = 0; bar < 7; bar++)
-                    Box("Gate vertical rail", new Vector3(2.95f, 1.08f, z - .7f + bar * .23f), new Vector3(.05f, 1.9f, .035f), dark, false);
+                    Box("Gate vertical rail", new Vector3(gateX - .06f, 1.08f, z - .7f + bar * .23f), new Vector3(.05f, 1.9f, .035f), dark, false);
+                foreach (float y in new[] { .22f, 1.05f, 1.98f })
+                    Box("Gate horizontal rail", new Vector3(gateX - .08f, y, z), new Vector3(.05f, .055f, 1.73f), dark, false);
+                foreach (float offset in new[] { -.9f, .9f })
+                    Box("Gate edge frame", new Vector3(gateX - .05f, 1.06f, z + offset), new Vector3(.08f, 2.18f, .08f), dark, false);
             }
             for (int i = 0; i < 4; i++)
             {
                 float z = -10 + i * 8;
                 Cylinder("Utility pole", new Vector3(2.76f, 2.7f, z), new Vector3(.18f, 2.7f, .18f), iron, true);
-                var polePrefab = Resources.Load<GameObject>("AlleyUtilityPole/UtilityPole");
-                if (polePrefab && i >= 2)
-                {
-                    var previousPole = transform.GetChild(transform.childCount - 1).GetComponent<Renderer>();
-                    if (previousPole) previousPole.enabled = false;
-                    var holder = CorridorEntranceModels.Group(transform, "Weathered Korean utility pole", Vector3.zero);
-                    Instantiate(polePrefab, holder, false);
-                    CorridorEntranceModels.GroundAtHeight(holder, new Vector3(2.76f, 0, z), 5.4f, Quaternion.identity);
-                    foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
-                }
+
                 var light = new GameObject("Warm alley lamp"); light.transform.SetParent(transform, false);
                 light.transform.localPosition = new Vector3(2.47f, 3.3f, z);
                 var lamp = light.AddComponent<Light>(); lamp.type = LightType.Point; lamp.color = new Color(1, .66f, .35f);
@@ -212,26 +210,57 @@ namespace HappyToy.V2
             foreach (Transform child in transform)
             {
                 bool oldHouse = child.name == "House facade above wall" || child.name == "Sloping dark tile roof" || child.name == "Roof tile ridge";
-                if (oldHouse && child.localPosition.z > -3f)
+                if (oldHouse && (child.localPosition.z > -3f || child.localPosition.x > 3f))
                 {
                     var renderer = child.GetComponent<Renderer>();
                     if (renderer) renderer.enabled = false;
                 }
             }
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
+            // Replace the flat foreground block above the right wall with the
+            // authored house, keeping its actual mesh outside the lane.
+            var foreground = CorridorEntranceModels.Group(transform, "Foreground old Korean house", Vector3.zero);
+            Instantiate(prefab, foreground, false);
+            CorridorEntranceModels.GroundAtHeight(foreground, new Vector3(7.0f, 0, -8f), 4.7f, Quaternion.Euler(0, -90, 0));
+            var foregroundBounds = MonsterPresentationScale.Bounds(foreground);
+            float foregroundClearance = transform.position.x + 4.85f;
+            if (foregroundBounds.min.x < foregroundClearance)
+                foreground.position += Vector3.right * (foregroundClearance - foregroundBounds.min.x);
+            foreach (var node in foreground.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
             int houseIndex = 0;
             foreach (float side in new[] { -1f, 1f })
             {
                 foreach (float z in new[] { 0f, 8f, 15f })
                 {
                     var holder = CorridorEntranceModels.Group(transform, "Old Korean brick house", Vector3.zero);
-                    var selected = alternate && houseIndex++ % 2 == 0 ? alternate : prefab;
+                    int variant = houseIndex++;
+                    var selected = alternate && variant % 2 == 0 ? alternate : prefab;
                     Instantiate(selected, holder, false);
+                    float height = 4.15f + (variant % 3) * .22f;
+                    float setback = 6.65f + (variant % 2) * .25f;
+                    float yaw = (side < 0 ? 90 : -90) + (variant % 3 - 1) * 4;
                     CorridorEntranceModels.GroundAtHeight(holder,
-                        new Vector3(side * 6.8f + RoadBend(z), 0, z), 4.3f,
-                        Quaternion.Euler(0, side < 0 ? 90 : -90, 0));
+                        new Vector3(side * setback + RoadBend(z), 0, z + (variant % 2) * .3f), height,
+                        Quaternion.Euler(0, yaw, 0));
+                    // The generated meshes have different footprints. Keep
+                    // their entire world-space bounds outside the widest bend,
+                    // rather than letting a facade clip through the wall.
+                    var bounds = MonsterPresentationScale.Bounds(holder);
+                    float clearance = transform.position.x + side * 4.85f;
+                    float nearEdge = side > 0 ? bounds.min.x : bounds.max.x;
+                    if ((side > 0 && nearEdge < clearance) || (side < 0 && nearEdge > clearance))
+                        holder.position += Vector3.right * (clearance - nearEdge);
                     foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 }
+                // A second row breaks the empty skyline beyond the nearer roofs.
+                var rear = CorridorEntranceModels.Group(transform, "Distant neighborhood roof", Vector3.zero);
+                Instantiate(alternate ? alternate : prefab, rear, false);
+                CorridorEntranceModels.GroundAtHeight(rear,
+                    new Vector3(side * 11.8f, 0, side < 0 ? 9.5f : 16.5f), 5.0f,
+                    Quaternion.Euler(0, side < 0 ? 83 : -96, 0));
+                foreach (var node in rear.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                foreach (var renderer in rear.GetComponentsInChildren<Renderer>(true))
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
             }
         }
         // Two continuous bends leave the shop, beast marker and mountain seam
@@ -257,6 +286,16 @@ namespace HappyToy.V2
                 transform.GetChild(transform.childCount - 1).localRotation = Quaternion.Euler(0, angle, 0);
                 TiltedBox("Curved wall coping", new Vector3(center.x, height + .05f, center.z),
                     new Vector3(.58f, .16f, length), Quaternion.Euler(0, angle, 0), roof);
+                var footing = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));
+                TiltedBox("Weathered wall footing", new Vector3(center.x, .19f, center.z),
+                    new Vector3(.42f, .38f, length), Quaternion.Euler(0, angle, 0), footing);
+                if (i % 3 == 0)
+                {
+                    Box("Concrete wall pier", new Vector3(xa, height * .5f, a),
+                        new Vector3(.48f, height + .08f, .34f), footing, false);
+                    Box("Concrete wall pier cap", new Vector3(xa, height + .08f, a),
+                        new Vector3(.57f, .12f, .43f), roof, false);
+                }
             }
         }
         // Preserve the measured opening across the original wall segments.
@@ -358,6 +397,8 @@ namespace HappyToy.V2
             piece.GetComponent<Renderer>().sharedMaterial = material;
             if (label == "Alley pavement")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, surfaces.TileSpan("concrete-rough"));
+            else if (label == "Weathered residential wall" || label == "Curved residential wall" || label == "Concrete wall pier")
+                piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, GraphicsSurfaceLibrary.TileSpan(material));
             if (!collision) Destroy(piece.GetComponent<Collider>());
         }
         void Cylinder(string label, Vector3 point, Vector3 scale, Material material, bool collision)

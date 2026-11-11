@@ -1,0 +1,57 @@
+{
+  "key": "alley-red-brick",
+  "slug": "red_brick",
+  "sourcePage": "https://polyhaven.com/a/red_brick",
+  "license": "CC0-1.0",
+  "licensePage": "https://polyhaven.com/license",
+  "authors": {
+    "Rob Tuytel": "All"
+  },
+  "tileMetres": [
+    1.399999976158142,
+    1.399999976158142
+  ],
+  "pixels": [
+    2048,
+    2048
+  ],
+  "sources": {
+    "Diffuse": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/red_brick/red_brick_diff_2k.png",
+      "bytes": 22217598,
+      "md5": "5ff6f18025bccf81596feb4f0359fab5",
+      "sha256": "4b814528cb900a65e2a2600254a06326d2966a6188b325283fdf74891e7e1f04"
+    },
+    "nor_gl": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/red_brick/red_brick_nor_gl_2k.png",
+      "bytes": 8907641,
+      "md5": "4602a931ef31b2ab63f93543dce17289",
+      "sha256": "e3ca21654988c8ee348fff4a71ccd57fce35073d6898902f185c1f86799e9ae1"
+    },
+    "arm": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/red_brick/red_brick_arm_2k.png",
+      "bytes": 15276151,
+      "md5": "76e69b6931a61844a784b5e58d363bf3",
+      "sha256": "f7fc8dffeed054905d8ce5856a4b699d2fae0796a4fe670d06d9fff52d69ae17"
+    }
+  },
+  "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+  "outputs": {
+    "albedo.png": {
+      "bytes": 7476500,
+      "sha256": "7a7a789403891424f67ba04502d0d6369c44adf59229026eb46ee0ceb365d688"
+    },
+    "ao.png": {
+      "bytes": 2722313,
+      "sha256": "a47bc94983e8e045078cf1654efd9f3b5e3fd3aeb5a005128c7e45c071d0b36d"
+    },
+    "metallic-smoothness.png": {
+      "bytes": 829944,
+      "sha256": "1f92622e432eb909b6239dd417fc23133c85116b2adf103b6460a4cf473c0928"
+    },
+    "normal.png": {
+      "bytes": 8508177,
+      "sha256": "582c01460184c697ea9078e623cb48be8163f23d0799770bd0e716be15734623"
+    }
+  }
+}
