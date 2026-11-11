@@ -321,3 +321,7 @@ HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.png filter=lfs diff=lf
 HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TempleApproach/SlateHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Retain the official concrete wall scan and Unity conversion in LFS.
+HappyToyV2/SourceArt/TempleApproach/ConcreteWall004Pbr/source/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/GraphicsPbr/alley-form-wall/*.png filter=lfs diff=lfs merge=lfs -text

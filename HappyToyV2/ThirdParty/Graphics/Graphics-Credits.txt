@@ -9,6 +9,7 @@ plaster-damp / worn_plaster_wall — Dimitrios Savva — https://polyhaven.com/a
 concrete-rough / concrete_floor_02 — Rob Tuytel — https://polyhaven.com/a/concrete_floor_02
 ceramic-tile / floor_tiles_06 — Rob Tuytel — https://polyhaven.com/a/floor_tiles_06
 metal-rust / rusty_metal_02 — Rob Tuytel — https://polyhaven.com/a/rusty_metal_02
+alley-form-wall / concrete_wall_004 — Charlotte Baglioni (photography), Dario Barresi (processing) — https://polyhaven.com/a/concrete_wall_004
 
 Alley animal run animation source: Petrov_the_blind, 3d running dog low res PSX, CC0.
 https://petrov-the-blind.itch.io/3d-running-dog-low-res-psx

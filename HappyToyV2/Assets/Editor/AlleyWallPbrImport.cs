@@ -8,6 +8,7 @@ namespace HappyToy.V2.Editor
     {
         public static void Apply() => Import("Assets/Resources/GraphicsPbr/alley-red-brick/");
         public static void ApplyConcrete() => Import("Assets/Resources/GraphicsPbr/alley-concrete-wall/");
+        public static void ApplyForm() => Import("Assets/Resources/GraphicsPbr/alley-form-wall/");
 
         static void Import(string folder)
         {

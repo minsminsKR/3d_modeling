@@ -1,0 +1,58 @@
+{
+  "key": "alley-form-wall",
+  "slug": "concrete_wall_004",
+  "sourcePage": "https://polyhaven.com/a/concrete_wall_004",
+  "license": "CC0-1.0",
+  "licensePage": "https://polyhaven.com/license",
+  "authors": {
+    "Dario Barresi": "Processing",
+    "Charlotte Baglioni": "Photography"
+  },
+  "tileMetres": [
+    2.0,
+    2.0
+  ],
+  "pixels": [
+    2048,
+    2048
+  ],
+  "sources": {
+    "Diffuse": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_wall_004/concrete_wall_004_diff_2k.png",
+      "bytes": 20999995,
+      "md5": "ad50ac197519fd02713d82cd621a830f",
+      "sha256": "d64eb5100e8f79c90f332d5cbfc701b133cc58e2398fd9132197468553a53f1a"
+    },
+    "nor_gl": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_wall_004/concrete_wall_004_nor_gl_2k.png",
+      "bytes": 22953207,
+      "md5": "d41aacaa6b590e16535c432db20bed7d",
+      "sha256": "e7b316e5f92fa9a4408918d1eb581d7a353d5a663a449831b68ee27a589553cb"
+    },
+    "arm": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_wall_004/concrete_wall_004_arm_2k.png",
+      "bytes": 16304858,
+      "md5": "3c7f5d57acde0b730d3f1a1a956ae667",
+      "sha256": "e984b56cf5e3303649480bcf877a1543bb0777dd3db20c86808b642a9313ec1e"
+    }
+  },
+  "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+  "outputs": {
+    "albedo.png": {
+      "bytes": 5128866,
+      "sha256": "fd924faaae0f74c61929f8f47dcab696b1f53e9a83be944731e781fbc9f4e4b9"
+    },
+    "ao.png": {
+      "bytes": 3309457,
+      "sha256": "8f9cc3c4ba1f55464966faeb358e5fa8faa72d0afcb45ad6685df4c8cdb0288b"
+    },
+    "metallic-smoothness.png": {
+      "bytes": 1450284,
+      "sha256": "a8a66ec0b883e4240815ffcc7560de34a39375610f73b093389a96813a8f9643"
+    },
+    "normal.png": {
+      "bytes": 8580719,
+      "sha256": "3fd5c93affbb74da1efa740db145b8a7be15079b30e36f6f61a29b794a4b92f7"
+    }
+  }
+}

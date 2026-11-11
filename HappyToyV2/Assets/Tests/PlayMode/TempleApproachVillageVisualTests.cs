@@ -109,6 +109,12 @@ namespace HappyToy.V2.CloudTests
                     renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")), Is.True,
                     "Background house lost its PBR material");
             }
+            var formedWalls = nodes.Where(node => node.name == "Continuous curved wall skin")
+                .Select(node => node.GetComponent<Renderer>()).Where(renderer => renderer &&
+                    renderer.sharedMaterial && renderer.sharedMaterial.GetTag("GraphicsSurface", false) == "alley-form-wall").ToArray();
+            Assert.That(formedWalls.Length, Is.EqualTo(1), "Formed-concrete wall is missing or repeated");
+            Assert.That(formedWalls[0].sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
+            Assert.That(formedWalls[0].sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
             var yardWall = nodes.SingleOrDefault(node => node.name == "Shop rear courtyard wall");
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
@@ -180,6 +186,11 @@ namespace HappyToy.V2.CloudTests
                 "Cannot approach the wall notice");
             ApproachLookAt(notice.position); yield return null;
             CaptureApproachReview("village-09-wall-notice-close");
+            ApproachFaceForward();
+            yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 403.3f, 8,
+                "Cannot walk alongside the formed-concrete wall");
+            ApproachLookAt(alley.transform.TransformPoint(new Vector3(-1.95f, 1.35f, 5f))); yield return null;
+            CaptureApproachReview("village-10-formed-wall");
             ApproachFaceForward();
         }
     }

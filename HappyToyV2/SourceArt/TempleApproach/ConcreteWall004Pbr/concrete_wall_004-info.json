@@ -1,0 +1,55 @@
+{
+  "date_published": 1662595200,
+  "name": "Concrete Wall 004",
+  "type": 1,
+  "staging": null,
+  "authors": {
+    "Dario Barresi": "Processing",
+    "Charlotte Baglioni": "Photography"
+  },
+  "info": null,
+  "dimensions": [
+    2000,
+    2000
+  ],
+  "categories": [
+    "man made",
+    "wall",
+    "plaster-concrete",
+    "concrete",
+    "collection: the_shed"
+  ],
+  "tags": [
+    "worn",
+    "painted",
+    "dry",
+    "flat",
+    "wall",
+    "stained",
+    "dirty",
+    "weathered"
+  ],
+  "max_resolution": [
+    8192,
+    8192
+  ],
+  "files_hash": "259e8b2759d2524af008c5df1505eddd7df3b0ba",
+  "description": "Free 8K texture of a worn painted concrete wall with a dry, flat surface, mottled stains, dirt, fine pits and weathered plaster scratches.",
+  "category_id": "9d3c7da3-4959-5d42-8abc-5c31017a2fd4",
+  "category": "Concrete/Plaster & Stucco/Painted Plaster",
+  "collections": [
+    "the_shed"
+  ],
+  "attributes": {
+    "surface_use": "wall",
+    "condition": [
+      "painted",
+      "worn",
+      "weathered"
+    ],
+    "origin": "man_made"
+  },
+  "img_version": "350b245a",
+  "download_count": 55871,
+  "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/concrete_wall_004.png?width=256&height=256&format=webp&v=350b245a"
+}
