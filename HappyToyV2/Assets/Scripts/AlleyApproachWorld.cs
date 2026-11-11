@@ -267,7 +267,8 @@ namespace HappyToy.V2
             }
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHousePbr") ??
                 Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
-            var twoStory = Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouse");
+            var twoStory = Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouseClean") ??
+                Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouse");
             // Replace the flat foreground block above the right wall with the
             // authored house, keeping its actual mesh outside the lane.
             var foreground = CorridorEntranceModels.Group(transform, "Foreground old Korean house", Vector3.zero);
@@ -346,7 +347,8 @@ namespace HappyToy.V2
             }
             // A lighter version of the authored house makes a second roofline
             // possible without duplicating the full-detail mesh or its texture.
-            var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
+            var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-clean-far") ??
+                Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
             var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
             var farPlaster = Resources.Load<GameObject>("AlleyPlasterHouse/geometry-far");
             var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHousePbr") ??

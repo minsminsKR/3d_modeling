@@ -41,8 +41,21 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(bounds.max.x, Is.LessThanOrEqualTo(alley.transform.position.x - 4.84f),
                         "Left house intersects the lane");
             }
+            var cleanedHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
+                .Any(child => child.name.StartsWith("TwoStoryHouseClean", StringComparison.Ordinal)));
+            Assert.That(cleanedHouse, Is.Not.Null, "Cleaned two-story house was not applied");
+            var cleanMeshes = cleanedHouse.GetComponentsInChildren<MeshFilter>(true);
+            Assert.That(cleanMeshes.Length, Is.GreaterThan(0));
+            long cleanTriangles = 0;
+            foreach (var filter in cleanMeshes)
+                for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                    cleanTriangles += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
+            Assert.That(cleanTriangles, Is.InRange(77000, 79000), "Unexpected cleaned house geometry");
             var farHouses = nodes.Where(node => node.name == "Far residential roofline").ToArray();
             Assert.That(farHouses.Length, Is.EqualTo(2), "Far neighborhood assets failed to load");
+            Assert.That(farHouses.Any(house => house.GetComponentsInChildren<Transform>(true)
+                .Any(child => child.name.StartsWith("geometry-clean-far", StringComparison.Ordinal))), Is.True,
+                "Cleaned far house was not applied");
             foreach (var house in farHouses)
             {
                 var filters = house.GetComponentsInChildren<MeshFilter>(true);
