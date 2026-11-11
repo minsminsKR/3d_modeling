@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -12,6 +13,7 @@ namespace HappyToy.V2
         public static readonly Vector3 Barrier = new Vector3(500, 0, 405);
         public static readonly Vector3 Exit = new Vector3(500, .04f, 414);
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
+        readonly List<Mesh> wallMeshes = new List<Mesh>();
         Material storeSignMaterial;
         GameObject walkInStorefront;
 
@@ -330,6 +332,7 @@ namespace HappyToy.V2
         void CurvedWall(float side, float start, float end, float height, Material wall, Material roof)
         {
             const int count = 6;
+            var surface = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, 2.2f);
             for (int i = 0; i < count; i++)
             {
                 float a = Mathf.Lerp(start, end, i / (float)count);
@@ -341,11 +344,19 @@ namespace HappyToy.V2
                 Box("Curved residential wall", center, new Vector3(.35f, height, length), wall, true);
                 var segment = transform.GetChild(transform.childCount - 1);
                 segment.localRotation = Quaternion.Euler(0, angle, 0);
-                // Adjacent boxes share a continuous world-length texture
-                // instead of repeating the same large stain every metre.
-                var properties = new MaterialPropertyBlock();
-                properties.SetVector("_BaseMap_ST", new Vector4(length * .45f, 1f, a * .45f, 0f));
-                segment.GetComponent<Renderer>().SetPropertyBlock(properties);
+                // Keep the original overlapping colliders, but draw a single
+                // continuous wall skin so their cube seams do not show.
+                segment.GetComponent<Renderer>().enabled = false;
+                Vector3 Edge(float z, float x, float face)
+                {
+                    float slope = (RoadBend(z + .02f) - RoadBend(z - .02f)) / .04f;
+                    return new Vector3(x, 0, z) + new Vector3(1, 0, -slope).normalized * (.175f * face);
+                }
+                var nearA = Edge(a, xa, -1); var nearB = Edge(b, xb, -1);
+                var farA = Edge(a, xa, 1); var farB = Edge(b, xb, 1);
+                Vector3 up = Vector3.up * height;
+                surface.Quad(nearA, nearB, nearB + up, nearA + up);
+                surface.Quad(farB, farA, farA + up, farB + up);
                 TiltedBox("Curved wall coping", new Vector3(center.x, height + .05f, center.z),
                     new Vector3(.58f, .16f, length), Quaternion.Euler(0, angle, 0), roof);
                 var footing = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));
@@ -359,6 +370,12 @@ namespace HappyToy.V2
                         new Vector3(.57f, .12f, .43f), roof, false);
                 }
             }
+            var wallMesh = surface.Mesh("Continuous curved wall skin");
+            wallMeshes.Add(wallMesh);
+            var wallSkin = new GameObject("Continuous curved wall skin");
+            wallSkin.layer = 8; wallSkin.transform.SetParent(transform, false);
+            wallSkin.AddComponent<MeshFilter>().sharedMesh = wallMesh;
+            wallSkin.AddComponent<MeshRenderer>().sharedMaterial = wall;
         }
         // Preserve the measured opening across the original wall segments.
         void ShopDoorWallSegments(float start, float end, float height, Material wall)
@@ -471,6 +488,11 @@ namespace HappyToy.V2
             piece.GetComponent<Renderer>().sharedMaterial = material;
             if (!collision) Destroy(piece.GetComponent<Collider>());
         }
-        void OnDestroy() { surfaces.Dispose(); if (storeSignMaterial) Destroy(storeSignMaterial); }
+        void OnDestroy()
+        {
+            surfaces.Dispose();
+            if (storeSignMaterial) Destroy(storeSignMaterial);
+            foreach (var wallMesh in wallMeshes) if (wallMesh) Destroy(wallMesh);
+        }
     }
 }
