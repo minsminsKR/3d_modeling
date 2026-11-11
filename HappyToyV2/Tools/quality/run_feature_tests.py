@@ -96,6 +96,10 @@ PROFILES = {
         ("PlayMode", (CLOUD + "ApproachSceneStreamTests", CLOUD + "MountainForkSafetyTests", CLOUD + "ConnectorSafetyTests") + play_tests("TempleApproachStreamingEnvironmentTests.cs", "TempleApproachAudioTests.cs"))]),
     "temple-approach-visual": ("Opt-in real route gameplay camera snapshots", [
         ("PlayMode", (PLAY + "TempleApproachRealTitleKeysAndCollisionReachTemple",))]),
+    "temple-approach-village-visual": ("Opt-in focused village wall and roof gameplay-camera snapshots", [
+        ("PlayMode", (PLAY + "TempleApproachVillageVisualReview",))]),
+    "temple-approach-horizon-logic": ("Village horizon clearance, mountain ground and legacy restoration", [
+        ("PlayMode", (PLAY + "ApproachClearsHorizonAndTreesWithoutChangingLegacyTemple",))]),
     "temple-approach-existing": ("Prior temple walking, save and title integration after new approach", [
         ("PlayMode", tuple(PLAY + name for name in (
             "TempleFullWalkingRouteUsesGamepadWithoutTeleporting", "TempleFullWalkingRouteUsesKeyboardAndMouseWithoutTeleporting",
@@ -703,7 +707,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             editor_args += ["-noaudio"]
         if profile == "full-cpu":
             editor_args += ["-nographics"]
-        if profile in ("temple-approach-streaming", "temple-approach-existing", "temple-approach-route", "temple-approach-logic", "temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("temple-approach-horizon-logic", "temple-approach-streaming", "temple-approach-existing", "temple-approach-route", "temple-approach-logic", "temple-guardian-gaze-logic", "temple-offerings-logic", "temple-stone-layout-logic", "hud-interaction-logic", "temple-soil-logic", "temple-soil-original-logic", "temple-concept-environment-logic", "temple-altar-logic", "temple-horizon-logic", "corridor-story-logic", "temple-prologue-flow", "temple-prologue-regressions", "temple-prologue-restore", "hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation", "temple-story-ui-presentation", "title-tremor-presentation", "temple-altar-vapor-presentation", "temple-candle-presentation", "temple-facade-color-presentation", "temple-altar-soil-cost-presentation", "temple-soil-presentation", "temple-soil-candidate-presentation", "temple-soil-original-presentation"):
             editor_args += ["-noaudio"]

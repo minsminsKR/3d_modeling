@@ -34,6 +34,7 @@ namespace HappyToy.V2
             walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
             var road = surfaces.Get("concrete-rough", new Color(.105f, .10f, .095f));
             var wall = surfaces.Get("plaster-damp", new Color(.82f, .78f, .71f));
+            var concreteWall = surfaces.Get("concrete-rough", new Color(.59f, .57f, .54f));
             var brick = surfaces.Get("alley-red-brick", new Color(.90f, .84f, .78f));
             var dark = surfaces.Get("wood-aged", new Color(.28f, .22f, .18f));
             var roof = surfaces.Get("concrete-rough", new Color(.21f, .20f, .21f));
@@ -61,7 +62,7 @@ namespace HappyToy.V2
                 foreach (float side in new[] { -1f, 1f })
                 {
                     float height = i == 4 ? 2.1f : (side < 0 && i < 2 ? 2.8f : 2.35f);
-                    var wallFinish = side > 0 && (i < 2 || i == 3) ? brick : wall;
+                    var wallFinish = side > 0 && (i < 2 || i == 3) ? brick : (i >= 2 ? concreteWall : wall);
                     if (walkInStorefront && side < 0 && (i == 0 || i == 1))
                         ShopDoorWallSegments(z - 3, z + 3, height, wall);
                     else if (i < 2)
@@ -299,6 +300,24 @@ namespace HappyToy.V2
                 foreach (var renderer in rear.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
             }
+            // The old forest horizon sits below this part of the village.
+            // A visual-only residential yard keeps the distant houses grounded
+            // without extending the walkable road or adding invisible barriers.
+            Box("Residential ground behind shop", new Vector3(-14f, -.14f, -9f),
+                new Vector3(21f, .22f, 30f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            // Roofs behind the shop fill the empty side skyline without adding
+            // collision or changing the shop entrance and event corridor.
+            for (int i = 0; i < 2; i++)
+            {
+                var rearShop = CorridorEntranceModels.Group(transform, "Residential roofs behind shop", Vector3.zero);
+                Instantiate(i == 0 && twoStory ? twoStory : (alternate ? alternate : prefab), rearShop, false);
+                CorridorEntranceModels.GroundAtHeight(rearShop,
+                    new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && twoStory ? 5.8f : 4.7f,
+                    Quaternion.Euler(0, 83f + i * 9f, 0));
+                foreach (var node in rearShop.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                foreach (var renderer in rearShop.GetComponentsInChildren<Renderer>(true))
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+            }
         }
         // Two continuous bends leave the shop, beast marker and mountain seam
         // at their original coordinates. Segment overlap keeps the colliders closed.
@@ -320,7 +339,13 @@ namespace HappyToy.V2
                 float angle = Mathf.Atan2(xb - xa, b - a) * Mathf.Rad2Deg;
                 float length = Vector2.Distance(new Vector2(xa, a), new Vector2(xb, b)) + .06f;
                 Box("Curved residential wall", center, new Vector3(.35f, height, length), wall, true);
-                transform.GetChild(transform.childCount - 1).localRotation = Quaternion.Euler(0, angle, 0);
+                var segment = transform.GetChild(transform.childCount - 1);
+                segment.localRotation = Quaternion.Euler(0, angle, 0);
+                // Adjacent boxes share a continuous world-length texture
+                // instead of repeating the same large stain every metre.
+                var properties = new MaterialPropertyBlock();
+                properties.SetVector("_BaseMap_ST", new Vector4(length * .45f, 1f, a * .45f, 0f));
+                segment.GetComponent<Renderer>().SetPropertyBlock(properties);
                 TiltedBox("Curved wall coping", new Vector3(center.x, height + .05f, center.z),
                     new Vector3(.58f, .16f, length), Quaternion.Euler(0, angle, 0), roof);
                 var footing = surfaces.Get("concrete-rough", new Color(.43f, .40f, .36f));

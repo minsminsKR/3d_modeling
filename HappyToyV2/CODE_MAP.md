@@ -14,7 +14,7 @@ additive 씬의 로드·해제·복귀 게이트를, `AlleyApproachWorld`,
 `SourceArt/TempleApproach/README.md`와 `SourceArt/AlleyBeast/RunCandidate/README.md`. 기와 담장과 2층 주택의 원본·PBR 재생성은 `SourceArt/TempleApproach/KoreanWallCandidate/README.md`와 `SourceArt/TempleApproach/TwoStoryHouseCandidate/README.md`, `AlleyVillagePbrImport`를 참고한다.
 검사는 `temple-approach-logic`(획득·저장·복원), `temple-approach-route`(실제 입력·충돌),
 `temple-approach-streaming`(씬 수명·환경·갈림길), `temple-approach-existing`이다.
-대기·짖기 애니메이션과 발 접지, 실제 주인 모델·완성된 실내, GPU·FPS 및 청취 검증은 미완성이다. 골목 벽돌 재질은 `SourceArt/TempleApproach/AlleyWallPbr/README.md`, `AlleyWallPbrImport`와 `GraphicsSurfaceLibrary`가 소유한다. `temple-approach-visual`은 골목 주택 경계와 정면·곡선 좌우 게임 카메라를 선택적으로 확인한다.
+대기·짖기 애니메이션과 발 접지, 실제 주인 모델·완성된 실내, GPU·FPS 및 청취 검증은 미완성이다. 골목 벽돌 재질은 `SourceArt/TempleApproach/AlleyWallPbr/README.md`, `AlleyWallPbrImport`와 `GraphicsSurfaceLibrary`가 소유한다. `temple-approach-visual`은 전체 경로의 게임 카메라를 선택적으로 확인한다. `temple-approach-village-visual`은 골목 주택·담장 카메라만 확인하며, `temple-approach-horizon-logic`은 원경과 안개 메시의 골목·산길 높이 및 기존 사찰 복원을 검사한다.
 
 Windows 새 빌드 검증 뒤의 구버전 정리는 `Tools/quality/Clear-VerifiedOldBuilds.ps1`이
 현재 입력 해시를 재검증하고 실제 플레이어 폴더·실행 중 여부·경로와 링크를 확인한 뒤

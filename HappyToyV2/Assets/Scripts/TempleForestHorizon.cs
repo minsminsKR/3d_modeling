@@ -222,20 +222,24 @@ namespace HappyToy.V2
             // extend behind it across the mountain itself; extend that slope
             // below the terrain so the full approach, not just the seam, clears.
             for (int ring = 2; ring <= 4; ring++)
-            for (int i = 0; i < SideSteps; i++)
+            for (int i = 0; i < Perimeter; i++)
             {
                 int index = ring * Perimeter + i;
                 var point = transform.TransformPoint(carved[index]);
                 float offset = Mathf.Abs(point.x - transform.position.x);
-                // The outer ring is coarse (6 m between vertices), so keep
-                // its neighbouring vertices flat beyond the 24 m corridor;
-                // otherwise a diagonal triangle can still cover its edge.
-                if (offset >= 23f) continue;
-                float blend = 1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(18.25f, 23f, offset));
                 float z = point.z - MountainApproachWorld.Origin.z;
+                // The outer rings wrap around the village as well as crossing
+                // its skyline. Lower their southern apron, including the first
+                // few vertices on each return edge; otherwise a large diagonal
+                // triangle remains visible beside the village shop.
+                bool villageApron = ring >= 3 && z <= 12f;
+                if (!villageApron && (i >= SideSteps || offset >= 23f)) continue;
+                float blend = villageApron ? 1f :
+                    1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(18.25f, 23f, offset));
                 float ground = MountainApproachWorld.Origin.y +
                     (z <= 34f ? z * .045f : (56f - z) * (1.53f / 22f));
-                var target = transform.InverseTransformPoint(new Vector3(point.x, ground - .08f, point.z));
+                float clearance = villageApron ? .4f : .08f;
+                var target = transform.InverseTransformPoint(new Vector3(point.x, ground - clearance, point.z));
                 carved[index].y = Mathf.Lerp(carved[index].y, Mathf.Min(carved[index].y, target.y), blend);
             }
             mesh.vertices = carved; mesh.RecalculateNormals(); mesh.RecalculateBounds();

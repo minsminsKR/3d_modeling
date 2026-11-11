@@ -129,6 +129,20 @@ namespace HappyToy.V2.CloudTests
                     hazeCollider = hazeProbe.AddComponent<MeshCollider>(); hazeCollider.sharedMesh = hazeMesh;
                 }
                 Physics.SyncTransforms();
+                // The village is enclosed by the southern horizon rings. A
+                // narrow corridor alone leaves tall triangles over its roofs.
+                foreach (float x in new[] { 440f, 460f, 500f, 540f, 560f })
+                foreach (float z in new[] { 390f, 400f, 410f })
+                {
+                    var ray = new Ray(new Vector3(x, 30, z), Vector3.down);
+                    Assert.That(horizonCollider.Raycast(ray, out var villageTerrain, 60), Is.True,
+                        "Village horizon missing at " + x + "," + z);
+                    Assert.That(villageTerrain.point.y, Is.LessThanOrEqualTo(.05f),
+                        "Old horizon rises into the village at " + x + "," + z);
+                    if (hazeCollider && hazeCollider.Raycast(ray, out var villageHaze, 60))
+                        Assert.That(villageHaze.point.y, Is.LessThanOrEqualTo(.05f),
+                            "Old horizon haze rises into the village at " + x + "," + z);
+                }
                 foreach (float x in new[] { 488.5f, 497f, 500f, 503f, 511.5f })
                 foreach (float z in new[] { 414.1f, 420f, 424f, 430f, 440f, 447.9f, 448.1f, 450f, 454f, 458f, 462f, 466f })
                 {
