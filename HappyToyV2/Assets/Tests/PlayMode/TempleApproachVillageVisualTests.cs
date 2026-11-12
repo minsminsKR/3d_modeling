@@ -359,6 +359,39 @@ namespace HappyToy.V2.CloudTests
             Assert.That(shopRenderers.Length, Is.GreaterThan(0));
             var shopBounds = shopRenderers[0].bounds;
             foreach (var renderer in shopRenderers.Skip(1)) shopBounds.Encapsulate(renderer.bounds);
+            var frontShopSign = nodes.SingleOrDefault(node => node.name == "Weathered horizontal Woam sign");
+            Assert.That(frontShopSign, Is.Not.Null, "Horizontal shop sign is missing");
+            Assert.That(frontShopSign.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var frontSignTexture = frontShopSign.GetComponent<Renderer>().sharedMaterial.GetTexture("_BaseMap") as Texture2D;
+            Assert.That(frontSignTexture, Is.Not.Null);
+            Assert.That(Mathf.Max(frontSignTexture.width, frontSignTexture.height), Is.LessThanOrEqualTo(1024));
+            var shopBulbs = nodes.Where(node => node.name == "Warm shop bulb").ToArray();
+            var bulbSockets = nodes.Where(node => node.name == "Shop bulb socket").ToArray();
+            Assert.That(shopBulbs.Length, Is.EqualTo(2)); Assert.That(bulbSockets.Length, Is.EqualTo(2));
+            Assert.That(shopBulbs.All(bulb => bulb.GetComponentsInChildren<Collider>(true).Length == 0), Is.True);
+            foreach (var bulb in shopBulbs)
+            {
+                Assert.That(bulb.GetComponent<MeshFilter>().sharedMesh.vertexCount, Is.GreaterThan(100),
+                    "Shop bulb must use a rounded globe");
+                Assert.That(bulbSockets.Any(socket => socket.GetComponent<Renderer>().bounds.Intersects(
+                    bulb.GetComponent<Renderer>().bounds)), Is.True, "Shop bulb is detached from its socket");
+            }
+            var frontSignSupport = shop.GetComponentsInChildren<MeshFilter>(true)
+                .First(filter => filter.sharedMesh && filter.sharedMesh.vertexCount > 1000);
+            var frontSignProbe = frontSignSupport.gameObject.AddComponent<MeshCollider>();
+            try
+            {
+                frontSignProbe.sharedMesh = frontSignSupport.sharedMesh; Physics.SyncTransforms();
+                foreach (float z in new[] { -10.2f, -9.1f, -8.1f })
+                {
+                    var start = alley.transform.TransformPoint(new Vector3(-3.30f, 2.80f, z));
+                    Assert.That(frontSignProbe.Raycast(new Ray(start, Vector3.left), out var hit, .4f), Is.True,
+                        "Front sign has no shop surface behind it");
+                    float fasciaX = alley.transform.InverseTransformPoint(hit.point).x;
+                    Assert.That(-3.425f - fasciaX, Is.InRange(.005f, .09f), "Front sign floats away from its shop fascia");
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(frontSignProbe); }
             foreach (var bounds in houseBounds)
                 Assert.That(bounds.Intersects(shopBounds), Is.False,
                     "A residential house overlaps the shop: " + bounds.center + " vs " + shopBounds.center);
@@ -899,6 +932,11 @@ namespace HappyToy.V2.CloudTests
             Physics.SyncTransforms(); yield return null;
             ApproachLookAt(meterBounds.center); yield return null;
             CaptureApproachReview("village-36-electric-meter-close");
+            var signView = alley.transform.TransformPoint(new Vector3(-2.15f, 0, -9.15f));
+            player.transform.position = new Vector3(signView.x, player.transform.position.y, signView.z);
+            Physics.SyncTransforms(); yield return null;
+            ApproachLookAt(frontShopSign.GetComponent<Renderer>().bounds.center); yield return null;
+            CaptureApproachReview("village-38-front-shop-sign");
             var duskSky = RenderSettings.skybox;
             Assert.That(duskSky.shader.name, Is.EqualTo("HappyToy/AlleyDuskSky"));
             Assert.That(duskSky.GetTexture("_DuskClouds"), Is.Not.Null);

@@ -189,8 +189,18 @@ namespace HappyToy.V2
             shopLight.color = new Color(1, .55f, .24f); shopLight.range = 6; shopLight.intensity = 4f;
             shopLight.shadows = LightShadows.None;
             for (int bulb = 0; bulb < 2; bulb++)
-                Box("Warm shop bulb", new Vector3(-2.48f, 2.12f, -9.5f + bulb * 2.8f), new Vector3(.10f, .15f, .10f),
-                    surfaces.Get("painted-metal", new Color(.9f, .7f, .35f), new Color(1.3f, .65f, .18f)), false);
+            {
+                float z = -9.5f + bulb * 2.8f;
+                Cylinder("Shop bulb socket", new Vector3(-3.25f, 2.20f, z), new Vector3(.065f, .04f, .065f), dark, false);
+                var globe = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                globe.name = "Warm shop bulb"; globe.layer = 8; globe.transform.SetParent(transform, false);
+                globe.transform.localPosition = new Vector3(-3.25f, 2.10f, z);
+                globe.transform.localScale = new Vector3(.10f, .15f, .10f);
+                globe.GetComponent<Renderer>().sharedMaterial = surfaces.Get("painted-metal",
+                    new Color(.9f, .7f, .35f), new Color(1.3f, .65f, .18f));
+                globe.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+                Destroy(globe.GetComponent<Collider>());
+            }
             // Keep the straight gate fully within the straight wall. The
             // old position straddled the bend and stood out in the lane.
             foreach (float z in new[] { -11.7f, -4.4f, 4f, 11f })
@@ -855,6 +865,7 @@ namespace HappyToy.V2
             var bounds = MonsterPresentationScale.Bounds(holder);
             holder.position += Vector3.right * ((transform.position.x - 2.99f) - bounds.max.x);
             AttachProjectingSign();
+            if (walkInStorefront) gameObject.AddComponent<AlleyStorefrontFrontSign>().TryPrepare();
             // Only presentation geometry is replaced. Original wall colliders,
             // item targets, the projecting sign and freezer remain untouched.
             foreach (Transform child in transform)

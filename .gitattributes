@@ -377,3 +377,7 @@ HappyToyV2/Assets/Resources/AlleyMeter/*.png filter=lfs diff=lfs merge=lfs -text
 
 # Side-window curtain runtime image.
 HappyToyV2/Assets/Resources/AlleyCompactBrickHouse/side-window-curtain.png filter=lfs diff=lfs merge=lfs -text
+
+# Weathered storefront sign image and retained original.
+HappyToyV2/Assets/Resources/AlleyStorefrontInterior/woam-front-sign.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/Storefront/Interior/woam-front-sign-original.png filter=lfs diff=lfs merge=lfs -text
