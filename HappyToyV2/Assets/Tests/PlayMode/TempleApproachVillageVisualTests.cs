@@ -436,6 +436,24 @@ namespace HappyToy.V2.CloudTests
             Assert.That(agedBrickWalls.Length, Is.EqualTo(1), "Aged brick wall is missing or repeated");
             Assert.That(agedBrickWalls[0].sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
             Assert.That(agedBrickWalls[0].sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
+            var nearBrickWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Weathered residential wall" &&
+                node.localPosition.x > 0 && (Mathf.Approximately(node.localPosition.z, -12f) ||
+                Mathf.Approximately(node.localPosition.z, -6f))).ToArray();
+            Assert.That(nearBrickWalls.Length, Is.EqualTo(2));
+            foreach (var wall in nearBrickWalls)
+            {
+                var renderer = wall.GetComponent<Renderer>();
+                Assert.That(wall.GetComponent<BoxCollider>().enabled, Is.True, "Near wall collision must remain");
+                if (Mathf.Approximately(wall.localPosition.z, -12f))
+                    Assert.That(renderer.enabled, Is.False, "Authored wall must hide the original surface");
+                else
+                {
+                    Assert.That(renderer.enabled && renderer.sharedMaterial.GetTag("GraphicsSurface", false) == "alley-aged-brick", Is.True,
+                        "Visible near brick wall lost its weathered PBR surface");
+                    Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_NORMALMAP") &&
+                        renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
+                }
+            }
             var signFrame = nodes.Single(node => node.name == "Projecting shop sign frame");
             var signFaces = nodes.Where(node => node.name == "Baked Korean shop sign face").ToArray();
             Assert.That(signFaces.Length, Is.EqualTo(2));
