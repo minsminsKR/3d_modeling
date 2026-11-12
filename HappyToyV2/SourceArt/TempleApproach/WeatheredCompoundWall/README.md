@@ -20,7 +20,7 @@ The same job was rotated in the designated service viewer to inspect both
 sides and the end pillar. Blender 4.2.23 normalized the full-resolution mesh
 and saved a packed, editable source before decimating 988,462 triangles to
 60,000 for Unity. CPU previews of both faces retained the brick base and
-weathering. Unity uses two curved-path sections and the original path collider;
+weathering. Unity uses four curved-path sections and the original path collider;
 no new mesh collider is added to gameplay. A D3D11 PlayMode camera review
 and sampled visual-to-collider alignment checks passed. The focused real-input
 shop, firecracker, dog and village-to-mountain seam test also passed. These

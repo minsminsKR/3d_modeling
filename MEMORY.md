@@ -392,5 +392,5 @@
 
 ## 골목 풍화 담장 — 2026-11-12
 
-- 지정 A100 서비스 모델의 앞·뒤를 웹에서 검토하고 Blender 편집 원본과 6만 삼각형 게임 메시를 보존했다. 곡선 골목 회벽 두 구간을 새 메시로 교체하고 기존 충돌체를 유지했다. 원본과 재현 방법은 `HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/README.md`에 있다.
+- 지정 A100 서비스 모델의 앞·뒤를 웹에서 검토하고 Blender 편집 원본과 6만 삼각형 게임 메시를 보존했다. 곡선 골목 회벽 네 구간을 새 메시로 교체하고 기존 충돌체를 유지했다. 원본과 재현 방법은 `HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/README.md`에 있다.
 - D3D11 골목 카메라 및 메시·충돌 경계 검증과 실제 입력을 쓰는 상점·콩알탄·개 이벤트 및 산길 경계 검증이 통과했다. 전체 게임 회귀, 실제 빌드 및 FPS는 별도다.

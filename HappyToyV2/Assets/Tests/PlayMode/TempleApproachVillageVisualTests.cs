@@ -136,7 +136,7 @@ namespace HappyToy.V2.CloudTests
                 finally { UnityEngine.Object.DestroyImmediate(probe); }
             }
             var weatheredWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Weathered compound wall section").ToArray();
-            Assert.That(weatheredWalls.Length, Is.EqualTo(2), "Weathered wall sections are missing");
+            Assert.That(weatheredWalls.Length, Is.EqualTo(4), "Weathered wall sections are missing");
             foreach (var section in weatheredWalls)
             {
                 Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty, "Weathered wall visuals must not add collision");

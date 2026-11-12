@@ -604,8 +604,12 @@ namespace HappyToy.V2
             bool replaceVisual = false;
             if (side < 0 && Mathf.Approximately(start, -3f))
                 replaceVisual = gameObject.AddComponent<AlleyAuthoredWallSections>().TryBuild(start, end, height, RoadBend);
-            else if (side < 0 && Mathf.Approximately(start, 3f))
-                replaceVisual = gameObject.AddComponent<AlleyWeatheredWallSections>().TryBuild(start, end, height, RoadBend);
+            else if (side < 0 && (Mathf.Approximately(start, 3f) || Mathf.Approximately(start, 9f)))
+            {
+                var sections = GetComponent<AlleyWeatheredWallSections>();
+                if (!sections) sections = gameObject.AddComponent<AlleyWeatheredWallSections>();
+                replaceVisual = sections.TryBuild(start, end, height, RoadBend);
+            }
             if (replaceVisual)
             {
                 // Keep all original curved colliders, replacing only their
