@@ -352,7 +352,9 @@ namespace HappyToy.V2.CloudTests
                         triangles += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
                 bool waterTank = house.GetComponentsInChildren<Renderer>(true).Any(renderer =>
                     renderer.sharedMaterial && renderer.sharedMaterial.name == "WaterTankHouse");
-                Assert.That(triangles, Is.LessThanOrEqualTo(waterTank ? 126000 : 32000), "Background house used the full mesh");
+                bool usesTiledHouse = house.GetComponentsInChildren<Renderer>(true).Any(renderer =>
+                    renderer.sharedMaterial && renderer.sharedMaterial.name == "TiledHouse");
+                Assert.That(triangles, Is.LessThanOrEqualTo(waterTank || usesTiledHouse ? 126000 : 32000), "Background house used the full mesh");
                 Assert.That(house.GetComponentsInChildren<Collider>(true), Is.Empty);
                 Assert.That(house.GetComponentsInChildren<Renderer>(true).All(renderer => renderer.sharedMaterial &&
                     renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")), Is.True,
@@ -361,11 +363,14 @@ namespace HappyToy.V2.CloudTests
             var rearSlate = background.SingleOrDefault(house => house.GetComponentsInChildren<Renderer>(true)
                 .Any(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "SlateHousePbr"));
             Assert.That(rearSlate, Is.Not.Null, "The rear slate-roof house is missing");
-            Assert.That(rearSlate.position.z, Is.LessThan(alley.transform.position.z - 16f),
-                "The slate background does not extend behind the shop");
             var tankHouse = background.SingleOrDefault(house => house.GetComponentsInChildren<Renderer>(true)
                 .Any(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "WaterTankHouse"));
             Assert.That(tankHouse, Is.Not.Null, "Water-tank house is missing behind the shop");
+            var tiledHouse = background.SingleOrDefault(house => house.GetComponentsInChildren<Renderer>(true)
+                .Any(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "TiledHouse"));
+            Assert.That(tiledHouse, Is.Not.Null, "Tiled-roof house is missing behind the shop");
+            Assert.That(tiledHouse.position.z, Is.LessThan(alley.transform.position.z - 16f),
+                "The tiled-roof background does not extend behind the shop");
             var backgroundBounds = new System.Collections.Generic.List<Bounds>();
             var overlaps = new System.Collections.Generic.List<string>();
             foreach (var house in background.Concat(farHouses))
@@ -456,7 +461,7 @@ namespace HappyToy.V2.CloudTests
             foreach (var renderer in yardRenderers.Skip(1)) yardBounds.Encapsulate(renderer.bounds);
             Assert.That(returnBounds[0].Intersects(yardBounds), Is.True,
                 "Courtyard return does not meet the authored wall");
-            Assert.That(returnBounds[1].max.x, Is.LessThan(alley.transform.position.x - 3.9f),
+            Assert.That(returnBounds[1].max.x, Is.LessThan(alley.transform.position.x - 3.6f),
                 "Courtyard return encroaches on the alley");
             Assert.That(returnBounds[0].max.x, Is.GreaterThan(returnBounds[1].min.x), "Courtyard wall has a visible seam");
             Assert.That(returnBounds[1].max.x, Is.GreaterThan(alley.transform.position.x - 4.1f),
@@ -617,6 +622,9 @@ namespace HappyToy.V2.CloudTests
             }
             finally { UnityEngine.Object.DestroyImmediate(groundProbe); }
             CaptureApproachReview("village-19-water-tank-house");
+            var tiledBounds = tiledHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
+            ApproachLookAt(tiledBounds.center + Vector3.up * tiledBounds.extents.y * .45f); yield return null;
+            CaptureApproachReview("village-23-tiled-house");
 
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 393f, 15,

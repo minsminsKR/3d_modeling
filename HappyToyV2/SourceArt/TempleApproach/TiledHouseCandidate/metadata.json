@@ -1,0 +1,85 @@
+{
+  "source_images": [
+    "inputs/01_reference.png"
+  ],
+  "model_path": "model.glb",
+  "used_texture": true,
+  "warnings": [],
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": null,
+    "gpu_mode": "manual",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 49152,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 82943,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "actual_pipeline": "1024_cascade",
+  "actual_steps_per_stage": 12,
+  "effective_voxel_size": 0.0009765625,
+  "actual_resolution": 1024,
+  "effective_max_tokens": 49152,
+  "cross_gpu_transfer": null,
+  "actual_gpu_mode": "single_memory_safe",
+  "gpu_devices_used": [
+    1
+  ],
+  "gpu_stage_timings": {
+    "TRELLIS.2 재질 생성 · GPU 1": 11.36492327786982,
+    "TRELLIS.2 형상 복원 · GPU 1": 1.5289874337613583,
+    "TRELLIS.2 재질 복원 · GPU 1": 1.474004978314042,
+    "mesh_repair": 0.042284153401851654
+  },
+  "gpu_memory_snapshots": [
+    {
+      "logical_gpu": 0,
+      "free_mib": 38630,
+      "allocated_mib": 52,
+      "reserved_mib": 104
+    },
+    {
+      "logical_gpu": 0,
+      "free_mib": 38308,
+      "allocated_mib": 275,
+      "reserved_mib": 426
+    },
+    {
+      "logical_gpu": 0,
+      "free_mib": 38130,
+      "allocated_mib": 455,
+      "reserved_mib": 604
+    },
+    {
+      "logical_gpu": 0,
+      "free_mib": 38190,
+      "allocated_mib": 456,
+      "reserved_mib": 544
+    }
+  ],
+  "auxiliary_memory_fraction": null,
+  "auxiliary_free_mib_at_start": null,
+  "auxiliary_reserved_mib": null,
+  "postprocess_checkpoint": null,
+  "material_decode_fallback": false,
+  "torch_peak_memory_mib": [
+    {
+      "physical_gpu": 1,
+      "allocated": 7549.4,
+      "reserved": 7804.0
+    }
+  ],
+  "elapsed_seconds": 261.57,
+  "note": "Official native generation with shape/material GPU placement, independent mesh-repair overlap, and released sparse caches."
+}

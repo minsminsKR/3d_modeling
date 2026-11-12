@@ -370,6 +370,8 @@ namespace HappyToy.V2
             var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
             var waterTankHouse = Resources.Load<GameObject>("AlleyWaterTankHouse/geometry-high");
             var waterTankMaterial = Resources.Load<Material>("AlleyWaterTankHouse/WaterTankHouse");
+            var tiledHouse = Resources.Load<GameObject>("AlleyTiledHouse/geometry-high");
+            var tiledMaterial = Resources.Load<Material>("AlleyTiledHouse/TiledHouse");
             var farBrick = Resources.Load<GameObject>("AlleyBrickHouse/geometry-far");
             var farBrickMaterial = Resources.Load<Material>("AlleyBrickHouse/BrickHousePbr") ??
                 Resources.Load<Material>("AlleyBrickHouse/BrickHouse");
@@ -548,7 +550,7 @@ namespace HappyToy.V2
                 foreach (var node in yardWall.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in yardWall.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
-                GetComponent<AlleyAuthoredWallSections>().TryBuildCourtyardReturn(yardWall, -17.2f, -4f);
+                GetComponent<AlleyAuthoredWallSections>().TryBuildCourtyardReturn(yardWall, -17.2f, -3.7f);
             }
             // Roofs behind the shop fill the empty side skyline without adding
             // collision or changing the shop entrance and event corridor.
@@ -556,12 +558,13 @@ namespace HappyToy.V2
             {
                 var rearShop = CorridorEntranceModels.Group(transform, "Residential roofs behind shop", Vector3.zero);
                 bool useTwoStory = i == 0 && twoStory;
-                bool useSlate = i == 2 && slate && farSlate && farSlateMaterial;
+                bool useSlate = i == 1 && slate && farSlate && farSlateMaterial;
                 bool usePlaster = !useTwoStory && !useSlate && alternate;
                 bool useWaterTankHouse = i == 0 && waterTankHouse && waterTankMaterial;
+                bool useTiledHouse = i == 2 && tiledHouse && tiledMaterial;
                 PlaceBackground(rearShop, useSlate ? slate : (useTwoStory ? twoStory : (usePlaster ? alternate : prefab)),
-                    useWaterTankHouse ? waterTankHouse : (useSlate ? farSlate : (useTwoStory ? farHouse : (usePlaster ? farPlaster : null))),
-                    useWaterTankHouse ? waterTankMaterial : (useSlate ? farSlateMaterial : (useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null))));
+                    useWaterTankHouse ? waterTankHouse : (useTiledHouse ? tiledHouse : (useSlate ? farSlate : (useTwoStory ? farHouse : (usePlaster ? farPlaster : null)))),
+                    useWaterTankHouse ? waterTankMaterial : (useTiledHouse ? tiledMaterial : (useSlate ? farSlateMaterial : (useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null)))));
                 CorridorEntranceModels.GroundAtHeight(rearShop,
                     new Vector3(-12.2f, 0, i == 2 ? -20f : -12f + i * 8f), i == 0 && (useTwoStory || useWaterTankHouse) ? 5.8f : 4.7f,
                     Quaternion.Euler(0, useWaterTankHouse ? 158f : i == 2 ? 104f : 83f + i * 9f, 0));

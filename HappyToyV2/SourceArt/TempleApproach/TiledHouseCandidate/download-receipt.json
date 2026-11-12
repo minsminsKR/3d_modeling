@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "job_id": "aa95bc0d-813c-477c-b662-40e90fb09c8b",
+  "downloaded_at": "2026-11-12T06:50:22Z",
+  "archive": "aa95bc0d-813c-477c-b662-40e90fb09c8b.zip (verified archive not tracked)",
+  "generation_record": {
+    "schema_version": 1,
+    "id": "aa95bc0d-813c-477c-b662-40e90fb09c8b",
+    "status": "completed",
+    "message": "Model is ready.",
+    "created_at": 1794465932.5789893,
+    "updated_at": 1794466201.9778857,
+    "source_filename": "reference.png",
+    "batch_index": 1,
+    "batch_total": 1,
+    "options": {
+      "model": "trellis2",
+      "gpu_id": 1,
+      "texture_gpu_id": null,
+      "gpu_mode": "manual",
+      "texture_profile": "detail",
+      "omni_use_ema": false,
+      "trellis_pipeline": "1024_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 4096,
+      "trellis_max_tokens": 49152,
+      "trellis_dual_postprocess": false,
+      "texture": true,
+      "remove_background": true,
+      "seed": 82943,
+      "num_inference_steps": 50,
+      "guidance_scale": 7.5,
+      "octree_resolution": 512,
+      "num_chunks": 50000,
+      "output_format": "glb"
+    },
+    "request_id": "353832be-3026-4a77-abd3-25a853e3e675",
+    "submitted_options": {
+      "gpu_id": [
+        "1"
+      ],
+      "model": [
+        "trellis2"
+      ],
+      "seed": [
+        "82943"
+      ],
+      "trellis_pipeline": [
+        "1024_cascade"
+      ],
+      "trellis_steps": [
+        "12"
+      ],
+      "trellis_texture_size": [
+        "4096"
+      ]
+    },
+    "source": "cli",
+    "inputs": [
+      {
+        "name": "reference.png",
+        "archive_name": "inputs/01_reference.png",
+        "sha256": "2d11877b556047807f1670e2def519cffa8d61697227a0ddd14b47f962117775",
+        "size": 2654572
+      }
+    ],
+    "saved": true,
+    "saved_at": 1794465932.5789893,
+    "started_at": 1794465932.5903742,
+    "finished_at": 1794466201.9778764,
+    "used_texture": true,
+    "warnings": [],
+    "web_url": "/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b",
+    "status_url": "/api/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b",
+    "archive_url": "/api/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/archive",
+    "record_url": "/api/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/record",
+    "rigging": {
+      "status": "idle",
+      "ready": true,
+      "start_url": "/api/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/rigging",
+      "status_url": "/api/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/rigging"
+    },
+    "elapsed_seconds": 269,
+    "display_name": "reference",
+    "download_url": "/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/download",
+    "model_url": "/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/model",
+    "mixamo_package_url": "/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/mixamo/package",
+    "mixamo_upload_url": "/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/mixamo/upload",
+    "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+    "mixamo_files": [],
+    "processed_input_url": "/jobs/aa95bc0d-813c-477c-b662-40e90fb09c8b/processed/1",
+    "saved_at_label": "2026-11-12 15:45",
+    "created_at_label": "2026-11-12 15:45",
+    "artifacts": [
+      {
+        "name": "model.glb",
+        "sha256": "c88d4eabab1c4d8c3e5b6b8efa8aafd689db64925d09dc986dc805785d520f33",
+        "size": 76060120
+      },
+      {
+        "name": "metadata.json",
+        "sha256": "539f31e0b9f5e782fb3388fbf3407838472bcefdad66e3fd34119f7ab303c159",
+        "size": 2450
+      },
+      {
+        "name": "outputs/generation_request.json",
+        "sha256": "d68e66b851fe8c8643817527ddd7920430e9483323bc68a69bf7e1b5edea85e0",
+        "size": 857
+      },
+      {
+        "name": "outputs/generation_result.json",
+        "sha256": "092ea4cc14c800d3a189f91d40a75c637bd9ef79a1faa590a3c08350ff9421ed",
+        "size": 333
+      },
+      {
+        "name": "processed_inputs/01.png",
+        "sha256": "0b458d941d8f97c2d21bd80b2e83967fb2c072e9a02687ceb4629ea169392de8",
+        "size": 862260
+      }
+    ]
+  },
+  "archive_sha256": "cebe5d9213fae63fcc899d936c95e47a74f65e5d970b026ff4541395f5b8e52f",
+  "archive_bytes": 66940833,
+  "archive_etag": "\"cebe5d9213fae63fcc899d936c95e47a74f65e5d970b026ff4541395f5b8e52f\"",
+  "resumed_bytes": 0,
+  "received_bytes": 66940833,
+  "transfer_seconds": 1.5
+}
