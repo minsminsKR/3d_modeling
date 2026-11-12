@@ -238,9 +238,17 @@ namespace HappyToy.V2
             float noticeSlope = (RoadBend(noticeZ + .02f) - RoadBend(noticeZ - .02f)) / .04f;
             Vector3 noticeInward = new Vector3(1, 0, -noticeSlope).normalized;
             Vector3 noticePoint = new Vector3(-3.2f + RoadBend(noticeZ), 1.48f, noticeZ) + noticeInward * .198f;
-            gameObject.AddComponent<AlleyWallDressing>().Prepare(
+            var wallDetails = gameObject.AddComponent<AlleyWallDressing>();
+            wallDetails.Prepare(
                 new Vector3(-3.025f + RoadBend(.7f), 0, .7f),
                 new Vector3(3.025f + RoadBend(1.4f), 0, 1.4f), noticePoint, noticeInward);
+            foreach (var entry in new[] { (z: -5.7f, number: "23-4"), (z: 7.2f, number: "18") })
+            {
+                float slope = (RoadBend(entry.z + .02f) - RoadBend(entry.z - .02f)) / .04f;
+                var inward = new Vector3(-1, 0, slope).normalized;
+                var point = new Vector3(3.2f + RoadBend(entry.z), 1.67f, entry.z) + inward * .195f;
+                wallDetails.AddHouseNumber(point, inward, entry.number);
+            }
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
             InstallKoreanWallCandidate();
             InstallResidentialHouses();

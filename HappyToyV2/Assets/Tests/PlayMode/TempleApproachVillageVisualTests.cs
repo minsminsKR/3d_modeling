@@ -238,6 +238,22 @@ namespace HappyToy.V2.CloudTests
                 }
             }
             Assert.That(nodes.Count(node => node.name == "Gate door pull"), Is.EqualTo(4));
+            var numberPlates = nodes.Where(node => node.name == "Village house number plate").OrderBy(node => node.position.z).ToArray();
+            Assert.That(numberPlates.Length, Is.EqualTo(2), "House number plates are missing");
+            Assert.That(numberPlates.All(node => node.GetComponentsInChildren<Collider>(true).Length == 0),
+                Is.True, "Wall details must not add obstacles");
+            foreach (var plate in numberPlates)
+            {
+                var intoWall = plate.forward;
+                Assert.That(Physics.Raycast(plate.position - intoWall * .3f, intoWall, out var support, .4f,
+                    1 << 8, QueryTriggerInteraction.Ignore), Is.True, "House number floats off its wall");
+                Assert.That(support.collider.name == "Weathered residential wall" ||
+                    support.collider.name == "Curved residential wall", Is.True, "House number has no wall behind it");
+                Assert.That(support.distance, Is.InRange(.29f, .36f), "House number is too far from the wall");
+            }
+            var numbers = nodes.Where(node => node.name == "House number lettering")
+                .Select(node => node.GetComponent<TextMesh>().text).ToArray();
+            Assert.That(numbers, Is.EquivalentTo(new[] { "23-4", "18" }));
             var notice = nodes.SingleOrDefault(node => node.name == "Weathered village fire notice");
             Assert.That(notice, Is.Not.Null, "Village notice is missing");
             Assert.That(notice.GetComponent<Renderer>().sharedMaterial, Is.Not.Null);
@@ -265,6 +281,9 @@ namespace HappyToy.V2.CloudTests
             eye = Get<Camera>(player, "eyes").transform.position;
             ApproachLookAt(eye + new Vector3(5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-05-shop-right-roofs");
+            ApproachLookAt(numberPlates[0].position); yield return null;
+            CaptureApproachReview("village-14-house-number");
+
 
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 399f, 15,
@@ -291,6 +310,8 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-11-near-curved-gate");
             ApproachLookAt(farCurveGate.position); yield return null;
             CaptureApproachReview("village-12-far-curved-gate");
+            ApproachLookAt(numberPlates[1].position); yield return null;
+            CaptureApproachReview("village-15-curved-house-number");
             var slateBounds = slateHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
             ApproachLookAt(slateBounds.center + Vector3.up * (slateBounds.extents.y * .35f)); yield return null;
             CaptureApproachReview("village-13-slate-house");
