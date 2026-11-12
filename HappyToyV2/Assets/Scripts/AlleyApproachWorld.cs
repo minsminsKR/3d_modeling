@@ -258,6 +258,15 @@ namespace HappyToy.V2
                 var point = new Vector3(-3.2f + (a + b) * .5f, z > 10 ? 1.50f : 1.76f, z) + inward * .205f;
                 wallDetails.AddRunoff(point, inward, new Vector2(.82f, 1.34f), z == 6.5f);
             }
+            // Weathering on the opposite boundary makes the two sides read
+            // as independently maintained residential properties.
+            foreach (float z in new[] { -1f, 7.4f, 14f })
+            {
+                float a = RoadBend(z - .5f), b = RoadBend(z + .5f);
+                var inward = new Vector3(-1, 0, b - a).normalized;
+                var point = new Vector3(3.2f + (a + b) * .5f, 1.55f, z) + inward * .205f;
+                wallDetails.AddRunoff(point, inward, new Vector2(.72f, 1.18f), z != 7.4f);
+            }
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
             InstallKoreanWallCandidate();
             InstallResidentialHouses();
@@ -358,6 +367,7 @@ namespace HappyToy.V2
                 foreground.position += Vector3.right * (foregroundClearance - foregroundBounds.min.x);
             foreach (var node in foreground.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
             var occupiedHouses = new List<Bounds> { MonsterPresentationScale.Bounds(foreground) };
+            var aerialHouses = new List<Transform> { foreground };
             void SeparateOutward(Transform holder, float side)
             {
                 var bounds = MonsterPresentationScale.Bounds(holder);
@@ -429,6 +439,7 @@ namespace HappyToy.V2
                     // Keep the entire house away from previously placed
                     // buildings without moving it into the walkable lane.
                     SeparateOutward(holder, side);
+                    if (variant == 0 || variant == 3) aerialHouses.Add(holder);
                     foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 }
                 // A second row breaks the empty skyline beyond the nearer roofs.
@@ -476,6 +487,7 @@ namespace HappyToy.V2
                     new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && twoStory ? 5.8f : 4.7f,
                     Quaternion.Euler(0, 83f + i * 9f, 0));
                 SeparateOutward(rearShop, -1f);
+                if (i == 0) aerialHouses.Add(rearShop);
                 foreach (var node in rearShop.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in rearShop.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -500,6 +512,7 @@ namespace HappyToy.V2
                         renderer.shadowCastingMode = ShadowCastingMode.Off;
                     }
                 }
+            gameObject.AddComponent<AlleyRoofDetails>().Prepare(aerialHouses);
         }
         // Two continuous bends leave the shop, beast marker and mountain seam
         // at their original coordinates. Segment overlap keeps the colliders closed.

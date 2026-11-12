@@ -95,6 +95,12 @@ namespace HappyToy.V2.CloudTests
                 "No angled house on the left");
             Assert.That(roofHeadings.Any(yaw => Mathf.Abs(Mathf.DeltaAngle(145, yaw)) < 15f), Is.True,
                 "No angled house on the right");
+            var aerialAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "Village rooftop aerial anchor").ToArray();
+            Assert.That(aerialAnchors.Length, Is.EqualTo(4), "Rooftop aerial anchors are missing");
+            Assert.That(aerialAnchors.All(node => !node.GetComponent<Collider>()), Is.True);
+            var aerialMesh = alley.transform.Find("Batched vintage rooftop TV aerials");
+            Assert.That(aerialMesh && aerialMesh.GetComponent<MeshFilter>().sharedMesh.vertexCount > 0, Is.True);
+            Assert.That(aerialMesh.GetComponentsInChildren<Collider>(true), Is.Empty, "Rooftop details must not obstruct the player");
             var oldShopWindows = alley.transform.Cast<Transform>().Where(node => node.name == "Shop warm window").ToArray();
             Assert.That(oldShopWindows.Length, Is.EqualTo(3));
             Assert.That(oldShopWindows.All(node => !node.GetComponent<Renderer>().enabled), Is.True,
@@ -272,9 +278,11 @@ namespace HappyToy.V2.CloudTests
                 }
             }
             Assert.That(nodes.Count(node => node.name == "Gate door pull"), Is.EqualTo(4));
-            var runoff = nodes.Where(node => node.name == "Wall rain runoff").OrderBy(node => node.position.z).ToArray();
-            Assert.That(runoff.Length, Is.EqualTo(3), "Wall rain runoff is missing");
-            foreach (var patch in runoff)
+            var allRunoff = nodes.Where(node => node.name == "Wall rain runoff").OrderBy(node => node.position.z).ToArray();
+            Assert.That(allRunoff.Length, Is.EqualTo(6), "Wall rain runoff is missing");
+            var runoff = allRunoff.Where(node => alley.transform.InverseTransformPoint(node.position).x < 0).ToArray();
+            Assert.That(runoff.Length, Is.EqualTo(3), "Left wall runoff is missing");
+            foreach (var patch in allRunoff)
             {
                 Assert.That(patch.GetComponentsInChildren<Collider>(true), Is.Empty);
                 var renderer = patch.GetComponent<Renderer>();
