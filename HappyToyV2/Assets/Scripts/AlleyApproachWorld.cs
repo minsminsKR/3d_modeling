@@ -288,7 +288,17 @@ namespace HappyToy.V2
             var rearBoundary = transform.GetChild(transform.childCount - 1);
             var rearSections = GetComponent<AlleyWeatheredWallSections>();
             if (!rearSections) rearSections = gameObject.AddComponent<AlleyWeatheredWallSections>();
-            if (rearSections.TryBuildRear(new Vector3(0, 0, -17.2f), 8f, 2.8f))
+            var rearGate = GetComponent<AlleyAuthoredGate>();
+            bool hasRearGate = rearGate && rearGate.TryBuildRear(new Vector3(0, 0, -17.2f), 8f, 2.8f);
+            if (hasRearGate)
+            {
+                var corner = Box("Rear wall corner pier", new Vector3(-3.85f, 1.1f, -17.2f),
+                    new Vector3(.36f, 2.2f, .38f), concreteWall, false);
+                var cornerRenderer = corner.GetComponent<Renderer>();
+                cornerRenderer.shadowCastingMode = ShadowCastingMode.Off;
+                cornerRenderer.receiveShadows = false;
+            }
+            if (hasRearGate || rearSections.TryBuildRear(new Vector3(0, 0, -17.2f), 8f, 2.8f))
                 rearBoundary.GetComponent<Renderer>().enabled = false;
             InstallKoreanWallCandidate();
             InstallResidentialHouses();
@@ -813,7 +823,7 @@ namespace HappyToy.V2
                 label == "Residential ground behind village")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, surfaces.TileSpan("concrete-rough"));
             else if (label == "Weathered residential wall" || label == "Curved residential wall" ||
-                label == "Concrete wall pier" || label == "Wall tile coping")
+                label == "Concrete wall pier" || label == "Rear wall corner pier" || label == "Wall tile coping")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, GraphicsSurfaceLibrary.TileSpan(material));
             if (!collision) Destroy(piece.GetComponent<Collider>());
             return piece;

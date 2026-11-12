@@ -10,6 +10,31 @@ namespace HappyToy.V2
     public sealed class AlleyAuthoredGate : MonoBehaviour
     {
         public const float Start = 2.76f, End = 5.24f;
+        // A complete authored gate closes the starting end of the lane while
+        // the pre-existing box collider remains the gameplay boundary.
+        public bool TryBuildRear(Vector3 center, float width, float height)
+        {
+            var prefab = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
+            if (!prefab) return false;
+            var pivot = CorridorEntranceModels.Group(transform, "Authored rear courtyard gate", Vector3.zero);
+            var visual = CorridorEntranceModels.Group(pivot, "Rear gate surface", Vector3.zero);
+            Instantiate(prefab, visual, false);
+            CorridorEntranceModels.GroundAtHeight(visual, Vector3.zero, height, Quaternion.Euler(0, 180, 0));
+            var bounds = MonsterPresentationScale.Bounds(visual);
+            if (bounds.size.x < .01f) throw new InvalidOperationException("Rear gate width is invalid");
+            var scale = visual.localScale;
+            scale.x *= width / bounds.size.x; scale.z *= .35f;
+            visual.localScale = scale;
+            bounds = MonsterPresentationScale.Bounds(visual);
+            visual.position += new Vector3(pivot.position.x - bounds.center.x,
+                pivot.position.y - bounds.min.y, pivot.position.z + .15f - bounds.max.z);
+            pivot.localPosition = center;
+            foreach (var node in pivot.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+            foreach (var renderer in pivot.GetComponentsInChildren<Renderer>(true))
+                renderer.shadowCastingMode = ShadowCastingMode.Off;
+            return true;
+        }
+
         public bool TryBuild(Func<float, float> bend)
         {
             var prefab = Resources.Load<GameObject>("AlleyKoreanWall/gate-segment");

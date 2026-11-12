@@ -229,44 +229,31 @@ namespace HappyToy.V2.CloudTests
             var rearCollider = rearBoundary.GetComponent<BoxCollider>();
             Assert.That(rearCollider && rearCollider.enabled && !rearBoundary.GetComponent<Renderer>().enabled, Is.True,
                 "Rear wall must preserve collision while using the authored surface");
-            var rearSections = alley.transform.Cast<Transform>()
-                .Where(node => node.name == "Weathered rear boundary section").ToArray();
-            Assert.That(rearSections.Length, Is.EqualTo(2), "Rear wall sections are missing");
-            foreach (var section in rearSections)
+            var rearGate = alley.transform.Find("Authored rear courtyard gate");
+            Assert.That(rearGate, Is.Not.Null, "Rear residential gate is missing");
+            Assert.That(rearGate.GetComponentsInChildren<Collider>(true), Is.Empty,
+                "Rear gate must not add collision");
+            var rearFilters = rearGate.GetComponentsInChildren<MeshFilter>(true);
+            Assert.That(rearFilters.Length, Is.GreaterThan(0));
+            foreach (float offset in new[] { -3f, 0f, 3f })
             {
-                Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty);
-                var filter = section.GetComponentInChildren<MeshFilter>();
-                var probe = filter.gameObject.AddComponent<MeshCollider>();
-                try
+                var ray = new Ray(alley.transform.TransformPoint(new Vector3(offset, 1.1f, -15.7f)), Vector3.back);
+                Assert.That(rearCollider.Raycast(ray, out var collision, 3f), Is.True, "Rear collision is missing");
+                float visualDistance = float.PositiveInfinity;
+                foreach (var filter in rearFilters)
                 {
-                    probe.sharedMesh = filter.sharedMesh;
-                    foreach (float offset in new[] { -.4f, 0f, .4f })
+                    var probe = filter.gameObject.AddComponent<MeshCollider>();
+                    try
                     {
-                        var ray = new Ray(section.position + new Vector3(offset, 1.1f, 1.5f), Vector3.back);
-                        Assert.That(rearCollider.Raycast(ray, out var collision, 3f), Is.True, "Rear collision is missing");
-                        Assert.That(probe.Raycast(ray, out var visual, 3f), Is.True, "Rear wall surface is missing");
-                        Assert.That(Mathf.Abs(collision.distance - visual.distance), Is.LessThan(.25f),
-                            "Rear wall surface and collision diverge");
+                        probe.sharedMesh = filter.sharedMesh;
+                        if (probe.Raycast(ray, out var hit, 3f)) visualDistance = Mathf.Min(visualDistance, hit.distance);
                     }
+                    finally { UnityEngine.Object.DestroyImmediate(probe); }
                 }
-                finally { UnityEngine.Object.DestroyImmediate(probe); }
+                Assert.That(float.IsInfinity(visualDistance), Is.False, "Rear gate has a visible opening");
+                Assert.That(Mathf.Abs(visualDistance - collision.distance), Is.LessThan(.4f),
+                    "Rear gate surface and collision diverge");
             }
-            var seamRay = new Ray(alley.transform.TransformPoint(new Vector3(0, 1.1f, -15.7f)), Vector3.back);
-            Assert.That(rearCollider.Raycast(seamRay, out var seamCollision, 3f), Is.True);
-            float seamSurface = float.PositiveInfinity;
-            foreach (var section in rearSections)
-            {
-                var filter = section.GetComponentInChildren<MeshFilter>();
-                var probe = filter.gameObject.AddComponent<MeshCollider>();
-                try
-                {
-                    probe.sharedMesh = filter.sharedMesh;
-                    if (probe.Raycast(seamRay, out var hit, 3f)) seamSurface = Mathf.Min(seamSurface, hit.distance);
-                }
-                finally { UnityEngine.Object.DestroyImmediate(probe); }
-            }
-            Assert.That(float.IsInfinity(seamSurface), Is.False, "Rear wall has a visible gap at its join");
-            Assert.That(Mathf.Abs(seamSurface - seamCollision.distance), Is.LessThan(.25f));
             var backstreet = alley.transform.Find("Backstreet roof beyond rear wall");
             Assert.That(backstreet, Is.Not.Null, "Backstreet roof is missing");
             Assert.That(backstreet.GetComponentsInChildren<Collider>(true), Is.Empty);
@@ -466,6 +453,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(returnBounds[0].max.x, Is.GreaterThan(returnBounds[1].min.x), "Courtyard wall has a visible seam");
             Assert.That(returnBounds[1].max.x, Is.GreaterThan(alley.transform.position.x - 4.1f),
                 "Courtyard wall does not meet the original rear boundary");
+            var cornerPier = nodes.SingleOrDefault(node => node.name == "Rear wall corner pier");
+            Assert.That(cornerPier, Is.Not.Null, "Rear courtyard corner is uncovered");
+            Assert.That(cornerPier.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var cornerBounds = cornerPier.GetComponent<Renderer>().bounds;
+            Assert.That(cornerBounds.Intersects(returnBounds[1]), Is.True, "Corner pier misses courtyard wall");
+            Assert.That(rearGate.GetComponentsInChildren<Renderer>(true).Any(renderer =>
+                renderer.bounds.Intersects(cornerBounds)), Is.True, "Corner pier misses rear gate");
             var wires = nodes.SingleOrDefault(node => node.name == "Batched sagging village cables");
             Assert.That(wires, Is.Not.Null, "Village wiring was not created");
             Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);

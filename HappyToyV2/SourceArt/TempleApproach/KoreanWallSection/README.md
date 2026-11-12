@@ -58,3 +58,15 @@ continues to govern navigation. If the courtyard or source asset is absent,
 the decorative return is omitted. The focused village PlayMode check covers
 the joints, their lane clearance and the game-camera appearance. Each section
 uses the existing 22,226-triangle mesh; actual GPU frame cost is unmeasured.
+
+## Rear residential gate
+
+The complete existing `AlleyKoreanWall/KoreanWall` model now supplies the
+visual surface at the alley start's rear boundary. Its reverse face puts the
+closed green gate away from the nearby courtyard gate and shows the handle.
+The model is fitted to the retained rear box collider; a small visual-only
+concrete corner pier covers the join to the courtyard return. If the prefab is
+missing, the previously authored weathered rear-wall sections remain the
+fallback. A focused D3D11 village PlayMode check sampled the rear surface against
+the original collider, checked the corner bounds and captured the game camera.
+This is a static, non-interactive gate; native-player FPS was not measured.
