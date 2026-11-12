@@ -37,6 +37,17 @@ namespace HappyToy.V2.CloudTests
                     "Courtyard pottery must remain off the walkable road");
             }
             Assert.That(alley.transform.Find("Courtyard onggi contact shading"), Is.Not.Null);
+            var courtyardWeeds = alley.transform.Cast<Transform>()
+                .Where(node => node.name == "Courtyard wall weeds").ToArray();
+            Assert.That(courtyardWeeds.Length, Is.EqualTo(4), "Courtyard wall weeds are missing");
+            foreach (var weed in courtyardWeeds)
+            {
+                Assert.That(weed.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var bounds = weed.GetComponentsInChildren<Renderer>(true)[0].bounds;
+                Assert.That(bounds.min.y, Is.InRange(-.05f, -.01f), "Courtyard vegetation is not grounded");
+                Assert.That(bounds.max.x, Is.LessThan(alley.transform.position.x - 5.25f),
+                    "Courtyard vegetation must remain off the walkable road");
+            }
             var nearHouses = alley.transform.Cast<Transform>()
                 .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
             Assert.That(nearHouses.Length, Is.EqualTo(7));

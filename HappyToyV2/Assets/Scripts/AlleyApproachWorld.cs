@@ -578,21 +578,24 @@ namespace HappyToy.V2
                     }
                 }
             }
+            var yardSurface = surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f));
+            // The open residential yard is worn and dry, not a reflective slab.
+            yardSurface.SetFloat("_Smoothness", .72f);
             // The old forest horizon sits below this part of the village.
             // A visual-only residential yard keeps the distant houses grounded
             // without extending the walkable road or adding invisible barriers.
             Box("Residential ground behind shop", new Vector3(-26f, -.14f, -2f),
-                new Vector3(48f, .22f, 50f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+                new Vector3(48f, .22f, 50f), yardSurface, false);
             // Continue the same visual ground behind the start of the alley.
             // It overlaps the existing slab and the distant hillside edge, so
             // the dusk sky cannot show through their former open wedge. Keep
             // it slightly below the first slab to avoid coplanar flicker.
             Box("Residential ground behind village", new Vector3(-26.25f, -.16f, -48.5f),
-                new Vector3(48.5f, .22f, 43.2f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+                new Vector3(48.5f, .22f, 43.2f), yardSurface, false);
             // Continue the non-walkable yard behind the right end of the rear
             // gate; overlap the road below its surface without z-fighting.
             Box("Residential ground behind rear-right", new Vector3(12f, -.16f, -31f),
-                new Vector3(18f, .22f, 28f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+                new Vector3(18f, .22f, 28f), yardSurface, false);
             // A second authored boundary gives the rear houses a courtyard
             // edge and screens the broad empty ground beside the store.
             var backWall = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
@@ -608,6 +611,7 @@ namespace HappyToy.V2
                 GetComponent<AlleyAuthoredWallSections>().TryBuildCourtyardReturn(yardWall, -17.2f, -3.7f);
             }
             gameObject.AddComponent<AlleyCourtyardPottery>().Prepare();
+            gameObject.AddComponent<AlleyCourtyardVegetation>().Prepare();
             // Roofs behind the shop fill the empty side skyline without adding
             // collision or changing the shop entrance and event corridor.
             for (int i = 0; i < 3; i++)
