@@ -39,13 +39,24 @@ namespace HappyToy.V2.CloudTests
             Assert.That(compactHouse.GetComponentsInChildren<Collider>(true), Is.Empty);
             var compactFar = nearHouses.SingleOrDefault(house => house != compactHouse &&
                 house.GetComponentsInChildren<Renderer>(true).Any(renderer => renderer.sharedMaterial &&
-                    renderer.sharedMaterial.name == "CompactBrickHousePbr"));
+                    renderer.sharedMaterial.name == "CompactBrickHouseWarm"));
             Assert.That(compactFar, Is.Not.Null, "Reduced compact house is missing near the mountain");
             long compactFarFaces = 0;
             foreach (var filter in compactFar.GetComponentsInChildren<MeshFilter>(true))
                 for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
                     compactFarFaces += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
             Assert.That(compactFarFaces, Is.LessThanOrEqualTo(102000), "Distant house uses full geometry");
+            var compactFarRenderers = compactFar.GetComponentsInChildren<Renderer>(true);
+            Assert.That(compactFarRenderers.All(renderer => renderer.sharedMaterial &&
+                renderer.sharedMaterial.IsKeywordEnabled("_EMISSION") &&
+                renderer.sharedMaterial.GetTexture("_EmissionMap")), Is.True,
+                "Distant window emission is not configured");
+            Assert.That(compactFar.GetComponentsInChildren<MeshFilter>(true).Any(filter =>
+                filter.sharedMesh && filter.sharedMesh.subMeshCount > 0 && filter.sharedMesh.vertexCount == 4 &&
+                filter.sharedMesh.GetIndexCount(0) == 6), Is.True, "Stable window surface is missing");
+            Assert.That(compactHouse.GetComponentsInChildren<Renderer>(true).All(renderer =>
+                !renderer.sharedMaterial.IsKeywordEnabled("_EMISSION")), Is.True,
+                "Near house should retain its unlit windows");
             bool closerToCurvedWall = false;
             var houseBounds = new System.Collections.Generic.List<Bounds>();
             foreach (var house in nearHouses)

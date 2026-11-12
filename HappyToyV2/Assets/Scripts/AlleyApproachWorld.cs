@@ -317,8 +317,12 @@ namespace HappyToy.V2
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHousePbr") ??
                 Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
             var compact = Resources.Load<GameObject>("AlleyCompactBrickHouse/CompactBrickHousePbr");
-            var farCompact = Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-mid");
-            var farCompactMaterial = Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHousePbr");
+            var repairedCompact = Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-mid-window");
+            var farCompact = repairedCompact ? repairedCompact : Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-mid");
+            var originalCompactMaterial = Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHousePbr");
+            var farCompactMaterial = repairedCompact ?
+                (Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHouseWarm") ?? originalCompactMaterial) :
+                originalCompactMaterial;
             var slate = Resources.Load<GameObject>("AlleySlateHouse/SlateHousePbr");
             var farSlate = Resources.Load<GameObject>("AlleySlateHouse/geometry-far");
             var farSlateMaterial = Resources.Load<Material>("AlleySlateHouse/SlateHousePbr");
