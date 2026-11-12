@@ -249,6 +249,15 @@ namespace HappyToy.V2
                 var point = new Vector3(3.2f + RoadBend(entry.z), 1.67f, entry.z) + inward * .195f;
                 wallDetails.AddHouseNumber(point, inward, entry.number);
             }
+            // Small translucent runoff patches follow individual straight
+            // segments of the curved wall rather than spanning its bends.
+            foreach (float z in new[] { .5f, 6.5f, 12.5f })
+            {
+                float a = RoadBend(z - .5f), b = RoadBend(z + .5f);
+                var inward = new Vector3(1, 0, -(b - a)).normalized;
+                var point = new Vector3(-3.2f + (a + b) * .5f, z > 10 ? 1.50f : 1.76f, z) + inward * .205f;
+                wallDetails.AddRunoff(point, inward, new Vector2(.82f, 1.34f), z == 6.5f);
+            }
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
             InstallKoreanWallCandidate();
             InstallResidentialHouses();

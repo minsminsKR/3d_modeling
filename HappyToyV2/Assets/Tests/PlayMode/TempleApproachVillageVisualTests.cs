@@ -238,6 +238,19 @@ namespace HappyToy.V2.CloudTests
                 }
             }
             Assert.That(nodes.Count(node => node.name == "Gate door pull"), Is.EqualTo(4));
+            var runoff = nodes.Where(node => node.name == "Wall rain runoff").OrderBy(node => node.position.z).ToArray();
+            Assert.That(runoff.Length, Is.EqualTo(3), "Wall rain runoff is missing");
+            foreach (var patch in runoff)
+            {
+                Assert.That(patch.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var renderer = patch.GetComponent<Renderer>();
+                Assert.That(renderer.sharedMaterial.GetTexture("_BaseMap"), Is.Not.Null);
+                Assert.That(renderer.sharedMaterial.IsKeywordEnabled("_SURFACE_TYPE_TRANSPARENT"), Is.True);
+                var intoWall = patch.forward;
+                Assert.That(Physics.Raycast(patch.position - intoWall * .3f, intoWall, out var support, .42f,
+                    1 << 8, QueryTriggerInteraction.Ignore), Is.True, "Runoff has no wall support");
+                Assert.That(support.collider.name, Is.EqualTo("Curved residential wall"));
+            }
             var numberPlates = nodes.Where(node => node.name == "Village house number plate").OrderBy(node => node.position.z).ToArray();
             Assert.That(numberPlates.Length, Is.EqualTo(2), "House number plates are missing");
             Assert.That(numberPlates.All(node => node.GetComponentsInChildren<Collider>(true).Length == 0),
@@ -294,6 +307,10 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-07-curve-right-roofs");
             ApproachLookAt(eye + new Vector3(-5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-08-curve-left-roofs");
+            ApproachFaceForward();
+            yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 400.4f, 6, "Cannot approach wall runoff");
+            ApproachLookAt(runoff[0].position); yield return null;
+            CaptureApproachReview("village-17-wall-runoff-close");
             ApproachLookAt(notice.position);
             yield return ApproachWalkUntil(Key.W, () =>
                 Vector2.Distance(new Vector2(player.transform.position.x, player.transform.position.z),
@@ -306,6 +323,9 @@ namespace HappyToy.V2.CloudTests
                 "Cannot walk alongside the formed-concrete wall");
             ApproachLookAt(alley.transform.TransformPoint(new Vector3(-1.95f, 1.35f, 5f))); yield return null;
             CaptureApproachReview("village-10-formed-wall");
+            ApproachLookAt(runoff[1].position); yield return null;
+            CaptureApproachReview("village-16-wall-runoff");
+
             ApproachLookAt(curveGate.position); yield return null;
             CaptureApproachReview("village-11-near-curved-gate");
             ApproachLookAt(farCurveGate.position); yield return null;

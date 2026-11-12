@@ -34,6 +34,22 @@ namespace HappyToy.V2
             Destroy(notice.GetComponent<Collider>());
         }
 
+        public void AddRunoff(Vector3 point, Vector3 inward, Vector2 size, bool mirror)
+        {
+            if (!prepared) throw new InvalidOperationException("Wall dressing is not prepared");
+            var material = Resources.Load<Material>("AlleyWallRunoff/rain-runoff");
+            if (!material) throw new InvalidOperationException("Wall runoff material is missing");
+            var patch = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            patch.name = "Wall rain runoff"; patch.layer = 8;
+            patch.transform.SetParent(transform, false);
+            patch.transform.localPosition = point;
+            patch.transform.localRotation = Quaternion.LookRotation(-inward, Vector3.up);
+            patch.transform.localScale = new Vector3(mirror ? -size.x : size.x, size.y, 1);
+            var renderer = patch.GetComponent<Renderer>();
+            renderer.sharedMaterial = material; renderer.shadowCastingMode = ShadowCastingMode.Off;
+            Destroy(patch.GetComponent<Collider>());
+        }
+
         // Small enamel number plates distinguish neighboring homes and sit
         // flush on the measured inward face, including the curved wall.
         public void AddHouseNumber(Vector3 point, Vector3 inward, string number)
