@@ -412,6 +412,27 @@ namespace HappyToy.V2.CloudTests
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 415f, 15,
                 "Cannot reach the village-to-mountain seam");
             yield return Wait(() => Get<bool>(player, "Grounded"), 4, "Seam lacks ground support");
+            var seamAlley = GameObject.Find("Korean alley approach");
+            Assert.That(seamAlley, Is.Not.Null);
+            var seamHouses = seamAlley.transform.Cast<Transform>()
+                .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
+            var seamTrees = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(node => node.name.StartsWith("Mountain tree ", StringComparison.Ordinal) ||
+                    node.name == "Mountain forest visible beyond alley").ToArray();
+            Assert.That(seamHouses.Length, Is.EqualTo(7));
+            Assert.That(seamTrees.Length, Is.GreaterThan(0));
+            foreach (var house in seamHouses)
+            {
+                var renderers = house.GetComponentsInChildren<Renderer>(true);
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                foreach (var tree in seamTrees)
+                {
+                    bool inside = tree.position.x > bounds.min.x - .5f && tree.position.x < bounds.max.x + .5f &&
+                        tree.position.z > bounds.min.z - .5f && tree.position.z < bounds.max.z + .5f;
+                    Assert.That(inside, Is.False, "Mountain tree root intersects a village house: " + tree.name);
+                }
+            }
             var retaining = GameObject.Find("Transition retaining walls");
             Assert.That(retaining, Is.Not.Null, "Transition retaining wall is missing");
             Assert.That(retaining.GetComponentsInChildren<Collider>(true), Is.Empty,

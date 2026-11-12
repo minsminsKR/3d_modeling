@@ -316,6 +316,9 @@ namespace HappyToy.V2
             }
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHousePbr") ??
                 Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
+            var compact = Resources.Load<GameObject>("AlleyCompactBrickHouse/CompactBrickHousePbr");
+            var farCompact = Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-mid");
+            var farCompactMaterial = Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHousePbr");
             var slate = Resources.Load<GameObject>("AlleySlateHouse/SlateHousePbr");
             var farSlate = Resources.Load<GameObject>("AlleySlateHouse/geometry-far");
             var farSlateMaterial = Resources.Load<Material>("AlleySlateHouse/SlateHousePbr");
@@ -382,9 +385,13 @@ namespace HappyToy.V2
                 {
                     var holder = CorridorEntranceModels.Group(transform, "Old Korean brick house", Vector3.zero);
                     int variant = houseIndex++;
-                    var selected = twoStory && variant == 3 ? twoStory : (alternate && variant % 2 == 0 ? alternate : prefab);
-                    Instantiate(selected, holder, false);
-                    float height = twoStory && variant == 3 ? 6f : 4.15f + (variant % 3) * .22f;
+                    bool compactBackground = variant == 5 && farCompact && farCompactMaterial;
+                    var selected = compact && variant == 0 ? compact :
+                        (twoStory && variant == 3 ? twoStory : (alternate && variant % 2 == 0 ? alternate : prefab));
+                    if (compactBackground) PlaceBackground(holder, selected, farCompact, farCompactMaterial);
+                    else Instantiate(selected, holder, false);
+                    float height = compactBackground ? 5.6f : ((compact && variant == 0) ||
+                        (twoStory && variant == 3) ? 6f : 4.15f + (variant % 3) * .22f);
                     float setback = 6.65f + (variant % 2) * .25f;
                     float stationZ = z + stationOffsets[variant];
                     // Not every house faces directly across the lane. Show

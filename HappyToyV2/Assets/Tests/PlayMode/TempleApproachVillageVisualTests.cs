@@ -33,6 +33,19 @@ namespace HappyToy.V2.CloudTests
             Assert.That(slateHouse, Is.Not.Null, "Reviewed slate house was not placed in the lane");
             Assert.That(slateHouse.GetComponentsInChildren<Collider>(true), Is.Empty,
                 "The visual house must not create obstacles");
+            var compactHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
+                .Any(node => node.name.StartsWith("CompactBrickHousePbr", StringComparison.Ordinal)));
+            Assert.That(compactHouse, Is.Not.Null, "Reviewed compact two-story house was not placed");
+            Assert.That(compactHouse.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var compactFar = nearHouses.SingleOrDefault(house => house != compactHouse &&
+                house.GetComponentsInChildren<Renderer>(true).Any(renderer => renderer.sharedMaterial &&
+                    renderer.sharedMaterial.name == "CompactBrickHousePbr"));
+            Assert.That(compactFar, Is.Not.Null, "Reduced compact house is missing near the mountain");
+            long compactFarFaces = 0;
+            foreach (var filter in compactFar.GetComponentsInChildren<MeshFilter>(true))
+                for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                    compactFarFaces += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
+            Assert.That(compactFarFaces, Is.LessThanOrEqualTo(102000), "Distant house uses full geometry");
             bool closerToCurvedWall = false;
             var houseBounds = new System.Collections.Generic.List<Bounds>();
             foreach (var house in nearHouses)
@@ -294,6 +307,10 @@ namespace HappyToy.V2.CloudTests
             eye = Get<Camera>(player, "eyes").transform.position;
             ApproachLookAt(eye + new Vector3(5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-05-shop-right-roofs");
+            var compactBounds = compactHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
+            ApproachLookAt(compactBounds.center + Vector3.up * (compactBounds.extents.y * .35f)); yield return null;
+            CaptureApproachReview("village-18-compact-house");
+
             ApproachLookAt(numberPlates[0].position); yield return null;
             CaptureApproachReview("village-14-house-number");
 

@@ -329,3 +329,10 @@ HappyToyV2/Assets/Resources/GraphicsPbr/alley-form-wall/*.png filter=lfs diff=lf
 # Retain the official aged brick scan and Unity conversion in LFS.
 HappyToyV2/SourceArt/TempleApproach/AgedBrickPbr/source/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/GraphicsPbr/alley-aged-brick/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Compact Korean house: source, editable Blender, textures and Unity models.
+HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyCompactBrickHouse/*.fbx filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "id": "d530123a-59e0-4136-9089-de4e5fc06025",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1794445574.4102907,
+  "updated_at": 1794445997.8023348,
+  "source_filename": "courtyard-two-story-reference-v84.png",
+  "batch_index": 1,
+  "batch_total": 1,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 65536,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "request_id": "5f142e64-347c-4525-847a-145d8608e8a2",
+  "submitted_options": {
+    "gpu_id": [
+      "split"
+    ],
+    "model": [
+      "trellis2"
+    ],
+    "seed": [
+      "1234"
+    ],
+    "trellis_pipeline": [
+      "1024_cascade"
+    ],
+    "trellis_texture_size": [
+      "4096"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "courtyard-two-story-reference-v84.png",
+      "archive_name": "inputs/01_courtyard-two-story-reference-v84.png",
+      "sha256": "f1a7add2fe537a30c44c6c17f1572920ec52b6938839e63d05dd0b0bdc89eec0",
+      "size": 2325895
+    }
+  ],
+  "saved": true,
+  "saved_at": 1794445574.4102907,
+  "started_at": 1794445574.421444,
+  "finished_at": 1794445997.8023229,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/d530123a-59e0-4136-9089-de4e5fc06025",
+  "status_url": "/api/jobs/d530123a-59e0-4136-9089-de4e5fc06025",
+  "archive_url": "/api/jobs/d530123a-59e0-4136-9089-de4e5fc06025/archive",
+  "record_url": "/api/jobs/d530123a-59e0-4136-9089-de4e5fc06025/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/d530123a-59e0-4136-9089-de4e5fc06025/rigging",
+    "status_url": "/api/jobs/d530123a-59e0-4136-9089-de4e5fc06025/rigging"
+  },
+  "elapsed_seconds": 423,
+  "display_name": "courtyard-two-story-reference-v84",
+  "download_url": "/jobs/d530123a-59e0-4136-9089-de4e5fc06025/download",
+  "model_url": "/jobs/d530123a-59e0-4136-9089-de4e5fc06025/model",
+  "mixamo_package_url": "/jobs/d530123a-59e0-4136-9089-de4e5fc06025/mixamo/package",
+  "mixamo_upload_url": "/jobs/d530123a-59e0-4136-9089-de4e5fc06025/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/d530123a-59e0-4136-9089-de4e5fc06025/processed/1",
+  "saved_at_label": "2026-11-12 10:06",
+  "created_at_label": "2026-11-12 10:06",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "21837403eff1a02510620e5ae211aad9786a55c00ab63de9bce2e939fe0cc6a2",
+      "size": 73553320
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "c337b6e1eddfea4e77e1b6eeb77ebea921417726a0bddc36cdf680df7421a882",
+      "size": 3084
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "2dbbebed2203f69fd465dfbac9186d89af48c19f8641a292149087bebb43b2bb",
+      "size": 876
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "8da72cd83b8b0c1845e3ca66ecfb50e9c03f8bdba885c7f079abe2e2a51fb447",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "21ff92b910248f25ec3cf1e96e3019f21cd0ce4be6661bcb3cb6c77fbf64df16",
+      "size": 726003
+    }
+  ]
+}
