@@ -53,6 +53,9 @@ namespace HappyToy.V2
             session.player.RelocateWorld(new Vector3(500, .04f, 386), Quaternion.identity);
             Active = true;
             LoadVillage(village, true);
+            // Start loading before the first playable village frame: the
+            // mountain is already visible from the entrance to the alley.
+            PreloadMountain();
             session.Notify(PlayerControls.UsingGamepad ? "왼쪽 스틱으로 이동하고 오른쪽 스틱으로 둘러보세요." :
                 "WASD로 이동하고 마우스로 주변을 둘러보세요.");
         }
@@ -62,7 +65,8 @@ namespace HappyToy.V2
             float z = session.player.transform.position.z;
             MaintainVillage(z);
             if (!Active || requested || !session.InputAllowed) return;
-            if (z >= 395 && !MountainReady && string.IsNullOrEmpty(MountainFailure)) PreloadMountain();
+            // Duplicate requests are ignored while the first async load is pending.
+            if (!MountainReady && string.IsNullOrEmpty(MountainFailure)) PreloadMountain();
             if (!reachedMountain && encounter && encounter.Cleared && (encounter.Acquired || encounter.Bypassed) && z >= 414)
             { reachedMountain = true; session.Notify("산길을 따라 절로 가자."); }
             if (reachedMountain && z >= 474)

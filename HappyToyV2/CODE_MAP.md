@@ -3,7 +3,7 @@
 새 이야기 도입은 `TempleApproachFlow`와 `ApproachSceneStream`이 Village·MountainPath
 additive 씬의 로드·해제·복귀 게이트를, `AlleyApproachWorld`,
 `AlleyUtilityDressing`, `AlleyWallDressing`, `AlleyRoofDetails`, `AlleyAuthoredWallSections`, `AlleyWeatheredWallSections`, `AlleyAuthoredGate`, `VillageMountainTransitionDressing`, `MountainApproachWorld`, `MountainForkDressing`,
-`TempleApproachConnector`, `ConnectorBankDressing`, `ConnectorStoneDressing`이 지형과 배치를 소유한다. 도입 때만 `TempleForestHorizon`과 `TempleForestDepthFill`의 기존 원경을 통로 아래로 조정하거나 가린다. `AlleyVillageHorizon`은 도입 경로에 속한 비충돌 서쪽 능선과 소나무 실루엣을 소유하며 원본·경량화 방법은 `SourceArt/TempleApproach/VillageHorizon/README.md`에 있다. 씬은 마커 컨테이너이며 실제
+`TempleApproachConnector`, `ConnectorBankDressing`, `ConnectorStoneDressing`이 지형과 배치를 소유한다. 도입 때만 `TempleForestHorizon`과 `TempleForestDepthFill`의 기존 원경을 통로 아래로 조정하거나 가린다. `AlleyVillageHorizon`은 도입 경로에 속한 비충돌 서쪽 능선과 소나무 실루엣을 소유하며 원본·경량화 방법은 `SourceArt/TempleApproach/VillageHorizon/README.md`에 있다. 산길은 골목 첫 시야에서 보여 도입 준비 시 비동기 로드를 시작한다. 씬은 마커 컨테이너이며 실제
 배경 오브젝트 생성은 메인 스레드에서 동기 실행된다. 사찰까지 순간이동 없이
 이동하며 기존 플레이어·인벤토리를 재사용한다. `AlleySnapperEncounter`는 임시
 상점 주인, 재보급, 위쪽을 향한 지정 바닥 착탄 판정, 개와 장애물 상태를 소유하고

@@ -437,6 +437,10 @@ namespace HappyToy.V2.CloudTests
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 393f, 15,
                 "Cannot walk to the shop frontage");
+            var approachFlow = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>()
+                .Single(x => x.GetType().Name == "TempleApproachFlow");
+            Assert.That(Get<bool>(approachFlow, "MountainReady"), Is.True,
+                "The mountain must be visible by the shop approach, before the dog encounter");
             CaptureApproachReview("village-04-shop-approach");
             eye = Get<Camera>(player, "eyes").transform.position;
             ApproachLookAt(eye + new Vector3(5, 1.3f, 4)); yield return null;
