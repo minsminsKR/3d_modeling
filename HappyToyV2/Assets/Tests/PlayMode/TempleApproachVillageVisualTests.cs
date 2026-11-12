@@ -702,6 +702,35 @@ namespace HappyToy.V2.CloudTests
                 out var coalSupport, .4f, 1 << 8, QueryTriggerInteraction.Ignore), Is.True,
                 "Coal notice must be supported by the wall");
             Assert.That(coalSupport.collider.name, Is.EqualTo("Curved residential wall"));
+            var meter = nodes.SingleOrDefault(node => node.name == "Residential electricity meter");
+            Assert.That(meter, Is.Not.Null, "Residential meter is missing");
+            Assert.That(meter.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var meterRenderer = meter.GetComponentInChildren<Renderer>();
+            Assert.That(meterRenderer.sharedMaterial.GetTexture("_BaseMap"), Is.Not.Null);
+            Assert.That(meterRenderer.sharedMaterial.GetTexture("_MetallicGlossMap"), Is.Not.Null);
+            var meterBounds = meterRenderer.bounds;
+            Assert.That(meterBounds.size.y, Is.InRange(.58f, .66f));
+            var meterMesh = meter.GetComponentsInChildren<MeshFilter>(true)
+                .Select(filter => filter.sharedMesh).First(mesh => mesh && mesh.vertexCount > 1000);
+            long meterFaces = 0;
+            for (int submesh = 0; submesh < meterMesh.subMeshCount; submesh++)
+                meterFaces += (long)meterMesh.GetIndexCount(submesh) / 3;
+            Assert.That(meterFaces, Is.LessThanOrEqualTo(46000), "Meter exceeds the reviewed geometry budget");
+            Assert.That(numberPlates.All(plate => !plate.GetComponent<Renderer>().bounds.Intersects(meterBounds)), Is.True,
+                "Meter overlaps a house number plate");
+            Assert.That(nodes.Where(node => node.name == "Concrete wall pier")
+                .Select(node => node.GetComponent<Renderer>()).Where(renderer => renderer && renderer.enabled)
+                .All(renderer => !renderer.bounds.Intersects(meterBounds)), Is.True,
+                "Meter overlaps a wall pier");
+            Assert.That(Physics.Raycast(meterBounds.center + Vector3.left * .5f, Vector3.right,
+                out var meterSupport, 1f, 1 << 8, QueryTriggerInteraction.Ignore), Is.True,
+                "Meter has no wall behind it");
+            Assert.That(meterSupport.collider.name, Is.EqualTo("Curved residential wall"));
+            var lowerConduit = meter.Find("Meter lower conduit");
+            var upperConduit = meter.Find("Meter upper conduit");
+            Assert.That(lowerConduit, Is.Not.Null); Assert.That(upperConduit, Is.Not.Null);
+            Assert.That(lowerConduit.GetComponent<Renderer>().bounds.max.y, Is.EqualTo(meterBounds.min.y).Within(.02f));
+            Assert.That(upperConduit.GetComponent<Renderer>().bounds.min.y, Is.EqualTo(meterBounds.max.y).Within(.02f));
             var wallPipes = nodes.Where(node => node.name == "Weathered wall service pipe").ToArray();
             Assert.That(wallPipes.Length, Is.EqualTo(2), "Authored wall fittings are missing");
             foreach (var pipe in wallPipes)
@@ -797,6 +826,8 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-12-far-curved-gate");
             ApproachLookAt(numberPlates[1].position); yield return null;
             CaptureApproachReview("village-15-curved-house-number");
+            ApproachLookAt(meterBounds.center); yield return null;
+            CaptureApproachReview("village-35-electric-meter");
             ApproachLookAt(coalNotice.position); yield return null;
             CaptureApproachReview("village-29-coal-notice");
             var slateBounds = slateHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
@@ -809,6 +840,11 @@ namespace HappyToy.V2.CloudTests
             Physics.SyncTransforms(); yield return null;
             ApproachLookAt(coalNotice.position); yield return null;
             CaptureApproachReview("village-30-coal-notice-close");
+            Vector3 nearMeter = meterBounds.center + Vector3.left * 1.35f;
+            player.transform.position = new Vector3(nearMeter.x, player.transform.position.y, nearMeter.z);
+            Physics.SyncTransforms(); yield return null;
+            ApproachLookAt(meterBounds.center); yield return null;
+            CaptureApproachReview("village-36-electric-meter-close");
             var duskSky = RenderSettings.skybox;
             Assert.That(duskSky.shader.name, Is.EqualTo("HappyToy/AlleyDuskSky"));
             Assert.That(duskSky.GetTexture("_DuskClouds"), Is.Not.Null);

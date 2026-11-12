@@ -279,6 +279,11 @@ namespace HappyToy.V2
             var flyerInward = new Vector3(-1, 0, flyerSlope).normalized;
             var flyerPoint = new Vector3(3.2f + RoadBend(flyerZ), 1.48f, flyerZ) + flyerInward * .205f;
             wallDetails.AddCoalNotice(flyerPoint, flyerInward);
+            const float meterZ = 6.52f;
+            float meterSlope = (RoadBend(meterZ + .02f) - RoadBend(meterZ - .02f)) / .04f;
+            var meterInward = new Vector3(-1, 0, meterSlope).normalized;
+            var meterFace = new Vector3(3.2f + RoadBend(meterZ), 1.04f, meterZ) + meterInward * .19f;
+            AlleyWallUtilityMeter.TryPlace(transform, meterFace, meterInward);
             // Small translucent runoff patches follow individual straight
             // segments of the curved wall rather than spanning its bends.
             foreach (float z in new[] { .5f, 6.5f, 12.5f })

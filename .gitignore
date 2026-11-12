@@ -80,3 +80,8 @@ model_test/model/_extracted/
 *.log
 error.txt
 .DS_Store
+
+# Reproducible source and reduced mesh for the residential meter.
+!HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.glb
+!HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.fbx
+!HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.blend

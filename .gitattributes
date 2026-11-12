@@ -365,3 +365,12 @@ HappyToyV2/SourceArt/TempleApproach/TiledHouseCandidate/*.png filter=lfs diff=lf
 HappyToyV2/SourceArt/TempleApproach/TiledHouseCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyTiledHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyTiledHouse/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Generated residential meter sources and Unity resources.
+HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyMeter/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyMeter/*.png filter=lfs diff=lfs merge=lfs -text
