@@ -432,6 +432,25 @@ namespace HappyToy.V2.CloudTests
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
             Assert.That(yardWall.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var courtyardReturn = nodes.Where(node => node.name == "Rear courtyard return wall").ToArray();
+            Assert.That(courtyardReturn.Length, Is.EqualTo(2), "Rear courtyard wall is disconnected");
+            foreach (var section in courtyardReturn)
+            {
+                Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty);
+                Assert.That(section.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
+            }
+            var returnBounds = courtyardReturn.Select(section => section.GetComponentsInChildren<Renderer>(true)[0].bounds)
+                .OrderBy(bounds => bounds.center.x).ToArray();
+            var yardRenderers = yardWall.GetComponentsInChildren<Renderer>(true);
+            var yardBounds = yardRenderers[0].bounds;
+            foreach (var renderer in yardRenderers.Skip(1)) yardBounds.Encapsulate(renderer.bounds);
+            Assert.That(returnBounds[0].Intersects(yardBounds), Is.True,
+                "Courtyard return does not meet the authored wall");
+            Assert.That(returnBounds[1].max.x, Is.LessThan(alley.transform.position.x - 3.9f),
+                "Courtyard return encroaches on the alley");
+            Assert.That(returnBounds[0].max.x, Is.GreaterThan(returnBounds[1].min.x), "Courtyard wall has a visible seam");
+            Assert.That(returnBounds[1].max.x, Is.GreaterThan(alley.transform.position.x - 4.1f),
+                "Courtyard wall does not meet the original rear boundary");
             var wires = nodes.SingleOrDefault(node => node.name == "Batched sagging village cables");
             Assert.That(wires, Is.Not.Null, "Village wiring was not created");
             Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);

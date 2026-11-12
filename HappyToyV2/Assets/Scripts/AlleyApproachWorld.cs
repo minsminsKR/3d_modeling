@@ -548,6 +548,7 @@ namespace HappyToy.V2
                 foreach (var node in yardWall.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in yardWall.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
+                GetComponent<AlleyAuthoredWallSections>().TryBuildCourtyardReturn(yardWall, -17.2f, -4f);
             }
             // Roofs behind the shop fill the empty side skyline without adding
             // collision or changing the shop entrance and event corridor.

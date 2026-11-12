@@ -9,6 +9,48 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class AlleyAuthoredWallSections : MonoBehaviour
     {
+        // Close the visual corner between the original rear boundary and the
+        // courtyard. The existing rear collision remains the only barrier.
+        public bool TryBuildCourtyardReturn(Transform courtyard, float rearZ, float rearEdgeX)
+        {
+            var prefab = Resources.Load<GameObject>("AlleyKoreanWall/wall-segment");
+            var material = Resources.Load<Material>("AlleyKoreanWall/KoreanWall");
+            if (!courtyard || !prefab || !material) return false;
+            var bounds = MonsterPresentationScale.Bounds(courtyard);
+            var localMin = transform.InverseTransformPoint(bounds.min);
+            var localMax = transform.InverseTransformPoint(bounds.max);
+            if (rearZ < localMin.z || rearZ > localMax.z) return false;
+            float left = (localMin.x + localMax.x) * .5f;
+            float width = rearEdgeX - left;
+            if (width < .5f) return false;
+            const int count = 2;
+            for (int i = 0; i < count; i++)
+            {
+                float length = width / count;
+                var pivot = CorridorEntranceModels.Group(transform, "Rear courtyard return wall", Vector3.zero);
+                var visual = CorridorEntranceModels.Group(pivot, "Courtyard wall surface", Vector3.zero);
+                Instantiate(prefab, visual, false);
+                CorridorEntranceModels.GroundAtHeight(visual, Vector3.zero, 2.15f,
+                    Quaternion.Euler(0, i == 0 ? 0 : 180, 0));
+                var piece = MonsterPresentationScale.Bounds(visual);
+                if (piece.size.x < .01f) throw new InvalidOperationException("Courtyard wall width is invalid");
+                var scale = visual.localScale;
+                scale.x *= (length + .12f) / piece.size.x;
+                visual.localScale = scale;
+                piece = MonsterPresentationScale.Bounds(visual);
+                visual.position += new Vector3(pivot.position.x - piece.center.x,
+                    pivot.position.y - piece.min.y, pivot.position.z - piece.center.z);
+                pivot.localPosition = new Vector3(left + length * (i + .5f), 0, rearZ);
+                foreach (var node in pivot.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                foreach (var renderer in pivot.GetComponentsInChildren<Renderer>(true))
+                {
+                    renderer.sharedMaterial = material;
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                }
+            }
+            return true;
+        }
+
         public bool TryBuild(float start, float end, float height, Func<float, float> bend)
         {
             var prefab = Resources.Load<GameObject>("AlleyKoreanWall/wall-segment");

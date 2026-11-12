@@ -48,3 +48,13 @@ The focused village D3D11 test checks three door-face rays against the retained
 wall collision (tolerance 0.30m) and captures the gameplay camera; the focused
 seam test walks through the existing shop and encounter to the mountain boundary.
 These checks do not establish standalone build appearance or measured FPS.
+
+## Shop courtyard return
+
+The same gate-free section is reused twice to connect the rear courtyard wall
+to the alley's existing rear boundary. The pieces overlap slightly at their
+join, use alternate faces, and add no colliders; the pre-existing rear boundary
+continues to govern navigation. If the courtyard or source asset is absent,
+the decorative return is omitted. The focused village PlayMode check covers
+the joints, their lane clearance and the game-camera appearance. Each section
+uses the existing 22,226-triangle mesh; actual GPU frame cost is unmeasured.
