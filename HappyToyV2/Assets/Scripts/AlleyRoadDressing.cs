@@ -38,8 +38,9 @@ namespace HappyToy.V2
                     p += step;
                 }
             }
-            AddMesh("Asphalt weathered fracture lines", cracks,
-                surfaces.Get("concrete-rough", new Color(.095f, .081f, .072f)));
+            var crackMaterial = surfaces.Get("concrete-rough", new Color(.095f, .081f, .072f));
+            crackMaterial.SetFloat("_Smoothness", .4f);
+            AddMesh("Asphalt weathered fracture lines", cracks, crackMaterial);
             var patches = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, 2f);
             foreach (var center in new[] { new Vector3(-1.7f, .002f, -11.1f), new Vector3(1.2f, .002f, -3.5f),
                 new Vector3(-.8f, .002f, 5.8f), new Vector3(1.5f, .002f, 11.4f) })
@@ -47,8 +48,9 @@ namespace HappyToy.V2
                 patches.Quad(center + new Vector3(-.38f, 0, -.52f), center + new Vector3(-.44f, 0, .45f),
                     center + new Vector3(.42f, 0, .49f), center + new Vector3(.37f, 0, -.46f));
             }
-            AddMesh("Irregular old road repairs", patches,
-                surfaces.Get("concrete-rough", new Color(.135f, .122f, .112f)));
+            var patchMaterial = surfaces.Get("concrete-rough", new Color(.110f, .105f, .100f));
+            patchMaterial.SetFloat("_Smoothness", .65f);
+            AddMesh("Irregular old road repairs", patches, patchMaterial);
             var grate = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, 1f);
             foreach (float z in new[] { -8.9f, 7.4f })
             {

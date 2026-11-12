@@ -37,6 +37,8 @@ namespace HappyToy.V2
             walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
             authoredGateReady = gameObject.AddComponent<AlleyAuthoredGate>().TryBuild(RoadBend);
             var road = surfaces.Get("concrete-rough", new Color(.105f, .10f, .095f));
+            // Old dry pavement should not reflect the sunset like a wet floor.
+            road.SetFloat("_Smoothness", .65f);
             var wall = surfaces.Get("plaster-damp", new Color(.82f, .78f, .71f));
             var concreteWall = surfaces.Get("alley-concrete-wall", new Color(.84f, .83f, .80f));
             var formedWall = surfaces.Get("alley-form-wall", new Color(.83f, .82f, .78f));
