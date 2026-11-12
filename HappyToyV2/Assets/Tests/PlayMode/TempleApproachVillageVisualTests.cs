@@ -287,7 +287,7 @@ namespace HappyToy.V2.CloudTests
             }
             var background = nodes.Where(node => node.name == "Distant neighborhood roof" ||
                 node.name == "Residential roofs behind shop").ToArray();
-            Assert.That(background.Length, Is.EqualTo(4), "Background houses are missing");
+            Assert.That(background.Length, Is.EqualTo(5), "Background houses are missing");
             foreach (var house in background)
             {
                 var filters = house.GetComponentsInChildren<MeshFilter>(true);
@@ -304,6 +304,11 @@ namespace HappyToy.V2.CloudTests
                     renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")), Is.True,
                     "Background house lost its PBR material");
             }
+            var rearSlate = background.SingleOrDefault(house => house.GetComponentsInChildren<Renderer>(true)
+                .Any(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "SlateHousePbr"));
+            Assert.That(rearSlate, Is.Not.Null, "The rear slate-roof house is missing");
+            Assert.That(rearSlate.position.z, Is.LessThan(alley.transform.position.z - 16f),
+                "The slate background does not extend behind the shop");
             var tankHouse = background.SingleOrDefault(house => house.GetComponentsInChildren<Renderer>(true)
                 .Any(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "WaterTankHouse"));
             Assert.That(tankHouse, Is.Not.Null, "Water-tank house is missing behind the shop");

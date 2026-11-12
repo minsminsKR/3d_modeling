@@ -512,18 +512,19 @@ namespace HappyToy.V2
             }
             // Roofs behind the shop fill the empty side skyline without adding
             // collision or changing the shop entrance and event corridor.
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var rearShop = CorridorEntranceModels.Group(transform, "Residential roofs behind shop", Vector3.zero);
                 bool useTwoStory = i == 0 && twoStory;
-                bool usePlaster = !useTwoStory && alternate;
+                bool useSlate = i == 2 && slate && farSlate && farSlateMaterial;
+                bool usePlaster = !useTwoStory && !useSlate && alternate;
                 bool useWaterTankHouse = i == 0 && waterTankHouse && waterTankMaterial;
-                PlaceBackground(rearShop, useTwoStory ? twoStory : (usePlaster ? alternate : prefab),
-                    useWaterTankHouse ? waterTankHouse : (useTwoStory ? farHouse : (usePlaster ? farPlaster : null)),
-                    useWaterTankHouse ? waterTankMaterial : (useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null)));
+                PlaceBackground(rearShop, useSlate ? slate : (useTwoStory ? twoStory : (usePlaster ? alternate : prefab)),
+                    useWaterTankHouse ? waterTankHouse : (useSlate ? farSlate : (useTwoStory ? farHouse : (usePlaster ? farPlaster : null))),
+                    useWaterTankHouse ? waterTankMaterial : (useSlate ? farSlateMaterial : (useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null))));
                 CorridorEntranceModels.GroundAtHeight(rearShop,
-                    new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && (useTwoStory || useWaterTankHouse) ? 5.8f : 4.7f,
-                    Quaternion.Euler(0, useWaterTankHouse ? 158f : 83f + i * 9f, 0));
+                    new Vector3(-12.2f, 0, i == 2 ? -20f : -12f + i * 8f), i == 0 && (useTwoStory || useWaterTankHouse) ? 5.8f : 4.7f,
+                    Quaternion.Euler(0, useWaterTankHouse ? 158f : i == 2 ? 104f : 83f + i * 9f, 0));
                 SeparateOutward(rearShop, -1f);
                 if (i == 0) aerialHouses.Add(rearShop);
                 foreach (var node in rearShop.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
