@@ -28,6 +28,11 @@ namespace HappyToy.V2.CloudTests
             var nearHouses = alley.transform.Cast<Transform>()
                 .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
             Assert.That(nearHouses.Length, Is.EqualTo(7));
+            var slateHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
+                .Any(node => node.name.StartsWith("SlateHousePbr", StringComparison.Ordinal)));
+            Assert.That(slateHouse, Is.Not.Null, "Reviewed slate house was not placed in the lane");
+            Assert.That(slateHouse.GetComponentsInChildren<Collider>(true), Is.Empty,
+                "The visual house must not create obstacles");
             bool closerToCurvedWall = false;
             var houseBounds = new System.Collections.Generic.List<Bounds>();
             foreach (var house in nearHouses)
@@ -286,6 +291,9 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-11-near-curved-gate");
             ApproachLookAt(farCurveGate.position); yield return null;
             CaptureApproachReview("village-12-far-curved-gate");
+            var slateBounds = slateHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
+            ApproachLookAt(slateBounds.center + Vector3.up * (slateBounds.extents.y * .35f)); yield return null;
+            CaptureApproachReview("village-13-slate-house");
             ApproachFaceForward();
         }
     }

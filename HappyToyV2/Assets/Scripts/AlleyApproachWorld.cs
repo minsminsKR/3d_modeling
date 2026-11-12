@@ -299,6 +299,9 @@ namespace HappyToy.V2
             }
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHousePbr") ??
                 Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
+            var slate = Resources.Load<GameObject>("AlleySlateHouse/SlateHousePbr");
+            var farSlate = Resources.Load<GameObject>("AlleySlateHouse/geometry-far");
+            var farSlateMaterial = Resources.Load<Material>("AlleySlateHouse/SlateHousePbr");
             var twoStory = Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouseClean") ??
                 Resources.Load<GameObject>("AlleyTwoStoryHouse/TwoStoryHouse");
             // Distant houses reuse the authored PBR materials on their
@@ -323,7 +326,7 @@ namespace HappyToy.V2
             // Replace the flat foreground block above the right wall with the
             // authored house, keeping its actual mesh outside the lane.
             var foreground = CorridorEntranceModels.Group(transform, "Foreground old Korean house", Vector3.zero);
-            Instantiate(prefab, foreground, false);
+            Instantiate(slate ? slate : prefab, foreground, false);
             CorridorEntranceModels.GroundAtHeight(foreground, new Vector3(7.0f, 0, -8f), 4.7f, Quaternion.Euler(0, -90, 0));
             var foregroundBounds = MonsterPresentationScale.Bounds(foreground);
             float foregroundClearance = transform.position.x + 4.85f;
@@ -455,8 +458,9 @@ namespace HappyToy.V2
                 for (int i = 0; i < 2; i++)
                 {
                     var distant = CorridorEntranceModels.Group(transform, "Far residential roofline", Vector3.zero);
-                    bool usePlaster = i == 0 && farPlaster && farPlasterMaterial;
-                    Instantiate(usePlaster ? farPlaster : farHouse, distant, false);
+                    bool useSlate = i == 0 && farSlate && farSlateMaterial;
+                    bool usePlaster = !useSlate && i == 0 && farPlaster && farPlasterMaterial;
+                    Instantiate(useSlate ? farSlate : (usePlaster ? farPlaster : farHouse), distant, false);
                     CorridorEntranceModels.GroundAtHeight(distant,
                         new Vector3(-20.2f, 0, -15f + i * 12f), 5.2f + i * .5f,
                         Quaternion.Euler(0, 68f + i * 19f, 0));
@@ -464,7 +468,7 @@ namespace HappyToy.V2
                     foreach (var node in distant.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                     foreach (var renderer in distant.GetComponentsInChildren<Renderer>(true))
                     {
-                        renderer.sharedMaterial = usePlaster ? farPlasterMaterial : farMaterial;
+                        renderer.sharedMaterial = useSlate ? farSlateMaterial : (usePlaster ? farPlasterMaterial : farMaterial);
                         renderer.shadowCastingMode = ShadowCastingMode.Off;
                     }
                 }
