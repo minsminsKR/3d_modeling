@@ -12,8 +12,9 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         Mesh wireMesh;
 
-        public void Prepare()
+        public void Prepare(Vector3[] servicePoles)
         {
+            if (servicePoles == null || servicePoles.Length != 2) throw new ArgumentException("Two service poles are required");
             if (wireMesh) throw new InvalidOperationException("Alley wiring is already prepared");
             var geometry = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, 1f);
             float[] poles = { -8.2f, -2f, 6f, 14f };
@@ -33,16 +34,31 @@ namespace HappyToy.V2
                 SaggedCable(geometry, new Vector3(x, 5.27f, poles[span]),
                     new Vector3(x, 5.27f, poles[span + 1]), .18f + line * .025f, .027f);
             }
-            // Unequal crossings and leads echo the layered residential cables
-            // in the reference without adding collision to the street.
-            for (int pole = 0; pole < poles.Length; pole++)
-            for (int lead = 0; lead < 2; lead++)
+            // Secondary supports and real connected service leads give the
+            // old homes their own crossing lines instead of loose wire ends.
+            foreach (var pole in servicePoles)
             {
-                float z = poles[pole];
-                var from = new Vector3(2.54f + lead * .34f, 5.20f - lead * .16f, z);
-                var to = new Vector3(-4.0f - lead * .55f, 4.55f + .12f * (pole % 2),
-                    z - 1.3f + lead * 1.7f);
-                SaggedCable(geometry, from, to, .24f + .07f * lead, .024f);
+                geometry.Box(pole + Vector3.down * .12f, new Vector3(.78f, .07f, .09f), Quaternion.identity, 0);
+                for (int line = 0; line < 3; line++)
+                    geometry.Box(pole + new Vector3((line - 1) * .23f, -.05f, 0),
+                        new Vector3(.06f, .1f, .06f), Quaternion.identity, 0);
+            }
+            for (int line = 0; line < 3; line++)
+            {
+                var offset = new Vector3((line - 1) * .23f, 0, 0);
+                SaggedCable(geometry, servicePoles[0] + offset, servicePoles[1] + offset,
+                    .25f + line * .035f, .022f);
+            }
+            for (int i = 0; i < poles.Length; i++)
+            {
+                var target = Mathf.Abs(poles[i] - servicePoles[0].z) < Mathf.Abs(poles[i] - servicePoles[1].z)
+                    ? servicePoles[0] : servicePoles[1];
+                for (int line = 0; line < 2; line++)
+                {
+                    var from = new Vector3(2.43f + line * .44f, 5.27f, poles[i]);
+                    var to = target + new Vector3((line == 0 ? -1 : 1) * .23f, 0, 0);
+                    SaggedCable(geometry, from, to, .22f + .07f * line, .022f);
+                }
             }
             var mesh = geometry.Mesh("Batched sagging village cables");
             wireMesh = mesh;

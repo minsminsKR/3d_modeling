@@ -364,6 +364,18 @@ namespace HappyToy.V2.CloudTests
             Assert.That(wires, Is.Not.Null, "Village wiring was not created");
             Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);
             Assert.That(wires.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var servicePoles = alley.transform.Cast<Transform>().Where(node => node.name == "Secondary village utility pole").ToArray();
+            Assert.That(servicePoles.Length, Is.EqualTo(2), "Secondary utility supports are missing");
+            Assert.That(servicePoles.All(pole => pole.GetComponentsInChildren<Collider>(true).Length == 0), Is.True);
+            Assert.That(servicePoles.All(pole => pole.GetComponent<Renderer>().shadowCastingMode ==
+                UnityEngine.Rendering.ShadowCastingMode.Off), Is.True, "Secondary supports cast distracting shadows");
+            var wireVertices = wires.GetComponent<MeshFilter>().sharedMesh.vertices;
+            foreach (var pole in servicePoles)
+            {
+                var top = pole.position + Vector3.up * 2.62f;
+                float distance = wireVertices.Min(vertex => Vector3.Distance(wires.TransformPoint(vertex), top));
+                Assert.That(distance, Is.LessThan(.05f), "A secondary support has no attached cable");
+            }
             var curveGate = nodes.SingleOrDefault(node => node.name == "House gate" &&
                 node.position.z > 403.5f && node.position.z < 404.5f);
             Assert.That(curveGate, Is.Not.Null, "Curved wall gate is missing");

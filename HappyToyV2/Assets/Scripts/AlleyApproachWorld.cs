@@ -236,7 +236,18 @@ namespace HappyToy.V2
                 lamp.range = 6; lamp.intensity = .8f; lamp.shadows = LightShadows.None;
                 Box("Lamp arm", new Vector3(2.57f, 3.34f, z), new Vector3(.45f, .07f, .07f), iron, false);
             }
-            gameObject.AddComponent<AlleyUtilityDressing>().Prepare();
+            var servicePoles = new Vector3[2];
+            float[] servicePoleZ = { -1f, 8.5f };
+            for (int i = 0; i < servicePoles.Length; i++)
+            {
+                float z = servicePoleZ[i], x = -3.65f + RoadBend(z);
+                // Secondary poles sit behind the wall, with no new collision.
+                Cylinder("Secondary village utility pole", new Vector3(x, 2.65f, z),
+                    new Vector3(.14f, 2.65f, .14f), wallCoping, false);
+                transform.GetChild(transform.childCount - 1).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+                servicePoles[i] = new Vector3(x, 5.27f, z);
+            }
+            gameObject.AddComponent<AlleyUtilityDressing>().Prepare(servicePoles);
             float noticeZ = 1.8f;
             float noticeSlope = (RoadBend(noticeZ + .02f) - RoadBend(noticeZ - .02f)) / .04f;
             Vector3 noticeInward = new Vector3(1, 0, -noticeSlope).normalized;
