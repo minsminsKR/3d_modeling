@@ -461,6 +461,35 @@ namespace HappyToy.V2.CloudTests
             Assert.That(signFaces.Min(face => face.position.z), Is.LessThan(signBounds.min.z));
             Assert.That(signFaces.Max(face => face.position.z), Is.GreaterThan(signBounds.max.z),
                 "Rear sign face is hidden inside the opaque frame");
+            var signBrackets = nodes.Where(node => node.name == "Projecting sign mounting bracket").ToArray();
+            Assert.That(signBrackets.Length, Is.EqualTo(2), "Projecting sign lacks its two mounting brackets");
+            foreach (var bracket in signBrackets)
+            {
+                Assert.That(bracket.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var bracketBounds = bracket.GetComponent<Renderer>().bounds;
+                Assert.That(bracketBounds.Intersects(signBounds), Is.True, "Bracket does not meet sign frame");
+                Assert.That(bracketBounds.Intersects(shopBounds), Is.True, "Bracket does not reach shop frontage");
+                var ray = new Ray(bracket.TransformPoint(Vector3.back * .5f), bracket.forward);
+                bool reachedShop = false;
+                bool previousBackfaces = Physics.queriesHitBackfaces;
+                try
+                {
+                    Physics.queriesHitBackfaces = true;
+                    foreach (var filter in shop.GetComponentsInChildren<MeshFilter>(true))
+                    {
+                        if (!filter.sharedMesh) continue;
+                        var probe = filter.gameObject.AddComponent<MeshCollider>();
+                        try
+                        {
+                            probe.sharedMesh = filter.sharedMesh;
+                            if (probe.Raycast(ray, out _, bracket.localScale.z)) reachedShop = true;
+                        }
+                        finally { UnityEngine.Object.DestroyImmediate(probe); }
+                    }
+                }
+                finally { Physics.queriesHitBackfaces = previousBackfaces; }
+                Assert.That(reachedShop, Is.True, "Bracket does not intersect the actual shop mesh");
+            }
             var yardWall = nodes.SingleOrDefault(node => node.name == "Shop rear courtyard wall");
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));

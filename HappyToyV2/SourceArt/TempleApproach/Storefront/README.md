@@ -35,3 +35,13 @@ and generation output contain no intended third-party logos; this description
 does not assert a third-party license for generated output.
 
 The separately authored walk-in derivative, marker measurements and its current placeholder interior are documented under `Interior/README.md`. The original generated facade and its sources remain unchanged for fallback.
+
+## Projecting sign mounting
+
+The existing projecting sign now has two slim, non-colliding metal brackets
+for the authored walk-in shop. Their endpoints are fitted to the visible shop
+mesh, not merely its bounding box; the alternate storefront fallback is left
+unchanged. The focused D3D11 village PlayMode test checks both frame contact
+and a test-only ray intersection with the actual shop mesh, then captures
+the forward and rear-facing gameplay cameras. The player build and GPU frame
+time were not measured.

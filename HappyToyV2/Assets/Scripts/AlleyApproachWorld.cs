@@ -770,6 +770,24 @@ namespace HappyToy.V2
             var light = lamp.AddComponent<Light>(); light.type = LightType.Point; light.color = new Color(1f, .57f, .27f);
             light.range = 4f; light.intensity = 1.2f; light.shadows = LightShadows.None;
         }
+        // Endpoints are fitted to the visible front mesh of the authored
+        // walk-in shop, rather than its much broader renderer bounds.
+        void AttachProjectingSign()
+        {
+            if (!walkInStorefront) return;
+            var finish = surfaces.Get("metal-rust", new Color(.28f, .26f, .23f));
+            foreach (float y in new[] { 2.46f, 3.04f })
+            {
+                var start = new Vector3(-3.025f, y, -11.2f);
+                var end = new Vector3(y < 2.75f ? -4.10f : -3.86f, y, -10.9f);
+                Vector3 delta = end - start;
+                var bracket = Box("Projecting sign mounting bracket", (start + end) * .5f,
+                    new Vector3(.07f, .07f, delta.magnitude + .10f), finish, false);
+                bracket.transform.localRotation = Quaternion.LookRotation(delta, Vector3.up);
+                bracket.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
+        }
+
         void InstallStorefront()
         {
             var prefab = walkInStorefront ? walkInStorefront : Resources.Load<GameObject>("AlleyStorefront/Storefront");
@@ -783,6 +801,7 @@ namespace HappyToy.V2
             foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
             var bounds = MonsterPresentationScale.Bounds(holder);
             holder.position += Vector3.right * ((transform.position.x - 2.99f) - bounds.max.x);
+            AttachProjectingSign();
             // Only presentation geometry is replaced. Original wall colliders,
             // item targets, the projecting sign and freezer remain untouched.
             foreach (Transform child in transform)
