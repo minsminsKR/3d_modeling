@@ -20,3 +20,26 @@ The generated window had overlapping triangles which became conspicuous when ill
 Run Unity editor method `HappyToy.V2.Editor.AlleyCompactWindowImport.Apply` after the regular PBR import. It checks the original atlas hash, derives a 1024px emission mask from the two UV islands of this one window, restores the atlas importer settings, and creates a separate warm material. The warm material is used only with the repaired mid LOD; the near house stays unlit, and the original mid LOD falls back to the original dark material. There is no added realtime light.
 
 The focused village and seam D3D11 tests passed and the actual game camera showed the overlapping-triangle artifact removed and the window frame preserved. Re-running the Blender recipe matched all mesh positions, triangle indices and UV data; re-running the Unity importer produced the same emission PNG SHA-256 `cc6f906438b350c9cd47184e97de612cc08bd6c95232642b9c6dc0035f0b8e7f`. Native-player appearance and FPS were not tested.
+
+
+## Near house ground-floor window repair
+
+The near house's ground-floor window had overlapping folded triangles and
+scattered atlas fragments. Game-camera ray samples located the damaged face;
+`prepare_ground_window.py` verifies the retained `CompactHouse.fbx` and atlas
+hashes, retains the 125,000-face house and adds one UV-mapped four-vertex
+window surface inside the existing frame. The clean glass sample comes from the
+original atlas. It produces `CompactHouseGroundWindowEditable.blend` (packed
+albedo) and `CompactHouseGroundWindow.fbx`. The full original GLB, its PBR
+textures and original editable Blender file remain unchanged.
+
+Run Blender 4.2.23 with `--background --threads 2 --python-exit-code 1
+--python SourceArt/TempleApproach/CompactBrickHouseCandidate/prepare_ground_window.py`,
+then copy the resulting FBX to
+`Assets/Resources/AlleyCompactBrickHouse/geometry-ground-window.fbx`. Unity
+uses the existing `CompactBrickHousePbr` material. The original prefab is the
+fallback if the repair or material is unavailable. The repaired near mesh is
+visual-only; existing collision remains untouched. The actual D3D11 village
+camera and house/wall placement checks passed. The patch removes the visible
+large fragment from the sampled view; it is not a reconstruction of an interior
+and native-player FPS has not been measured.

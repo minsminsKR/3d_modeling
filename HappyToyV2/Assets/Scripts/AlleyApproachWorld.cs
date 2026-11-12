@@ -328,10 +328,14 @@ namespace HappyToy.V2
             }
             var alternate = Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHousePbr") ??
                 Resources.Load<GameObject>("AlleyPlasterHouse/PlasterHouse");
-            var compact = Resources.Load<GameObject>("AlleyCompactBrickHouse/CompactBrickHousePbr");
+            var nearWindowRepair = Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-ground-window");
+            var originalCompactMaterial = Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHousePbr");
+            // Avoid loading a second 125k-face copy when the repaired near
+            // model and its original material are already available.
+            var compact = nearWindowRepair && originalCompactMaterial ? null :
+                Resources.Load<GameObject>("AlleyCompactBrickHouse/CompactBrickHousePbr");
             var repairedCompact = Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-mid-window");
             var farCompact = repairedCompact ? repairedCompact : Resources.Load<GameObject>("AlleyCompactBrickHouse/geometry-mid");
-            var originalCompactMaterial = Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHousePbr");
             var farCompactMaterial = repairedCompact ?
                 (Resources.Load<Material>("AlleyCompactBrickHouse/CompactBrickHouseWarm") ?? originalCompactMaterial) :
                 originalCompactMaterial;
@@ -406,9 +410,14 @@ namespace HappyToy.V2
                     bool compactBackground = variant == 5 && farCompact && farCompactMaterial;
                     var selected = compact && variant == 0 ? compact :
                         (twoStory && variant == 3 ? twoStory : (alternate && variant % 2 == 0 ? alternate : prefab));
-                    if (compactBackground) PlaceBackground(holder, selected, farCompact, farCompactMaterial);
+                    if (variant == 0 && nearWindowRepair && originalCompactMaterial)
+                    {
+                        var repaired = CorridorEntranceModels.Group(holder, "Compact brick house repaired ground window", Vector3.zero);
+                        PlaceBackground(repaired, selected, nearWindowRepair, originalCompactMaterial);
+                    }
+                    else if (compactBackground) PlaceBackground(holder, selected, farCompact, farCompactMaterial);
                     else Instantiate(selected, holder, false);
-                    float height = compactBackground ? 5.6f : ((compact && variant == 0) ||
+                    float height = compactBackground ? 5.6f : (((compact || (nearWindowRepair && originalCompactMaterial)) && variant == 0) ||
                         (twoStory && variant == 3) ? 6f : 4.15f + (variant % 3) * .22f);
                     float setback = 6.65f + (variant % 2) * .25f;
                     float stationZ = z + stationOffsets[variant];

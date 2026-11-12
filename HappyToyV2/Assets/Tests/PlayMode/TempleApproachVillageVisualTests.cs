@@ -44,9 +44,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(slateHouse.GetComponentsInChildren<Collider>(true), Is.Empty,
                 "The visual house must not create obstacles");
             var compactHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
-                .Any(node => node.name.StartsWith("CompactBrickHousePbr", StringComparison.Ordinal)));
+                .Any(node => node.name == "Compact brick house repaired ground window"));
             Assert.That(compactHouse, Is.Not.Null, "Reviewed compact two-story house was not placed");
             Assert.That(compactHouse.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(compactHouse.GetComponentsInChildren<MeshFilter>(true).Any(filter =>
+                filter.sharedMesh && filter.sharedMesh.vertexCount == 4 && filter.sharedMesh.GetIndexCount(0) == 6),
+                Is.True, "Repaired ground window surface is missing");
+
             var compactFar = nearHouses.SingleOrDefault(house => house != compactHouse &&
                 house.GetComponentsInChildren<Renderer>(true).Any(renderer => renderer.sharedMaterial &&
                     renderer.sharedMaterial.name == "CompactBrickHouseWarm"));
@@ -445,7 +449,8 @@ namespace HappyToy.V2.CloudTests
             eye = Get<Camera>(player, "eyes").transform.position;
             ApproachLookAt(eye + new Vector3(5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-05-shop-right-roofs");
-            var compactBounds = compactHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
+            var compactBounds = compactHouse.GetComponentsInChildren<Renderer>(true)
+                .OrderByDescending(renderer => renderer.bounds.size.sqrMagnitude).First().bounds;
             ApproachLookAt(compactBounds.center + Vector3.up * (compactBounds.extents.y * .35f)); yield return null;
             CaptureApproachReview("village-18-compact-house");
 

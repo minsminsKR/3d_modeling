@@ -346,3 +346,6 @@ HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/*.png filter=lfs diff=
 HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyWeatheredWall/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyWeatheredWall/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Retain the reproducible compact-house window repair export.
+HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
