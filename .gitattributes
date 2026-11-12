@@ -374,3 +374,6 @@ HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/*.png filter=lfs diff=
 HappyToyV2/SourceArt/TempleApproach/UtilityMeterCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyMeter/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyMeter/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Side-window curtain runtime image.
+HappyToyV2/Assets/Resources/AlleyCompactBrickHouse/side-window-curtain.png filter=lfs diff=lfs merge=lfs -text

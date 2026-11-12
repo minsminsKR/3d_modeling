@@ -22,6 +22,20 @@ namespace HappyToy.V2.Editor
             return paneA || paneB;
         }
 
+        // The curtain is a small distant detail; do not reimport other textures.
+        public static void ApplySideCurtain()
+        {
+            AssetDatabase.Refresh();
+            var importer = AssetImporter.GetAtPath(Folder + "side-window-curtain.png") as TextureImporter;
+            if (!importer) throw new InvalidOperationException("Side-window curtain texture is missing");
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = true; importer.maxTextureSize = 512;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.wrapMode = TextureWrapMode.Clamp; importer.mipmapEnabled = true;
+            importer.SaveAndReimport();
+            Debug.Log("ALLEY_SIDE_CURTAIN_IMPORT_PASS");
+        }
+
         public static void Apply()
         {
             AssetDatabase.Refresh();

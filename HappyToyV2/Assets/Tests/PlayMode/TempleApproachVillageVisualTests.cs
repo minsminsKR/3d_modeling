@@ -95,9 +95,22 @@ namespace HappyToy.V2.CloudTests
             Assert.That(compactFar.GetComponentsInChildren<MeshFilter>(true).Any(filter =>
                 filter.sharedMesh && filter.sharedMesh.subMeshCount > 0 && filter.sharedMesh.vertexCount == 4 &&
                 filter.sharedMesh.GetIndexCount(0) == 6), Is.True, "Stable window surface is missing");
-            Assert.That(compactHouse.GetComponentsInChildren<Renderer>(true).All(renderer =>
-                !renderer.sharedMaterial.IsKeywordEnabled("_EMISSION")), Is.True,
-                "Near house should retain its unlit windows");
+            var sidePane = compactHouse.GetComponentsInChildren<Transform>(true)
+                .SingleOrDefault(node => node.name == "Near side window warm glass");
+            Assert.That(sidePane, Is.Not.Null);
+            Assert.That(sidePane.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var sidePaneRenderer = sidePane.GetComponent<Renderer>();
+            Assert.That(sidePaneRenderer.sharedMaterial.IsKeywordEnabled("_EMISSION"), Is.True);
+            Assert.That(sidePaneRenderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
+            var sideCurtain = Resources.Load<Texture2D>("AlleyCompactBrickHouse/side-window-curtain");
+            Assert.That(sideCurtain, Is.Not.Null);
+            Assert.That(Mathf.Max(sideCurtain.width, sideCurtain.height), Is.LessThanOrEqualTo(512));
+            Assert.That(sidePaneRenderer.sharedMaterial.GetTexture("_BaseMap"), Is.SameAs(sideCurtain));
+            Assert.That(sidePaneRenderer.sharedMaterial.GetTexture("_EmissionMap"),
+                Is.SameAs(sidePaneRenderer.sharedMaterial.GetTexture("_BaseMap")));
+            Assert.That(compactHouse.GetComponentsInChildren<Renderer>(true).Where(renderer => renderer != sidePaneRenderer)
+                .All(renderer => !renderer.sharedMaterial.IsKeywordEnabled("_EMISSION")), Is.True,
+                "Only the near side glass should emit light");
             bool closerToCurvedWall = false;
             var houseBounds = new System.Collections.Generic.List<Bounds>();
             foreach (var house in nearHouses)
