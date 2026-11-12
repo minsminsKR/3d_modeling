@@ -285,6 +285,11 @@ namespace HappyToy.V2
                 wallDetails.AddRunoff(point, inward, new Vector2(.72f, 1.18f), z != 7.4f);
             }
             Box("Alley rear boundary", new Vector3(0, 1.4f, -17.2f), new Vector3(8, 2.8f, .3f), wall, true);
+            var rearBoundary = transform.GetChild(transform.childCount - 1);
+            var rearSections = GetComponent<AlleyWeatheredWallSections>();
+            if (!rearSections) rearSections = gameObject.AddComponent<AlleyWeatheredWallSections>();
+            if (rearSections.TryBuildRear(new Vector3(0, 0, -17.2f), 8f, 2.8f))
+                rearBoundary.GetComponent<Renderer>().enabled = false;
             InstallKoreanWallCandidate();
             InstallResidentialHouses();
             InstallStorefront();
@@ -491,6 +496,34 @@ namespace HappyToy.V2
                 foreach (var node in rear.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in rear.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
+            }
+            // A low roof beyond the rear wall gives the closed starting
+            // boundary a lived-in streetscape when the player looks back.
+            if (farHouse && farMaterial)
+            {
+                var backstreet = CorridorEntranceModels.Group(transform, "Backstreet roof beyond rear wall", Vector3.zero);
+                PlaceBackground(backstreet, twoStory ? twoStory : prefab, farHouse, farMaterial);
+                CorridorEntranceModels.GroundAtHeight(backstreet, new Vector3(.4f, 0, -22.8f), 5.8f,
+                    Quaternion.Euler(0, 26f, 0));
+                var backstreetBounds = MonsterPresentationScale.Bounds(backstreet);
+                bool spaceAvailable = true;
+                foreach (var occupied in occupiedHouses)
+                    if (backstreetBounds.Intersects(occupied)) { spaceAvailable = false; break; }
+                if (!spaceAvailable)
+                {
+                    // A visual backdrop must not prevent the approach loading
+                    // when another installed house has a different footprint.
+                    backstreet.gameObject.SetActive(false);
+                    Destroy(backstreet.gameObject);
+                }
+                else
+                {
+                    occupiedHouses.Add(backstreetBounds);
+                    aerialHouses.Add(backstreet);
+                    foreach (var node in backstreet.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                    foreach (var renderer in backstreet.GetComponentsInChildren<Renderer>(true))
+                        renderer.shadowCastingMode = ShadowCastingMode.Off;
+                }
             }
             // The old forest horizon sits below this part of the village.
             // A visual-only residential yard keeps the distant houses grounded

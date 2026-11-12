@@ -224,8 +224,62 @@ namespace HappyToy.V2.CloudTests
             Assert.That(float.IsInfinity(pipeWallX), Is.False, "Right pipe has no wall support");
             Assert.That(Mathf.Abs(pipeBounds.max.x - pipeWallX), Is.LessThan(.04f),
                 "Right pipe is buried or detached from its visible wall");
+            var rearBoundary = alley.transform.Find("Alley rear boundary");
+            Assert.That(rearBoundary, Is.Not.Null);
+            var rearCollider = rearBoundary.GetComponent<BoxCollider>();
+            Assert.That(rearCollider && rearCollider.enabled && !rearBoundary.GetComponent<Renderer>().enabled, Is.True,
+                "Rear wall must preserve collision while using the authored surface");
+            var rearSections = alley.transform.Cast<Transform>()
+                .Where(node => node.name == "Weathered rear boundary section").ToArray();
+            Assert.That(rearSections.Length, Is.EqualTo(2), "Rear wall sections are missing");
+            foreach (var section in rearSections)
+            {
+                Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var filter = section.GetComponentInChildren<MeshFilter>();
+                var probe = filter.gameObject.AddComponent<MeshCollider>();
+                try
+                {
+                    probe.sharedMesh = filter.sharedMesh;
+                    foreach (float offset in new[] { -.4f, 0f, .4f })
+                    {
+                        var ray = new Ray(section.position + new Vector3(offset, 1.1f, 1.5f), Vector3.back);
+                        Assert.That(rearCollider.Raycast(ray, out var collision, 3f), Is.True, "Rear collision is missing");
+                        Assert.That(probe.Raycast(ray, out var visual, 3f), Is.True, "Rear wall surface is missing");
+                        Assert.That(Mathf.Abs(collision.distance - visual.distance), Is.LessThan(.25f),
+                            "Rear wall surface and collision diverge");
+                    }
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
+            var seamRay = new Ray(alley.transform.TransformPoint(new Vector3(0, 1.1f, -15.7f)), Vector3.back);
+            Assert.That(rearCollider.Raycast(seamRay, out var seamCollision, 3f), Is.True);
+            float seamSurface = float.PositiveInfinity;
+            foreach (var section in rearSections)
+            {
+                var filter = section.GetComponentInChildren<MeshFilter>();
+                var probe = filter.gameObject.AddComponent<MeshCollider>();
+                try
+                {
+                    probe.sharedMesh = filter.sharedMesh;
+                    if (probe.Raycast(seamRay, out var hit, 3f)) seamSurface = Mathf.Min(seamSurface, hit.distance);
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
+            Assert.That(float.IsInfinity(seamSurface), Is.False, "Rear wall has a visible gap at its join");
+            Assert.That(Mathf.Abs(seamSurface - seamCollision.distance), Is.LessThan(.25f));
+            var backstreet = alley.transform.Find("Backstreet roof beyond rear wall");
+            Assert.That(backstreet, Is.Not.Null, "Backstreet roof is missing");
+            Assert.That(backstreet.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var backstreetRenderers = backstreet.GetComponentsInChildren<Renderer>(true);
+            Assert.That(backstreetRenderers.Length, Is.GreaterThan(0));
+            Assert.That(backstreetRenderers.All(renderer => renderer.bounds.max.z < rearCollider.bounds.min.z), Is.True,
+                "Backstreet house crosses the rear boundary");
+            var backstreetBounds = backstreetRenderers[0].bounds;
+            foreach (var renderer in backstreetRenderers.Skip(1)) backstreetBounds.Encapsulate(renderer.bounds);
+            foreach (var near in houseBounds)
+                Assert.That(backstreetBounds.Intersects(near), Is.False, "Backstreet house overlaps a near house");
             var aerialAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "Village rooftop aerial anchor").ToArray();
-            Assert.That(aerialAnchors.Length, Is.EqualTo(4), "Rooftop aerial anchors are missing");
+            Assert.That(aerialAnchors.Length, Is.EqualTo(5), "Rooftop aerial anchors are missing");
             Assert.That(aerialAnchors.All(node => !node.GetComponent<Collider>()), Is.True);
             var aerialMesh = alley.transform.Find("Batched vintage rooftop TV aerials");
             Assert.That(aerialMesh && aerialMesh.GetComponent<MeshFilter>().sharedMesh.vertexCount > 0, Is.True);
@@ -319,6 +373,8 @@ namespace HappyToy.V2.CloudTests
                 var renderers = house.GetComponentsInChildren<Renderer>(true);
                 var bounds = renderers[0].bounds;
                 foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                if (bounds.Intersects(backstreetBounds))
+                    overlaps.Add(house.name + " " + bounds.center + " overlaps backstreet " + backstreetBounds.center);
                 foreach (var near in houseBounds)
                     if (bounds.Intersects(near)) overlaps.Add(house.name + " " + bounds.center + " overlaps near " + near.center);
                 foreach (var previous in backgroundBounds)
@@ -504,6 +560,9 @@ namespace HappyToy.V2.CloudTests
 
             CaptureApproachReview("village-01-start");
             var eye = Get<Camera>(player, "eyes").transform.position;
+            ApproachLookAt(eye + new Vector3(0, .3f, -5)); yield return null;
+            CaptureApproachReview("village-21-rear-boundary");
+            ApproachFaceForward(); yield return null;
             ApproachLookAt(eye + new Vector3(5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-02-front-right-roofs");
             ApproachLookAt(eye + new Vector3(-5, 1.3f, 4)); yield return null;

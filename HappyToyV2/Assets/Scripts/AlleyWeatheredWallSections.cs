@@ -9,6 +9,38 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class AlleyWeatheredWallSections : MonoBehaviour
     {
+        // Replace only the visual skin of the rear boundary. Alternating the
+        // reviewed model's faces avoids repeating the same stains.
+        public bool TryBuildRear(Vector3 center, float width, float height)
+        {
+            var prefab = Resources.Load<GameObject>("AlleyWeatheredWall/geometry");
+            var material = Resources.Load<Material>("AlleyWeatheredWall/WeatheredWall");
+            if (!prefab || !material) return false;
+            const int pieces = 2;
+            for (int i = 0; i < pieces; i++)
+            {
+                float segmentWidth = width / pieces;
+                var pivot = CorridorEntranceModels.Group(transform, "Weathered rear boundary section", Vector3.zero);
+                var visual = CorridorEntranceModels.Group(pivot, "Generated rear wall surface", Vector3.zero);
+                Instantiate(prefab, visual, false);
+                CorridorEntranceModels.GroundAtHeight(visual, Vector3.zero, height, Quaternion.Euler(0, i == 0 ? 180 : 0, 0));
+                var bounds = MonsterPresentationScale.Bounds(visual);
+                if (bounds.size.x < .01f) throw new InvalidOperationException("Rear wall width is invalid");
+                var scale = visual.localScale; scale.x *= (segmentWidth + .18f) / bounds.size.x; visual.localScale = scale;
+                bounds = MonsterPresentationScale.Bounds(visual);
+                visual.position += new Vector3(pivot.position.x - bounds.center.x,
+                    pivot.position.y - bounds.min.y, pivot.position.z + .23f - bounds.max.z);
+                pivot.localPosition = center + Vector3.right * (-width * .5f + segmentWidth * (i + .5f));
+                foreach (var node in pivot.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                foreach (var renderer in pivot.GetComponentsInChildren<Renderer>(true))
+                {
+                    renderer.sharedMaterial = material;
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                }
+            }
+            return true;
+        }
+
         public bool TryBuild(float start, float end, float height, Func<float, float> bend, int side = -1)
         {
             if (side != -1 && side != 1) throw new ArgumentOutOfRangeException(nameof(side));
