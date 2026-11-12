@@ -337,3 +337,12 @@ HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/*.png filter=lfs 
 HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/AlleyCompactBrickHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TempleApproach/KoreanWallSection/*.blend filter=lfs diff=lfs merge=lfs -text
+
+# Weathered residential wall generated source and Unity runtime assets.
+HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WeatheredCompoundWall/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyWeatheredWall/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyWeatheredWall/*.png filter=lfs diff=lfs merge=lfs -text

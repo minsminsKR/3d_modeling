@@ -135,6 +135,42 @@ namespace HappyToy.V2.CloudTests
                 }
                 finally { UnityEngine.Object.DestroyImmediate(probe); }
             }
+            var weatheredWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Weathered compound wall section").ToArray();
+            Assert.That(weatheredWalls.Length, Is.EqualTo(2), "Weathered wall sections are missing");
+            foreach (var section in weatheredWalls)
+            {
+                Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty, "Weathered wall visuals must not add collision");
+                var filters = section.GetComponentsInChildren<MeshFilter>(true);
+                Assert.That(filters.Length, Is.GreaterThan(0));
+                long faces = 0;
+                foreach (var filter in filters)
+                    for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                        faces += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
+                Assert.That(faces, Is.LessThanOrEqualTo(61000), "Weathered wall exceeded its geometry budget");
+                Assert.That(section.GetComponentsInChildren<Renderer>(true).All(renderer => renderer.sharedMaterial &&
+                    renderer.sharedMaterial.name == "WeatheredWall" && renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")),
+                    Is.True, "Weathered wall lost its original PBR material");
+                var probe = filters[0].gameObject.AddComponent<MeshCollider>();
+                try
+                {
+                    probe.sharedMesh = filters[0].sharedMesh;
+                    var originalWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Curved residential wall")
+                        .Select(node => node.GetComponent<BoxCollider>()).Where(collider => collider && collider.enabled);
+                    foreach (float offset in new[] { -.6f, 0f, .6f })
+                    {
+                        var ray = new Ray(section.position + section.right * 1.5f + section.forward * offset + Vector3.up,
+                            -section.right);
+                        float collisionDistance = float.PositiveInfinity;
+                        foreach (var collider in originalWalls)
+                            if (collider.Raycast(ray, out var hit, 3f)) collisionDistance = Mathf.Min(collisionDistance, hit.distance);
+                        Assert.That(float.IsInfinity(collisionDistance), Is.False, "Weathered wall collision is missing");
+                        Assert.That(probe.Raycast(ray, out var visualHit, 3f), Is.True, "Weathered wall has no visible surface");
+                        Assert.That(Mathf.Abs(visualHit.distance - collisionDistance), Is.LessThan(.25f),
+                            "Weathered wall surface and original collision diverge: visual=" + visualHit.distance + " collision=" + collisionDistance);
+                    }
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
             var aerialAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "Village rooftop aerial anchor").ToArray();
             Assert.That(aerialAnchors.Length, Is.EqualTo(4), "Rooftop aerial anchors are missing");
             Assert.That(aerialAnchors.All(node => !node.GetComponent<Collider>()), Is.True);

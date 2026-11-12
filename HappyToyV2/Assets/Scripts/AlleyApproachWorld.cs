@@ -601,8 +601,12 @@ namespace HappyToy.V2
             wallSkin.layer = 8; wallSkin.transform.SetParent(transform, false);
             wallSkin.AddComponent<MeshFilter>().sharedMesh = wallMesh;
             wallSkin.AddComponent<MeshRenderer>().sharedMaterial = wall;
-            if (side < 0 && Mathf.Approximately(start, -3f) &&
-                gameObject.AddComponent<AlleyAuthoredWallSections>().TryBuild(start, end, height, RoadBend))
+            bool replaceVisual = false;
+            if (side < 0 && Mathf.Approximately(start, -3f))
+                replaceVisual = gameObject.AddComponent<AlleyAuthoredWallSections>().TryBuild(start, end, height, RoadBend);
+            else if (side < 0 && Mathf.Approximately(start, 3f))
+                replaceVisual = gameObject.AddComponent<AlleyWeatheredWallSections>().TryBuild(start, end, height, RoadBend);
+            if (replaceVisual)
             {
                 // Keep all original curved colliders, replacing only their
                 // matching render surfaces and caps with the authored section.
