@@ -13,3 +13,12 @@ blender -b --threads 2 --python-use-system-env --python-exit-code 1 --python Hap
 ```
 
 The focused D3D11 village and seam play-mode tests passed; the seam check actually unloads the village scene and confirms that the hillside survives. Both game-camera views were inspected. Material instancing is enabled, but native-player frame rate and actual instancing behavior were not measured. This is a distant silhouette improvement; the entire map is not claimed to match the reference.
+
+
+The village also has a separate visual-only rear ground slab owned by
+`AlleyApproachWorld`. It overlaps the existing shop-yard slab and western
+hillside edge to cover the previously visible sky wedge behind the houses.
+The added slab is 2 cm below the existing slab to avoid coplanar overlap.
+A focused D3D11 village camera and a test-only ray through the former wedge
+were checked. The slab adds no gameplay collider and unloads with the village;
+this single sampled view is not proof of every possible horizon angle.

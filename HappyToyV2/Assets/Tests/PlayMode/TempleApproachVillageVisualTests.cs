@@ -386,6 +386,12 @@ namespace HappyToy.V2.CloudTests
             Assert.That(rearGround, Is.Not.Null, "Residential background ground is missing");
             Assert.That(rearGround.GetComponentsInChildren<Collider>(true), Is.Empty);
             var groundBounds = rearGround.GetComponent<Renderer>().bounds;
+            var groundExtension = nodes.SingleOrDefault(node => node.name == "Residential ground behind village");
+            Assert.That(groundExtension, Is.Not.Null, "Rear background ground is missing");
+            Assert.That(groundExtension.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var extensionBounds = groundExtension.GetComponent<Renderer>().bounds;
+            Assert.That(extensionBounds.max.z, Is.GreaterThan(groundBounds.min.z), "Rear ground slabs do not meet");
+            Assert.That(extensionBounds.min.x, Is.LessThan(alley.transform.position.x - 50f), "Rear ground misses the hillside edge");
             foreach (var house in nearHouses.Concat(background).Concat(farHouses)
                 .Where(node => node.position.x < alley.transform.position.x))
             {
@@ -569,6 +575,18 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-03-front-left-roofs");
             var tankBounds = tankHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
             ApproachLookAt(tankBounds.center + Vector3.up * tankBounds.extents.y * .72f); yield return null;
+            // This ray crossed the exposed sky wedge before the rear ground
+            // extension. The test-only collider never remains in gameplay.
+            var groundProbe = groundExtension.gameObject.AddComponent<BoxCollider>();
+            try
+            {
+                Physics.SyncTransforms();
+                var gapRay = Get<Camera>(player, "eyes").ViewportPointToRay(new Vector2(.10f, .27f));
+                Assert.That(groundProbe.Raycast(gapRay, out var groundHit, 200f), Is.True,
+                    "Dusk sky is visible through the rear-ground wedge");
+                Assert.That(groundHit.point.y, Is.InRange(-.06f, .01f), "Unexpected rear-ground surface");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(groundProbe); }
             CaptureApproachReview("village-19-water-tank-house");
 
             ApproachFaceForward();

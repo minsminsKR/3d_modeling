@@ -530,6 +530,12 @@ namespace HappyToy.V2
             // without extending the walkable road or adding invisible barriers.
             Box("Residential ground behind shop", new Vector3(-26f, -.14f, -2f),
                 new Vector3(48f, .22f, 50f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            // Continue the same visual ground behind the start of the alley.
+            // It overlaps the existing slab and the distant hillside edge, so
+            // the dusk sky cannot show through their former open wedge. Keep
+            // it slightly below the first slab to avoid coplanar flicker.
+            Box("Residential ground behind village", new Vector3(-26.25f, -.16f, -48.5f),
+                new Vector3(48.5f, .22f, 43.2f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
             // A second authored boundary gives the rear houses a courtyard
             // edge and screens the broad empty ground beside the store.
             var backWall = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
