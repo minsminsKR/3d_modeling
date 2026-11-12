@@ -16,6 +16,7 @@ namespace HappyToy.V2
         readonly List<Mesh> wallMeshes = new List<Mesh>();
         Material storeSignMaterial;
         GameObject walkInStorefront;
+        bool authoredGateReady;
 
         public static AlleyApproachWorld Create(Transform parent)
         {
@@ -34,6 +35,7 @@ namespace HappyToy.V2
         void Build()
         {
             walkInStorefront = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
+            authoredGateReady = gameObject.AddComponent<AlleyAuthoredGate>().TryBuild(RoadBend);
             var road = surfaces.Get("concrete-rough", new Color(.105f, .10f, .095f));
             var wall = surfaces.Get("plaster-damp", new Color(.82f, .78f, .71f));
             var concreteWall = surfaces.Get("alley-concrete-wall", new Color(.84f, .83f, .80f));
@@ -195,8 +197,9 @@ namespace HappyToy.V2
                 Vector3 pivot = new Vector3(3.01f + RoadBend(z), 0, z);
                 void GatePiece(string label, Vector3 offset, Vector3 size, Material material)
                 {
-                    Box(label, pivot + rotation * offset, size, material, false);
-                    transform.GetChild(transform.childCount - 1).localRotation = rotation;
+                    var piece = Box(label, pivot + rotation * offset, size, material, false);
+                    piece.transform.localRotation = rotation;
+                    if (authoredGateReady && Mathf.Approximately(z, 4f)) piece.GetComponent<Renderer>().enabled = false;
                 }
                 // Older neighboring gates were painted independently rather
                 // than sharing an identical black factory finish.
@@ -555,19 +558,36 @@ namespace HappyToy.V2
                     float slope = (RoadBend(z + .02f) - RoadBend(z - .02f)) / .04f;
                     return new Vector3(x, 0, z) + new Vector3(1, 0, -slope).normalized * (.175f * face);
                 }
-                var nearA = Edge(a, xa, -1); var nearB = Edge(b, xb, -1);
-                var farA = Edge(a, xa, 1); var farB = Edge(b, xb, 1);
-                Vector3 up = Vector3.up * height;
-                surface.Quad(nearA, nearB, nearB + up, nearA + up);
-                surface.Quad(farB, farA, farA + up, farB + up);
-                TiltedBox("Curved wall coping", new Vector3(center.x, height + .04f, center.z),
-                    new Vector3(.45f, .12f, length), Quaternion.Euler(0, angle, 0), roof);
-                // Keep the structural band subordinate to the wall face. The
-                // old dark, tall band and wide posts read as a black frame.
+                // Split only the visual wall where the authored gate joins.
+                // Collider segments remain untouched and continuous.
                 var footing = surfaces.Get("alley-concrete-wall", new Color(.66f, .64f, .60f));
-                TiltedBox("Weathered wall footing", new Vector3(center.x, .09f, center.z),
-                    new Vector3(.39f, .18f, length), Quaternion.Euler(0, angle, 0), footing);
-                if (i % 3 == 0)
+                void DrawWallPart(float from, float to)
+                {
+                    if (to - from < .001f) return;
+                    float fromX = side * 3.2f + RoadBend(from), toX = side * 3.2f + RoadBend(to);
+                    var nearA = Edge(from, fromX, -1); var nearB = Edge(to, toX, -1);
+                    var farA = Edge(from, fromX, 1); var farB = Edge(to, toX, 1);
+                    Vector3 up = Vector3.up * height;
+                    surface.Quad(nearA, nearB, nearB + up, nearA + up);
+                    surface.Quad(farB, farA, farA + up, farB + up);
+                    var partCenter = new Vector3((fromX + toX) * .5f, 0, (from + to) * .5f);
+                    float partAngle = Mathf.Atan2(toX - fromX, to - from) * Mathf.Rad2Deg;
+                    bool meetsGate = authoredGateReady && side > 0 &&
+                        (Mathf.Approximately(to, AlleyAuthoredGate.Start) || Mathf.Approximately(from, AlleyAuthoredGate.End));
+                    float partLength = Vector2.Distance(new Vector2(fromX, from), new Vector2(toX, to)) + (meetsGate ? .005f : .06f);
+                    TiltedBox("Curved wall coping", partCenter + Vector3.up * (height + .04f),
+                        new Vector3(.45f, .12f, partLength), Quaternion.Euler(0, partAngle, 0), roof);
+                    TiltedBox("Weathered wall footing", partCenter + Vector3.up * .09f,
+                        new Vector3(.39f, .18f, partLength), Quaternion.Euler(0, partAngle, 0), footing);
+                }
+                bool cutsGate = authoredGateReady && side > 0 && a < AlleyAuthoredGate.End && b > AlleyAuthoredGate.Start;
+                if (cutsGate)
+                {
+                    DrawWallPart(a, Mathf.Min(b, AlleyAuthoredGate.Start));
+                    DrawWallPart(Mathf.Max(a, AlleyAuthoredGate.End), b);
+                }
+                else DrawWallPart(a, b);
+                if (i % 3 == 0 && !(authoredGateReady && side > 0 && a > AlleyAuthoredGate.Start && a < AlleyAuthoredGate.End))
                 {
                     Box("Concrete wall pier", new Vector3(xa, height * .5f, a),
                         new Vector3(.41f, height + .04f, .22f), footing, false);

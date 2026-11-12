@@ -254,7 +254,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(formedWalls[0].sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
             Assert.That(formedWalls[0].sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
             var curvedCoping = nodes.Where(node => node.name == "Curved wall coping").ToArray();
-            Assert.That(curvedCoping.Length, Is.EqualTo(36), "Curved wall coping is missing");
+            Assert.That(curvedCoping.Length, Is.EqualTo(34), "Curved wall coping is missing around the gate");
             foreach (var coping in curvedCoping)
             {
                 var renderer = coping.GetComponent<Renderer>();
@@ -278,6 +278,35 @@ namespace HappyToy.V2.CloudTests
             var curveGate = nodes.SingleOrDefault(node => node.name == "House gate" &&
                 node.position.z > 403.5f && node.position.z < 404.5f);
             Assert.That(curveGate, Is.Not.Null, "Curved wall gate is missing");
+            Assert.That(curveGate.GetComponent<Renderer>().enabled, Is.False, "Placeholder gate still covers the authored gate");
+            var authoredGate = alley.transform.Find("Authored curved Korean gate");
+            Assert.That(authoredGate, Is.Not.Null, "Authored Korean gate is missing");
+            Assert.That(authoredGate.GetComponentsInChildren<Collider>(true), Is.Empty, "Decorative gate must not add collision");
+            var gateRenderers = authoredGate.GetComponentsInChildren<Renderer>(true);
+            Assert.That(gateRenderers.Length, Is.GreaterThan(0));
+            Assert.That(gateRenderers.All(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "KoreanWall"), Is.True,
+                "The gate lost the original authored material");
+            var gateFilter = authoredGate.GetComponentInChildren<MeshFilter>();
+            var gateProbe = gateFilter.gameObject.AddComponent<MeshCollider>();
+            try
+            {
+                gateProbe.sharedMesh = gateFilter.sharedMesh;
+                var originalWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Curved residential wall")
+                    .Select(node => node.GetComponent<BoxCollider>()).Where(collider => collider && collider.enabled);
+                foreach (float offset in new[] { -.55f, 0f, .55f })
+                {
+                    var ray = new Ray(authoredGate.position - authoredGate.right * 1.5f + authoredGate.forward * offset + Vector3.up,
+                        authoredGate.right);
+                    float collisionDistance = float.PositiveInfinity;
+                    foreach (var collider in originalWalls)
+                        if (collider.Raycast(ray, out var hit, 3f)) collisionDistance = Mathf.Min(collisionDistance, hit.distance);
+                    Assert.That(float.IsInfinity(collisionDistance), Is.False, "Gate has no original collision behind it");
+                    Assert.That(gateProbe.Raycast(ray, out var visualHit, 3f), Is.True, "Gate door has no visible surface");
+                    Assert.That(Mathf.Abs(visualHit.distance - collisionDistance), Is.LessThan(.30f),
+                        "Gate surface and retained collision diverge: visual=" + visualHit.distance + " collision=" + collisionDistance);
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(gateProbe); }
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(0, curveGate.localEulerAngles.y)), Is.GreaterThan(5f),
                 "Curved wall gate is not aligned to the bend");
             var straightGate = nodes.SingleOrDefault(node => node.name == "House gate" &&

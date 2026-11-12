@@ -29,3 +29,22 @@ actual visible mesh against the collision at three midpoints (tolerance 0.25m)
 and records D3D11 gameplay-camera views. `temple-approach-seam-visual` checks
 real input through the shop, encounter and mountain boundary. These checks do
 not prove native-player appearance, measured FPS or reference-level fidelity.
+
+## Curved-lane gate
+
+`prepare_gate_segment.py` uses the same hash-locked reviewed original FBX,
+clips the x=0.05..1.12 interval containing the gate and its masonry pillars,
+and exports `Assets/Resources/AlleyKoreanWall/gate-segment.fbx` while saving
+`GateSectionEditable.blend` with packed textures. The editable mesh has
+33,565 triangles and one UV layer. Run the script with the same Blender 4.2.23
+command as above, substituting `prepare_gate_segment.py`.
+
+`AlleyAuthoredGate` places this static, non-interactive gate on the right-hand
+curve. It compresses the scan's excessive depth so the rendered door aligns
+with the pre-existing collision. `AlleyApproachWorld` splits only the visual
+wall at the gate's exact boundaries and retains all original wall colliders;
+the previous placeholder remains a fallback when the asset is unavailable.
+The focused village D3D11 test checks three door-face rays against the retained
+wall collision (tolerance 0.30m) and captures the gameplay camera; the focused
+seam test walks through the existing shop and encounter to the mountain boundary.
+These checks do not establish standalone build appearance or measured FPS.
