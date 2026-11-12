@@ -296,12 +296,17 @@ namespace HappyToy.V2.CloudTests
                 foreach (var filter in filters)
                     for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
                         triangles += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
-                Assert.That(triangles, Is.LessThanOrEqualTo(32000), "Background house used the full mesh");
+                bool waterTank = house.GetComponentsInChildren<Renderer>(true).Any(renderer =>
+                    renderer.sharedMaterial && renderer.sharedMaterial.name == "WaterTankHouse");
+                Assert.That(triangles, Is.LessThanOrEqualTo(waterTank ? 126000 : 32000), "Background house used the full mesh");
                 Assert.That(house.GetComponentsInChildren<Collider>(true), Is.Empty);
                 Assert.That(house.GetComponentsInChildren<Renderer>(true).All(renderer => renderer.sharedMaterial &&
                     renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")), Is.True,
                     "Background house lost its PBR material");
             }
+            var tankHouse = background.SingleOrDefault(house => house.GetComponentsInChildren<Renderer>(true)
+                .Any(renderer => renderer.sharedMaterial && renderer.sharedMaterial.name == "WaterTankHouse"));
+            Assert.That(tankHouse, Is.Not.Null, "Water-tank house is missing behind the shop");
             var backgroundBounds = new System.Collections.Generic.List<Bounds>();
             var overlaps = new System.Collections.Generic.List<string>();
             foreach (var house in background.Concat(farHouses))
@@ -498,6 +503,9 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-02-front-right-roofs");
             ApproachLookAt(eye + new Vector3(-5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-03-front-left-roofs");
+            var tankBounds = tankHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
+            ApproachLookAt(tankBounds.center + Vector3.up * tankBounds.extents.y * .72f); yield return null;
+            CaptureApproachReview("village-19-water-tank-house");
 
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 393f, 15,

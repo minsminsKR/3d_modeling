@@ -349,3 +349,12 @@ HappyToyV2/Assets/Resources/AlleyWeatheredWall/*.png filter=lfs diff=lfs merge=l
 
 # Retain the reproducible compact-house window repair export.
 HappyToyV2/SourceArt/TempleApproach/CompactBrickHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Rooftop water-tank house: generated originals and Unity resources.
+HappyToyV2/SourceArt/TempleApproach/WaterTankHouseCandidate/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WaterTankHouseCandidate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WaterTankHouseCandidate/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WaterTankHouseCandidate/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TempleApproach/WaterTankHouseCandidate/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyWaterTankHouse/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/AlleyWaterTankHouse/*.png filter=lfs diff=lfs merge=lfs -text

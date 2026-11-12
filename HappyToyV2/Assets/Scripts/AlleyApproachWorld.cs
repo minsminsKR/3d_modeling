@@ -363,6 +363,8 @@ namespace HappyToy.V2
             var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-clean-far") ??
                 Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
             var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
+            var waterTankHouse = Resources.Load<GameObject>("AlleyWaterTankHouse/geometry-high");
+            var waterTankMaterial = Resources.Load<Material>("AlleyWaterTankHouse/WaterTankHouse");
             var farBrick = Resources.Load<GameObject>("AlleyBrickHouse/geometry-far");
             var farBrickMaterial = Resources.Load<Material>("AlleyBrickHouse/BrickHousePbr") ??
                 Resources.Load<Material>("AlleyBrickHouse/BrickHouse");
@@ -515,12 +517,13 @@ namespace HappyToy.V2
                 var rearShop = CorridorEntranceModels.Group(transform, "Residential roofs behind shop", Vector3.zero);
                 bool useTwoStory = i == 0 && twoStory;
                 bool usePlaster = !useTwoStory && alternate;
+                bool useWaterTankHouse = i == 0 && waterTankHouse && waterTankMaterial;
                 PlaceBackground(rearShop, useTwoStory ? twoStory : (usePlaster ? alternate : prefab),
-                    useTwoStory ? farHouse : (usePlaster ? farPlaster : null),
-                    useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null));
+                    useWaterTankHouse ? waterTankHouse : (useTwoStory ? farHouse : (usePlaster ? farPlaster : null)),
+                    useWaterTankHouse ? waterTankMaterial : (useTwoStory ? farMaterial : (usePlaster ? farPlasterMaterial : null)));
                 CorridorEntranceModels.GroundAtHeight(rearShop,
-                    new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && twoStory ? 5.8f : 4.7f,
-                    Quaternion.Euler(0, 83f + i * 9f, 0));
+                    new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && (useTwoStory || useWaterTankHouse) ? 5.8f : 4.7f,
+                    Quaternion.Euler(0, useWaterTankHouse ? 158f : 83f + i * 9f, 0));
                 SeparateOutward(rearShop, -1f);
                 if (i == 0) aerialHouses.Add(rearShop);
                 foreach (var node in rearShop.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;

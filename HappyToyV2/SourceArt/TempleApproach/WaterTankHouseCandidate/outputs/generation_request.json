@@ -1,0 +1,27 @@
+{
+  "image_paths": [
+    "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/uploads/53780944-f80b-4fc1-9d1b-ea48463ad23b/reference.png"
+  ],
+  "output_dir": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/53780944-f80b-4fc1-9d1b-ea48463ad23b",
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": null,
+    "gpu_mode": "manual",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 49152,
+    "trellis_dual_postprocess": false,
+    "texture": true,
+    "remove_background": true,
+    "seed": 73489,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  }
+}
