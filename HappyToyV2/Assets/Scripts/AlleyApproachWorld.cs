@@ -661,6 +661,7 @@ namespace HappyToy.V2
                     }
                 }
             gameObject.AddComponent<AlleyRoofDetails>().Prepare(aerialHouses);
+            GetComponent<AlleyUtilityDressing>().AddHouseDrops(aerialHouses);
         }
         // Two continuous bends leave the shop, beast marker and mountain seam
         // at their original coordinates. Segment overlap keeps the colliders closed.

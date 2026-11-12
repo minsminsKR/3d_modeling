@@ -588,6 +588,41 @@ namespace HappyToy.V2.CloudTests
             Assert.That(cornerBounds.Intersects(returnBounds[1]), Is.True, "Corner pier misses courtyard wall");
             Assert.That(rearGate.GetComponentsInChildren<Renderer>(true).Any(renderer =>
                 renderer.bounds.Intersects(cornerBounds)), Is.True, "Corner pier misses rear gate");
+            var houseDrops = alley.transform.Find("Batched village house service drops");
+            Assert.That(houseDrops, Is.Not.Null, "House service wires are missing");
+            Assert.That(houseDrops.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var dropVertices = houseDrops.GetComponent<MeshFilter>().sharedMesh.vertices;
+            var dropAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "House service wire anchor").ToArray();
+            Assert.That(dropAnchors.Length, Is.EqualTo(3));
+            foreach (var anchor in dropAnchors)
+            {
+                var supportHouse = nearHouses.FirstOrDefault(house =>
+                {
+                    var renderers = house.GetComponentsInChildren<Renderer>(true);
+                    var bounds = renderers[0].bounds;
+                    foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                    return bounds.Contains(anchor.position);
+                });
+                Assert.That(supportHouse, Is.Not.Null, "House wire support is outside every house roof bounds");
+                float roofSurface = float.NegativeInfinity;
+                foreach (var filter in supportHouse.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    if (!filter.sharedMesh || filter.sharedMesh.vertexCount < 1000) continue;
+                    var temporary = filter.gameObject.AddComponent<MeshCollider>();
+                    try
+                    {
+                        temporary.sharedMesh = filter.sharedMesh; Physics.SyncTransforms();
+                        if (temporary.Raycast(new Ray(anchor.position + Vector3.up * 2f, Vector3.down), out var roofHit, 4f))
+                            roofSurface = Mathf.Max(roofSurface, roofHit.point.y);
+                    }
+                    finally { UnityEngine.Object.DestroyImmediate(temporary); }
+                }
+                Assert.That(float.IsNegativeInfinity(roofSurface), Is.False, "Wire support has no roof mesh beneath it");
+                Assert.That(anchor.position.y, Is.LessThanOrEqualTo(roofSurface + .03f), "Wire support floats above the roof");
+                Assert.That(anchor.position.y + .6f, Is.GreaterThan(roofSurface + .03f), "Wire support is buried in the roof");
+                Assert.That(dropVertices.Min(vertex => Vector3.Distance(houseDrops.TransformPoint(vertex),
+                    anchor.position + Vector3.up * .615f)), Is.LessThan(.12f), "House wire is disconnected from its roof support");
+            }
             var wires = nodes.SingleOrDefault(node => node.name == "Batched sagging village cables");
             Assert.That(wires, Is.Not.Null, "Village wiring was not created");
             Assert.That(wires.GetComponent<MeshRenderer>(), Is.Not.Null);
