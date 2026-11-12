@@ -16,7 +16,7 @@ namespace HappyToy.V2
         readonly List<Mesh> wallMeshes = new List<Mesh>();
         Material storeSignMaterial;
         GameObject walkInStorefront;
-        bool authoredGateReady;
+        bool authoredGateReady, rightWeatheredReady;
 
         public static AlleyApproachWorld Create(Transform parent)
         {
@@ -242,9 +242,12 @@ namespace HappyToy.V2
             Vector3 noticeInward = new Vector3(1, 0, -noticeSlope).normalized;
             Vector3 noticePoint = new Vector3(-3.2f + RoadBend(noticeZ), 1.48f, noticeZ) + noticeInward * .198f;
             var wallDetails = gameObject.AddComponent<AlleyWallDressing>();
+            // The generated right wall projects farther into the lane than
+            // the old skin; this is the measured pipe-to-mesh contact at z=1.4.
+            float rightPipeFace = (rightWeatheredReady ? 2.837f : 3.025f) + RoadBend(1.4f);
             wallDetails.Prepare(
                 new Vector3(-3.025f + RoadBend(.7f), 0, .7f),
-                new Vector3(3.025f + RoadBend(1.4f), 0, 1.4f), noticePoint, noticeInward);
+                new Vector3(rightPipeFace, 0, 1.4f), noticePoint, noticeInward);
             foreach (var entry in new[] { (z: -5.7f, number: "23-4"), (z: 7.2f, number: "18") })
             {
                 float slope = (RoadBend(entry.z + .02f) - RoadBend(entry.z - .02f)) / .04f;
@@ -618,6 +621,14 @@ namespace HappyToy.V2
                 var sections = GetComponent<AlleyWeatheredWallSections>();
                 if (!sections) sections = gameObject.AddComponent<AlleyWeatheredWallSections>();
                 replaceVisual = sections.TryBuild(start, end, height, RoadBend);
+            }
+            else if (side > 0 && Mathf.Approximately(start, -3f))
+            {
+                var sections = GetComponent<AlleyWeatheredWallSections>();
+                if (!sections) sections = gameObject.AddComponent<AlleyWeatheredWallSections>();
+                float visibleEnd = authoredGateReady ? Mathf.Min(end, AlleyAuthoredGate.Start) : end;
+                replaceVisual = sections.TryBuild(start, visibleEnd, height, RoadBend, 1);
+                rightWeatheredReady = replaceVisual;
             }
             if (replaceVisual)
             {

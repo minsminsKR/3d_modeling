@@ -175,6 +175,55 @@ namespace HappyToy.V2.CloudTests
                 }
                 finally { UnityEngine.Object.DestroyImmediate(probe); }
             }
+            var oppositeWeathered = alley.transform.Cast<Transform>()
+                .Where(node => node.name == "Weathered compound wall right section").ToArray();
+            Assert.That(oppositeWeathered.Length, Is.EqualTo(2), "Opposite wall sections are missing");
+            foreach (var section in oppositeWeathered)
+            {
+                Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var filter = section.GetComponentInChildren<MeshFilter>();
+                Assert.That(filter, Is.Not.Null);
+                var probe = filter.gameObject.AddComponent<MeshCollider>();
+                try
+                {
+                    probe.sharedMesh = filter.sharedMesh;
+                    var walls = alley.transform.Cast<Transform>().Where(node => node.name == "Curved residential wall")
+                        .Select(node => node.GetComponent<BoxCollider>()).Where(collider => collider && collider.enabled);
+                    foreach (float offset in new[] { -.6f, 0f, .6f })
+                    {
+                        var ray = new Ray(section.position - section.right * 1.5f + section.forward * offset + Vector3.up * 1.1f, section.right);
+                        float collisionDistance = float.PositiveInfinity;
+                        foreach (var collider in walls)
+                            if (collider.Raycast(ray, out var hit, 3f)) collisionDistance = Mathf.Min(collisionDistance, hit.distance);
+                        Assert.That(float.IsInfinity(collisionDistance), Is.False, "Right wall collision is missing");
+                        Assert.That(probe.Raycast(ray, out var visualHit, 3f), Is.True, "Right wall visual is missing");
+                        Assert.That(Mathf.Abs(visualHit.distance - collisionDistance), Is.LessThan(.25f),
+                            "Right wall visual and collision diverge: " + visualHit.distance + "/" + collisionDistance);
+                    }
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
+            var rightPipe = nodes.Where(node => node.name == "Weathered wall service pipe")
+                .OrderByDescending(node => node.position.x).First();
+            var pipeRenderers = rightPipe.GetComponentsInChildren<Renderer>(true);
+            var pipeBounds = pipeRenderers[0].bounds;
+            foreach (var renderer in pipeRenderers.Skip(1)) pipeBounds.Encapsulate(renderer.bounds);
+            var pipeRay = new Ray(new Vector3(pipeBounds.center.x - 1f, 1.1f, pipeBounds.center.z), Vector3.right);
+            float pipeWallX = float.PositiveInfinity;
+            foreach (var section in oppositeWeathered)
+            {
+                var filter = section.GetComponentInChildren<MeshFilter>();
+                var probe = filter.gameObject.AddComponent<MeshCollider>();
+                try
+                {
+                    probe.sharedMesh = filter.sharedMesh;
+                    if (probe.Raycast(pipeRay, out var hit, 3f)) pipeWallX = Mathf.Min(pipeWallX, hit.point.x);
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
+            Assert.That(float.IsInfinity(pipeWallX), Is.False, "Right pipe has no wall support");
+            Assert.That(Mathf.Abs(pipeBounds.max.x - pipeWallX), Is.LessThan(.04f),
+                "Right pipe is buried or detached from its visible wall");
             var aerialAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "Village rooftop aerial anchor").ToArray();
             Assert.That(aerialAnchors.Length, Is.EqualTo(4), "Rooftop aerial anchors are missing");
             Assert.That(aerialAnchors.All(node => !node.GetComponent<Collider>()), Is.True);

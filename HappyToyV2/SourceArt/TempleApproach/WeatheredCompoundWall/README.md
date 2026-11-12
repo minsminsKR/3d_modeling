@@ -20,8 +20,10 @@ The same job was rotated in the designated service viewer to inspect both
 sides and the end pillar. Blender 4.2.23 normalized the full-resolution mesh
 and saved a packed, editable source before decimating 988,462 triangles to
 60,000 for Unity. CPU previews of both faces retained the brick base and
-weathering. Unity uses four curved-path sections and the original path collider;
-no new mesh collider is added to gameplay. A D3D11 PlayMode camera review
+weathering. Unity uses four left and two right curved-path sections and the original path collider;
+no new mesh collider is added to gameplay. The right sections stop at the
+authored gate and the old pipe is seated on the measured visible surface;
+when the model is unavailable, the original wall and pipe placement remain. A D3D11 PlayMode camera review
 and sampled visual-to-collider alignment checks passed. The focused real-input
 shop, firecracker, dog and village-to-mountain seam test also passed. These
 checks are not a complete game regression or an FPS benchmark.
