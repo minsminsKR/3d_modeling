@@ -29,17 +29,20 @@ fragment_count = 0
 for face in bm.faces:
     p = obj.matrix_world @ face.calc_center_median()
     mass = -.38 < p.x < .02 and .05 < p.y < .46 and p.z > .752
-    fragment = -.20 < p.x < -.035 and -.27 < p.y < -.155 and p.z > .754
+    # The remaining speck was traced from the game camera to triangles just
+    # outside the old y=-.27 cutoff; this volume excludes the tank and shed.
+    fragment = -.20 < p.x < -.035 and -.32 < p.y < -.155 and p.z > .754
     if mass or fragment:
         selected.append(face)
         mass_count += int(mass)
         fragment_count += int(fragment)
-if not 22000 <= mass_count <= 22500 or not 400 <= fragment_count <= 500:
+if not 22000 <= mass_count <= 22500 or not 448 <= fragment_count <= 452:
     raise RuntimeError('Unexpected roof artifact selection; aborting')
 print('ROOF_ARTIFACTS_REMOVED', mass_count, fragment_count, 'OF', len(bm.faces))
 bmesh.ops.delete(bm, geom=selected, context='FACES')
 bm.to_mesh(obj.data); bm.free(); obj.data.update()
 bpy.ops.file.pack_all()
+bpy.context.preferences.filepaths.save_version = 0
 bpy.ops.wm.save_as_mainfile(filepath=str(root / 'TwoStoryHouseCleanEditable.blend'))
 def export(name):
     bpy.ops.object.select_all(action='SELECT')

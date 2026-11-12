@@ -13,7 +13,7 @@ root = Path(__file__).resolve().parent
 points = {
     'mass-centre': (-.195, .245), 'mass-edge': (-.30, .16),
     'tank': (-.07, -.08), 'shed': (.19, .16), 'roof-clear': (-.1, .04),
-    'fragments': (-.12, -.19),
+    'fragments': (-.12, -.19), 'floating-fragment': (-.139247, -.277936),
 }
 def sample(path):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -42,6 +42,10 @@ if original['fragments'][0] < .9 or not .749 < clean['fragments'][0] < .753:
     raise RuntimeError('Rooftop fragment not removed')
 if abs(original['fragments'][1] - clean['fragments'][1]) > .00001:
     raise RuntimeError('Roof floor changed under fragment')
+if original['floating-fragment'][0] is None or original['floating-fragment'][0] < .9:
+    raise RuntimeError('Original floating fragment was not found at the reviewed game-camera location')
+if clean['floating-fragment'][0] is not None and clean['floating-fragment'][0] > .82:
+    raise RuntimeError('Floating fragment remains above the roof')
 for key in ('tank', 'shed', 'roof-clear'):
     if abs(original[key][0] - clean[key][0]) > .00001:
         raise RuntimeError('Roof feature changed at ' + key)
