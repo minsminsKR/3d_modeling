@@ -87,7 +87,10 @@ namespace HappyToy.V2
             Instantiate(prefab, holder, false);
             // The reusable source runs on local X. Rotate it upright and
             // scale by measured height before seating the bounds on the wall.
-            CorridorEntranceModels.GroundAtHeight(holder, face, 2.25f, Quaternion.Euler(0, 90, 90));
+            // The left wall has a tiled eave; stop the drain below it.
+            // The right formed-concrete wall retains the taller fitting.
+            CorridorEntranceModels.GroundAtHeight(holder, face, side < 0 ? 1.72f : 2.25f,
+                Quaternion.Euler(0, 90, 90));
             var bounds = MonsterPresentationScale.Bounds(holder);
             float desired = transform.TransformPoint(face).x;
             float contact = side > 0 ? bounds.max.x : bounds.min.x;

@@ -95,6 +95,36 @@ namespace HappyToy.V2.CloudTests
                 "No angled house on the left");
             Assert.That(roofHeadings.Any(yaw => Mathf.Abs(Mathf.DeltaAngle(145, yaw)) < 15f), Is.True,
                 "No angled house on the right");
+            var authoredWall = alley.transform.Cast<Transform>().Where(node => node.name == "Authored curved wall section").ToArray();
+            Assert.That(authoredWall.Length, Is.EqualTo(3), "Authored curved wall sections are missing");
+            foreach (var section in authoredWall)
+            {
+                Assert.That(section.GetComponentsInChildren<Collider>(true), Is.Empty, "Wall visuals must not add collision");
+                var sectionRenderers = section.GetComponentsInChildren<Renderer>(true);
+                Assert.That(sectionRenderers.Length, Is.GreaterThan(0));
+                Assert.That(sectionRenderers.All(renderer => renderer.sharedMaterial &&
+                    renderer.sharedMaterial.name == "KoreanWall"), Is.True, "Wall section lost its original material");
+                // Test-only mesh raycast: compare the visible face to the
+                // original curved collision without retaining any new collider.
+                var ray = new Ray(section.position + section.right * 1.5f + Vector3.up * 1.1f, -section.right);
+                var originalWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Curved residential wall")
+                    .Select(node => node.GetComponent<BoxCollider>()).Where(collider => collider && collider.enabled);
+                float collisionDistance = float.PositiveInfinity;
+                foreach (var collider in originalWalls)
+                    if (collider.Raycast(ray, out var hit, 3f)) collisionDistance = Mathf.Min(collisionDistance, hit.distance);
+                Assert.That(float.IsInfinity(collisionDistance), Is.False, "Wall collision is missing behind its visual");
+                var filter = section.GetComponentInChildren<MeshFilter>();
+                var probe = filter.gameObject.AddComponent<MeshCollider>();
+                try
+                {
+                    probe.sharedMesh = filter.sharedMesh;
+                    Assert.That(probe.Raycast(ray, out var visualHit, 3f), Is.True, "Wall visual has no front face");
+                    Assert.That(Mathf.Abs(visualHit.distance - collisionDistance), Is.LessThan(.25f),
+                        "Visible wall diverges from retained collision: " + section.name + " visual=" +
+                        visualHit.distance + " collision=" + collisionDistance);
+                }
+                finally { UnityEngine.Object.DestroyImmediate(probe); }
+            }
             var aerialAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "Village rooftop aerial anchor").ToArray();
             Assert.That(aerialAnchors.Length, Is.EqualTo(4), "Rooftop aerial anchors are missing");
             Assert.That(aerialAnchors.All(node => !node.GetComponent<Collider>()), Is.True);

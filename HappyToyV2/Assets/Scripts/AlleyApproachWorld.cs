@@ -524,6 +524,7 @@ namespace HappyToy.V2
         }
         void CurvedWall(float side, float start, float end, float height, Material wall, Material roof)
         {
+            int originalStart = transform.childCount;
             const int count = 6;
             var surface = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, GraphicsSurfaceLibrary.TileSpan(wall));
             for (int i = 0; i < count; i++)
@@ -571,6 +572,21 @@ namespace HappyToy.V2
             wallSkin.layer = 8; wallSkin.transform.SetParent(transform, false);
             wallSkin.AddComponent<MeshFilter>().sharedMesh = wallMesh;
             wallSkin.AddComponent<MeshRenderer>().sharedMaterial = wall;
+            if (side < 0 && Mathf.Approximately(start, -3f) &&
+                gameObject.AddComponent<AlleyAuthoredWallSections>().TryBuild(start, end, height, RoadBend))
+            {
+                // Keep all original curved colliders, replacing only their
+                // matching render surfaces and caps with the authored section.
+                for (int index = originalStart; index < transform.childCount; index++)
+                {
+                    var child = transform.GetChild(index);
+                    if (child.name != "Continuous curved wall skin" && child.name != "Curved wall coping" &&
+                        child.name != "Weathered wall footing" && child.name != "Concrete wall pier" &&
+                        child.name != "Concrete wall pier cap") continue;
+                    var renderer = child.GetComponent<Renderer>();
+                    if (renderer) renderer.enabled = false;
+                }
+            }
         }
         // Preserve the measured opening across the original wall segments.
         void ShopDoorWallSegments(float start, float end, float height, Material wall)

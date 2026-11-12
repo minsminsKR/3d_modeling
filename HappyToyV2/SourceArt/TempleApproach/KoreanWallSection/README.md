@@ -1,0 +1,31 @@
+# Gate-free Korean wall section
+
+This section derives only from the existing designated-modeling-service wall
+`../KoreanWallCandidate/` (request `1c7bb725-dc4b-47d2-acd9-791902190e58`,
+job `b866f8f9-a828-4469-8334-a24c8321745c`). The original generation input,
+GLB, textures and provenance remain there. On 2026-11-12 the original job was
+rotated in the designated web 3D viewer to inspect its front, side and eaves.
+
+`prepare_wall_segment.py` imports the reviewed runtime FBX
+`Assets/Resources/AlleyKoreanWall/geometry.fbx` (SHA-256
+`682638bc6d7ca5715ca3fa3796fe86d86722ab99db0afcee72f7dfe78dab691b`),
+bakes its transform, clips the gate-free interval x=-1.25..-0.25, recentres it,
+preserves its UV atlas, and exports `wall-segment.fbx` in the same Resources
+folder. It does not regenerate or overwrite the original. Blender 4.2.23 CPU
+rendering was used to compare the retained and cut-away sections. The packed,
+editable `WallSectionEditable.blend` has 22,226 triangles and one UV layer.
+
+From the project root, regenerate with Blender 4.2.23:
+
+```
+blender -b --threads 2 --python-exit-code 1 --python SourceArt/TempleApproach/KoreanWallSection/prepare_wall_segment.py
+```
+
+`AlleyAuthoredWallSections` places three two-metre visual pieces along the left
+curve, alternating the original front/back surfaces; the existing independent
+curved colliders remain unchanged. It reuses `AlleyKoreanWall/KoreanWall.mat`
+and its original texture maps. `temple-approach-village-visual` checks the
+actual visible mesh against the collision at three midpoints (tolerance 0.25m)
+and records D3D11 gameplay-camera views. `temple-approach-seam-visual` checks
+real input through the shop, encounter and mountain boundary. These checks do
+not prove native-player appearance, measured FPS or reference-level fidelity.
