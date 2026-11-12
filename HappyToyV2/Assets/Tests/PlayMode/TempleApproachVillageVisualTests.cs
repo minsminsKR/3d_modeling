@@ -562,6 +562,18 @@ namespace HappyToy.V2.CloudTests
             Assert.That(signFaces.Min(face => face.position.z), Is.LessThan(signBounds.min.z));
             Assert.That(signFaces.Max(face => face.position.z), Is.GreaterThan(signBounds.max.z),
                 "Rear sign face is hidden inside the opaque frame");
+            var roundSign = nodes.SingleOrDefault(node => node.name == "Round ice cream sign casing");
+            var roundFaces = nodes.Where(node => node.name == "Round ice cream sign face").ToArray();
+            Assert.That(roundSign, Is.Not.Null, "Round ice cream sign is missing");
+            Assert.That(roundFaces.Length, Is.EqualTo(2));
+            Assert.That(roundSign.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(roundFaces.All(face => face.GetComponentsInChildren<Collider>(true).Length == 0), Is.True);
+            Assert.That(signFrame.GetComponent<Renderer>().enabled, Is.False, "Square sign casing still covers the round sign");
+            Assert.That(signFaces.All(face => !face.GetComponent<Renderer>().enabled), Is.True);
+            Assert.That(roundFaces.All(face => face.GetComponent<Renderer>().sharedMaterial.IsKeywordEnabled("_ALPHATEST_ON")), Is.True);
+            var roundTexture = roundFaces[0].GetComponent<Renderer>().sharedMaterial.GetTexture("_BaseMap") as Texture2D;
+            Assert.That(roundTexture, Is.Not.Null);
+            Assert.That(Mathf.Max(roundTexture.width, roundTexture.height), Is.LessThanOrEqualTo(1024));
             var signBrackets = nodes.Where(node => node.name == "Projecting sign mounting bracket").ToArray();
             Assert.That(signBrackets.Length, Is.EqualTo(2), "Projecting sign lacks its two mounting brackets");
             foreach (var bracket in signBrackets)
@@ -569,6 +581,13 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(bracket.GetComponentsInChildren<Collider>(true), Is.Empty);
                 var bracketBounds = bracket.GetComponent<Renderer>().bounds;
                 Assert.That(bracketBounds.Intersects(signBounds), Is.True, "Bracket does not meet sign frame");
+                bool touchesRoundCasing = Enumerable.Range(0, 65).Any(step =>
+                {
+                    var point = bracket.TransformPoint(new Vector3(0, 0, -.5f + step / 64f));
+                    var local = roundSign.InverseTransformPoint(point);
+                    return local.x * local.x + local.z * local.z <= .25f && Mathf.Abs(local.y) <= 1f;
+                });
+                Assert.That(touchesRoundCasing, Is.True, "Bracket does not touch the actual round casing");
                 Assert.That(bracketBounds.Intersects(shopBounds), Is.True, "Bracket does not reach shop frontage");
                 var ray = new Ray(bracket.TransformPoint(Vector3.back * .5f), bracket.forward);
                 bool reachedShop = false;
@@ -937,6 +956,16 @@ namespace HappyToy.V2.CloudTests
             Physics.SyncTransforms(); yield return null;
             ApproachLookAt(frontShopSign.GetComponent<Renderer>().bounds.center); yield return null;
             CaptureApproachReview("village-38-front-shop-sign");
+            var nearRound = alley.transform.TransformPoint(new Vector3(-1.9f, 0, -13.3f));
+            player.transform.position = new Vector3(nearRound.x, player.transform.position.y, nearRound.z);
+            Physics.SyncTransforms(); yield return null;
+            ApproachLookAt(roundSign.GetComponent<Renderer>().bounds.center); yield return null;
+            CaptureApproachReview("village-39-round-shop-sign");
+            var behindRound = alley.transform.TransformPoint(new Vector3(-1.9f, 0, -9.2f));
+            player.transform.position = new Vector3(behindRound.x, player.transform.position.y, behindRound.z);
+            Physics.SyncTransforms(); yield return null;
+            ApproachLookAt(roundSign.GetComponent<Renderer>().bounds.center); yield return null;
+            CaptureApproachReview("village-40-round-shop-sign-rear");
             var duskSky = RenderSettings.skybox;
             Assert.That(duskSky.shader.name, Is.EqualTo("HappyToy/AlleyDuskSky"));
             Assert.That(duskSky.GetTexture("_DuskClouds"), Is.Not.Null);

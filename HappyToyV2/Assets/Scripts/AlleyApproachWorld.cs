@@ -865,6 +865,7 @@ namespace HappyToy.V2
             var bounds = MonsterPresentationScale.Bounds(holder);
             holder.position += Vector3.right * ((transform.position.x - 2.99f) - bounds.max.x);
             AttachProjectingSign();
+            if (walkInStorefront) gameObject.AddComponent<AlleyRoundShopSign>().TryPrepare();
             if (walkInStorefront) gameObject.AddComponent<AlleyStorefrontFrontSign>().TryPrepare();
             // Only presentation geometry is replaced. Original wall colliders,
             // item targets, the projecting sign and freezer remain untouched.

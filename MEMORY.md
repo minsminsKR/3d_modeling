@@ -542,3 +542,6 @@
 
 - 입장 가능한 상점의 전면 메시를 광선으로 측정해 풍화된 가로 ‘우암상회’ 간판을 비충돌로 부착했다. 글자 중앙의 종횡비는 유지하고 양끝 여백만 늘렸다. 원본·프롬프트와 단일 이미지 임포트는 `HappyToyV2/SourceArt/TempleApproach/Storefront/Interior/README.md`에 보존한다. 새 조명은 추가하지 않았다.
 - 근접 카메라에서 기존 사각 전구가 간판 앞을 가리는 것을 발견해 작은 둥근 전구와 소켓으로 바꿨다. D3D11 `temple-approach-village-visual`에서 실제 상점 메시와 간판 간격, 전구 소켓 연결·비충돌, 이미지 크기를 검사하고 시작점과 시험용 근접 카메라 화면을 확인했다. 별도 플레이어·FPS는 미측정이다.
+
+
+- 2026-11-12: 입장형 우암상회의 사각 돌출 간판을 기존 지지대를 재사용하는 낡은 양면 원형 아이스크림 금속 간판으로 교체했다. 원본과 재현 설정은 `HappyToyV2/SourceArt/TempleApproach/Storefront/Interior/README.md`를 참고한다. D3D11 Unity PlayMode 골목 카메라와 양면 근접 시점을 확인했고 해당 검사 1건이 통과했다. 독립 실행 플레이어와 FPS는 확인하지 않았다.
