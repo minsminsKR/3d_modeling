@@ -34,6 +34,9 @@ namespace HappyToy.V2
             if (!owner || !owner.player || onMountainEnd == null) throw new ArgumentException("도입 경로를 준비할 수 없습니다.");
             session = owner; mountainEnd = onMountainEnd;
             route = new GameObject("Alley and mountain approach"); route.transform.SetParent(transform, false);
+            var skyline = new GameObject("Village shared skyline"); skyline.transform.SetParent(route.transform, false);
+            skyline.transform.position = new Vector3(500, 0, 400);
+            skyline.AddComponent<AlleyVillageHorizon>().Prepare();
             var village = CreateVillageContent();
             bool indoorShop = Resources.Load<GameObject>("AlleyStorefrontInterior/StorefrontDoorCandidate");
             encounter = AlleySnapperEncounter.Create(session, route.transform, new Vector3(500, 0, 405),

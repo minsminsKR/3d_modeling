@@ -433,6 +433,31 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(inside, Is.False, "Mountain tree root intersects a village house: " + tree.name);
                 }
             }
+            var skyline = GameObject.Find("Village shared skyline");
+            var hill = GameObject.Find("Village distant hillside");
+            Assert.That(skyline, Is.Not.Null);
+            Assert.That(hill, Is.Not.Null);
+            Assert.That(skyline.scene, Is.Not.EqualTo(seamAlley.scene), "Skyline must outlive village unloading");
+            Assert.That(hill.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var hillBounds = hill.GetComponent<Renderer>().bounds;
+            Assert.That(hillBounds.max.x, Is.LessThanOrEqualTo(450.01f), "Hillside enters the residential area");
+            Assert.That(hillBounds.max.y, Is.GreaterThan(8f), "Distant ridge is too low");
+            var hillTrees = skyline.GetComponentsInChildren<Transform>(true)
+                .Where(node => node.name == "Village distant hillside pine").ToArray();
+            Assert.That(hillTrees.Length, Is.EqualTo(24));
+            Assert.That(hillTrees.All(node => node.GetComponentsInChildren<Collider>(true).Length == 0), Is.True);
+            foreach (var tree in hillTrees)
+            {
+                var filters = tree.GetComponentsInChildren<MeshFilter>(true);
+                Assert.That(filters.Length, Is.GreaterThan(0));
+                long triangles = 0;
+                foreach (var filter in filters)
+                    for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                        triangles += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
+                Assert.That(triangles, Is.InRange(1000, 12000), "Village skyline pine exceeded its budget");
+                Assert.That(tree.GetComponentsInChildren<Renderer>(true).All(renderer =>
+                    renderer.sharedMaterial && renderer.sharedMaterial.enableInstancing), Is.True);
+            }
             var retaining = GameObject.Find("Transition retaining walls");
             Assert.That(retaining, Is.Not.Null, "Transition retaining wall is missing");
             Assert.That(retaining.GetComponentsInChildren<Collider>(true), Is.Empty,
@@ -447,6 +472,12 @@ namespace HappyToy.V2.CloudTests
             ApproachLookAt(eye + new Vector3(-4, 1f, 0)); yield return null;
             CaptureApproachReview("seam-03-left-houses");
             ApproachFaceForward();
+            var unload = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(seamAlley.scene);
+            Assert.That(unload, Is.Not.Null, "Village scene did not start unloading");
+            yield return new WaitUntil(() => unload.isDone);
+            Assert.That(skyline, Is.Not.Null, "Skyline disappeared when village unloaded");
+            Assert.That(hill && hill.GetComponent<Renderer>().enabled, Is.True,
+                "Distant hillside disappeared when village unloaded");
         }
 
         [UnityTest, Timeout(300000)]
