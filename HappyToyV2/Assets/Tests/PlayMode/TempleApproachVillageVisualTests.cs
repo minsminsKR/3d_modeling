@@ -28,6 +28,16 @@ namespace HappyToy.V2.CloudTests
             var nearHouses = alley.transform.Cast<Transform>()
                 .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
             Assert.That(nearHouses.Length, Is.EqualTo(7));
+            var closerRight = nearHouses.Single(house => house.GetComponentsInChildren<Transform>(true)
+                .Any(node => node.name.StartsWith("TwoStoryHouseClean", StringComparison.Ordinal)));
+            var rightNearEdge = closerRight.GetComponentsInChildren<Renderer>(true).Min(renderer => renderer.bounds.min.x);
+            Assert.That(rightNearEdge, Is.LessThan(alley.transform.position.x + 7f),
+                "The right two-story house was pushed out of the streetscape");
+            var mountainLeft = nearHouses.Single(house => house.position.x < alley.transform.position.x &&
+                house.position.z > alley.transform.position.z + 14f);
+            var leftNearEdge = mountainLeft.GetComponentsInChildren<Renderer>(true).Max(renderer => renderer.bounds.max.x);
+            Assert.That(leftNearEdge, Is.GreaterThan(alley.transform.position.x - 7f),
+                "The left mountain-side house was pushed out of the streetscape");
             var slateHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
                 .Any(node => node.name.StartsWith("SlateHousePbr", StringComparison.Ordinal)));
             Assert.That(slateHouse, Is.Not.Null, "Reviewed slate house was not placed in the lane");

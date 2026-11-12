@@ -389,9 +389,10 @@ namespace HappyToy.V2
                     if (bounds.Intersects(occupied)) throw new InvalidOperationException("House overlap could not be resolved");
                 occupiedHouses.Add(bounds);
             }
-            // Small offsets along the lane give rotated footprints room to
-            // clear one another without pushing an entire house out of view.
-            float[] stationOffsets = { 0f, .5f, .9f, -1.2f, -1.1f, 1.4f };
+            // Separate roofs along the lane before resolving their lateral
+            // bounds. A few decimetres of longitudinal overlap previously
+            // pushed whole houses many metres away from the street.
+            float[] stationOffsets = { 0f, .5f, 2.7f, -.45f, -.2f, 1.6f };
             int houseIndex = 0;
             foreach (float side in new[] { -1f, 1f })
             {
@@ -436,6 +437,14 @@ namespace HappyToy.V2
                         float nearEdge = side > 0 ? bounds.min.x : bounds.max.x;
                         holder.position += Vector3.right * (clearance - nearEdge);
                     }
+                    // Leave a small yard between the last left-hand
+                    // house and the existing forest tree roots at the seam.
+                    if (variant == 2)
+                    {
+                        var edge = MonsterPresentationScale.Bounds(holder).max.x;
+                        float forestClearance = transform.position.x - 6.6f;
+                        if (edge > forestClearance) holder.position += Vector3.left * (edge - forestClearance);
+                    }
                     // Keep the entire house away from previously placed
                     // buildings without moving it into the walkable lane.
                     SeparateOutward(holder, side);
@@ -458,8 +467,8 @@ namespace HappyToy.V2
             // The old forest horizon sits below this part of the village.
             // A visual-only residential yard keeps the distant houses grounded
             // without extending the walkable road or adding invisible barriers.
-            Box("Residential ground behind shop", new Vector3(-26f, -.14f, -3f),
-                new Vector3(48f, .22f, 48f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            Box("Residential ground behind shop", new Vector3(-26f, -.14f, -2f),
+                new Vector3(48f, .22f, 50f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
             // A second authored boundary gives the rear houses a courtyard
             // edge and screens the broad empty ground beside the store.
             var backWall = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
