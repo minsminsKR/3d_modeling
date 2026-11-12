@@ -95,6 +95,16 @@ namespace HappyToy.V2.CloudTests
                 "No angled house on the left");
             Assert.That(roofHeadings.Any(yaw => Mathf.Abs(Mathf.DeltaAngle(145, yaw)) < 15f), Is.True,
                 "No angled house on the right");
+            var oldShopWindows = alley.transform.Cast<Transform>().Where(node => node.name == "Shop warm window").ToArray();
+            Assert.That(oldShopWindows.Length, Is.EqualTo(3));
+            Assert.That(oldShopWindows.All(node => !node.GetComponent<Renderer>().enabled), Is.True,
+                "Legacy window panels must not cover the authored storefront");
+            var sideWalls = alley.transform.Cast<Transform>().Where(node => node.name == "Shop interior side wall").ToArray();
+            Assert.That(sideWalls.Length, Is.EqualTo(2));
+            Assert.That(sideWalls.All(node => !node.GetComponent<Renderer>().enabled && node.GetComponent<Collider>().enabled), Is.True,
+                "Exterior-facing side-wall placeholders must retain only collision");
+            Assert.That(alley.transform.Cast<Transform>().Count(node => node.name == "Shop interior inset side wall" &&
+                node.GetComponent<Renderer>().enabled), Is.EqualTo(2), "Inset interior side walls are missing");
             var shop = nodes.SingleOrDefault(node => node.name == "Authored Korean neighborhood shop");
             Assert.That(shop, Is.Not.Null, "Authored shop is missing");
             var shopRenderers = shop.GetComponentsInChildren<Renderer>(true).Where(renderer => renderer.enabled).ToArray();

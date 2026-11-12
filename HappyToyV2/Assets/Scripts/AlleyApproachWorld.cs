@@ -582,7 +582,23 @@ namespace HappyToy.V2
                 surfaces.Get("concrete-rough", new Color(.34f, .30f, .26f)), true);
             Box("Shop interior back wall", new Vector3(-6.12f, 1.2f, -8.6f), new Vector3(.12f, 2.4f, 5.5f), wall, true);
             foreach (float z in new[] { -11.3f, -5.9f })
-                Box("Shop interior side wall", new Vector3(-4.95f, 1.2f, z), new Vector3(2.3f, 2.4f, .12f), wall, true);
+            {
+                // Keep the original collision boundary, but do not let its
+                // full rectangular placeholder protrude through the scanned facade.
+                var boundary = Box("Shop interior side wall", new Vector3(-4.95f, 1.2f, z),
+                    new Vector3(2.3f, 2.4f, .12f), wall, true);
+                boundary.GetComponent<Renderer>().enabled = false;
+                // A one-sided plane is visible from the room but cannot
+                // cover the exterior when the scan tapers at its side edges.
+                var inside = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                inside.name = "Shop interior inset side wall"; inside.layer = 8;
+                inside.transform.SetParent(transform, false);
+                inside.transform.localPosition = new Vector3(-4.95f, 1.2f, z);
+                inside.transform.localRotation = Quaternion.Euler(0, z < -8 ? 180 : 0, 0);
+                inside.transform.localScale = new Vector3(2.3f, 2.4f, 1);
+                inside.GetComponent<Renderer>().sharedMaterial = wall;
+                Destroy(inside.GetComponent<Collider>());
+            }
             Box("Shop interior counter", new Vector3(-5.6f, .48f, -7.45f), new Vector3(.38f, .96f, 1.7f), wood, true);
             foreach (float z in new[] { -9.09946f, -8.11197f })
                 Box("Shop entrance timber jamb", new Vector3(-3.89f, .93f, z), new Vector3(.12f, 1.86f, .09f), wood, false);
@@ -616,7 +632,7 @@ namespace HappyToy.V2
                 string n = child.name;
                 bool previousShop = n.StartsWith("Shop frontage") || n.StartsWith("Shop upper sign") ||
                     n.StartsWith("Shop timber post") || n.StartsWith("Striped shop awning") ||
-                    n.StartsWith("Weathered awning") || n.StartsWith("Shop window") || n.StartsWith("Window ") ||
+                    n.StartsWith("Weathered awning") || n.StartsWith("Shop window") || n.StartsWith("Shop warm window") || n.StartsWith("Window ") ||
                     n.StartsWith("Store jar") || n.StartsWith("Store display") || n.StartsWith("Damaged window") ||
                     n.StartsWith("Shop entrance frame") || n.StartsWith("Shop entrance wood") ||
                     n.StartsWith("Shop entrance upper") || n.StartsWith("Shop entrance handle") ||
@@ -641,7 +657,7 @@ namespace HappyToy.V2
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, GraphicsSurfaceLibrary.TileSpan(material));
             Destroy(piece.GetComponent<Collider>());
         }
-        void Box(string label, Vector3 point, Vector3 size, Material material, bool collision)
+        GameObject Box(string label, Vector3 point, Vector3 size, Material material, bool collision)
         {
             var piece = GameObject.CreatePrimitive(PrimitiveType.Cube);
             piece.name = label; piece.layer = 8; piece.transform.SetParent(transform, false);
@@ -653,6 +669,7 @@ namespace HappyToy.V2
                 label == "Concrete wall pier" || label == "Wall tile coping")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, GraphicsSurfaceLibrary.TileSpan(material));
             if (!collision) Destroy(piece.GetComponent<Collider>());
+            return piece;
         }
         void Cylinder(string label, Vector3 point, Vector3 scale, Material material, bool collision)
         {
