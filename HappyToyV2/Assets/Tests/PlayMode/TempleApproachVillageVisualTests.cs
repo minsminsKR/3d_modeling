@@ -389,6 +389,16 @@ namespace HappyToy.V2.CloudTests
             var groundExtension = nodes.SingleOrDefault(node => node.name == "Residential ground behind village");
             Assert.That(groundExtension, Is.Not.Null, "Rear background ground is missing");
             Assert.That(groundExtension.GetComponentsInChildren<Collider>(true), Is.Empty);
+            foreach (var ground in new[] { rearGround, groundExtension })
+            {
+                var mesh = ground.GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(mesh, Is.Not.Null);
+                var uv = mesh.uv;
+                Assert.That(uv.Max(point => point.x) - uv.Min(point => point.x), Is.GreaterThan(15f),
+                    "Rear ground texture is stretched across the whole yard");
+                Assert.That(uv.Max(point => point.y) - uv.Min(point => point.y), Is.GreaterThan(15f),
+                    "Rear ground texture lacks detail along its length");
+            }
             var extensionBounds = groundExtension.GetComponent<Renderer>().bounds;
             Assert.That(extensionBounds.max.z, Is.GreaterThan(groundBounds.min.z), "Rear ground slabs do not meet");
             Assert.That(extensionBounds.min.x, Is.LessThan(alley.transform.position.x - 50f), "Rear ground misses the hillside edge");

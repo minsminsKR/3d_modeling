@@ -22,3 +22,9 @@ The added slab is 2 cm below the existing slab to avoid coplanar overlap.
 A focused D3D11 village camera and a test-only ray through the former wedge
 were checked. The slab adds no gameplay collider and unloads with the village;
 this single sampled view is not proof of every possible horizon angle.
+
+Both visual-only rear ground slabs use physically scaled UVs for the existing
+`concrete-rough` PBR texture. Previously each roughly 48-metre slab stretched
+one texture over its full surface, making the yard appear blurred. The focused
+village D3D11 play-mode check validates the UV coverage and captures the shop
+rear camera. Existing colliders and terrain dimensions are unchanged.

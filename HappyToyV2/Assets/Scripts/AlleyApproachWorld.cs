@@ -804,7 +804,10 @@ namespace HappyToy.V2
             piece.name = label; piece.layer = 8; piece.transform.SetParent(transform, false);
             piece.transform.localPosition = point; piece.transform.localScale = size;
             piece.GetComponent<Renderer>().sharedMaterial = material;
-            if (label == "Alley pavement")
+            // The rear yard spans tens of metres: default cube UVs stretch a
+            // single texture across it and erase the surface detail.
+            if (label == "Alley pavement" || label == "Residential ground behind shop" ||
+                label == "Residential ground behind village")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, surfaces.TileSpan("concrete-rough"));
             else if (label == "Weathered residential wall" || label == "Curved residential wall" ||
                 label == "Concrete wall pier" || label == "Wall tile coping")
