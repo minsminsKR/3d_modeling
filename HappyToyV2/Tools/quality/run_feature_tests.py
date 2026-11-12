@@ -96,6 +96,8 @@ PROFILES = {
         ("PlayMode", (CLOUD + "ApproachSceneStreamTests", CLOUD + "MountainForkSafetyTests", CLOUD + "ConnectorSafetyTests") + play_tests("TempleApproachStreamingEnvironmentTests.cs", "TempleApproachAudioTests.cs"))]),
     "temple-approach-visual": ("Opt-in real route gameplay camera snapshots", [
         ("PlayMode", (PLAY + "TempleApproachRealTitleKeysAndCollisionReachTemple",))]),
+    "temple-approach-seam-visual": ("Opt-in focused real-input village-to-mountain seam camera", [
+        ("PlayMode", (PLAY + "TempleApproachFocusedVillageMountainSeam",))]),
     "temple-approach-village-visual": ("Opt-in focused village wall and roof gameplay-camera snapshots", [
         ("PlayMode", (PLAY + "TempleApproachVillageVisualReview",))]),
     "temple-approach-horizon-logic": ("Village horizon clearance, mountain ground and legacy restoration", [

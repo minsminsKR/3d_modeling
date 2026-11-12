@@ -380,6 +380,54 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(4));
             Assert.That(Vector3.Distance(player.transform.position, Get<Vector3>(Get<object>(approachSnapshot, "player"), "position")), Is.LessThan(.02f));
         }
+        // Narrow visual check of the village-to-mountain seam. It uses the
+        // real shop interaction and projectile; it does not run the temple route.
+        [UnityTest, Timeout(180000)]
+        public IEnumerator TempleApproachFocusedVillageMountainSeam()
+        {
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HAPPYTOY_APPROACH_REVIEW_DIR")))
+                Assert.Ignore("Set HAPPYTOY_APPROACH_REVIEW_DIR for the seam camera review");
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            yield return RecoveryWaitForTempleEntry();
+            var encounter = session.GetComponentsInChildren<Component>(true)
+                .First(component => component && component.GetType().Name == "AlleySnapperEncounter");
+            yield return ApproachEnterShop();
+            var shopkeeper = encounter.transform.Find("Shopkeeper conversation placeholder");
+            Assert.That(shopkeeper, Is.Not.Null);
+            ApproachLookAt(shopkeeper.position + new Vector3(-.38f, .46f, 0)); yield return null; yield return null;
+            yield return RecoveryPulse(Key.E);
+            yield return Wait(() => Get<bool>(encounter, "Acquired"), 3, "Shop interaction did not give the snapper");
+            yield return ApproachExitShop();
+            ApproachFaceForward();
+            yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 401.6f, 15,
+                "Cannot approach the animal obstruction");
+            var target = Get<Vector3>(encounter, "GroundTarget");
+            ApproachLookAt(target); yield return null; yield return null;
+            int committed = Get<int>(AnimatedActions, "CommittedCount");
+            yield return RecoveryPulse(Key.Q);
+            yield return Wait(() => Get<int>(AnimatedActions, "CommittedCount") > committed, 10, "Snapper was not released");
+            yield return Wait(() => Get<bool>(encounter, "Cleared"), 12, "Passage did not open after the ground impact");
+            ApproachFaceForward();
+            yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 415f, 15,
+                "Cannot reach the village-to-mountain seam");
+            yield return Wait(() => Get<bool>(player, "Grounded"), 4, "Seam lacks ground support");
+            var retaining = GameObject.Find("Transition retaining walls");
+            Assert.That(retaining, Is.Not.Null, "Transition retaining wall is missing");
+            Assert.That(retaining.GetComponentsInChildren<Collider>(true), Is.Empty,
+                "Visual retaining wall must not create a new obstacle");
+            var retainingRenderer = retaining.GetComponent<Renderer>();
+            Assert.That(retainingRenderer.sharedMaterial.GetTag("GraphicsSurface", false), Is.EqualTo("alley-concrete-wall"));
+            Assert.That(retaining.GetComponent<MeshFilter>().sharedMesh.vertexCount, Is.GreaterThan(0));
+            CaptureApproachReview("seam-01-forward");
+            var eye = Get<Camera>(player, "eyes").transform.position;
+            ApproachLookAt(eye + new Vector3(4, 1f, 0)); yield return null;
+            CaptureApproachReview("seam-02-right-houses");
+            ApproachLookAt(eye + new Vector3(-4, 1f, 0)); yield return null;
+            CaptureApproachReview("seam-03-left-houses");
+            ApproachFaceForward();
+        }
+
         [UnityTest, Timeout(300000)]
         public IEnumerator TempleApproachRealInputRefillsSixSnappersInsideShop()
         {

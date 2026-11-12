@@ -30,7 +30,7 @@ namespace HappyToy.V2
 
         void Build()
         {
-            var wall = surfaces.Get("concrete-rough", new Color(.42f, .40f, .37f));
+            var wall = surfaces.Get("alley-concrete-wall", new Color(.66f, .64f, .60f));
             var iron = surfaces.Get("metal-rust", new Color(.28f, .25f, .22f));
             var wood = surfaces.Get("wood-aged", new Color(.39f, .32f, .25f));
             var earthTexture = Resources.Load<Texture2D>("TempleForest/forest-earth-candidate/forest-earth-candidate-albedo");
@@ -45,19 +45,39 @@ namespace HappyToy.V2
             earth.SetFloat("_BumpScale", .38f);
             earth.EnableKeyword("_NORMALMAP");
 
-            var retaining = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, surfaces.TileSpan("concrete-rough"));
+            var retaining = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, surfaces.TileSpan("alley-concrete-wall"));
             var fence = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, surfaces.TileSpan("metal-rust"));
             var sign = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, surfaces.TileSpan("wood-aged"));
             foreach (int side in new[] { -1, 1 })
             {
-                // The last houses end at z=414. The wall recedes and lowers
-                // from there, while the path itself remains unobstructed.
+                // The retaining wall recedes and slopes down continuously.
+                // Shared section endpoints prevent black, stepped box seams.
                 for (int segment = 0; segment < 5; segment++)
                 {
-                    float z = 1.0f + segment * 1.7f;
-                    float height = 1.45f - segment * .23f;
-                    retaining.Box(new Vector3(side * (3.35f + segment * .16f), Ground(z) + height * .5f, z),
-                        new Vector3(.25f, height, 1.74f), Quaternion.identity, 0);
+                    float t0 = segment / 5f, t1 = (segment + 1) / 5f;
+                    float z0 = Mathf.Lerp(.13f, 8.63f, t0), z1 = Mathf.Lerp(.13f, 8.63f, t1);
+                    float x0 = side * Mathf.Lerp(3.27f, 4.07f, t0), x1 = side * Mathf.Lerp(3.27f, 4.07f, t1);
+                    float h0 = Mathf.Lerp(1.565f, .415f, t0), h1 = Mathf.Lerp(1.565f, .415f, t1);
+                    var a = new Vector3(x0 - side * .125f, Ground(z0), z0);
+                    var b = new Vector3(x1 - side * .125f, Ground(z1), z1);
+                    var c = new Vector3(x0 + side * .125f, Ground(z0), z0);
+                    var d = new Vector3(x1 + side * .125f, Ground(z1), z1);
+                    var at = a + Vector3.up * h0; var bt = b + Vector3.up * h1;
+                    var ct = c + Vector3.up * h0; var dt = d + Vector3.up * h1;
+                    if (side > 0)
+                    {
+                        retaining.Quad(a, b, bt, at); retaining.Quad(d, c, ct, dt);
+                        retaining.Quad(at, bt, dt, ct);
+                        if (segment == 0) retaining.Quad(c, a, at, ct);
+                        if (segment == 4) retaining.Quad(b, d, dt, bt);
+                    }
+                    else
+                    {
+                        retaining.Quad(b, a, at, bt); retaining.Quad(c, d, dt, ct);
+                        retaining.Quad(ct, dt, bt, at);
+                        if (segment == 0) retaining.Quad(a, c, ct, at);
+                        if (segment == 4) retaining.Quad(d, b, bt, dt);
+                    }
                 }
                 // Worn, open iron rails continue beyond the masonry. These
                 // are presentation only: no additional collision volume.
