@@ -458,6 +458,16 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(tree.GetComponentsInChildren<Renderer>(true).All(renderer =>
                     renderer.sharedMaterial && renderer.sharedMaterial.enableInstancing), Is.True);
             }
+            var earthEdge = GameObject.Find("Earth encroaching on village pavement");
+            Assert.That(earthEdge, Is.Not.Null, "Village soil transition is missing");
+            Assert.That(earthEdge.GetComponentsInChildren<Collider>(true), Is.Empty,
+                "Soil dressing must not alter the walkable surface");
+            var earthMesh = earthEdge.GetComponent<MeshFilter>().sharedMesh;
+            Assert.That(earthMesh.colors.Length, Is.EqualTo(earthMesh.vertexCount));
+            Assert.That(earthMesh.colors.Any(color => color.a == 0), Is.True, "Soil edge must fade out");
+            Assert.That(earthMesh.colors.Any(color => color.a > .5f), Is.True, "Soil interior must be visible");
+            Assert.That(earthEdge.GetComponent<Renderer>().sharedMaterial.shader.name,
+                Is.EqualTo("HappyToy/VillageSoilBlend"));
             var retaining = GameObject.Find("Transition retaining walls");
             Assert.That(retaining, Is.Not.Null, "Transition retaining wall is missing");
             Assert.That(retaining.GetComponentsInChildren<Collider>(true), Is.Empty,

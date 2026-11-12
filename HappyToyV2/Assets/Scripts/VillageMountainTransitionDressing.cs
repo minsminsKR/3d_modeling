@@ -34,16 +34,12 @@ namespace HappyToy.V2
             var iron = surfaces.Get("metal-rust", new Color(.28f, .25f, .22f));
             var wood = surfaces.Get("wood-aged", new Color(.39f, .32f, .25f));
             var earthTexture = Resources.Load<Texture2D>("TempleForest/forest-earth-candidate/forest-earth-candidate-albedo");
-            var earthNormal = Resources.Load<Texture2D>("TempleForest/forest-earth-candidate/forest-earth-candidate-height");
-            var earthTemplate = Resources.Load<Material>("GraphicsPbr/concrete-rough/material");
-            if (!earthTexture || !earthNormal || !earthTemplate)
+            var earthShader = Resources.Load<Shader>("AlleyTransition/SoilBlend");
+            if (!earthTexture || !earthShader)
                 throw new InvalidOperationException("Village transition earth sources are missing");
-            earth = new Material(earthTemplate) { name = "Village transition forest earth", enableInstancing = true };
-            earth.SetColor("_BaseColor", new Color(.43f, .41f, .38f));
+            earth = new Material(earthShader) { name = "Village transition blended earth", enableInstancing = true };
+            earth.SetColor("_BaseColor", new Color(.32f, .30f, .27f, .85f));
             earth.SetTexture("_BaseMap", earthTexture);
-            earth.SetTexture("_BumpMap", earthNormal);
-            earth.SetFloat("_BumpScale", .38f);
-            earth.EnableKeyword("_NORMALMAP");
 
             var retaining = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, surfaces.TileSpan("alley-concrete-wall"));
             var fence = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, surfaces.TileSpan("metal-rust"));
@@ -117,27 +113,44 @@ namespace HappyToy.V2
 
         void AddEarthPatches()
         {
-            var geometry = new GraphicsSurfaceLibrary.Geometry(Vector3.zero, 2f);
-            // Narrow, irregular patches gradually interrupt the concrete in the
-            // last metres before the existing dirt slope. They do not change
-            // the floor or pretend to be a physically blended terrain shader.
-            for (int row = 0; row < 6; row++)
+            // Tapered, softly blended bands along the verge replace the old
+            // hard-edged quads. The existing walkable surface stays unchanged.
+            const int rows = 19;
+            var vertices = new List<Vector3>();
+            var uv = new List<Vector2>();
+            var colors = new List<Color>();
+            var triangles = new List<int>();
+            foreach (int side in new[] { -1, 1 })
             {
-                float z = -5.1f + row * .84f;
-                float edge = 2.82f - row * .13f;
-                for (int side = -1; side <= 1; side += 2)
+                int start = vertices.Count;
+                for (int row = 0; row < rows; row++)
                 {
-                    float x = side * (edge - .11f * (row % 2));
-                    float halfWidth = .16f + row * .055f;
-                    float halfLength = .28f + .05f * (row % 3);
-                    var a = new Vector3(x - halfWidth, .014f, z - halfLength);
-                    var b = new Vector3(x - halfWidth * .65f, .014f, z + halfLength);
-                    var c = new Vector3(x + halfWidth, .014f, z + halfLength * .8f);
-                    var d = new Vector3(x + halfWidth * .8f, .014f, z - halfLength * .7f);
-                    geometry.Quad(a, b, c, d);
+                    float t = row / (float)(rows - 1);
+                    float z = Mathf.Lerp(-6.5f, -.15f, t);
+                    float bend = -1.25f * Mathf.Sin(((z + 14f) - 5f) * Mathf.PI / 10f);
+                    float inner = Mathf.Lerp(2.93f, 1.95f, t) + .12f * Mathf.Sin(t * 23f + side);
+                    float outer = 3.35f;
+                    float opacity = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(0, .22f, t)) * .9f;
+                    foreach (int lane in new[] { 0, 1, 2 })
+                    {
+                        float x = bend + side * Mathf.Lerp(inner, outer, lane * .5f);
+                        vertices.Add(new Vector3(x, .015f, z));
+                        uv.Add(new Vector2(x * .5f, z * .5f));
+                        colors.Add(new Color(1, 1, 1, lane == 1 ? opacity : 0));
+                    }
+                    if (row == 0) continue;
+                    int prior = start + (row - 1) * 3, current = start + row * 3;
+                    for (int lane = 0; lane < 2; lane++)
+                    {
+                        triangles.Add(prior + lane); triangles.Add(current + lane); triangles.Add(current + lane + 1);
+                        triangles.Add(prior + lane); triangles.Add(current + lane + 1); triangles.Add(prior + lane + 1);
+                    }
                 }
             }
-            Attach("Earth encroaching on village pavement", geometry.Mesh("Transition earth patches"), earth);
+            var mesh = new Mesh { name = "Soft earth along village verge" };
+            mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetColors(colors); mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            Attach("Earth encroaching on village pavement", mesh, earth);
         }
 
         void AddVegetation()
