@@ -29,12 +29,16 @@ namespace HappyToy.V2.CloudTests
                 .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
             Assert.That(nearHouses.Length, Is.EqualTo(7));
             bool closerToCurvedWall = false;
+            var houseBounds = new System.Collections.Generic.List<Bounds>();
             foreach (var house in nearHouses)
             {
                 var renderers = house.GetComponentsInChildren<Renderer>(true);
                 Assert.That(renderers.Length, Is.GreaterThan(0));
                 var bounds = renderers[0].bounds;
                 foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                foreach (var previous in houseBounds)
+                    Assert.That(bounds.Intersects(previous), Is.False, "Neighboring house bounds overlap");
+                houseBounds.Add(bounds);
                 bool right = house.position.x > alley.transform.position.x;
                 int matchingWalls = 0;
                 foreach (Transform wall in alley.transform)
@@ -56,6 +60,21 @@ namespace HappyToy.V2.CloudTests
                         bounds.max.x > alley.transform.position.x - 4.80f;
             }
             Assert.That(closerToCurvedWall, Is.True, "No curved-street house moved closer to its wall");
+            var roofHeadings = nearHouses.Where(house => house.name == "Old Korean brick house")
+                .Select(house => house.GetChild(0).localEulerAngles.y).ToArray();
+            Assert.That(roofHeadings.Any(yaw => Mathf.Abs(Mathf.DeltaAngle(35, yaw)) < 15f), Is.True,
+                "No angled house on the left");
+            Assert.That(roofHeadings.Any(yaw => Mathf.Abs(Mathf.DeltaAngle(145, yaw)) < 15f), Is.True,
+                "No angled house on the right");
+            var shop = nodes.SingleOrDefault(node => node.name == "Authored Korean neighborhood shop");
+            Assert.That(shop, Is.Not.Null, "Authored shop is missing");
+            var shopRenderers = shop.GetComponentsInChildren<Renderer>(true).Where(renderer => renderer.enabled).ToArray();
+            Assert.That(shopRenderers.Length, Is.GreaterThan(0));
+            var shopBounds = shopRenderers[0].bounds;
+            foreach (var renderer in shopRenderers.Skip(1)) shopBounds.Encapsulate(renderer.bounds);
+            foreach (var bounds in houseBounds)
+                Assert.That(bounds.Intersects(shopBounds), Is.False,
+                    "A residential house overlaps the shop: " + bounds.center + " vs " + shopBounds.center);
             var cleanedHouse = nearHouses.SingleOrDefault(house => house.GetComponentsInChildren<Transform>(true)
                 .Any(child => child.name.StartsWith("TwoStoryHouseClean", StringComparison.Ordinal)));
             Assert.That(cleanedHouse, Is.Not.Null, "Cleaned two-story house was not applied");
@@ -109,6 +128,40 @@ namespace HappyToy.V2.CloudTests
                     renderer.sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP")), Is.True,
                     "Background house lost its PBR material");
             }
+            var backgroundBounds = new System.Collections.Generic.List<Bounds>();
+            var overlaps = new System.Collections.Generic.List<string>();
+            foreach (var house in background.Concat(farHouses))
+            {
+                var renderers = house.GetComponentsInChildren<Renderer>(true);
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                foreach (var near in houseBounds)
+                    if (bounds.Intersects(near)) overlaps.Add(house.name + " " + bounds.center + " overlaps near " + near.center);
+                foreach (var previous in backgroundBounds)
+                    if (bounds.Intersects(previous)) overlaps.Add(house.name + " " + bounds.center + " overlaps background " + previous.center);
+                backgroundBounds.Add(bounds);
+            }
+            Assert.That(overlaps, Is.Empty, string.Join("; ", overlaps));
+            var rearGround = nodes.SingleOrDefault(node => node.name == "Residential ground behind shop");
+            Assert.That(rearGround, Is.Not.Null, "Residential background ground is missing");
+            Assert.That(rearGround.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var groundBounds = rearGround.GetComponent<Renderer>().bounds;
+            foreach (var house in nearHouses.Concat(background).Concat(farHouses)
+                .Where(node => node.position.x < alley.transform.position.x))
+            {
+                var renderers = house.GetComponentsInChildren<Renderer>(true);
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                Assert.That(bounds.min.x, Is.GreaterThanOrEqualTo(groundBounds.min.x), "House extends past rear ground");
+                Assert.That(bounds.max.x, Is.LessThanOrEqualTo(groundBounds.max.x), "House extends toward the road past rear ground");
+                Assert.That(bounds.min.z, Is.GreaterThanOrEqualTo(groundBounds.min.z), "House extends past rear ground start");
+                Assert.That(bounds.max.z, Is.LessThanOrEqualTo(groundBounds.max.z), "House extends past rear ground end");
+            }
+            var rightRear = background.Single(house => house.name == "Distant neighborhood roof" &&
+                house.position.x > alley.transform.position.x);
+            Assert.That(rightRear.GetComponentsInChildren<Renderer>(true).Any(renderer => renderer.sharedMaterial &&
+                renderer.sharedMaterial.name == "BrickHousePbr"), Is.True,
+                "Right background lost the varied brick-house material");
             var formedWalls = nodes.Where(node => node.name == "Continuous curved wall skin")
                 .Select(node => node.GetComponent<Renderer>()).Where(renderer => renderer &&
                     renderer.sharedMaterial && renderer.sharedMaterial.GetTag("GraphicsSurface", false) == "alley-form-wall").ToArray();

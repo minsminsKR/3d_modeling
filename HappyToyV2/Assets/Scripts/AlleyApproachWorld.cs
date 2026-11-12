@@ -55,7 +55,11 @@ namespace HappyToy.V2
                     {
                         var tree = Instantiate(pine, transform, false);
                         tree.name = "Mountain forest visible beyond alley";
-                        tree.transform.localPosition = new Vector3(side * (5.8f + i * 2), -.1f, 20 + i * 5);
+                        // The first right-hand silhouette must sit beyond
+                        // the last village roof at the mountain seam.
+                        float treeX = side > 0 && i == 0 ? 8.4f : 5.8f + i * 2;
+                        float treeZ = side > 0 && i == 0 ? 23f : 20 + i * 5;
+                        tree.transform.localPosition = new Vector3(side * treeX, -.1f, treeZ);
                         tree.transform.localRotation = Quaternion.Euler(0, side * 45 + i * 110, 0);
                         foreach (var renderer in tree.GetComponentsInChildren<Renderer>(true))
                             renderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -302,6 +306,9 @@ namespace HappyToy.V2
             var farHouse = Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-clean-far") ??
                 Resources.Load<GameObject>("AlleyTwoStoryHouse/geometry-far");
             var farMaterial = Resources.Load<Material>("AlleyTwoStoryHouse/TwoStoryHouse");
+            var farBrick = Resources.Load<GameObject>("AlleyBrickHouse/geometry-far");
+            var farBrickMaterial = Resources.Load<Material>("AlleyBrickHouse/BrickHousePbr") ??
+                Resources.Load<Material>("AlleyBrickHouse/BrickHouse");
             var farPlaster = Resources.Load<GameObject>("AlleyPlasterHouse/geometry-far");
             var farPlasterMaterial = Resources.Load<Material>("AlleyPlasterHouse/PlasterHousePbr") ??
                 Resources.Load<Material>("AlleyPlasterHouse/PlasterHouse");
@@ -323,6 +330,31 @@ namespace HappyToy.V2
             if (foregroundBounds.min.x < foregroundClearance)
                 foreground.position += Vector3.right * (foregroundClearance - foregroundBounds.min.x);
             foreach (var node in foreground.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+            var occupiedHouses = new List<Bounds> { MonsterPresentationScale.Bounds(foreground) };
+            void SeparateOutward(Transform holder, float side)
+            {
+                var bounds = MonsterPresentationScale.Bounds(holder);
+                for (int pass = 0; pass < occupiedHouses.Count; pass++)
+                {
+                    bool moved = false;
+                    foreach (var occupied in occupiedHouses)
+                    {
+                        if (!bounds.Intersects(occupied)) continue;
+                        float shift = side > 0 ? occupied.max.x - bounds.min.x + .20f :
+                            occupied.min.x - bounds.max.x - .20f;
+                        holder.position += Vector3.right * shift;
+                        bounds = MonsterPresentationScale.Bounds(holder);
+                        moved = true;
+                    }
+                    if (!moved) break;
+                }
+                foreach (var occupied in occupiedHouses)
+                    if (bounds.Intersects(occupied)) throw new InvalidOperationException("House overlap could not be resolved");
+                occupiedHouses.Add(bounds);
+            }
+            // Small offsets along the lane give rotated footprints room to
+            // clear one another without pushing an entire house out of view.
+            float[] stationOffsets = { 0f, .5f, .9f, -1.2f, -1.1f, 1.4f };
             int houseIndex = 0;
             foreach (float side in new[] { -1f, 1f })
             {
@@ -334,9 +366,13 @@ namespace HappyToy.V2
                     Instantiate(selected, holder, false);
                     float height = twoStory && variant == 3 ? 6f : 4.15f + (variant % 3) * .22f;
                     float setback = 6.65f + (variant % 2) * .25f;
-                    float yaw = (side < 0 ? 90 : -90) + (variant % 3 - 1) * 4;
+                    float stationZ = z + stationOffsets[variant];
+                    // Not every house faces directly across the lane. Show
+                    // two side elevations to break the repeated roofline.
+                    float yaw = variant == 1 ? 35f : variant == 4 ? 145f :
+                        (side < 0 ? 90 : -90) + (variant % 3 - 1) * 4;
                     CorridorEntranceModels.GroundAtHeight(holder,
-                        new Vector3(side * setback + RoadBend(z), 0, z + (variant % 2) * .3f), height,
+                        new Vector3(side * setback + RoadBend(stationZ), 0, stationZ), height,
                         Quaternion.Euler(0, yaw, 0));
                     // Seat each generated footprint behind the actual walls
                     // spanning it. A single worst-case lane width pushes houses
@@ -359,18 +395,20 @@ namespace HappyToy.V2
                         float nearEdge = side > 0 ? bounds.min.x : bounds.max.x;
                         holder.position += Vector3.right * (clearance - nearEdge);
                     }
+                    // Keep the entire house away from previously placed
+                    // buildings without moving it into the walkable lane.
+                    SeparateOutward(holder, side);
                     foreach (var node in holder.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 }
                 // A second row breaks the empty skyline beyond the nearer roofs.
                 var rear = CorridorEntranceModels.Group(transform, "Distant neighborhood roof", Vector3.zero);
-                bool plasterRear = (side < 0 || !twoStory) && alternate;
-                bool twoStoryRear = !plasterRear && twoStory;
-                PlaceBackground(rear, plasterRear ? alternate : (twoStoryRear ? twoStory : prefab),
-                    plasterRear ? farPlaster : (twoStoryRear ? farHouse : null),
-                    plasterRear ? farPlasterMaterial : (twoStoryRear ? farMaterial : null));
+                bool plasterRear = side < 0 && alternate;
+                PlaceBackground(rear, plasterRear ? alternate : prefab,
+                    plasterRear ? farPlaster : farBrick, plasterRear ? farPlasterMaterial : farBrickMaterial);
                 CorridorEntranceModels.GroundAtHeight(rear,
-                    new Vector3(side * 12.8f, 0, side < 0 ? 5f : 10f), plasterRear ? 5.0f : (twoStory ? 6.6f : 5.0f),
+                    new Vector3(side * 12.8f, 0, side < 0 ? 5f : 10f), plasterRear ? 5.0f : 5.1f,
                     Quaternion.Euler(0, side < 0 ? 83 : -96, 0));
+                SeparateOutward(rear, side);
                 foreach (var node in rear.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in rear.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -378,8 +416,8 @@ namespace HappyToy.V2
             // The old forest horizon sits below this part of the village.
             // A visual-only residential yard keeps the distant houses grounded
             // without extending the walkable road or adding invisible barriers.
-            Box("Residential ground behind shop", new Vector3(-16f, -.14f, -9f),
-                new Vector3(25f, .22f, 30f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            Box("Residential ground behind shop", new Vector3(-26f, -.14f, -3f),
+                new Vector3(48f, .22f, 48f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
             // A second authored boundary gives the rear houses a courtyard
             // edge and screens the broad empty ground beside the store.
             var backWall = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
@@ -406,6 +444,7 @@ namespace HappyToy.V2
                 CorridorEntranceModels.GroundAtHeight(rearShop,
                     new Vector3(-12.2f, 0, -12f + i * 8f), i == 0 && twoStory ? 5.8f : 4.7f,
                     Quaternion.Euler(0, 83f + i * 9f, 0));
+                SeparateOutward(rearShop, -1f);
                 foreach (var node in rearShop.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                 foreach (var renderer in rearShop.GetComponentsInChildren<Renderer>(true))
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -421,6 +460,7 @@ namespace HappyToy.V2
                     CorridorEntranceModels.GroundAtHeight(distant,
                         new Vector3(-20.2f, 0, -15f + i * 12f), 5.2f + i * .5f,
                         Quaternion.Euler(0, 68f + i * 19f, 0));
+                    SeparateOutward(distant, -1f);
                     foreach (var node in distant.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
                     foreach (var renderer in distant.GetComponentsInChildren<Renderer>(true))
                     {

@@ -59,7 +59,9 @@ namespace HappyToy.V2
                     var model = row % 3 == 1 ? tree : pine;
                     var trunk = Instantiate(model, transform, false);
                     trunk.name = "Mountain tree " + row + " " + side;
-                    float x = side * (4.8f + (row % 3) * 1.1f);
+                    // Keep the first tree outside the adjacent village
+                    // house; its former trunk grew through the rooftop.
+                    float x = side * (row == 0 && side > 0 ? 11.5f : 4.8f + (row % 3) * 1.1f);
                     trunk.transform.localPosition = new Vector3(x, z * Slope + BankHeight(x, z) - .04f, z);
                     trunk.transform.localRotation = Quaternion.Euler(0, (row * 73 + side * 29) % 360, 0);
                     trunk.transform.localScale = Vector3.one * (.8f + .05f * (row % 3));

@@ -113,11 +113,21 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(renderers.Length, Is.GreaterThan(0));
                 var bounds = renderers[0].bounds;
                 foreach (var r in renderers.Skip(1)) bounds.Encapsulate(r.bounds);
-                float origin = alleyGeometry.transform.position.x;
-                if (house.position.x > origin)
-                    Assert.That(bounds.min.x, Is.GreaterThanOrEqualTo(origin + 4.84f), "Right house clips into the lane");
-                else
-                    Assert.That(bounds.max.x, Is.LessThanOrEqualTo(origin - 4.84f), "Left house clips into the lane");
+                bool right = house.position.x > alleyGeometry.transform.position.x;
+                int checkedWalls = 0;
+                foreach (Transform wall in alleyGeometry.transform)
+                {
+                    if ((wall.localPosition.x > 0) != right ||
+                        (wall.name != "Curved residential wall" && wall.name != "Weathered residential wall")) continue;
+                    var collider = wall.GetComponent<BoxCollider>();
+                    if (!collider || !collider.enabled) continue;
+                    var wallBounds = collider.bounds;
+                    if (wallBounds.max.z < bounds.min.z || wallBounds.min.z > bounds.max.z) continue;
+                    checkedWalls++;
+                    float gap = right ? bounds.min.x - wallBounds.max.x : wallBounds.min.x - bounds.max.x;
+                    Assert.That(gap, Is.GreaterThanOrEqualTo(.09f), "House clips into its local wall");
+                }
+                Assert.That(checkedWalls, Is.GreaterThan(0), "House has no checked local wall");
             }
             CaptureApproachReview("01-alley-start");
             var encounter = session.GetComponentsInChildren<Component>(true)
@@ -308,6 +318,41 @@ namespace HappyToy.V2.CloudTests
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 415f, 15, "Cannot pass from alley to mountain after animal retreats");
             Assert.That(RenderSettings.skybox, Is.SameAs(alleySky), "Transition should still blend the alley dusk at z=415");
+            // Trees at the streamed seam must not grow out of nearby houses.
+            var seamTrees = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(node => node.name.StartsWith("Mountain tree ", StringComparison.Ordinal) ||
+                    node.name == "Mountain forest visible beyond alley").ToArray();
+            Assert.That(seamTrees.Length, Is.GreaterThan(0), "Mountain seam trees are missing");
+            foreach (var house in houses)
+            {
+                var renderers = house.GetComponentsInChildren<Renderer>(true);
+                var bounds = renderers[0].bounds;
+                foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+                foreach (var tree in seamTrees)
+                {
+                    bool inside = tree.position.x > bounds.min.x - .5f && tree.position.x < bounds.max.x + .5f &&
+                        tree.position.z > bounds.min.z - .5f && tree.position.z < bounds.max.z + .5f;
+                    Assert.That(inside, Is.False, "Mountain tree root intersects a village house: " + tree.name);
+                }
+            }
+            // Optional focused seam review without capturing the unrelated dog animation.
+            var seamDir = Environment.GetEnvironmentVariable("HAPPYTOY_APPROACH_SEAM_REVIEW_DIR");
+            if (!string.IsNullOrEmpty(seamDir))
+            {
+                var priorDir = Environment.GetEnvironmentVariable("HAPPYTOY_APPROACH_REVIEW_DIR");
+                try
+                {
+                    Environment.SetEnvironmentVariable("HAPPYTOY_APPROACH_REVIEW_DIR", seamDir);
+                    CaptureApproachReview("seam-01-forward");
+                    var seamEye = Get<Camera>(player, "eyes").transform.position;
+                    ApproachLookAt(seamEye + new Vector3(4, 1f, 0)); yield return null;
+                    CaptureApproachReview("seam-02-right-houses");
+                    ApproachLookAt(seamEye + new Vector3(-4, 1f, 0)); yield return null;
+                    CaptureApproachReview("seam-03-left-houses");
+                    ApproachFaceForward(); yield return null;
+                }
+                finally { Environment.SetEnvironmentVariable("HAPPYTOY_APPROACH_REVIEW_DIR", priorDir); }
+            }
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 435f, 30, "Cannot walk up the mountain slope");
             Assert.That(player.transform.position.y, Is.GreaterThan(.65f), "Mountain ascent did not raise the grounded player");
             Assert.That(RenderSettings.skybox, Is.Not.SameAs(alleySky), "Mountain did not finish restoring its night sky");
