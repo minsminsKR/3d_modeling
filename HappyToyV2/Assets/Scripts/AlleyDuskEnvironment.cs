@@ -20,9 +20,11 @@ namespace HappyToy.V2
         {
             if (!camera || !world || dusk) throw new ArgumentException("A fresh alley camera and temple world are required");
             var shader = Resources.Load<Shader>("AlleyDuskSky");
+            var clouds = Resources.Load<Texture2D>("AlleyDusk/clouds");
             sun = world.GetComponentsInChildren<Light>(true).FirstOrDefault(light => light.name == "Temple outdoor fill");
             if (!shader || !sun) throw new InvalidOperationException("Dusk sky or temple directional light is missing");
             eyes = camera; dusk = new Material(shader) { name = "Temporary alley dusk sky" };
+            if (clouds) { dusk.SetTexture("_DuskClouds", clouds); dusk.SetFloat("_DuskCloudsStrength", 1); }
             Capture();
             Update();
         }

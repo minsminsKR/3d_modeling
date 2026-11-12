@@ -3,6 +3,8 @@ Shader "HappyToy/AlleyDuskSky"
     Properties
     {
         _DuskWeight("Dusk weight", Range(0,1)) = 1
+        _DuskClouds("Dusk cloud panorama", 2D) = "black" {}
+        _DuskCloudsStrength("Cloud panorama strength", Range(0,1)) = 0
         _MoonDirection("Direction to moon", Vector) = (-0.10, 0.43, 0.90, 0)
         _SkyTime("Cloud simulation time", Float) = 0
         _CloudBrightness("Cloud brightness", Float) = 1
@@ -22,9 +24,12 @@ Shader "HappyToy/AlleyDuskSky"
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
+            TEXTURE2D(_DuskClouds); SAMPLER(sampler_DuskClouds);
+
             CBUFFER_START(UnityPerMaterial)
                 float4 _MoonDirection;
                 float _DuskWeight;
+                float _DuskCloudsStrength;
                 float _SkyTime;
                 float _CloudBrightness;
                 float _MoonHaloStrength;
@@ -111,6 +116,16 @@ Shader "HappyToy/AlleyDuskSky"
                 float sunset = pow(1 - elevation, 2.4);
                 float3 dusk = lerp(float3(.026, .035, .062), float3(.22, .065, .045), sunset);
                 dusk += cover * float3(.027, .018, .022);
+                // The image covers horizon-to-zenith. Crossfade the wrap seam
+                // against the opposite section so no hard vertical edge appears.
+                float u = frac(atan2(ray.x, ray.z) * .159154943 + .5);
+                float v = asin(saturate(ray.y)) * .636619772;
+                float3 clouds = SAMPLE_TEXTURE2D(_DuskClouds, sampler_DuskClouds, float2(u, v)).rgb;
+                float3 seamClouds = SAMPLE_TEXTURE2D(_DuskClouds, sampler_DuskClouds, float2(frac(u + .5), v)).rgb;
+                float seam = 1 - smoothstep(0, .08, min(u, 1 - u));
+                clouds = lerp(clouds, seamClouds, seam);
+                float zenithFade = 1 - smoothstep(.48, .82, ray.y);
+                dusk = lerp(dusk, clouds * .36, .85 * _DuskCloudsStrength * smoothstep(-.08, .03, ray.y) * zenithFade);
                 return half4(lerp(sky, dusk, saturate(_DuskWeight)), 1);
             }
             ENDHLSL

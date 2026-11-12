@@ -809,6 +809,34 @@ namespace HappyToy.V2.CloudTests
             Physics.SyncTransforms(); yield return null;
             ApproachLookAt(coalNotice.position); yield return null;
             CaptureApproachReview("village-30-coal-notice-close");
+            var duskSky = RenderSettings.skybox;
+            Assert.That(duskSky.shader.name, Is.EqualTo("HappyToy/AlleyDuskSky"));
+            Assert.That(duskSky.GetTexture("_DuskClouds"), Is.Not.Null);
+            Assert.That(duskSky.GetFloat("_DuskCloudsStrength"), Is.EqualTo(1));
+            eye = Get<Camera>(player, "eyes").transform.position;
+            ApproachLookAt(eye + new Vector3(0, 2, -4)); yield return null;
+            CaptureApproachReview("village-31-sky-wrap");
+            ApproachLookAt(eye + new Vector3(.01f, 5, .01f)); yield return null;
+            CaptureApproachReview("village-32-sky-zenith");
+            // Drive the environment's actual input camera directly; player
+            // camera smoothing can otherwise leave it at the old position.
+            var skyOwner = alley.GetComponent(RequireType("AlleyDuskEnvironment"));
+            Assert.That(skyOwner, Is.Not.Null);
+            var updateSky = skyOwner.GetType().GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(updateSky, Is.Not.Null);
+            var skyCamera = Get<Camera>(player, "eyes").transform;
+            Vector3 savedEye = skyCamera.position;
+            Quaternion savedEyeRotation = skyCamera.rotation;
+            skyCamera.rotation = Quaternion.LookRotation(new Vector3(0, .25f, 1));
+            skyCamera.position = new Vector3(savedEye.x, savedEye.y, 407f); updateSky.Invoke(skyOwner, null);
+            float villageDusk = duskSky.GetFloat("_DuskWeight");
+            skyCamera.position = new Vector3(savedEye.x, savedEye.y, 417.5f); updateSky.Invoke(skyOwner, null);
+            Assert.That(duskSky.GetFloat("_DuskWeight"), Is.LessThan(villageDusk), "Dusk should fade toward the mountain");
+            CaptureApproachReview("village-33-dusk-transition");
+            skyCamera.position = new Vector3(savedEye.x, savedEye.y, 431f); updateSky.Invoke(skyOwner, null);
+            Assert.That(RenderSettings.skybox, Is.Not.SameAs(duskSky), "Mountain must recover the prior sky");
+            CaptureApproachReview("village-34-mountain-sky");
+            skyCamera.position = savedEye; skyCamera.rotation = savedEyeRotation; updateSky.Invoke(skyOwner, null);
             ApproachFaceForward();
         }
     }
