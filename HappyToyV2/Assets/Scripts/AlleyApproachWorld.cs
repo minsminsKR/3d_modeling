@@ -541,6 +541,34 @@ namespace HappyToy.V2
                         renderer.shadowCastingMode = ShadowCastingMode.Off;
                 }
             }
+            // A second, lower roof continues the neighborhood beyond the
+            // rear gate. It is presentation-only and never blocks the lane.
+            if (farSlate && farSlateMaterial)
+            {
+                var backCorner = CorridorEntranceModels.Group(transform, "Backstreet slate roof", Vector3.zero);
+                Instantiate(farSlate, backCorner, false);
+                CorridorEntranceModels.GroundAtHeight(backCorner, new Vector3(10f, 0, -25f), 4.8f,
+                    Quaternion.Euler(0, -27f, 0));
+                var cornerBounds = MonsterPresentationScale.Bounds(backCorner);
+                bool spaceAvailable = cornerBounds.max.z < transform.position.z - 17.35f;
+                foreach (var occupied in occupiedHouses)
+                    if (cornerBounds.Intersects(occupied)) { spaceAvailable = false; break; }
+                if (!spaceAvailable)
+                {
+                    backCorner.gameObject.SetActive(false);
+                    Destroy(backCorner.gameObject);
+                }
+                else
+                {
+                    occupiedHouses.Add(cornerBounds);
+                    foreach (var node in backCorner.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = 8;
+                    foreach (var renderer in backCorner.GetComponentsInChildren<Renderer>(true))
+                    {
+                        renderer.sharedMaterial = farSlateMaterial;
+                        renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    }
+                }
+            }
             // The old forest horizon sits below this part of the village.
             // A visual-only residential yard keeps the distant houses grounded
             // without extending the walkable road or adding invisible barriers.
@@ -552,6 +580,10 @@ namespace HappyToy.V2
             // it slightly below the first slab to avoid coplanar flicker.
             Box("Residential ground behind village", new Vector3(-26.25f, -.16f, -48.5f),
                 new Vector3(48.5f, .22f, 43.2f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
+            // Continue the non-walkable yard behind the right end of the rear
+            // gate; overlap the road below its surface without z-fighting.
+            Box("Residential ground behind rear-right", new Vector3(12f, -.16f, -31f),
+                new Vector3(18f, .22f, 28f), surfaces.Get("concrete-rough", new Color(.25f, .24f, .22f)), false);
             // A second authored boundary gives the rear houses a courtyard
             // edge and screens the broad empty ground beside the store.
             var backWall = Resources.Load<GameObject>("AlleyKoreanWall/KoreanWall");
@@ -843,7 +875,7 @@ namespace HappyToy.V2
             // The rear yard spans tens of metres: default cube UVs stretch a
             // single texture across it and erase the surface detail.
             if (label == "Alley pavement" || label == "Residential ground behind shop" ||
-                label == "Residential ground behind village")
+                label == "Residential ground behind village" || label == "Residential ground behind rear-right")
                 piece.GetComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, 0, surfaces.TileSpan("concrete-rough"));
             else if (label == "Weathered residential wall" || label == "Curved residential wall" ||
                 label == "Concrete wall pier" || label == "Rear wall corner pier" || label == "Wall tile coping")

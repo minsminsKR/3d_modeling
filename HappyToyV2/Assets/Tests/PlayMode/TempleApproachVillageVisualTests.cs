@@ -271,6 +271,32 @@ namespace HappyToy.V2.CloudTests
             foreach (var renderer in backstreetRenderers.Skip(1)) backstreetBounds.Encapsulate(renderer.bounds);
             foreach (var near in houseBounds)
                 Assert.That(backstreetBounds.Intersects(near), Is.False, "Backstreet house overlaps a near house");
+            var backCorner = alley.transform.Find("Backstreet slate roof");
+            Assert.That(backCorner, Is.Not.Null, "Second backstreet roof is missing");
+            Assert.That(backCorner.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var cornerRenderers = backCorner.GetComponentsInChildren<Renderer>(true);
+            Assert.That(cornerRenderers.Length, Is.GreaterThan(0));
+            Assert.That(cornerRenderers.All(renderer => renderer.sharedMaterial &&
+                renderer.sharedMaterial.name == "SlateHousePbr"), Is.True);
+            long cornerTriangles = 0;
+            foreach (var filter in backCorner.GetComponentsInChildren<MeshFilter>(true))
+                for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                    cornerTriangles += (long)filter.sharedMesh.GetIndexCount(submesh) / 3;
+            Assert.That(cornerTriangles, Is.InRange(1, 32000), "Backstreet slate roof used the full mesh");
+            var backCornerBounds = cornerRenderers[0].bounds;
+            foreach (var renderer in cornerRenderers.Skip(1)) backCornerBounds.Encapsulate(renderer.bounds);
+            Assert.That(backCornerBounds.max.z, Is.LessThan(rearCollider.bounds.min.z), "Slate house crosses the rear boundary");
+            Assert.That(backCornerBounds.Intersects(backstreetBounds), Is.False, "Backstreet houses overlap");
+            foreach (var near in houseBounds)
+                Assert.That(backCornerBounds.Intersects(near), Is.False, "Slate backstreet house overlaps a near house");
+            var rearRightGround = alley.transform.Find("Residential ground behind rear-right");
+            Assert.That(rearRightGround, Is.Not.Null);
+            Assert.That(rearRightGround.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var rearRightBounds = rearRightGround.GetComponent<Renderer>().bounds;
+            Assert.That(backCornerBounds.min.x, Is.GreaterThanOrEqualTo(rearRightBounds.min.x));
+            Assert.That(backCornerBounds.max.x, Is.LessThanOrEqualTo(rearRightBounds.max.x));
+            Assert.That(backCornerBounds.min.z, Is.GreaterThanOrEqualTo(rearRightBounds.min.z));
+            Assert.That(backCornerBounds.max.z, Is.LessThanOrEqualTo(rearRightBounds.max.z));
             var aerialAnchors = alley.transform.Cast<Transform>().Where(node => node.name == "Village rooftop aerial anchor").ToArray();
             Assert.That(aerialAnchors.Length, Is.EqualTo(5), "Rooftop aerial anchors are missing");
             Assert.That(aerialAnchors.All(node => !node.GetComponent<Collider>()), Is.True);
@@ -373,6 +399,8 @@ namespace HappyToy.V2.CloudTests
                 foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
                 if (bounds.Intersects(backstreetBounds))
                     overlaps.Add(house.name + " " + bounds.center + " overlaps backstreet " + backstreetBounds.center);
+                if (bounds.Intersects(backCornerBounds))
+                    overlaps.Add(house.name + " " + bounds.center + " overlaps slate backstreet " + backCornerBounds.center);
                 foreach (var near in houseBounds)
                     if (bounds.Intersects(near)) overlaps.Add(house.name + " " + bounds.center + " overlaps near " + near.center);
                 foreach (var previous in backgroundBounds)
@@ -693,6 +721,8 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-05-shop-right-roofs");
             ApproachLookAt(rearGate.position + Vector3.up * .7f); yield return null;
             CaptureApproachReview("village-24-rear-gate-floor");
+            ApproachLookAt(backCornerBounds.center + Vector3.up * backCornerBounds.extents.y * .7f); yield return null;
+            CaptureApproachReview("village-27-backstreet-slate");
             var compactBounds = compactHouse.GetComponentsInChildren<Renderer>(true)
                 .OrderByDescending(renderer => renderer.bounds.size.sqrMagnitude).First().bounds;
             ApproachLookAt(compactBounds.center + Vector3.up * (compactBounds.extents.y * .35f)); yield return null;

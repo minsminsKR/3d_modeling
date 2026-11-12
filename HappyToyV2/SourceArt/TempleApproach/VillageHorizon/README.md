@@ -28,3 +28,10 @@ Both visual-only rear ground slabs use physically scaled UVs for the existing
 one texture over its full surface, making the yard appear blurred. The focused
 village D3D11 play-mode check validates the UV coverage and captures the shop
 rear camera. Existing colliders and terrain dimensions are unchanged.
+
+
+A separate visual-only, physically tiled rear-right yard extends beneath the
+slate house beyond the rear gate, overlapping the road from below to avoid a
+sky gap. It introduces no ground collider. The focused village test checks
+that it covers the new house footprint and that neighboring houses do not
+overlap. It is not a navigable area.
