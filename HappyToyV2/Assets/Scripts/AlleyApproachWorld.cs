@@ -48,7 +48,9 @@ namespace HappyToy.V2
             var iron = surfaces.Get("painted-metal", new Color(.22f, .23f, .22f));
             var red = surfaces.Get("cloth-charred", new Color(.54f, .24f, .19f));
             var cream = surfaces.Get("cloth-charred", new Color(.72f, .64f, .51f));
-            Box("Alley pavement", new Vector3(0, -.12f, -1.25f), new Vector3(10.5f, .24f, 31.5f), road, true);
+            // Carry the pavement under the rear wall so the sunset sky cannot
+            // leak through the former 20 cm gap at the foot of the gate.
+            Box("Alley pavement", new Vector3(0, -.12f, -1.55f), new Vector3(10.5f, .24f, 32.1f), road, true);
             gameObject.AddComponent<AlleyRoadDressing>().Prepare();
             var pine = Resources.Load<GameObject>("TemplePrologue/pine-trunk-review");
             if (pine)
@@ -127,7 +129,9 @@ namespace HappyToy.V2
                 var panel = GameObject.CreatePrimitive(PrimitiveType.Quad);
                 panel.name = "Baked Korean shop sign face"; panel.layer = 8;
                 panel.transform.SetParent(transform, false);
-                panel.transform.localPosition = new Vector3(-2.63f, 2.75f, -11.265f);
+                // Each face must sit outside its own side of the frame.
+                // The old positive-Z face was buried behind the opaque box.
+                panel.transform.localPosition = new Vector3(-2.63f, 2.75f, -11.2f + (face == 0 ? -.065f : .065f));
                 panel.transform.localRotation = Quaternion.Euler(0, face * 180, 0);
                 panel.transform.localScale = Vector3.one * .84f;
                 var signRenderer = panel.GetComponent<Renderer>(); signRenderer.sharedMaterial = storeSignMaterial;

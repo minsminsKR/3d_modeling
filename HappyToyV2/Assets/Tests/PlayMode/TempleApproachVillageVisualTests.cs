@@ -229,6 +229,12 @@ namespace HappyToy.V2.CloudTests
             var rearCollider = rearBoundary.GetComponent<BoxCollider>();
             Assert.That(rearCollider && rearCollider.enabled && !rearBoundary.GetComponent<Renderer>().enabled, Is.True,
                 "Rear wall must preserve collision while using the authored surface");
+            var pavement = alley.transform.Find("Alley pavement").GetComponent<BoxCollider>();
+            Assert.That(pavement, Is.Not.Null);
+            Assert.That(pavement.bounds.min.z, Is.LessThan(rearCollider.bounds.min.z - .1f),
+                "Pavement stops short of the rear gate and exposes the sky");
+            Assert.That(pavement.bounds.max.z, Is.EqualTo(alley.transform.position.z + 14.5f).Within(.01f),
+                "The forward edge of the alley pavement moved");
             var rearGate = alley.transform.Find("Authored rear courtyard gate");
             Assert.That(rearGate, Is.Not.Null, "Rear residential gate is missing");
             Assert.That(rearGate.GetComponentsInChildren<Collider>(true), Is.Empty,
@@ -430,6 +436,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(agedBrickWalls.Length, Is.EqualTo(1), "Aged brick wall is missing or repeated");
             Assert.That(agedBrickWalls[0].sharedMaterial.IsKeywordEnabled("_NORMALMAP"), Is.True);
             Assert.That(agedBrickWalls[0].sharedMaterial.IsKeywordEnabled("_METALLICSPECGLOSSMAP"), Is.True);
+            var signFrame = nodes.Single(node => node.name == "Projecting shop sign frame");
+            var signFaces = nodes.Where(node => node.name == "Baked Korean shop sign face").ToArray();
+            Assert.That(signFaces.Length, Is.EqualTo(2));
+            var signBounds = signFrame.GetComponent<Renderer>().bounds;
+            Assert.That(signFaces.Min(face => face.position.z), Is.LessThan(signBounds.min.z));
+            Assert.That(signFaces.Max(face => face.position.z), Is.GreaterThan(signBounds.max.z),
+                "Rear sign face is hidden inside the opaque frame");
             var yardWall = nodes.SingleOrDefault(node => node.name == "Shop rear courtyard wall");
             Assert.That(yardWall, Is.Not.Null, "Rear courtyard wall failed to load");
             Assert.That(yardWall.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
@@ -631,6 +644,8 @@ namespace HappyToy.V2.CloudTests
             eye = Get<Camera>(player, "eyes").transform.position;
             ApproachLookAt(eye + new Vector3(5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-05-shop-right-roofs");
+            ApproachLookAt(rearGate.position + Vector3.up * .7f); yield return null;
+            CaptureApproachReview("village-24-rear-gate-floor");
             var compactBounds = compactHouse.GetComponentsInChildren<Renderer>(true)
                 .OrderByDescending(renderer => renderer.bounds.size.sqrMagnitude).First().bounds;
             ApproachLookAt(compactBounds.center + Vector3.up * (compactBounds.extents.y * .35f)); yield return null;
