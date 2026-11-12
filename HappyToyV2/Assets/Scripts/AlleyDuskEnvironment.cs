@@ -45,10 +45,10 @@ namespace HappyToy.V2
             if (previousSky && previousSky.HasProperty("_SkyTime"))
                 dusk.SetFloat("_SkyTime", previousSky.GetFloat("_SkyTime"));
             RenderSettings.skybox = dusk; dusk.SetFloat("_DuskWeight", weight);
-            RenderSettings.ambientLight = Color.Lerp(previousAmbient, new Color(.44f, .31f, .26f), weight);
+            RenderSettings.ambientLight = Color.Lerp(previousAmbient, new Color(.40f, .36f, .33f), weight);
             RenderSettings.fogColor = Color.Lerp(previousFog, new Color(.105f, .060f, .055f), weight);
             RenderSettings.fogDensity = Mathf.Lerp(previousFogDensity, .016f, weight);
-            sun.color = Color.Lerp(previousSun, new Color(1f, .58f, .37f), weight);
+            sun.color = Color.Lerp(previousSun, new Color(1f, .76f, .58f), weight);
             sun.intensity = Mathf.Lerp(previousIntensity, .65f, weight);
         }
         void Restore()
