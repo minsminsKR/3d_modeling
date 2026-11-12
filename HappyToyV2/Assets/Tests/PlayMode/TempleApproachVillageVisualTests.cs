@@ -671,6 +671,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(notice, Is.Not.Null, "Village notice is missing");
             Assert.That(notice.GetComponent<Renderer>().sharedMaterial, Is.Not.Null);
             Assert.That(notice.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var coalNotice = nodes.SingleOrDefault(node => node.name == "Weathered coal delivery notice");
+            Assert.That(coalNotice, Is.Not.Null, "Coal delivery notice is missing");
+            Assert.That(coalNotice.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(coalNotice.GetComponent<Renderer>().sharedMaterial.GetTexture("_BaseMap"), Is.Not.Null);
+            Assert.That(Physics.Raycast(coalNotice.position - coalNotice.forward * .3f, coalNotice.forward,
+                out var coalSupport, .4f, 1 << 8, QueryTriggerInteraction.Ignore), Is.True,
+                "Coal notice must be supported by the wall");
+            Assert.That(coalSupport.collider.name, Is.EqualTo("Curved residential wall"));
             var wallPipes = nodes.Where(node => node.name == "Weathered wall service pipe").ToArray();
             Assert.That(wallPipes.Length, Is.EqualTo(2), "Authored wall fittings are missing");
             foreach (var pipe in wallPipes)
@@ -766,9 +774,18 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-12-far-curved-gate");
             ApproachLookAt(numberPlates[1].position); yield return null;
             CaptureApproachReview("village-15-curved-house-number");
+            ApproachLookAt(coalNotice.position); yield return null;
+            CaptureApproachReview("village-29-coal-notice");
             var slateBounds = slateHouse.GetComponentsInChildren<Renderer>(true)[0].bounds;
             ApproachLookAt(slateBounds.center + Vector3.up * (slateBounds.extents.y * .35f)); yield return null;
             CaptureApproachReview("village-13-slate-house");
+            // A diagnostic close view after the route checks; the dog barrier
+            // remains active and no gameplay state is changed by this camera probe.
+            Vector3 nearCoal = coalNotice.position - coalNotice.forward * 1.3f;
+            player.transform.position = new Vector3(nearCoal.x, player.transform.position.y, nearCoal.z);
+            Physics.SyncTransforms(); yield return null;
+            ApproachLookAt(coalNotice.position); yield return null;
+            CaptureApproachReview("village-30-coal-notice-close");
             ApproachFaceForward();
         }
     }

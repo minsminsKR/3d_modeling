@@ -272,6 +272,13 @@ namespace HappyToy.V2
                 var point = new Vector3(3.2f + RoadBend(entry.z), 1.67f, entry.z) + inward * .195f;
                 wallDetails.AddHouseNumber(point, inward, entry.number);
             }
+            // An old delivery flyer belongs to a separate property and sits
+            // against the inward-facing brick wall, away from its number plate.
+            const float flyerZ = 8.45f;
+            float flyerSlope = (RoadBend(flyerZ + .02f) - RoadBend(flyerZ - .02f)) / .04f;
+            var flyerInward = new Vector3(-1, 0, flyerSlope).normalized;
+            var flyerPoint = new Vector3(3.2f + RoadBend(flyerZ), 1.48f, flyerZ) + flyerInward * .205f;
+            wallDetails.AddCoalNotice(flyerPoint, flyerInward);
             // Small translucent runoff patches follow individual straight
             // segments of the curved wall rather than spanning its bends.
             foreach (float z in new[] { .5f, 6.5f, 12.5f })

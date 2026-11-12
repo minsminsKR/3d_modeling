@@ -7,6 +7,32 @@ namespace HappyToy.V2.Editor
 {
     public static class AlleyNoticeImport
     {
+        public static void ApplyCoalDelivery()
+        {
+            const string folder = "Assets/Resources/AlleyNotices/";
+            AssetDatabase.Refresh();
+            var importer = AssetImporter.GetAtPath(folder + "coal-delivery.png") as TextureImporter;
+            if (!importer) throw new InvalidOperationException("Coal delivery notice texture is missing");
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = true; importer.alphaIsTransparency = true;
+            importer.alphaSource = TextureImporterAlphaSource.FromInput;
+            importer.wrapMode = TextureWrapMode.Clamp; importer.mipmapEnabled = true;
+            importer.SaveAndReimport();
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(folder + "coal-delivery.png");
+            var source = AssetDatabase.LoadAssetAtPath<Material>(folder + "fire-notice.mat");
+            if (!texture || !source) throw new InvalidOperationException("Notice template is missing");
+            var material = AssetDatabase.LoadAssetAtPath<Material>(folder + "coal-delivery.mat");
+            if (!material)
+            {
+                material = new Material(source);
+                AssetDatabase.CreateAsset(material, folder + "coal-delivery.mat");
+            }
+            else material.CopyPropertiesFromMaterial(source);
+            material.SetTexture("_BaseMap", texture);
+            EditorUtility.SetDirty(material); AssetDatabase.SaveAssets();
+            Debug.Log("ALLEY_COAL_NOTICE_IMPORT_PASS");
+        }
+
         public static void Apply()
         {
             const string folder = "Assets/Resources/AlleyNotices/";

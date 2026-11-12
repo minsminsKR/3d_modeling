@@ -34,6 +34,22 @@ namespace HappyToy.V2
             Destroy(notice.GetComponent<Collider>());
         }
 
+        public void AddCoalNotice(Vector3 point, Vector3 inward)
+        {
+            if (!prepared) throw new InvalidOperationException("Wall dressing is not prepared");
+            var material = Resources.Load<Material>("AlleyNotices/coal-delivery");
+            if (!material) return;
+            var notice = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            notice.name = "Weathered coal delivery notice"; notice.layer = 8;
+            notice.transform.SetParent(transform, false);
+            notice.transform.localPosition = point;
+            notice.transform.localRotation = Quaternion.LookRotation(-inward, Vector3.up);
+            notice.transform.localScale = new Vector3(.30f, .40f, 1);
+            var renderer = notice.GetComponent<Renderer>();
+            renderer.sharedMaterial = material; renderer.shadowCastingMode = ShadowCastingMode.Off;
+            Destroy(notice.GetComponent<Collider>());
+        }
+
         public void AddRunoff(Vector3 point, Vector3 inward, Vector2 size, bool mirror)
         {
             if (!prepared) throw new InvalidOperationException("Wall dressing is not prepared");
