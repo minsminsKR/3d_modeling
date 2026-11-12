@@ -43,3 +43,7 @@ visual-only; existing collision remains untouched. The actual D3D11 village
 camera and house/wall placement checks passed. The patch removes the visible
 large fragment from the sampled view; it is not a reconstruction of an interior
 and native-player FPS has not been measured.
+
+## Near side-window mullion
+
+The near house has a second-floor side window painted into the original atlas. Its dark panes appeared as one blank surface from the curved lane. `AlleySideWindowFrame` adds a small non-emissive, visual-only central mullion under the repaired near-house mesh; it does not modify the FBX or collision. Its mesh-local coordinates were fitted to the original atlas window UV bounds (approximately U .3663–.4169, V .8163–.8544) using game-camera surface ray samples. The original FBX/material remain the fallback when the repaired mesh is unavailable. The focused D3D11 village review showed the divider inside the window in the sampled route views and checked it adds no collision. This is not an interior or transparent glass reconstruction; standalone player appearance and FPS were not tested.

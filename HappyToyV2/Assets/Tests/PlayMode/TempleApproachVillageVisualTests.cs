@@ -70,6 +70,10 @@ namespace HappyToy.V2.CloudTests
                 .Any(node => node.name == "Compact brick house repaired ground window"));
             Assert.That(compactHouse, Is.Not.Null, "Reviewed compact two-story house was not placed");
             Assert.That(compactHouse.GetComponentsInChildren<Collider>(true), Is.Empty);
+            var sideWindowFrame = compactHouse.GetComponentsInChildren<Transform>(true)
+                .SingleOrDefault(node => node.name == "Near side window central mullion");
+            Assert.That(sideWindowFrame, Is.Not.Null, "Near side window frame is missing");
+            Assert.That(sideWindowFrame.GetComponentsInChildren<Collider>(true), Is.Empty);
             Assert.That(compactHouse.GetComponentsInChildren<MeshFilter>(true).Any(filter =>
                 filter.sharedMesh && filter.sharedMesh.vertexCount == 4 && filter.sharedMesh.GetIndexCount(0) == 6),
                 Is.True, "Repaired ground window surface is missing");
@@ -801,6 +805,8 @@ namespace HappyToy.V2.CloudTests
             CaptureApproachReview("village-07-curve-right-roofs");
             ApproachLookAt(eye + new Vector3(-5, 1.3f, 4)); yield return null;
             CaptureApproachReview("village-08-curve-left-roofs");
+            ApproachLookAt(sideWindowFrame.GetComponent<Renderer>().bounds.center); yield return null;
+            CaptureApproachReview("village-37-side-window-frame");
             ApproachFaceForward();
             yield return ApproachWalkUntil(Key.W, () => player.transform.position.z >= 400.4f, 6, "Cannot approach wall runoff");
             ApproachLookAt(runoff[0].position); yield return null;

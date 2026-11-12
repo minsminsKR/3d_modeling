@@ -465,6 +465,7 @@ namespace HappyToy.V2
                     {
                         var repaired = CorridorEntranceModels.Group(holder, "Compact brick house repaired ground window", Vector3.zero);
                         PlaceBackground(repaired, selected, nearWindowRepair, originalCompactMaterial);
+                        holder.gameObject.AddComponent<AlleySideWindowFrame>().TryPrepare(repaired);
                     }
                     else if (compactBackground) PlaceBackground(holder, selected, farCompact, farCompactMaterial);
                     else Instantiate(selected, holder, false);
