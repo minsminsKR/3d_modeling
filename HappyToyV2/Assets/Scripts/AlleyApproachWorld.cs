@@ -607,6 +607,7 @@ namespace HappyToy.V2
                     renderer.shadowCastingMode = ShadowCastingMode.Off;
                 GetComponent<AlleyAuthoredWallSections>().TryBuildCourtyardReturn(yardWall, -17.2f, -3.7f);
             }
+            gameObject.AddComponent<AlleyCourtyardPottery>().Prepare();
             // Roofs behind the shop fill the empty side skyline without adding
             // collision or changing the shop entrance and event corridor.
             for (int i = 0; i < 3; i++)

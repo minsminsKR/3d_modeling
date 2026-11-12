@@ -25,6 +25,18 @@ namespace HappyToy.V2.CloudTests
             var nodes = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var alley = GameObject.Find("Korean alley approach");
             Assert.That(alley, Is.Not.Null);
+            var courtyardJars = alley.transform.Cast<Transform>()
+                .Where(node => node.name == "Courtyard household onggi").ToArray();
+            Assert.That(courtyardJars.Length, Is.EqualTo(3), "Courtyard pottery is missing");
+            foreach (var jar in courtyardJars)
+            {
+                Assert.That(jar.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var bounds = jar.GetComponentsInChildren<Renderer>(true)[0].bounds;
+                Assert.That(bounds.min.y, Is.InRange(-.05f, -.01f), "Courtyard pottery is not grounded");
+                Assert.That(bounds.max.x, Is.LessThan(alley.transform.position.x - 5.25f),
+                    "Courtyard pottery must remain off the walkable road");
+            }
+            Assert.That(alley.transform.Find("Courtyard onggi contact shading"), Is.Not.Null);
             var nearHouses = alley.transform.Cast<Transform>()
                 .Where(node => node.name == "Old Korean brick house" || node.name == "Foreground old Korean house").ToArray();
             Assert.That(nearHouses.Length, Is.EqualTo(7));
